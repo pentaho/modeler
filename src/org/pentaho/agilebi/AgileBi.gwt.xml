@@ -1,0 +1,30 @@
+<module rename-to="agilebi">
+
+	<!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.user.User'/>
+	<inherits name='com.google.gwt.xml.XML'/>
+
+	<inherits name='org.pentaho.ui.Xul'/>
+  <inherits name='org.pentaho.ui.xul.Gwt'/>
+  <inherits name='com.googlecode.gwtx.Java'/>
+
+	<inherits name='org.pentaho.gwt.widgets.Widgets'/>
+
+  <inherits name="org.pentaho.metadata.Model"/>
+
+	<!-- Specify the app entry point class.                   -->
+	<!--<entry-point class='org.pentaho.agilebi.modeler.gwt.GwtModelerEntryPoint'/>-->
+
+	<!--<servlet path="/MantleService" class="org.pentaho.mantle.server.DebugMantleServlet" />-->
+
+	<script src="nativeScripts.js"/>
+
+  <source path="modeler">
+    <exclude name="**/*Servlet*"/>
+    <exclude name="**/util/*"/>
+  </source>
+
+  <public path="modeler/res"/>
+
+  <servlet path="/modelerService" class="org.pentaho.agilebi.modeler.gwt.services.GwtModelerDebugServlet" />
+</module>

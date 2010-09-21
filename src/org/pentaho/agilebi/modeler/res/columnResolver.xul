@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
+<dialog width="300" height="400" id="resolveColumnsDialog" title="Resolve Missing Columns"
+  ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()"
+  xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" onload="colResolver.init()" xmlns:pen="http://www.pentaho.org/2008/xul">
+  <groupbox flex="1">
+  <caption label="Choose a column from the available list"/>
+    <listbox id="resolveColumnsList" flex="1" pen:binding="name" command="colResolver.done()"/>
+  </groupbox>
+</dialog>

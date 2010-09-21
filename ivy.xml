@@ -31,6 +31,12 @@
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
                 changing="true"/>
 
+    <dependency org="pentaho.kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho.kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
+
+		<dependency org="pentaho.kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default" changing="true" />
+
+
 
       <dependency org="org.slf4j" name="slf4j-api" rev="1.5.8" conf="default->default" />
       <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default" />
@@ -72,13 +78,14 @@
       <artifact name="pentaho-metadata"/>
       <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
+    
+    <!-- test dependencies -->
+    <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
 
     <exclude org="xerces" module="xerces" conf="default->default"/>
     <exclude org="xml-apis" module="xml-apis" conf="default->default"/>
     <exclude org="org.olap4j" module="olap4j" conf="default->default"/>
 
-    <!-- test dependencies -->
-    <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
 
 
   </dependencies>

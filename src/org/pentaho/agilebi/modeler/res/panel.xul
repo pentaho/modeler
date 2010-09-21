@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
+<window id="label-test" title="Flow Test"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600"
+  width="800" onload="propertiesForm.init(),modeler.init()" xmlns:pen="http://www.pentaho.org/2008/xul">
+
+  <pen:include src="columnResolver.xul" />
+
+  <vbox flex="1" id="mainVBox" spacing="0" padding="0">
+
+    <toolbar mode="full">
+      <toolbaritem><label value="${new}:" /></toolbaritem>
+      <toolbaritem>
+        <menulist id="visualizationlist" label="">
+          <menupopup>
+            <menuitem label="Dummy Visualization" />
+          </menupopup>
+        </menulist>
+        </toolbaritem>
+      
+      <toolbarbutton label="${go}" id="exploreButton" onclick="modeler.visualize()" />
+      <toolbarbutton image="images/publish.png" id="publishButton" onclick="modeler.publish()" tooltiptext="${publish}"/>
+      
+    </toolbar>
+
+    <hbox flex="1">
+
+        
+      <editpanel width="250">
+        <caption label="Data" />
+        
+        <toolbar mode="icons">
+          <toolbaritem>
+            <label value="${available}:" />
+          </toolbaritem>
+          <toolbarspacer flex="1"/>
+          <toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/refresh.png" />
+          <toolbarbutton id="autoPopulateButton" image="images/autogen_model.png" onclick="modeler.showAutopopulatePrompt()" tooltiptext="${autopopulate_model}"/>
+          <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()" tooltiptext="${add}"/>
+          <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.clearFields()"
+                         tooltiptext="${clearFields}"/>
+        </toolbar>
+      
+        <listbox id="fieldList" flex="1" seltype="multi"
+          pen:binding="name" ondrag="modeler.onFieldListDrag()"
+          pen:drageffect="copy">
+          <listitem label="field" />
+          <listitem label="field" />
+          <listitem label="field" />
+          <listitem label="field" />
+          <listitem label="field" />
+          <listitem label="field" />
+        </listbox>
+      </editpanel>
+      
+      <editpanel flex="1">
+        <caption label="Model" />
+        <toolbar id="schema-toolbar" mode="icons">
+              <toolbarspacer flex="1"/>
+              <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
+    		  <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}"/>
+    		  <toolbarbutton id="hierarchyBtn" image="images/sm_hierarchy_icon.png" onclick="modeler.showNewHierarchyDialog()" disabled="true" tooltiptext="${add_hiearchy}"/>
+    		  <toolbarbutton id="levelBtn" image="images/sm_level_icon.png" onclick="modeler.showNewLevelDialog()" disabled="true" tooltiptext="${add_level}"/>
+  			  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}"/>
+  			  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}"/>
+  			  <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
+  		</toolbar>
+        <tree id="dimensionTree" flex="1" editable="false"
+          ondrag="modeler.onDimensionTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+          ondrop="modeler.onDimensionTreeDrop()" hiddenrootnode="false" preserveselection="true">
+          <treecols>
+            <treecol flex="1" label="" primary="true"
+              pen:binding="displayName" pen:childrenbinding="children"
+              pen:imagebinding="image" editable="false"
+               pen:disabledbinding="editingDisabled"
+              pen:tooltipbinding="validationMessagesString" 
+              pen:expandedbinding="expanded"/>
+          </treecols>
+          <treechildren>
+            <treeitem container="true" open="true">
+              <treerow>
+                <treecell label="" />
+              </treerow>
+              <treechildren></treechildren>
+            </treeitem>
+          </treechildren>
+        </tree>
+      </editpanel>
+
+        
+      <editpanel type="closable" width="250" id="propertiesPanel">
+        <caption label="${properties}" />
+        <deck id="propertiesdeck" flex="1">
+          <vbox/>
+          <pen:include src="measuresForm.xul" />
+          <pen:include src="cubeForms.xul" ignoreroot="true" />
+        </deck>
+      </editpanel>
+          
+    </hbox>
+  </vbox>
+
+</window>
