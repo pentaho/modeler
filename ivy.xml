@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="pentaho" module="${ivy.artifact.id}" revision="${project.revision}"/>
+
+  <configurations>
+    <conf name="default"/>
+    <conf name="test" visibility="private"/>
+    <conf name="source"/>
+    <conf name="codegen" visibility="private"/>
+    <conf name="codegen-mac" visibility="private" extends="codegen"/>
+    <conf name="codegen-win" visibility="private" extends="codegen"/>
+    <conf name="codegen-linux" visibility="private" extends="codegen"/>
+    <conf name="runtime"/>
+  </configurations>
+
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
+  </publications>
+
+  <dependencies defaultconf="default->default">
+
+    <dependency org="commons-vfs" name="commons-vfs" rev="1.0" conf="default->default"/>
+
+    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}"
+                conf="default->default"
+                changing="true"/>
+
+    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" conf="default->default"
+                changing="true"/>
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
+                changing="true"/>
+
+
+      <dependency org="org.slf4j" name="slf4j-api" rev="1.5.8" conf="default->default" />
+      <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default" />
+
+
+    <dependency org="com.google.gwt" name="gwt-servlet" rev="2.0.3" conf="default->default"/>
+
+    <!-- it doesn't matter what platform of gwt-dev we use here. GWT compile only cares about the API part of the jar -->
+    <dependency org="com.google.gwt" name="gwt-dev" rev="2.0.3" conf="default->default"/>
+    <dependency org="com.google.gwt" name="gwt-user" rev="2.0.3" conf="default->default"/>
+
+    <dependency org="org.zenica" name="gwt-datepicker" rev="r30" conf="default->default"/>
+    <dependency org="com.google.gwt" name="gwt-incubator" rev="2.0.1" conf="default->default"/>
+    <dependency org="com.allen_sauer" name="gwt-dnd" rev="3.0.1" conf="default->default"/>
+    <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" transitive="false" conf="default->default"/>
+
+    <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}"
+                conf="default->default"
+                changing="true">
+      <artifact name="pentaho-gwt-widgets"/>
+      <artifact name="pentaho-gwt-widgets" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}"
+                conf="default->default"
+                changing="true">
+      <artifact name="pentaho-xul-gwt"/>
+      <artifact name="pentaho-xul-gwt" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" conf="default->default"
+                changing="true">
+      <artifact name="pentaho-xul-core"/>
+      <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <dependency org="pentaho" name="pentaho-metadata" rev="TRUNK-SNAPSHOT" changing="true"
+                transitive="false" conf="default->default">
+      <artifact name="pentaho-metadata"/>
+      <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+
+    <exclude org="xerces" module="xerces" conf="default->default"/>
+    <exclude org="xml-apis" module="xml-apis" conf="default->default"/>
+    <exclude org="org.olap4j" module="olap4j" conf="default->default"/>
+
+    <!-- test dependencies -->
+    <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
+
+
+  </dependencies>
+</ivy-module>
