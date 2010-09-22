@@ -91,7 +91,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.workspaceHelper = helper;
 
     setModel(new MainModelNode());
-
   }
 
   @Bindable
