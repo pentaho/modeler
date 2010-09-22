@@ -85,7 +85,7 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
 
   @Bindable
   public void setName( String name ) {
-    if (!(name == null || "".equals(this.name))) {
+    if (!(name == null)) {
       String oldName = this.name;
       this.name = name;
       this.firePropertyChange("name", oldName, name); //$NON-NLS-1$
