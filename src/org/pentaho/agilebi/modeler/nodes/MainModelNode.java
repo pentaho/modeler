@@ -206,4 +206,10 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
     return listener;
   }
 
+  public void setSupressEvents( boolean suppress ) {
+    super.setSupressEvents(suppress);
+    firePropertyChange("valid", !isValid(), isValid());
+
+  }
+
 }

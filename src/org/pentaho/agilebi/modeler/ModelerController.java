@@ -700,6 +700,7 @@ public class ModelerController extends AbstractXulEventHandler {
     try {
     // TODO: GWT-ify
     workspaceHelper.autoModelFlatInBackground(this.workspace);
+    workspace.setModelIsChanging(false, true);
     this.dimensionTree.expandAll();
     } catch (ModelerException e) {
       e.printStackTrace();//logger.error(e);
