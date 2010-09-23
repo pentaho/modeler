@@ -324,7 +324,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     Domain newDomain = source.generateDomain();
     refresh(newDomain);
   }
-
   public void refresh(Domain newDomain) throws ModelerException {
 
     // Add in new logicalColumns
@@ -426,6 +425,13 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       e.printStackTrace();
     }
 
+    // If the new model was previously "auto-modeled" we need to clean that now
+    LogicalModel newLModel = newDomain.getLogicalModels().get(0);
+    List<OlapDimension> theDimensions = (List) newLModel.getProperty("olap_dimensions"); //$NON-NLS-1$
+    theDimensions.clear();
+    List<OlapCube> theCubes = (List) newLModel.getProperty("olap_cubes"); //$NON-NLS-1$
+    theCubes.clear();
+    
     // replace the domain with the new domain, which
     // makes sure the physical and logical columns are accurate
     domain = newDomain;
