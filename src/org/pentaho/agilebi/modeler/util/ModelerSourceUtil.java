@@ -1,5 +1,7 @@
 package org.pentaho.agilebi.modeler.util;
 
+import java.util.Locale;
+
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.di.core.database.Database;
@@ -18,8 +20,6 @@ import org.pentaho.pms.core.exception.PentahoMetadataException;
 import org.pentaho.pms.schema.concept.DefaultPropertyID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Locale;
 
 public class ModelerSourceUtil {
 
@@ -50,7 +50,12 @@ public class ModelerSourceUtil {
     }
   }
 
-  public static Domain generateDomain(DatabaseMeta databaseMeta, String schemaName, String tableName)
+  
+  public static Domain generateDomain(DatabaseMeta databaseMeta, String schemaName, String tableName) throws ModelerException{
+	  return generateDomain(databaseMeta, schemaName, tableName, tableName);
+  }
+  
+  public static Domain generateDomain(DatabaseMeta databaseMeta, String schemaName, String tableName, String datasourceName)
       throws ModelerException {
 
     // before generating model, let's check that the table exists and can be quoted.
@@ -78,7 +83,7 @@ public class ModelerSourceUtil {
 	    // TODO do this with messages
 	    businessModel.setName(new LocalizedString(locale, tableName));
 	    businessModel.setDescription(new LocalizedString(locale, "This is the data model for "
-	        + businessModel.getName(locale)));
+	        + datasourceName));
 
 	    LogicalTable businessTable = businessModel.getLogicalTables().get(0);
 	    businessTable.setName(new LocalizedString(locale, "Available Columns"));

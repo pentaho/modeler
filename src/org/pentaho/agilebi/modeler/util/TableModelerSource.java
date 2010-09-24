@@ -18,6 +18,7 @@ import org.pentaho.metadata.util.ThinModelConverter;
  */
 public class TableModelerSource implements ISpoonModelerSource {
 
+	private String datasourceName;
 	private String tableName;
 	private transient DatabaseMeta databaseMeta;
 	private String schemaName;
@@ -28,9 +29,14 @@ public class TableModelerSource implements ISpoonModelerSource {
   }
 
 	public TableModelerSource(DatabaseMeta databaseMeta, String tableName, String schemaName ) {
+		this(databaseMeta, tableName, schemaName, tableName);
+	}
+	
+	public TableModelerSource(DatabaseMeta databaseMeta, String tableName, String schemaName, String datasourceName ) {
 		this.tableName = tableName;
 		this.databaseMeta = databaseMeta;
 		this.schemaName = schemaName;
+		this.datasourceName = datasourceName;
 		if( schemaName == null ) {
 		  this.schemaName = ""; //$NON-NLS-1$
 		}
@@ -41,7 +47,7 @@ public class TableModelerSource implements ISpoonModelerSource {
 	}
 
 	public Domain generateDomain() throws ModelerException {
-		return ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName);
+		return ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName, datasourceName);
 	}
 
 	public void initialize(Domain domain) throws ModelerException {
@@ -93,5 +99,12 @@ public class TableModelerSource implements ISpoonModelerSource {
     }
     this.schemaName = schemaName;
   }
-
+  
+  public void setDatasourceName(String datasourceName) {
+	  this.datasourceName = datasourceName;
+  }
+  
+  public String getDatasourceName() {
+	  return this.datasourceName;
+  }
 }
