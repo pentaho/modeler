@@ -427,10 +427,16 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     // If the new model was previously "auto-modeled" we need to clean that now
     LogicalModel newLModel = newDomain.getLogicalModels().get(0);
-    List<OlapDimension> theDimensions = (List) newLModel.getProperty("olap_dimensions"); //$NON-NLS-1$
-    theDimensions.clear();
-    List<OlapCube> theCubes = (List) newLModel.getProperty("olap_cubes"); //$NON-NLS-1$
-    theCubes.clear();
+    if (newLModel != null) {
+      List<OlapDimension> theDimensions = (List) newLModel.getProperty("olap_dimensions"); //$NON-NLS-1$
+      if (theDimensions != null) {
+        theDimensions.clear();
+      }
+      List<OlapCube> theCubes = (List) newLModel.getProperty("olap_cubes"); //$NON-NLS-1$
+      if (theCubes != null) {
+        theCubes.clear();
+      }
+    }
     
     // replace the domain with the new domain, which
     // makes sure the physical and logical columns are accurate
