@@ -38,8 +38,6 @@
           <toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/refresh.png" />
           <toolbarbutton id="autoPopulateButton" image="images/autogen_model.png" onclick="modeler.showAutopopulatePrompt()" tooltiptext="${autopopulate_model}"/>
           <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()" tooltiptext="${add}"/>
-          <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.clearFields()"
-                         tooltiptext="${clearFields}"/>
         </toolbar>
       
         <listbox id="fieldList" flex="1" seltype="multi"
@@ -65,6 +63,8 @@
   			  <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}"/>
   			  <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}"/>
   			  <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
+          <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
+                         tooltiptext="${clearFields}"/>
   		</toolbar>
         <tree id="dimensionTree" flex="1" editable="false"
           ondrag="modeler.onDimensionTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
