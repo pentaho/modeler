@@ -8,7 +8,7 @@
 	<property file="${basedir}/version.properties" />
 
 	<!-- Define the default location of the gwt common build file -->
-	<property name="gwt.common.build.file" value="./build-res/subfloor-gwt.xml" description="This is the location of the standardized common_build.xml file" />
+	<property name="gwt.common.build.file" value="./build-res/subfloor.xml" description="This is the location of the standardized common_build.xml file" />
 
 	<!-- Import the common_build.xml file which contains all the default tasks -->
 	<import file="${gwt.common.build.file}" />
