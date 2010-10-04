@@ -492,7 +492,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       setModelName(lModel.getCategories().get(0).getId());
     }
 
-    List<OlapDimension> theDimensions = (List) lModel.getProperty("olap_dimensions"); //$NON-NLS-1$
+    List<OlapDimension> theDimensions = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_DIMS); //$NON-NLS-1$
     if (theDimensions != null) {
       Iterator<OlapDimension> theDimensionItr = theDimensions.iterator();
       while (theDimensionItr.hasNext()) {
@@ -524,7 +524,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       }
     }
 
-    List<OlapCube> theCubes = (List) lModel.getProperty("olap_cubes"); //$NON-NLS-1$
+    List<OlapCube> theCubes = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_CUBES); //$NON-NLS-1$
     if (theCubes != null) {
       Iterator<OlapCube> theCubeItr = theCubes.iterator();
       while (theCubeItr.hasNext()) {
