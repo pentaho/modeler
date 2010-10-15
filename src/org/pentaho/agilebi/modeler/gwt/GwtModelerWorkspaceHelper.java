@@ -19,9 +19,13 @@ import java.util.List;
  */
 public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implements IModelerWorkspaceHelper {
 
-  public GwtModelerWorkspaceHelper(){
+  public GwtModelerWorkspaceHelper(String locale){
+    super(locale);
     BogoPojo bogo = new BogoPojo();
   }
+
+
+  
 
   public void autoModelFlatInBackground( ModelerWorkspace workspace ) throws ModelerException {
     autoModelFlat(workspace);

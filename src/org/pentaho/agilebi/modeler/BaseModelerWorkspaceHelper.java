@@ -31,6 +31,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
   private static final List<AggregationType> DEFAULT_AGGREGATION_LIST = new ArrayList<AggregationType>();
   private static final List<AggregationType> DEFAULT_NON_NUMERIC_AGGREGATION_LIST = new ArrayList<AggregationType>();
+  private static String locale;
+
   static {
     DEFAULT_AGGREGATION_LIST.add(AggregationType.NONE);
     DEFAULT_AGGREGATION_LIST.add(AggregationType.SUM);
@@ -44,6 +46,10 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     DEFAULT_NON_NUMERIC_AGGREGATION_LIST.add(AggregationType.COUNT);
     DEFAULT_NON_NUMERIC_AGGREGATION_LIST.add(AggregationType.COUNT_DISTINCT);
 
+  }
+
+  public BaseModelerWorkspaceHelper(String locale){
+    this.locale = locale;
   }
   
   public void populateDomain(ModelerWorkspace model) throws ModelerException {
@@ -60,7 +66,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     LogicalModel logicalModel = domain.getLogicalModels().get(0);
     logicalModel.setId("MODEL_1");
-    logicalModel.setName( new LocalizedString( LocaleHolder.getLocaleAsString(), model.getModelName() ) );
+    logicalModel.setName( new LocalizedString(locale, model.getModelName() ) );
 
     Category cat;
     // Find existing category or create new one
@@ -90,7 +96,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         f.setLogicalColumn(lCol);
       }
 
-      lCol.setName(new LocalizedString(LocaleHolder.getLocaleAsString(), f.getName()));
+      lCol.setName(new LocalizedString(locale, f.getName()));
       AggregationType type = AggregationType.valueOf(f.getAggTypeDesc());
       if (type != AggregationType.NONE) {
         lCol.setAggregationType(type);
@@ -136,7 +142,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
           if(cat.getLogicalColumns().contains(lCol)){
             continue;
           }
-          lCol.setName(new LocalizedString(LocaleHolder.getLocaleAsString(), level.getName()));
+          lCol.setName(new LocalizedString(locale, level.getName()));
           if (cat.findLogicalColumn(lCol.getId()) == null) {
             cat.addLogicalColumn(lCol);
           }
@@ -247,5 +253,13 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
     }
     return newId;
+  }
+
+  public String getLocale() {
+    return locale;
+  }
+
+  public void setLocale(String locale) {
+    BaseModelerWorkspaceHelper.locale = locale;
   }
 }

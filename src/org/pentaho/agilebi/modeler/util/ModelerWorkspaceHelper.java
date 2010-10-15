@@ -21,6 +21,10 @@ import java.util.List;
 public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implements IModelerWorkspaceHelper {
 
 
+  public ModelerWorkspaceHelper(String locale) {
+    super(locale);
+  }
+
   /**
    * Builds an OLAP model that is attribute based.
    * @param workspace

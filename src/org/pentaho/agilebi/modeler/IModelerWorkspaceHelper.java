@@ -13,4 +13,5 @@ public interface IModelerWorkspaceHelper {
   void autoModelFlatInBackground(ModelerWorkspace workspace) throws ModelerException;
   void sortFields( List<AvailableField> availableFields);
   void populateDomain(ModelerWorkspace model) throws ModelerException;
+  String getLocale();
 }

@@ -30,6 +30,12 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<MeasureMetaD
   private MeasureMetaData fieldMeta;
   private Vector aggTypes;
   private String colName;
+  private String locale;
+
+  public MeasuresPropertiesForm(String panelId, String locale) {
+    super(panelId);
+    this.locale = locale;
+  }
 
   private PropertyChangeListener propListener = new PropertyChangeListener() {
 
@@ -104,7 +110,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<MeasureMetaD
     String prevName = this.colName;
     //TODO: GWT LanguageChoice.getInstance().getDefaultLocale().toString()
     this.colName = (col != null && col.getPhysicalColumn() != null) ? col.getPhysicalColumn().getName(
-        "en_US") : ""; //$NON-NLS-1$
+        locale) : ""; //$NON-NLS-1$
     this.firePropertyChange("columnName", prevName, this.colName); //$NON-NLS-1$
   }
 

@@ -44,6 +44,8 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
   String fieldTypeDesc = "---";
   String levelTypeDesc = "---";
   String aggTypeDesc = null;
+  private String locale;
+
   transient LogicalColumn logicalColumn;
 
   private List<String> numericAggTypes = new ArrayList<String>();
@@ -58,15 +60,17 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
 
   private List<String> textAggTypes = Collections.singletonList("COUNT");
 
-  public MeasureMetaData() {
+  public MeasureMetaData(String locale) {
 
+    this.locale = locale;
   }
 
-  public MeasureMetaData( String fieldName, String format, String displayName ) {
+  public MeasureMetaData( String fieldName, String format, String displayName, String locale ) {
     super();
     this.name = fieldName;
     this.format = format;
     this.displayName = displayName;
+    this.locale = locale;
   }
 
   public String toString() {
@@ -93,7 +97,7 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
       validateNode();
       if (logicalColumn != null) {
         //TODO: GWT i18n
-        logicalColumn.setName(new LocalizedString("en_US", name));//Locale.getDefault().toString(), name));
+        logicalColumn.setName(new LocalizedString(locale, name));//Locale.getDefault().toString(), name));
       }
     }
   }

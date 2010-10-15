@@ -33,7 +33,12 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<LevelMetaData>
   private XulLabel level_message_label;
   private XulVbox messageBox;
   private String colName;
+  private String locale;
 
+  public LevelsPropertiesForm(String panelId, String locale) {
+    super(panelId);
+    this.locale = locale;
+  }
 
   private PropertyChangeListener validListener = new PropertyChangeListener() {
 
@@ -98,7 +103,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<LevelMetaData>
     String prevName = this.colName;
     //TODO: GWT locale
     this.colName = (col != null && col.getPhysicalColumn() != null) ? col.getPhysicalColumn().getName(
-        "en_US") : ""; //$NON-NLS-1$
+        locale) : ""; //$NON-NLS-1$
     this.firePropertyChange("columnName", prevName, this.colName); //$NON-NLS-1$
   }
 

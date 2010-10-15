@@ -19,6 +19,7 @@ import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -53,9 +54,9 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
     XulDomContainer container = gwtXulRunner.getXulDomContainers().get(0);
 
 
-    ModelerWorkspace model = new ModelerWorkspace(new GwtModelerWorkspaceHelper());
-    GwtModelerWorkspaceHelper helper = new GwtModelerWorkspaceHelper();
-    model.setWorkspaceHelper(helper);
+    GwtModelerWorkspaceHelper helper = new GwtModelerWorkspaceHelper(StringUtils.defaultIfEmpty(Window.Location.getParameter("locale"), getLanguagePreference()));
+
+    ModelerWorkspace model = new ModelerWorkspace(helper);
     model.setDomain(this.domain);
     ModelerController controller = new ModelerController(model);
     controller.setWorkspaceHelper(helper);
@@ -118,6 +119,17 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
   }
+
+  public static native String getLanguagePreference()
+    /*-{
+    var m = $doc.getElementsByTagName('meta');
+    for(var i in m) {
+      if(m[i].name == 'gwt:property' && m[i].content.indexOf('locale=') != -1) {
+        return m[i].content.substring(m[i].content.indexOf('=')+1);
+      }
+    }
+    return "en_US";
+  }-*/;
 
   public void overlayLoaded() {
     //To change body of implemented methods use File | Settings | File Templates.

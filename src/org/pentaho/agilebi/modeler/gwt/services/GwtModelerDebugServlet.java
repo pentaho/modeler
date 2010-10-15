@@ -16,6 +16,7 @@ import org.pentaho.metadata.util.XmiParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Locale;
 
 /**
  * User: nbaker
@@ -45,7 +46,7 @@ public class GwtModelerDebugServlet extends RemoteServiceServlet implements IGwt
       database.setDBPort("3306");
 
       TableModelerSource source = new TableModelerSource(database, tableName, null);
-      ModelerWorkspace model = new ModelerWorkspace(new ModelerWorkspaceHelper());
+      ModelerWorkspace model = new ModelerWorkspace(new ModelerWorkspaceHelper(Locale.getDefault().toString()));
       Domain d = null;
       try {
         d = source.generateDomain();

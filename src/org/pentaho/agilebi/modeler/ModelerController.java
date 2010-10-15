@@ -439,7 +439,7 @@ public class ModelerController extends AbstractXulEventHandler {
           if (returnCode == Status.ACCEPT) {
             MeasuresCollection theMesaures = (MeasuresCollection) selectedTreeItem;
             MeasureMetaData theMeasure = new MeasureMetaData("" + retVal, "",
-                "" + retVal); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+                "" + retVal, workspaceHelper.getLocale()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
             if (selectedFields.length > 0) {
               AvailableField f = selectedFields[0];

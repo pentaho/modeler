@@ -279,7 +279,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public MeasureMetaData createMeasureForNode( AvailableField selectedField ) {
 
     MeasureMetaData meta = new MeasureMetaData(selectedField.getName(), "",
-        selectedField.getDisplayName()); //$NON-NLS-1$
+        selectedField.getDisplayName(), workspaceHelper.getLocale()); //$NON-NLS-1$
     meta.setLogicalColumn(selectedField.getLogicalColumn());
 
     return meta;
@@ -296,7 +296,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public LogicalColumn findLogicalColumn( String id ) {
     LogicalColumn col = null;
     for (LogicalColumn c : domain.getLogicalModels().get(0).getLogicalTables().get(0).getLogicalColumns()) {
-      if (c.getName("en_US").equals(id)) {
+      if (c.getName(workspaceHelper.getLocale()).equals(id)) {
         col = c;
         break;
       }
@@ -331,7 +331,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       boolean exists = false;
       inner:
       for (AvailableField fmd : this.availableFields) {
-        if (fmd.getLogicalColumn().getId().equals(lc.getId())) {
+        if (fmd.getLogicalColumn().getId().equals(lc.getId()) || fmd.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lc.getName(workspaceHelper.getLocale()))) {
           fmd.setLogicalColumn(lc);
           exists = true;
           break inner;
@@ -340,8 +340,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       if (!exists) {
         AvailableField fm = new AvailableField();
         fm.setLogicalColumn(lc);
-        fm.setName(lc.getName("en_US"));//TODO GWT i18n: Locale.getDefault().toString()));
-        fm.setDisplayName(lc.getName("en_US"));//TODO GWT i18n: Locale.getDefault().toString()));
+        fm.setName(lc.getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
+        fm.setDisplayName(lc.getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
         availableFields.add(fm);
         Collections.sort(availableFields, new Comparator<AvailableField>() {
           public int compare( AvailableField arg0, AvailableField arg1 ) {
@@ -360,7 +360,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       LogicalColumn fmlc = fm.getLogicalColumn();
       inner:
       for (LogicalColumn lc : newDomain.getLogicalModels().get(0).getLogicalTables().get(0).getLogicalColumns()) {
-        if (lc.getId().equals(fmlc.getId())) {
+        if (lc.getId().equals(fmlc.getId()) || lc.getName(workspaceHelper.getLocale()).equals(fmlc.getName(workspaceHelper.getLocale()))) {
           exists = true;
           break inner;
         }
@@ -379,7 +379,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       boolean found = false;
       if (measure.getLogicalColumn() != null) {
         for (AvailableField fm : availableFields) {
-          if (fm.getLogicalColumn().getId().equals(measure.getLogicalColumn().getId())) {
+          if (fm.getLogicalColumn().getId().equals(measure.getLogicalColumn().getId()) || fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(measure.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
             found = true;
           } else {
             if (fm.getLogicalColumn().getProperty(SqlPhysicalColumn.TARGET_COLUMN).equals(
@@ -409,7 +409,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             if (lm.getLogicalColumn() != null) {
               inner:
               for (AvailableField fm : availableFields) {
-                if (fm.getLogicalColumn().getId().equals(lm.getLogicalColumn().getId())) {
+                if (fm.getLogicalColumn().getId().equals(lm.getLogicalColumn().getId()) || fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lm.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
                   found = true;
                   break inner;
                 }
@@ -476,8 +476,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for (LogicalColumn c : table.getLogicalColumns()) {
       AvailableField fm = new AvailableField();
       fm.setLogicalColumn(c);
-      fm.setName(c.getPhysicalColumn().getName("en_US"));//TODO GWT i18n: Locale.getDefault().toString()));
-      fm.setDisplayName(c.getName("en_US"));//TODO GWT i18n: Locale.getDefault().toString()));
+      fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
+      fm.setDisplayName(c.getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
       fm.setAggTypeDesc(c.getAggregationType().toString());
       availableFields.add(fm);
     }
@@ -535,9 +535,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         while (theMeasuresItr.hasNext()) {
           OlapMeasure theMeasure = theMeasuresItr.next();
 
-          MeasureMetaData theMeasureMD = new MeasureMetaData();
+          MeasureMetaData theMeasureMD = new MeasureMetaData(workspaceHelper.getLocale());
           theMeasureMD.setName(
-              theMeasure.getLogicalColumn().getName("en_US"));//TODO GWT i18n: Locale.getDefault().toString()));
+              theMeasure.getLogicalColumn().getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
           theMeasureMD.setFormat((String) theMeasure.getLogicalColumn().getProperty("mask")); //$NON-NLS-1$
           theMeasureMD.setAggTypeDesc(theMeasure.getLogicalColumn().getAggregationType().toString());
 
