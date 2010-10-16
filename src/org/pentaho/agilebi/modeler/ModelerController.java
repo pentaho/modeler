@@ -793,10 +793,31 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public void clearFields(){
-    workspace.setModelIsChanging(true);
-    workspace.getModel().getDimensions().clear();
-    workspace.getModel().getMeasures().clear();
-    workspace.setModelIsChanging(false, true);
+	  try {
+    	
+		  XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); //$NON-NLS-1$
+          confirm.setTitle(ModelerMessagesHolder.getMessages().getString("clear_model_title")); //$NON-NLS-1$
+          confirm.setMessage(ModelerMessagesHolder.getMessages().getString("clear_model_msg")); //$NON-NLS-1$
+          confirm.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("yes")); //$NON-NLS-1$
+          confirm.setCancelLabel(ModelerMessagesHolder.getMessages().getString("no")); //$NON-NLS-1$
+
+          confirm.addDialogCallback(new XulDialogCallback() {
+        	  public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
+        		  if (returnCode == Status.ACCEPT) {
+        			  workspace.setModelIsChanging(true);
+        			  workspace.getModel().getDimensions().clear();
+        			  workspace.getModel().getMeasures().clear();
+        			  workspace.setModelIsChanging(false, true);
+        		  }
+        	  }
+
+        	  public void onError( XulComponent sender, Throwable t ) {
+        	  }
+         });
+         confirm.open();
+      } catch (Exception e) {
+        e.printStackTrace();//logger.error(e);
+      }   
   }
 
 }
