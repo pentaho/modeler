@@ -56,6 +56,8 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
     numericAggTypes.add("MINIMUM");
     numericAggTypes.add("MAXIMUM");
     numericAggTypes.add("COUNT");
+    numericAggTypes.add("COUNT_DISTINCT");
+    
   }
 
   private List<String> textAggTypes = Collections.singletonList("COUNT");

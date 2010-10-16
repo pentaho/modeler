@@ -51,6 +51,7 @@
           <menuitem label="AVERAGE" />
           <menuitem label="MINIMUM" />
           <menuitem label="MAXIMUM" />
+          <menuitem label="COUNT_DISTINCT" />
         </menupopup>
       </menulist>
       <label value="${format}:" />
