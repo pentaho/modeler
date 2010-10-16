@@ -99,7 +99,7 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
       validateNode();
       if (logicalColumn != null) {
         //TODO: GWT i18n
-        logicalColumn.setName(new LocalizedString(locale, name));//Locale.getDefault().toString(), name));
+        logicalColumn.setName(new LocalizedString(locale, name));
       }
     }
   }

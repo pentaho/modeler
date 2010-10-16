@@ -19,8 +19,10 @@ import java.util.List;
  */
 public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implements IModelerWorkspaceHelper {
 
-  public GwtModelerWorkspaceHelper(String locale){
-    super(locale);
+  public static final String DEFAULT_LOCALE = "en_US";
+
+  public GwtModelerWorkspaceHelper(){
+    super(DEFAULT_LOCALE);
     BogoPojo bogo = new BogoPojo();
   }
 

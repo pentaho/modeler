@@ -52,8 +52,8 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<LevelMetaData>
 
   private LevelMetaData dim;
 
-  public LevelsPropertiesForm() {
-    super("levelprops");
+  public LevelsPropertiesForm(String locale) {
+    this("levelprops", locale);
   }
 
   public void setObject( LevelMetaData dim ) {

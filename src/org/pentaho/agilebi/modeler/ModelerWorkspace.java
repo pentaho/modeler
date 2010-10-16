@@ -340,8 +340,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       if (!exists) {
         AvailableField fm = new AvailableField();
         fm.setLogicalColumn(lc);
-        fm.setName(lc.getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
-        fm.setDisplayName(lc.getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
+        fm.setName(lc.getName(workspaceHelper.getLocale()));
+        fm.setDisplayName(lc.getName(workspaceHelper.getLocale()));
         availableFields.add(fm);
         Collections.sort(availableFields, new Comparator<AvailableField>() {
           public int compare( AvailableField arg0, AvailableField arg1 ) {
@@ -476,8 +476,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for (LogicalColumn c : table.getLogicalColumns()) {
       AvailableField fm = new AvailableField();
       fm.setLogicalColumn(c);
-      fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
-      fm.setDisplayName(c.getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
+      fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
+      fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
       fm.setAggTypeDesc(c.getAggregationType().toString());
       availableFields.add(fm);
     }
@@ -537,7 +537,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
           MeasureMetaData theMeasureMD = new MeasureMetaData(workspaceHelper.getLocale());
           theMeasureMD.setName(
-              theMeasure.getLogicalColumn().getName(workspaceHelper.getLocale()));//TODO GWT i18n: Locale.getDefault().toString()));
+              theMeasure.getLogicalColumn().getName(workspaceHelper.getLocale()));
           theMeasureMD.setFormat((String) theMeasure.getLogicalColumn().getProperty("mask")); //$NON-NLS-1$
           theMeasureMD.setAggTypeDesc(theMeasure.getLogicalColumn().getAggregationType().toString());
 

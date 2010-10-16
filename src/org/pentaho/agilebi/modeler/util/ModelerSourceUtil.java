@@ -65,7 +65,7 @@ public class ModelerSourceUtil {
   	Domain domain = null;
   	try {
 	    // modelName, databaseMeta, , "joe", tableOutputMeta.getTablename(), profiles);
-	    String locale = Locale.getDefault().toString();
+	    String locale = LocalizedString.DEFAULT_LOCALE;
 	    generator.setLocale(locale);
 	    generator.setDatabaseMeta(databaseMeta);
 	    generator.setModelName(tableName);

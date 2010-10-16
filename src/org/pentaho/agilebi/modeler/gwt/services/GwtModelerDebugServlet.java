@@ -12,6 +12,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.util.XmiParser;
 
 import java.io.File;
@@ -46,7 +47,7 @@ public class GwtModelerDebugServlet extends RemoteServiceServlet implements IGwt
       database.setDBPort("3306");
 
       TableModelerSource source = new TableModelerSource(database, tableName, null);
-      ModelerWorkspace model = new ModelerWorkspace(new ModelerWorkspaceHelper(Locale.getDefault().toString()));
+      ModelerWorkspace model = new ModelerWorkspace(new ModelerWorkspaceHelper(LocalizedString.DEFAULT_LOCALE));
       Domain d = null;
       try {
         d = source.generateDomain();

@@ -57,8 +57,8 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<MeasureMetaD
     }
   };
 
-  public MeasuresPropertiesForm() {
-    super("measuresprops");
+  public MeasuresPropertiesForm(String locale) {
+    this("measuresprops", locale);
   }
 
 

@@ -54,7 +54,7 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
     XulDomContainer container = gwtXulRunner.getXulDomContainers().get(0);
 
 
-    GwtModelerWorkspaceHelper helper = new GwtModelerWorkspaceHelper(StringUtils.defaultIfEmpty(Window.Location.getParameter("locale"), getLanguagePreference()));
+    GwtModelerWorkspaceHelper helper = new GwtModelerWorkspaceHelper();
 
     ModelerWorkspace model = new ModelerWorkspace(helper);
     model.setDomain(this.domain);
@@ -71,7 +71,7 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
     controller.setBindingFactory(bf);
     container.addEventHandler(controller);
 
-    AbstractModelerNodeForm propController = new MeasuresPropertiesForm();
+    AbstractModelerNodeForm propController = new MeasuresPropertiesForm(helper.getLocale());
     container.addEventHandler(propController);
     controller.addPropertyForm(propController);
     propController.setBindingFactory(bf);
@@ -83,7 +83,7 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
     propController.setBindingFactory(bf);
     propController.init();
 
-    propController = new LevelsPropertiesForm();
+    propController = new LevelsPropertiesForm(helper.getLocale());
     container.addEventHandler(propController);
     controller.addPropertyForm(propController);
     propController.setBindingFactory(bf);
@@ -119,17 +119,6 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
   }
-
-  public static native String getLanguagePreference()
-    /*-{
-    var m = $doc.getElementsByTagName('meta');
-    for(var i in m) {
-      if(m[i].name == 'gwt:property' && m[i].content.indexOf('locale=') != -1) {
-        return m[i].content.substring(m[i].content.indexOf('=')+1);
-      }
-    }
-    return "en_US";
-  }-*/;
 
   public void overlayLoaded() {
     //To change body of implemented methods use File | Settings | File Templates.
