@@ -34,7 +34,14 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
   }
 
   public void autoModelFlat( ModelerWorkspace workspace ) throws ModelerException {
-    MainModelNode mainModel = new MainModelNode();
+    MainModelNode mainModel = null;
+    if (workspace.getModel() == null) {
+      mainModel = new MainModelNode();
+    } else {
+      workspace.getModel().getMeasures().clear();
+      workspace.getModel().getDimensions().clear();
+      mainModel = workspace.getModel();
+    }
     mainModel.setName(workspace.getModelName());
     workspace.setModel(mainModel);
     final boolean prevChangeState = workspace.isModelChanging();
