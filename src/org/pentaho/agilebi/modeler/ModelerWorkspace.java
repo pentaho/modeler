@@ -468,6 +468,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   public void setDomain( Domain d ) {
     this.domain = d;
+    this.setModelIsChanging(true);
     this.model.getDimensions().clear();
     this.model.getMeasures().clear();
     this.availableFields.clear();
@@ -546,7 +547,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         }
       }
     }
-    model.validateTree();
+    this.setModelIsChanging(false, true);
 
   }
 
