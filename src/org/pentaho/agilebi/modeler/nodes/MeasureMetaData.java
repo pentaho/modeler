@@ -60,8 +60,13 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
     
   }
 
-  private List<String> textAggTypes = Collections.singletonList("COUNT");
+  private List<String> textAggTypes = new ArrayList<String>();
+  {
+    textAggTypes.add("COUNT");
+    textAggTypes.add("COUNT_DISTINCT");
 
+  }
+  
   public MeasureMetaData(String locale) {
 
     this.locale = locale;
