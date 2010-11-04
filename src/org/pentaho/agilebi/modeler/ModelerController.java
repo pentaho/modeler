@@ -820,4 +820,8 @@ public class ModelerController extends AbstractXulEventHandler {
       }   
   }
 
+  public void resetPropertyForm(){
+    this.propDeck.setSelectedIndex(0);
+  }
+
 }
