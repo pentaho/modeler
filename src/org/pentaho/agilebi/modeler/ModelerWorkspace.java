@@ -16,6 +16,15 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableFieldCollection;
@@ -37,15 +46,6 @@ import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**
@@ -101,6 +101,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   @Bindable
   public void setModel( MainModelNode model ) {
     this.model = model;
+    model.validateNode();
+    model.setModelerWorkspace(this);
     model.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
 
       public void propertyChange( PropertyChangeEvent arg0 ) {
