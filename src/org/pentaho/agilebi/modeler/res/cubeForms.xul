@@ -42,10 +42,9 @@
                     value="${undefined_ds}" />
           </row>
           <row flex="1">
-            <label id="datasource_message_label" flex="1" multiline="true"
+            <label id="datasource_message_label" flex="1" multiline="false" visible="false" 
                 value="${undefined_ds}" />
-          </row>
-      
+          </row>      
        </rows>
       </grid>
     </vbox>
