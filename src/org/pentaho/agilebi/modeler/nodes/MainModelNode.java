@@ -16,15 +16,15 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.agilebi.modeler.ModelerController;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.agilebi.modeler.propforms.MainModelerNodePropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
-import org.pentaho.ui.xul.stereotype.Bindable;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
+
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.propforms.MainModelerNodePropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataModelNode> implements Serializable {
 
@@ -34,6 +34,7 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
 
   private MeasuresCollection measures = new MeasuresCollection();
   private DimensionMetaDataCollection dimensions = new DimensionMetaDataCollection();
+  private ModelerWorkspace workspace;
 
   private transient PropertyChangeListener listener;
 
@@ -123,6 +124,12 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
   public void validate() {
     valid = true;
     this.validationMessages.clear();
+        
+    if(this.workspace == null || this.workspace.getModelSource() == null) {
+    	valid = false;
+        this.validationMessages.add(
+            "Datasource Undefined");
+    }    
 
     if ("".equals(this.getName())) {
       valid = false;
@@ -141,6 +148,10 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
     }
   }
 
+  public void setModelerWorkspace(ModelerWorkspace workspace) {
+	  this.workspace = workspace;
+  }
+  
   @Override
   public int hashCode() {
     final int prime = 31;
