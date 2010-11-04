@@ -130,7 +130,7 @@ public class ModelerController extends AbstractXulEventHandler {
         } else if (event.getDropParent() instanceof DimensionMetaData) {
           event.setAccepted(true);
           return;
-        } 
+        }
       } else if (obj instanceof HierarchyMetaData) {
         HierarchyMetaData hierarchy = (HierarchyMetaData) obj;
         if (event.getDropParent() == null) {
@@ -794,7 +794,7 @@ public class ModelerController extends AbstractXulEventHandler {
   @Bindable
   public void clearFields(){
 	  try {
-    	
+
 		  XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); //$NON-NLS-1$
           confirm.setTitle(ModelerMessagesHolder.getMessages().getString("clear_model_title")); //$NON-NLS-1$
           confirm.setMessage(ModelerMessagesHolder.getMessages().getString("clear_model_msg")); //$NON-NLS-1$
@@ -817,7 +817,11 @@ public class ModelerController extends AbstractXulEventHandler {
          confirm.open();
       } catch (Exception e) {
         e.printStackTrace();//logger.error(e);
-      }   
+      }
+  }
+
+  public void resetPropertyForm(){
+    this.propDeck.setSelectedIndex(0);
   }
 
 }
