@@ -101,8 +101,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   @Bindable
   public void setModel( MainModelNode model ) {
     this.model = model;
-    model.validateNode();
-    model.setModelerWorkspace(this);    
     model.addPropertyChangeListener("children", new PropertyChangeListener() { //$NON-NLS-1$
 
       public void propertyChange( PropertyChangeEvent arg0 ) {
