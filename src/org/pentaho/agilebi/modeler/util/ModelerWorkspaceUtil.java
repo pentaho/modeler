@@ -37,7 +37,6 @@ public class ModelerWorkspaceUtil {
 
   private static String MODELER_NAME = "OutputStepModeler"; //$NON-NLS-1$
 
-
   public static void saveWorkspace(ModelerWorkspace aModel, String fileName) throws ModelerException {
   	try {
 
@@ -54,8 +53,8 @@ public class ModelerWorkspaceUtil {
 	      out.close();
 
 	    } catch(IOException e){
-	      logger.info(BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
-	      throw new ModelerException(BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
+	      logger.info(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
+	      throw new ModelerException(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
 	    }
 
   	} catch (Exception e) {
@@ -103,7 +102,7 @@ public class ModelerWorkspaceUtil {
       if(e instanceof ModelerException){
         throw (ModelerException) e;
       }
-      throw new ModelerException(BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.LoadWorkspace.Failed"),e); //$NON-NLS-1$
+      throw new ModelerException(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.LoadWorkspace.Failed"),e); //$NON-NLS-1$
     }
   }
 }

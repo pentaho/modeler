@@ -4,6 +4,7 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -44,7 +45,7 @@ public class ModelerSourceUtil {
       database.connect();
       database.getTableFields(schemaTableCombination);
     } catch (KettleDatabaseException e) {
-      throw new ModelerException(BaseMessages.getString(ModelerSourceUtil.class, "ModelerSourceUtil.FAILED_TO_GET_TABLE_FIELDS", schemaTableCombination), e); //$NON-NLS-1$
+      throw new ModelerException(BaseMessages.getString(ModelerWorkspace.class, "ModelerSourceUtil.FAILED_TO_GET_TABLE_FIELDS", schemaTableCombination), e); //$NON-NLS-1$
     } finally {
       database.disconnect();
     }
