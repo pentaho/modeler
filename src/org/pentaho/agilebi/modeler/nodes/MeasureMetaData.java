@@ -237,7 +237,7 @@ public class MeasureMetaData extends AbstractMetaDataModelNode implements Serial
       valid = false;
     }
     if (logicalColumn == null) {
-      validationMessages.add("measure_column_missing");
+      validationMessages.add("The column mapped to the measure ("+getName()+") is missing or no longer available.");
 //      validationMessages.add(BaseMessages.getString(ModelerWorkspace.class, "measure_column_missing", getName()));
       valid = false;
     }

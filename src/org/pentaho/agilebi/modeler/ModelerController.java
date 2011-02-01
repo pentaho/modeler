@@ -443,8 +443,10 @@ public class ModelerController extends AbstractXulEventHandler {
 
             if (selectedFields.length > 0) {
               AvailableField f = selectedFields[0];
-              theMeasure.setLogicalColumn(f.getLogicalColumn());
-              workspace.setDirty(true);
+              if(f != null){
+                theMeasure.setLogicalColumn(f.getLogicalColumn());
+                workspace.setDirty(true);
+              }
             }
 
             theMeasure.setParent(theMesaures);
