@@ -32,7 +32,7 @@ public class LevelMetaData extends AbstractMetaDataModelNode implements Serializ
   String columnName;
   HierarchyMetaData parent;
   transient LogicalColumn logicalColumn;
-  Boolean uniqueMembers = true;
+  Boolean uniqueMembers = false;
 
   public LevelMetaData(){
     
