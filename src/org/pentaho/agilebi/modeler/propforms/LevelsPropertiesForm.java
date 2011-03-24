@@ -16,7 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
-import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -26,7 +26,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class LevelsPropertiesForm extends AbstractModelerNodeForm<LevelMetaData> {
+public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBackedMetaData> {
 
   private XulTextbox name;
   private XulLabel sourceLabel;
@@ -50,13 +50,13 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<LevelMetaData>
     }
   };
 
-  private LevelMetaData dim;
+  private BaseColumnBackedMetaData dim;
 
   public LevelsPropertiesForm(String locale) {
     this("levelprops", locale);
   }
 
-  public void setObject( LevelMetaData dim ) {
+  public void setObject( BaseColumnBackedMetaData dim ) {
     if (this.dim != null) {
       this.dim.removePropertyChangeListener(validListener);
     }

@@ -16,36 +16,16 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.metadata.model.*;
+import org.pentaho.metadata.model.olap.*;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.stereotype.Bindable;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
-import org.pentaho.agilebi.modeler.nodes.AvailableFieldCollection;
-import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
-import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
-import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
-import org.pentaho.agilebi.modeler.nodes.MainModelNode;
-import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.model.SqlPhysicalColumn;
-import org.pentaho.metadata.model.SqlPhysicalModel;
-import org.pentaho.metadata.model.olap.OlapCube;
-import org.pentaho.metadata.model.olap.OlapDimension;
-import org.pentaho.metadata.model.olap.OlapHierarchy;
-import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
-import org.pentaho.metadata.model.olap.OlapMeasure;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
-import org.pentaho.ui.xul.stereotype.Bindable;
+import java.util.*;
 
 
 /**
@@ -60,6 +40,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private AvailableFieldCollection availableFields = new AvailableFieldCollection();
 
   private MainModelNode model;
+  private RelationalModelNode relationalModel;
 
   private String sourceName;
 
@@ -84,6 +65,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   private AbstractMetaDataModelNode selectedNode;
   private IModelerWorkspaceHelper workspaceHelper;
+  private AbstractMetaDataModelNode selectedRelationalNode;
 
   public ModelerWorkspace(IModelerWorkspaceHelper helper) {
 
@@ -91,6 +73,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.workspaceHelper = helper;
 
     setModel(new MainModelNode());
+    setRelationalModel(new RelationalModelNode());
   }
 
   @Bindable
@@ -110,6 +93,24 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       }
     });
   }
+
+  @Bindable
+  public RelationalModelNode getRelationalModel() {
+    return relationalModel;
+  }
+
+  @Bindable
+  public void setRelationalModel( RelationalModelNode model ) {
+    this.relationalModel = model;
+    relationalModel.addPropertyChangeListener("children", new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        if (!modelIsChanging) {
+          fireRelationalModelChanged();
+        }
+      }
+    });
+  }
+
 
   @Bindable
   public void setFileName( String fileName ) {
@@ -171,6 +172,18 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
 
   @Bindable
+  public String getRelationalModelName() {
+    return relationalModel.getName();
+  }
+  @Bindable
+  public void setRelationalModelName(String modelName) {
+    String prevVal = model.getName();
+    relationalModel.setName(modelName);
+    setDirty(true);
+    this.firePropertyChange("relationalModelName", prevVal, modelName); //$NON-NLS-1$
+  }
+
+  @Bindable
   public boolean isDirty() {
     return dirty;
   }
@@ -178,12 +191,17 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   @Bindable
   public boolean isValid() {
     model.validateTree();
-    return this.model.isValid();
+    relationalModel.validateTree();
+
+    return this.model.isValid() && relationalModel.isValid();
   }
 
   @Bindable
   public List<String> getValidationMessages() {
-    return model.getValidationMessages();
+    List<String> modelMsg = model.getValidationMessages();
+    List<String> relModelMsg = relationalModel.getValidationMessages();
+    modelMsg.addAll(relModelMsg);
+    return modelMsg;
   }
 
   @Bindable
@@ -256,6 +274,20 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return level;
   }
 
+  public FieldMetaData createFieldForParentWithNode( CategoryMetaData parent, ColumnBackedNode obj ) {
+    FieldMetaData field = new FieldMetaData(parent, obj.getName());
+    field.setParent(parent);
+    field.setLogicalColumn(obj.getLogicalColumn());
+    return field;
+  }
+
+  public FieldMetaData createFieldForParentWithNode( CategoryMetaData parent, String name ) {
+    FieldMetaData field = new FieldMetaData(parent, name);
+    field.setParent(parent);
+    field.setLogicalColumn(findLogicalColumn(name));
+    return field;
+  }
+
   public HierarchyMetaData createHierarchyForParentWithNode( DimensionMetaData parent, ColumnBackedNode obj ) {
     HierarchyMetaData hier = new HierarchyMetaData(obj.getName());
     hier.setParent(parent);
@@ -273,6 +305,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   private void fireModelChanged() {
     firePropertyChange("model", null, model); //$NON-NLS-1$
+    setDirty(true);
+  }
+
+  private void fireRelationalModelChanged() {
+    firePropertyChange("relationalModel", null, relationalModel); //$NON-NLS-1$
     setDirty(true);
   }
 
@@ -579,9 +616,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (!changing && fireChanged) {
       fireFieldsChanged();
       model.validateTree();
+      relationalModel.validateTree();
       fireModelChanged();
+      fireRelationalModelChanged();
     }
     model.setSupressEvents(changing);
+    relationalModel.setSupressEvents(changing);
   }
 
   @Bindable
@@ -609,6 +649,18 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     AbstractMetaDataModelNode prevVal = this.selectedNode;
     this.selectedNode = node;
     firePropertyChange("selectedNode", prevVal, node); //$NON-NLS-1$
+  }
+
+  @Bindable
+  public AbstractMetaDataModelNode getSelectedRelationalNode() {
+    return selectedRelationalNode;
+  }
+
+  @Bindable
+  public void setSelectedRelationalNode( AbstractMetaDataModelNode node) {
+    AbstractMetaDataModelNode prevVal = this.selectedRelationalNode;
+    this.selectedRelationalNode = node;
+    firePropertyChange("selectedRelationalNode", prevVal, node); //$NON-NLS-1$
   }
 
   public IModelerWorkspaceHelper getWorkspaceHelper() {

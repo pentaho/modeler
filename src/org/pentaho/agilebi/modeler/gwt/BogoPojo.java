@@ -1,35 +1,16 @@
 package org.pentaho.agilebi.modeler.gwt;
 
 
-import java.io.Serializable;
-
+import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.security.RowLevelSecurity;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
-import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.metadata.model.concept.types.Alignment;
-import org.pentaho.metadata.model.concept.types.Color;
-import org.pentaho.metadata.model.concept.types.ColumnWidth;
-import org.pentaho.metadata.model.concept.types.DataType;
-import org.pentaho.metadata.model.concept.types.FieldType;
-import org.pentaho.metadata.model.concept.types.Font;
-import org.pentaho.metadata.model.concept.types.JoinType;
-import org.pentaho.metadata.model.concept.types.LocaleType;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.metadata.model.concept.types.RelationshipType;
-import org.pentaho.metadata.model.concept.types.TableType;
-import org.pentaho.metadata.model.concept.types.TargetColumnType;
-import org.pentaho.metadata.model.concept.types.TargetTableType;
-import org.pentaho.metadata.model.olap.OlapCube;
-import org.pentaho.metadata.model.olap.OlapDimension;
-import org.pentaho.metadata.model.olap.OlapDimensionUsage;
-import org.pentaho.metadata.model.olap.OlapHierarchy;
-import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
-import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metadata.model.concept.types.*;
+import org.pentaho.metadata.model.olap.*;
 
-import java.lang.Boolean;
+import java.io.Serializable;
 /*
  * This class is a workaround for GWT. GWT is not able to compile these classes are they have been used in a map
  * http://code.google.com/p/google-web-toolkit/issues/detail?id=3521
@@ -63,6 +44,15 @@ public class BogoPojo implements Serializable {
   OlapDimensionUsage dimUsage;
   LogicalTable lTable;
   LogicalModel lModel;
+  LogicalColumn lColumn;
+
+  public LogicalColumn getlColumn() {
+    return lColumn;
+  }
+
+  public void setlColumn(LogicalColumn lColumn) {
+    this.lColumn = lColumn;
+  }
 
   public LogicalModel getlModel() {
     return lModel;

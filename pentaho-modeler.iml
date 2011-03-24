@@ -24,10 +24,20 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="Kettle trunk" />
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../pentaho-xul-gwt/src" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module" module-name="pentaho-xul-swt" />
+    <orderEntry type="module" module-name="pentaho-xul-gwt" />
     <orderEntry type="module" module-name="pentaho-xul-core" />
     <orderEntry type="module" module-name="PentahoMetaData" />
+    <orderEntry type="module" module-name="Kettle trunk" />
     <orderEntry type="library" name="GWT 2.0.3" level="application" />
     <orderEntry type="module-library">
       <library name="jars">
