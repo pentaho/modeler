@@ -19,30 +19,40 @@
 
 package org.pentaho.agilebi.modeler.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.RelationshipType;
+import org.pentaho.pms.core.exception.PentahoMetadataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultiTableModelerSource implements ISpoonModelerSource {
 
-	public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
+	private ModelGenerator generator;
 	private DatabaseMeta databaseMeta;
 	private List<LogicalRelationship> joinTemplates;
+	public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
+	private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSource.class);
 
 	public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates) {
 		this.databaseMeta = databaseMeta;
 		this.joinTemplates = joinTemplates;
+		this.generator = new ModelGenerator();
 	}
 
 	@Override
 	public Domain generateDomain() throws ModelerException {
-		MultiTableModelerSourceUtil util = new MultiTableModelerSourceUtil();
-		Domain domain = util.generateDomain(this.databaseMeta, this.joinTemplates);
-		return domain;
+		return this.generateDomain(this.databaseMeta, this.joinTemplates);
 	}
 
 	@Override
@@ -77,5 +87,81 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 	@Override
 	public DatabaseMeta getDatabaseMeta() {
 		return this.databaseMeta;
+	}
+
+	public Domain generateDomain(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates) {
+
+		Domain domain = null;
+
+		try {
+
+			// Generate domain based on the table names.
+
+			String locale = LocalizedString.DEFAULT_LOCALE;
+			this.generator.setLocale(locale);
+			this.generator.setDatabaseMeta(databaseMeta);
+			this.generator.setModelName(databaseMeta.getName());
+
+			List<SchemaTable> schemas = new ArrayList<SchemaTable>();
+			for (LogicalRelationship joinTemplate : joinTemplates) {
+				schemas.add(new SchemaTable("", joinTemplate.getFromTable().getName(locale)));
+				schemas.add(new SchemaTable("", joinTemplate.getToTable().getName(locale)));
+			}
+
+			SchemaTable tableNames[] = new SchemaTable[schemas.size()];
+			tableNames = schemas.toArray(tableNames);
+			this.generator.setTableNames(tableNames);
+			domain = this.generator.generateDomain();
+			domain.setId(databaseMeta.getName());
+
+			// Create and add LogicalRelationships to the LogicalModel from the
+			// domain.
+
+			LogicalModel logicalModel = domain.getLogicalModels().get(0);
+			for (LogicalRelationship joinTemplate : joinTemplates) {
+
+				String lTable = joinTemplate.getFromTable().getName(locale);
+				String rTable = joinTemplate.getToTable().getName(locale);
+
+				LogicalTable fromTable = null;
+				LogicalColumn fromColumn = null;
+				LogicalTable toTable = null;
+				LogicalColumn toColumn = null;
+
+				for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
+					if (logicalTable.getName(locale).equals(lTable)) {
+						fromTable = logicalTable;
+
+						for (LogicalColumn logicalColumn : fromTable.getLogicalColumns()) {
+							if (logicalColumn.getName(locale).equals(joinTemplate.getFromColumn().getName(locale))) {
+								fromColumn = logicalColumn;
+							}
+						}
+					}
+					if (logicalTable.getName(locale).equals(rTable)) {
+						toTable = logicalTable;
+
+						for (LogicalColumn logicalColumn : toTable.getLogicalColumns()) {
+							if (logicalColumn.getName(locale).equals(joinTemplate.getToColumn().getName(locale))) {
+								toColumn = logicalColumn;
+							}
+						}
+					}
+				}
+
+				LogicalRelationship logicalRelationship = new LogicalRelationship();
+				// TODO is this INNER JOIN?
+				logicalRelationship.setRelationshipType(RelationshipType._1_1);
+				logicalRelationship.setFromTable(fromTable);
+				logicalRelationship.setFromColumn(fromColumn);
+				logicalRelationship.setToTable(toTable);
+				logicalRelationship.setToColumn(toColumn);
+				logicalModel.addLogicalRelationship(logicalRelationship);
+			}
+		} catch (PentahoMetadataException e) {
+			e.printStackTrace();
+			logger.info(e.getLocalizedMessage());
+		}
+		return domain;
 	}
 }
