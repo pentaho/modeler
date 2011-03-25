@@ -22,7 +22,6 @@ package org.pentaho.agilebi.modeler.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.agilebi.modeler.util.ModelGenerator;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
@@ -31,6 +30,7 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 
 public class MultiTableModelerSourceUtil {
@@ -54,6 +54,8 @@ public class MultiTableModelerSourceUtil {
 			List<SchemaTable> schemas = new ArrayList<SchemaTable>();
 
 			for (LogicalRelationship joinTemplate : joinTemplates) {
+				
+				//TODO Schema???
 				schemas.add(new SchemaTable("", joinTemplate.getFromTable().getName(locale)));
 				schemas.add(new SchemaTable("", joinTemplate.getToTable().getName(locale)));
 
@@ -101,6 +103,7 @@ public class MultiTableModelerSourceUtil {
 				}
 
 				LogicalRelationship logicalRelationship = new LogicalRelationship();
+				logicalRelationship.setRelationshipType(RelationshipType._1_1); //TODO INNER???
 				logicalRelationship.setFromTable(fromTable);
 				logicalRelationship.setFromColumn(fromColumn);
 				logicalRelationship.setToTable(toTable);

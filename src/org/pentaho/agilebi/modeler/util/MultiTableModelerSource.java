@@ -22,7 +22,6 @@ package org.pentaho.agilebi.modeler.util;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.util.ISpoonModelerSource;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -48,7 +47,11 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 
 	@Override
 	public String getDatabaseName() {
-		return null;
+		String name = null;
+		if (this.databaseMeta != null) {
+			name = this.databaseMeta.getDatabaseName();
+		}
+		return name;
 	}
 
 	@Override
@@ -58,7 +61,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 	@Override
 	public void serializeIntoDomain(Domain d) {
 		LogicalModel lm = d.getLogicalModels().get(0);
-		lm.setProperty("source_type", SOURCE_TYPE); //$NON-NLS-1$
+		lm.setProperty("source_type", SOURCE_TYPE);
 	}
 
 	@Override
@@ -73,6 +76,6 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 
 	@Override
 	public DatabaseMeta getDatabaseMeta() {
-		return null;
+		return this.databaseMeta;
 	}
 }

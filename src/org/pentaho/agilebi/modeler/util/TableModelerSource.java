@@ -12,9 +12,9 @@ import org.pentaho.metadata.util.ThinModelConverter;
 /**
  * Provides information to the ModelerModel to support the User Interface. This
  * class also generates the final artifacts from the UI models.
- *
+ * 
  * @author jdixon
- *
+ * 
  */
 public class TableModelerSource implements ISpoonModelerSource {
 
@@ -24,21 +24,21 @@ public class TableModelerSource implements ISpoonModelerSource {
 	private String schemaName;
 	public static final String SOURCE_TYPE = TableModelerSource.class.getSimpleName();
 
-  public TableModelerSource(){
+	public TableModelerSource() {
 
-  }
+	}
 
-	public TableModelerSource(DatabaseMeta databaseMeta, String tableName, String schemaName ) {
+	public TableModelerSource(DatabaseMeta databaseMeta, String tableName, String schemaName) {
 		this(databaseMeta, tableName, schemaName, tableName);
 	}
-	
-	public TableModelerSource(DatabaseMeta databaseMeta, String tableName, String schemaName, String datasourceName ) {
+
+	public TableModelerSource(DatabaseMeta databaseMeta, String tableName, String schemaName, String datasourceName) {
 		this.tableName = tableName;
 		this.databaseMeta = databaseMeta;
 		this.schemaName = schemaName;
 		this.datasourceName = datasourceName;
-		if( schemaName == null ) {
-		  this.schemaName = ""; //$NON-NLS-1$
+		if (schemaName == null) {
+			this.schemaName = "";
 		}
 	}
 
@@ -51,60 +51,60 @@ public class TableModelerSource implements ISpoonModelerSource {
 	}
 
 	public void initialize(Domain domain) throws ModelerException {
-	  SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get(0);
-	  SqlPhysicalTable table = model.getPhysicalTables().get(0);
+		SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get(0);
+		SqlPhysicalTable table = model.getPhysicalTables().get(0);
 
-	  String targetTable = (String) table.getProperty("target_table"); //$NON-NLS-1$
-	  if(!StringUtils.isEmpty(targetTable)) {
-	    domain.setId(targetTable);
-	  }
+		String targetTable = (String) table.getProperty("target_table");
+		if (!StringUtils.isEmpty(targetTable)) {
+			domain.setId(targetTable);
+		}
 
-	  this.databaseMeta = ThinModelConverter.convertToLegacy(model.getId(), model.getDatasource());
-    this.tableName = table.getTargetTable();
-	  this.schemaName = table.getTargetSchema();
+		this.databaseMeta = ThinModelConverter.convertToLegacy(model.getId(), model.getDatasource());
+		this.tableName = table.getTargetTable();
+		this.schemaName = table.getTargetSchema();
 
-    if( schemaName == null ) {
-      schemaName = ""; //$NON-NLS-1$
-    }
+		if (schemaName == null) {
+			schemaName = "";
+		}
 	}
 
-  public void serializeIntoDomain(Domain d) {
-    LogicalModel lm = d.getLogicalModels().get(0);
-    lm.setProperty("source_type", SOURCE_TYPE); //$NON-NLS-1$
-  }
+	public void serializeIntoDomain(Domain d) {
+		LogicalModel lm = d.getLogicalModels().get(0);
+		lm.setProperty("source_type", SOURCE_TYPE);
+	}
 
-  public DatabaseMeta getDatabaseMeta() {
-    return databaseMeta;
-  }
+	public DatabaseMeta getDatabaseMeta() {
+		return databaseMeta;
+	}
 
-  public void setDatabaseMeta(DatabaseMeta databaseMeta) {
-    this.databaseMeta = databaseMeta;
-  }
+	public void setDatabaseMeta(DatabaseMeta databaseMeta) {
+		this.databaseMeta = databaseMeta;
+	}
 
-  public String getTableName() {
-    return tableName;
-  }
+	public String getTableName() {
+		return tableName;
+	}
 
-  public void setTableName(String tableName) {
-    this.tableName = tableName;
-  }
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
 
-  public String getSchemaName() {
-    return schemaName == null ? "" : schemaName; //$NON-NLS-1$
-  }
+	public String getSchemaName() {
+		return schemaName == null ? "" : schemaName;
+	}
 
-  public void setSchemaName(String schemaName) {
-    if( schemaName == null ) {
-      schemaName = ""; //$NON-NLS-1$
-    }
-    this.schemaName = schemaName;
-  }
-  
-  public void setDatasourceName(String datasourceName) {
-	  this.datasourceName = datasourceName;
-  }
-  
-  public String getDatasourceName() {
-	  return this.datasourceName;
-  }
+	public void setSchemaName(String schemaName) {
+		if (schemaName == null) {
+			schemaName = "";
+		}
+		this.schemaName = schemaName;
+	}
+
+	public void setDatasourceName(String datasourceName) {
+		this.datasourceName = datasourceName;
+	}
+
+	public String getDatasourceName() {
+		return this.datasourceName;
+	}
 }
