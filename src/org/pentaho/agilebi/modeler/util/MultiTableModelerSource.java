@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
@@ -114,6 +115,13 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			domain = this.generator.generateDomain();
 			domain.setId(databaseMeta.getName());
 
+			// Automodel to create categories
+			
+			ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
+			ModelerWorkspace workspace = new ModelerWorkspace(helper);
+			workspace.setDomain(domain);
+			helper.autoModelFlat(workspace);
+
 			// Create and add LogicalRelationships to the LogicalModel from the
 			// domain.
 
@@ -159,6 +167,9 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 				logicalModel.addLogicalRelationship(logicalRelationship);
 			}
 		} catch (PentahoMetadataException e) {
+			e.printStackTrace();
+			logger.info(e.getLocalizedMessage());
+		} catch (ModelerException e) {
 			e.printStackTrace();
 			logger.info(e.getLocalizedMessage());
 		}
