@@ -32,10 +32,13 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultiTableModelerSourceUtil {
 
 	private ModelGenerator generator;
+	private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSourceUtil.class);
 
 	public MultiTableModelerSourceUtil() {
 		this.generator = new ModelGenerator();
@@ -54,8 +57,8 @@ public class MultiTableModelerSourceUtil {
 			List<SchemaTable> schemas = new ArrayList<SchemaTable>();
 
 			for (LogicalRelationship joinTemplate : joinTemplates) {
-				
-				//TODO Schema???
+
+				// TODO Schema???
 				schemas.add(new SchemaTable("", joinTemplate.getFromTable().getName(locale)));
 				schemas.add(new SchemaTable("", joinTemplate.getToTable().getName(locale)));
 
@@ -103,7 +106,8 @@ public class MultiTableModelerSourceUtil {
 				}
 
 				LogicalRelationship logicalRelationship = new LogicalRelationship();
-				logicalRelationship.setRelationshipType(RelationshipType._1_1); //TODO INNER???
+				logicalRelationship.setRelationshipType(RelationshipType._1_1); // TODO
+																				// INNER???
 				logicalRelationship.setFromTable(fromTable);
 				logicalRelationship.setFromColumn(fromColumn);
 				logicalRelationship.setToTable(toTable);
@@ -112,6 +116,7 @@ public class MultiTableModelerSourceUtil {
 			}
 		} catch (PentahoMetadataException e) {
 			e.printStackTrace();
+			logger.info(e.getLocalizedMessage());
 		}
 		return domain;
 	}
