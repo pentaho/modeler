@@ -1,6 +1,7 @@
 package org.pentaho.agilebi.modeler.gwt;
 
 
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
@@ -45,6 +46,15 @@ public class BogoPojo implements Serializable {
   LogicalTable lTable;
   LogicalModel lModel;
   LogicalColumn lColumn;
+  Domain domain;
+
+  public Domain getDomain() {
+    return domain;
+  }
+
+  public void setDomain(Domain domain) {
+    this.domain = domain;
+  }
 
   public LogicalColumn getlColumn() {
     return lColumn;
