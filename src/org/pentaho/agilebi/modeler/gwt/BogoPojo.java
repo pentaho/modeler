@@ -4,6 +4,7 @@ package org.pentaho.agilebi.modeler.gwt;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.security.RowLevelSecurity;
 import org.pentaho.metadata.model.concept.security.Security;
@@ -46,6 +47,7 @@ public class BogoPojo implements Serializable {
   LogicalTable lTable;
   LogicalModel lModel;
   LogicalColumn lColumn;
+  LogicalRelationship lRelationship;
   Domain domain;
 
   public Domain getDomain() {
@@ -235,5 +237,13 @@ public class BogoPojo implements Serializable {
 
   public void setDimUsage( OlapDimensionUsage dimUsage ) {
     this.dimUsage = dimUsage;
+  }
+
+  public LogicalRelationship getlRelationship() {
+	return lRelationship;
+  }
+
+  public void setlRelationship(LogicalRelationship lRelationship) {
+	this.lRelationship = lRelationship;
   }
 }
