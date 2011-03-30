@@ -8,14 +8,14 @@
 
   <toolbar id="categories-toolbar" mode="icons">
     <toolbarspacer flex="1"/>
-    <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}"/>
-    <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}"/>
     <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
     <toolbarbutton id="fieldBtn" image="images/fields.png" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}"/>
+    <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveRelationalFieldDown()" tooltiptext="${move_field_down}"/>
+    <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveRelationalFieldUp()" tooltiptext="${move_field_up}"/>
     <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
     <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
   </toolbar>
-  <tree id="categoriesTree" flex="1" editable="false">
+  <tree id="categoriesTree" flex="1" editable="false" hiddenrootnode="false" preserveselection="true">
 
     <treecols>
       <treecol flex="1" label="" primary="true"

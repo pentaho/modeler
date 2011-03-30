@@ -18,6 +18,7 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.*;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.olap.*;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -237,7 +238,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return dimension;
   }
 
-
   public DimensionMetaData createDimensionWithName( String dimName ) {
     DimensionMetaData dimension = new DimensionMetaData(dimName);
     dimension.setExpanded(true);
@@ -274,17 +274,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return level;
   }
 
-  public FieldMetaData createFieldForParentWithNode( CategoryMetaData parent, ColumnBackedNode obj ) {
-    FieldMetaData field = new FieldMetaData(parent, obj.getName());
-    field.setParent(parent);
-    field.setLogicalColumn(obj.getLogicalColumn());
-    return field;
-  }
-
-  public FieldMetaData createFieldForParentWithNode( CategoryMetaData parent, String name ) {
-    FieldMetaData field = new FieldMetaData(parent, name);
-    field.setParent(parent);
-    field.setLogicalColumn(findLogicalColumn(name));
+  public FieldMetaData createFieldForParentWithNode( CategoryMetaData parent, AvailableField selectedField ) {
+    FieldMetaData field = new FieldMetaData(parent, selectedField.getName(), "",
+        selectedField.getDisplayName(), workspaceHelper.getLocale()); //$NON-NLS-1$
+    field.setLogicalColumn(selectedField.getLogicalColumn());
+    field.setFieldTypeDesc(selectedField.getLogicalColumn().getDataType().getName());
     return field;
   }
 
@@ -480,6 +474,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     domain = newDomain;
 
     model.validateTree();
+    relationalModel.validateTree();
   }
 
 
@@ -508,16 +503,20 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.setModelIsChanging(true);
     this.model.getDimensions().clear();
     this.model.getMeasures().clear();
+    this.relationalModel.getCategories().clear();
     this.availableFields.clear();
+
 
     LogicalTable table = domain.getLogicalModels().get(0).getLogicalTables().get(0);
     for (LogicalColumn c : table.getLogicalColumns()) {
-      AvailableField fm = new AvailableField();
-      fm.setLogicalColumn(c);
-      fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
-      fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
-      fm.setAggTypeDesc(c.getAggregationType().toString());
-      availableFields.add(fm);
+      if (!isColumnInAvailableFieldsList(c)) {
+        AvailableField fm = new AvailableField();
+        fm.setLogicalColumn(c);
+        fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
+        fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
+        fm.setAggTypeDesc(c.getAggregationType().toString());
+        availableFields.add(fm);
+      }
     }
 
     workspaceHelper.sortFields(availableFields);
@@ -526,9 +525,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     LogicalModel lModel = domain.getLogicalModels().get(0);
 
-    if (lModel.getCategories().size() > 0) {
-      setModelName(lModel.getCategories().get(0).getId());
-    }
+    setModelName(lModel.getName(workspaceHelper.getLocale()));
+    setRelationalModelName(lModel.getName(workspaceHelper.getLocale()));
 
     List<OlapDimension> theDimensions = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_DIMS); //$NON-NLS-1$
     if (theDimensions != null) {
@@ -584,8 +582,44 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         }
       }
     }
+
+    int i = 1;
+    for (Category cat : this.getDomain().getLogicalModels().get(0).getCategories()) {
+      String catName = cat.getName() != null ? cat.getName().getString(workspaceHelper.getLocale()) : "Category " + i++;
+      CategoryMetaData catMeta = new CategoryMetaData(catName);
+      for (LogicalColumn col : cat.getLogicalColumns()) {
+        Object formatMask = col.getProperty("mask");
+        String colName = col.getName(workspaceHelper.getLocale());
+        AggregationType aggType = col.getAggregationType();
+        FieldMetaData field = new FieldMetaData(catMeta,
+            colName,
+            formatMask == null ? null : formatMask.toString(),
+            colName,
+            workspaceHelper.getLocale());
+        if (aggType != null) {
+          field.setAggTypeDesc(aggType.name());
+        } else {
+          field.setAggTypeDesc(AggregationType.NONE.name());
+        }
+        field.setLogicalColumn(col);
+        catMeta.add(field);
+      }
+      this.getRelationalModel().getCategories().add(catMeta);
+    }
+
     this.setModelIsChanging(false, true);
 
+  }
+
+  private boolean isColumnInAvailableFieldsList(LogicalColumn column) {
+    String colName, tableName;
+    for (AvailableField field : availableFields) {
+      colName = field.getName();
+      if (colName.equals(column.getName().getLocalizedString(workspaceHelper.getLocale()))) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void resolveConnectionFromDomain() {

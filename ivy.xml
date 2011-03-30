@@ -84,6 +84,8 @@
 
     <dependency org="mysql" name="mysql-connector-java" rev="5.1.10"  conf="test->default"/>
     <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7"  conf="test->default"/>
+    <dependency org="pentaho" name="pentaho-bi-platform-engine-core" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default"/>
+    <dependency org="simple-jndi" name="simple-jndi" rev="0.11.3" conf="test->default" transitive="false" />
 
     <exclude org="xerces" module="xerces" conf="default->default"/>
     <exclude org="xml-apis" module="xml-apis" conf="default->default"/>

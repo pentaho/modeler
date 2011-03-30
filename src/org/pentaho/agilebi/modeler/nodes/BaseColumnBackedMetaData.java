@@ -13,11 +13,10 @@ import java.io.Serializable;
  *
  * @author rfellows
  */
-public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> extends AbstractMetaDataModelNode<T> implements Serializable, ColumnBackedNode {
+public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implements Serializable, ColumnBackedNode {
   private static final long serialVersionUID = -7342401951588541248L;
   protected String name;
   protected String columnName;
-  protected transient T parent;
   protected transient LogicalColumn logicalColumn;
   protected Boolean uniqueMembers = false;
   private static final String IMAGE = "images/sm_level_icon.png";
@@ -31,8 +30,7 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
     return IMAGE;
   }
 
-  public BaseColumnBackedMetaData(T parent, String name) {
-    this.parent = parent;
+  public BaseColumnBackedMetaData(String name) {
     this.name = name;
     this.columnName = name;
   }
@@ -66,14 +64,6 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   @Bindable
   public void setColumnName( String columnName ) {
     this.columnName = columnName;
-  }
-
-  public T getParent() {
-    return parent;
-  }
-
-  public void setParent( T md ) {
-    this.parent = md;
   }
 
   @Bindable

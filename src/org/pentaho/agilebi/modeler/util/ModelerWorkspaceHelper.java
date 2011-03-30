@@ -4,9 +4,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.IModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
-import org.pentaho.agilebi.modeler.nodes.MainModelNode;
-import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.concept.types.DataType;
 
 import java.util.Collections;
@@ -32,9 +30,16 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
   public void autoModelFlat( ModelerWorkspace workspace ) throws ModelerException {
 
     MainModelNode mainModel = new MainModelNode();
+    RelationalModelNode relationalModelNode = new RelationalModelNode();
+
     mainModel.setName(workspace.getModelName());
+    relationalModelNode.setName(workspace.getRelationalModelName());
+
     workspace.setModel(mainModel);
+    workspace.setRelationalModel(relationalModelNode);
     workspace.setModelIsChanging(true);
+
+    CategoryMetaData category = new CategoryMetaData("Category");
 
     List<AvailableField> fields = workspace.getAvailableFields();
     for( AvailableField field : fields ) {
@@ -46,7 +51,11 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
       }
       // create a dimension
       workspace.addDimensionFromNode(field);
+
+      category.add(workspace.createFieldForParentWithNode(category, field));
     }
+    relationalModelNode.getCategories().add(category);
+    
     workspace.setModelIsChanging(false);
 
   }
@@ -57,8 +66,8 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
    * @param workspace
    */
   public void autoModelFlatInBackground( final ModelerWorkspace workspace ) throws ModelerException {
-    throw new UnsupportedOperationException("Not available outside of Spoon");
-
+//    throw new UnsupportedOperationException("Not available outside of Spoon");
+    autoModelFlat(workspace);
   }
   public void sortFields( List<AvailableField> availableFields) {
     Collections.sort(availableFields, new Comparator<AvailableField>() {

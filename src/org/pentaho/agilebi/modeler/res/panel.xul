@@ -62,8 +62,8 @@
 
         <tabbox id="modelTabbox" flex="1" >
           <tabs>
-            <tab id="analysisTab" label="analysis" onclick="modeler.setModelerPerspective('ANALYSIS')"></tab>
-            <tab id="reportingTab" label="reporting" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
+            <tab id="analysisTab" label="${analysisTabLabel}" onclick="modeler.setModelerPerspective('ANALYSIS')"></tab>
+            <tab id="reportingTab" label="${reportingTabLabel}" onclick="modeler.setModelerPerspective('REPORTING')"></tab>
           </tabs>
           <tabpanels>
             <tabpanel id="analysisTabPanel">
@@ -89,6 +89,7 @@
           <vbox/>
           <pen:include src="measuresForm.xul" />
           <pen:include src="cubeForms.xul" ignoreroot="true" />
+          <pen:include src="reportingForms.xul" ignoreroot="true" />
         </deck>
       </editpanel>
           

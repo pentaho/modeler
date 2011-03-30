@@ -1,9 +1,6 @@
 package org.pentaho.agilebi.modeler;
 
-import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
-import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
-import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
-import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -68,87 +65,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     logicalModel.setId("MODEL_1");
     logicalModel.setName( new LocalizedString(locale, model.getModelName() ) );
 
-    Category cat;
-    // Find existing category or create new one
-
-    if (cats.size() > 0) {
-      cat = cats.get(0);
-    } else {
-      cat = new Category();
-      logicalModel.addCategory(cat);
-    }
-    cat.setId(model.getModelName());
-    cat.getLogicalColumns().clear();
-
-    // Add all measures
-    for (MeasureMetaData f : model.getModel().getMeasures()) {
-      if (f.getLogicalColumn() == null) {
-        continue;
-      }
-      LogicalColumn lCol = logicalModel.findLogicalColumn(f.getLogicalColumn().getId());
-      if (cat.getLogicalColumns().contains(lCol)) {
-        // clone the logical column
-        // all measures must have a unique logical column
-        // because of different names and aggregates
-        lCol = (LogicalColumn)lCol.clone();
-        lCol.setId(uniquify(lCol.getId(), logicalModel.getLogicalTables().get(0).getLogicalColumns()));
-        logicalModel.getLogicalTables().get(0).addLogicalColumn(lCol);
-        f.setLogicalColumn(lCol);
-      }
-
-      lCol.setName(new LocalizedString(locale, f.getName()));
-      AggregationType type = AggregationType.valueOf(f.getAggTypeDesc());
-      if (type != AggregationType.NONE) {
-        lCol.setAggregationType(type);
-      }
-
-      // set the format mask
-
-      String formatMask = f.getFormat();
-      if( MeasureMetaData.FORMAT_NONE.equals(formatMask) || (formatMask == null || formatMask.equals(""))) {
-        formatMask = null;
-      }
-      if (formatMask != null) {
-        lCol.setProperty("mask", formatMask); //$NON-NLS-1$
-      } else if(lCol.getDataType() == DataType.NUMERIC){
-        lCol.setProperty("mask", "#");
-      } else {
-        // remove old mask that might have been set
-        if (lCol.getChildProperty("mask") != null) { //$NON-NLS-1$
-          lCol.removeChildProperty("mask"); //$NON-NLS-1$
-        }
-      }
-
-      // All Measures get a list of aggs to choose from within metadata
-      // eventually this will be customizable
-
-      if (lCol.getDataType() != DataType.NUMERIC) {
-        lCol.setAggregationList(DEFAULT_NON_NUMERIC_AGGREGATION_LIST);
-      } else {
-        lCol.setAggregationList(DEFAULT_AGGREGATION_LIST);
-      }
-      cat.addLogicalColumn(lCol);
-    }
-
-    // Add levels
-    for (DimensionMetaData dim : model.getModel().getDimensions()) {
-      for (HierarchyMetaData hier : dim) {
-        for (int j = 0; j < hier.size(); j++) {
-          LevelMetaData level = hier.get(j);
-          if (level.getLogicalColumn() == null) {
-            continue;
-          }
-          LogicalColumn lCol = logicalModel.findLogicalColumn(level.getLogicalColumn().getId());
-          if(cat.getLogicalColumns().contains(lCol)){
-            continue;
-          }
-          lCol.setName(new LocalizedString(locale, level.getName()));
-          if (cat.findLogicalColumn(lCol.getId()) == null) {
-            cat.addLogicalColumn(lCol);
-          }
-        }
-      }
-    }
+    populateCategories(model.getRelationalModel(), logicalModel);
 
     // =========================== OLAP ===================================== //
 
@@ -262,4 +179,57 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   public void setLocale(String locale) {
     BaseModelerWorkspaceHelper.locale = locale;
   }
+
+  protected void populateCategories(RelationalModelNode model, LogicalModel logicalModel) {
+    logicalModel.getCategories().clear();
+
+    for (CategoryMetaData catMeta : model.getCategories()) {
+      Category cat = new Category();
+      cat.setName(new LocalizedString(this.getLocale(), catMeta.getName()));
+      cat.setId(catMeta.getName());
+
+      for (FieldMetaData fieldMeta : catMeta) {
+        LogicalColumn lCol = fieldMeta.getLogicalColumn();
+
+        if (cat.getLogicalColumns().contains(lCol)) {
+          // clone the logical column
+          // all fields must have a unique logical column
+          // because of different names and aggregates
+          lCol = (LogicalColumn)lCol.clone();
+          lCol.setId(uniquify(lCol.getId(), logicalModel.getLogicalTables().get(0).getLogicalColumns()));
+          logicalModel.getLogicalTables().get(0).addLogicalColumn(lCol);
+          fieldMeta.setLogicalColumn(lCol);
+        }
+        lCol.setName(new LocalizedString(locale, fieldMeta.getName()));
+        AggregationType type = AggregationType.valueOf(fieldMeta.getAggTypeDesc());
+        if (type != AggregationType.NONE) {
+          lCol.setAggregationType(type);
+        }
+
+        String formatMask = fieldMeta.getFormat();
+        if( BaseAggregationMetaDataNode.FORMAT_NONE.equals(formatMask) || (formatMask == null || formatMask.equals(""))) {
+          formatMask = null;
+        }
+        if (formatMask != null) {
+          lCol.setProperty("mask", formatMask); //$NON-NLS-1$
+        } else if(lCol.getDataType() == DataType.NUMERIC){
+          lCol.setProperty("mask", "#");
+        } else {
+          // remove old mask that might have been set
+          if (lCol.getChildProperty("mask") != null) { //$NON-NLS-1$
+            lCol.removeChildProperty("mask"); //$NON-NLS-1$
+          }
+        }
+
+        if (lCol.getDataType() != DataType.NUMERIC) {
+          lCol.setAggregationList(DEFAULT_NON_NUMERIC_AGGREGATION_LIST);
+        } else {
+          lCol.setAggregationList(DEFAULT_AGGREGATION_LIST);
+        }
+        cat.addLogicalColumn(lCol);
+      }
+      logicalModel.addCategory(cat);
+    }
+  }
+
 }

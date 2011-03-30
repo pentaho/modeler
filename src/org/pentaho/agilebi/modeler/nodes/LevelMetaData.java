@@ -23,17 +23,19 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import java.io.Serializable;
 
 @SuppressWarnings("unchecked")
-public class LevelMetaData extends BaseColumnBackedMetaData<HierarchyMetaData> implements Serializable {
+public class LevelMetaData extends BaseColumnBackedMetaData implements Serializable {
 
   private static final long serialVersionUID = -8026104295937064671L;
   private static final String IMAGE = "images/sm_level_icon.png";
+  private HierarchyMetaData parent;
 
   public LevelMetaData(){
     super();
   }
 
   public LevelMetaData( HierarchyMetaData parent, String name ) {
-    super(parent, name);
+    super(name);
+    this.parent = parent;
   }
 
   @Bindable
@@ -45,6 +47,14 @@ public class LevelMetaData extends BaseColumnBackedMetaData<HierarchyMetaData> i
   @Bindable
   public String getValidImage() {
     return IMAGE;
+  }
+
+  public HierarchyMetaData getParent() {
+    return parent;
+  }
+
+  public void setParent( HierarchyMetaData md ) {
+    this.parent = md;
   }
 
   @Override

@@ -1,26 +1,71 @@
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.FieldsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
-
-import java.io.Serializable;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
  * Created: 3/18/11
  *
  * @author rfellows
  */
-public class FieldMetaData extends BaseColumnBackedMetaData<CategoryMetaData> implements Serializable {
+public class FieldMetaData extends BaseAggregationMetaDataNode {
 
   private static final String IMAGE = "images/fields.png";
   private static final long serialVersionUID = -7091129923372909756L;
+  private CategoryMetaData parent;
 
-  public FieldMetaData(){
-    super();
+  public FieldMetaData( String locale ) {
+    super(locale);
   }
 
-  public FieldMetaData( CategoryMetaData parent, String name ) {
-    super(parent, name);
+  public FieldMetaData(CategoryMetaData parent, String fieldName, String format, String displayName, String locale ) {
+    super(fieldName, format, displayName, locale);
+    this.parent = parent;
+  }
+
+  @Override
+  protected void setNumericAggTypes() {
+    numericAggTypes.add("NONE");
+    numericAggTypes.add("SUM");
+    numericAggTypes.add("AVERAGE");
+    numericAggTypes.add("MINIMUM");
+    numericAggTypes.add("MAXIMUM");
+    numericAggTypes.add("COUNT");
+    numericAggTypes.add("COUNT_DISTINCT");
+  }
+
+
+  @Override
+  protected void setTextAggTypes() {
+    textAggTypes.add("NONE");
+    textAggTypes.add("COUNT");
+    textAggTypes.add("COUNT_DISTINCT");
+  }
+
+  @Bindable
+  public String getAggTypeDesc() {
+    if (logicalColumn == null) {
+      return null;
+    }
+    if (aggTypeDesc == null || "".equals(aggTypeDesc)) {
+      switch (logicalColumn.getDataType()) {
+        case NUMERIC:
+          aggTypeDesc = "NONE";
+          break;
+        default:
+          aggTypeDesc = "NONE";
+      }
+    }
+    return aggTypeDesc;
+  }
+
+  public CategoryMetaData getParent() {
+    return parent;
+  }
+
+  public void setParent( CategoryMetaData md ) {
+    this.parent = md;
   }
 
   @Override
@@ -29,57 +74,8 @@ public class FieldMetaData extends BaseColumnBackedMetaData<CategoryMetaData> im
   }
 
   @Override
-  public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
-    return LevelsPropertiesForm.class;
+  public Class<? extends ModelerNodePropertiesForm<BaseAggregationMetaDataNode>> getPropertiesForm() {
+    return FieldsPropertiesForm.class;
   }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result
-        + ((columnName == null) ? 0 : columnName.hashCode());
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((parent == null) ? 0 : parent.hashCode());
-    result = prime * result
-        + ((uniqueMembers == null) ? 0 : uniqueMembers.hashCode());
-    return result;
-  }
-
-  public boolean equals( FieldMetaData obj ) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    FieldMetaData other = (FieldMetaData) obj;
-    if (columnName == null) {
-      if (other.columnName != null) {
-        return false;
-      }
-    } else if (!columnName.equals(other.columnName)) {
-      return false;
-    }
-    if (name == null) {
-      if (other.name != null) {
-        return false;
-      }
-    } else if (!name.equals(other.name)) {
-      return false;
-    }
-    if (parent == null) {
-      if (other.parent != null) {
-        return false;
-      }
-    } else if (!parent.equals(other.parent)) {
-      return false;
-    }
-    return true;
-  }
-
 
 }

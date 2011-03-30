@@ -4,9 +4,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.IModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
-import org.pentaho.agilebi.modeler.nodes.MainModelNode;
-import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.concept.types.DataType;
 
 import java.util.Collections;
@@ -35,6 +33,7 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
 
   public void autoModelFlat( ModelerWorkspace workspace ) throws ModelerException {
     MainModelNode mainModel = null;
+    RelationalModelNode relationalModel = null;
     if (workspace.getModel() == null) {
       mainModel = new MainModelNode();
     } else {
@@ -42,8 +41,21 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
       workspace.getModel().getDimensions().clear();
       mainModel = workspace.getModel();
     }
+    if (workspace.getRelationalModel() == null) {
+      relationalModel = new RelationalModelNode();
+    } else {
+      workspace.getRelationalModel().getCategories().clear();
+      relationalModel = workspace.getRelationalModel();
+    }
+
     mainModel.setName(workspace.getModelName());
+    relationalModel.setName(workspace.getRelationalModelName());
+
     workspace.setModel(mainModel);
+    workspace.setRelationalModel(relationalModel);
+
+    CategoryMetaData category = new CategoryMetaData("Category");
+
     final boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
 
@@ -57,7 +69,10 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
       }
       // create a dimension
       workspace.addDimensionFromNode(field);
+
+      category.add(workspace.createFieldForParentWithNode(category, field));
     }
+    relationalModel.getCategories().add(category);
 
     workspace.setModelIsChanging(prevChangeState);
     workspace.setSelectedNode(workspace.getModel());

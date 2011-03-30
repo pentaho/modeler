@@ -20,10 +20,9 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   public DimensionTreeHelper(Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> propertiesForms,
       XulDeck propsDeck,
       ModelerWorkspace workspace,
-      AvailableField[] availableFields,
       Document document) {
 
-    super(propertiesForms, propsDeck, workspace, availableFields, document);
+    super(propertiesForms, propsDeck, workspace, document);
   }
 
   @Override
@@ -39,15 +38,15 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   }
 
   @Override
-  public void addField() {
+  public void addField(Object[] selectedFields) {
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
     AbstractMetaDataModelNode theNode = null;
     Object selectedTreeItem = getSelectedTreeItem();
-    Object[] selectedItems = getSelectedFields();
-    for (Object obj : selectedItems) {
+
+    for (Object obj : selectedFields) {
       if (obj instanceof AvailableField) {
-        AvailableField availableField = (AvailableField) obj;
+        AvailableField availableField = (AvailableField)obj;
         // depending on the parent
         if (selectedTreeItem == null) {
           // null - cannot add fields at this level

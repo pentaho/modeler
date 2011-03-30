@@ -52,7 +52,18 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
 
   @Override
   public void validate() {
-    //To change body of implemented methods use File | Settings | File Templates.
+    // make sure there is at least one field
+    valid = true;
+    this.validationMessages.clear();
+
+    if (this.children.size() == 0) {
+      valid = false;
+      this.validationMessages.add("Categories require at least one Field");
+    }
+    for (AbstractMetaDataModelNode child : children) {
+      valid &= child.isValid();
+      this.validationMessages.addAll(child.getValidationMessages());
+    }
   }
 
   @Override

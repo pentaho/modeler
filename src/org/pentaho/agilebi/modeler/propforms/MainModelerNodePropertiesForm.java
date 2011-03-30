@@ -17,6 +17,7 @@
 package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.MainModelNode;
+import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -64,6 +65,10 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
     }
     ;
     name.setValue(dim.getName());
+
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    bf.createBinding(dim, "name", name, "value");
+
     showValidations();
     dim.addPropertyChangeListener(propListener);
   }
@@ -80,8 +85,8 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
     name = (XulTextbox) document.getElementById("main_name");
     messageBox = (XulVbox) document.getElementById("main_message");
     messageLabel = (XulLabel) document.getElementById("mainnode_message_label");
+    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(this, "name", name, "value");
-
 
   }
 

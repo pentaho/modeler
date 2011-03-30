@@ -258,7 +258,11 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public void addField() {
-    dimTreeHelper.addField();
+    if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
+      dimTreeHelper.addField(getSelectedFields());
+    } else {
+      catTreeHelper.addField(getSelectedFields());
+    }
   }
 
   @Bindable
@@ -266,8 +270,8 @@ public class ModelerController extends AbstractXulEventHandler {
 
     bf.setDocument(document);
 
-    dimTreeHelper = new DimensionTreeHelper(propertiesForms, propDeck, workspace, selectedFields, document);
-    catTreeHelper = new CategoryTreeHelper(propertiesForms, propDeck, workspace, selectedFields, document);
+    dimTreeHelper = new DimensionTreeHelper(propertiesForms, propDeck, workspace, document);
+    catTreeHelper = new CategoryTreeHelper(propertiesForms, propDeck, workspace, document);
 
     dimensionTree = (XulTree) document.getElementById("dimensionTree"); //$NON-NLS-1$
     categoriesTree = (XulTree) document.getElementById("categoriesTree"); //$NON-NLS-1$
@@ -291,6 +295,7 @@ public class ModelerController extends AbstractXulEventHandler {
 
 
     bf.setBindingType(Type.BI_DIRECTIONAL);
+    bf.createBinding(workspace.getModel(), "name", workspace.getRelationalModel(), "name");
     bf.createBinding(workspace, "selectedNode", dimensionTree, "selectedItems",
         new BindingConvertor<AbstractMetaDataModelNode, Collection>() { //$NON-NLS-1$//$NON-NLS-2$
 
@@ -326,7 +331,11 @@ public class ModelerController extends AbstractXulEventHandler {
         new BindingConvertor<Object, Boolean>() { //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
 
           public Boolean sourceToTarget( Object value ) {
-            return getSelectedFields().length == 0 || dimTreeHelper.getSelectedTreeItem() == null || dimTreeHelper.getSelectedTreeItem() instanceof LevelMetaData || dimTreeHelper.getSelectedTreeItem() instanceof MainModelNode;
+            if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
+              return getSelectedFields().length == 0 || dimTreeHelper.getSelectedTreeItem() == null || dimTreeHelper.getSelectedTreeItem() instanceof LevelMetaData || dimTreeHelper.getSelectedTreeItem() instanceof MainModelNode;
+            } else {
+              return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || !(catTreeHelper.getSelectedTreeItem() instanceof CategoryMetaData);
+            }
           }
 
           public Object targetToSource( Boolean value ) {
@@ -339,6 +348,18 @@ public class ModelerController extends AbstractXulEventHandler {
 
           public Boolean sourceToTarget( Object value ) {
             return getSelectedFields().length == 0 || dimTreeHelper.getSelectedTreeItem() == null || dimTreeHelper.getSelectedTreeItem() instanceof LevelMetaData || dimTreeHelper.getSelectedTreeItem() instanceof MainModelNode;
+          }
+
+          public Object targetToSource( Boolean value ) {
+            return null;
+          }
+        });
+
+    bf.createBinding(categoriesTree, "selectedItem", "addField", "disabled",
+        new BindingConvertor<Object, Boolean>() { //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+          public Boolean sourceToTarget( Object value ) {
+            return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || !(catTreeHelper.getSelectedTreeItem() instanceof CategoryMetaData);
           }
 
           public Object targetToSource( Boolean value ) {
@@ -359,11 +380,16 @@ public class ModelerController extends AbstractXulEventHandler {
     bf.createBinding(categoriesTree, "selectedItem", "fieldBtn", "disabled",
         new ButtonConvertor(CategoryMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
+    bf.createBinding(categoriesTree, "selectedItem", "categoryBtn", "disabled",
+        new ButtonConvertor(CategoryMetaDataCollection.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
     bf.setBindingType(Type.BI_DIRECTIONAL);
     fireBindings();
 
     dimensionTree.setSelectedItems(Collections.singletonList(workspace.getModel()));
-    categoriesTree.setSelectedItems(Collections.singletonList(workspace.getRelationalModel()));
+    if (workspace.getRelationalModel().size() > 0) {
+      categoriesTree.setSelectedItems(Collections.singletonList(workspace.getRelationalModel()));
+    }
 
   }
 
@@ -588,7 +614,7 @@ public class ModelerController extends AbstractXulEventHandler {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
           if (returnCode == Status.ACCEPT) {
-            RelationalModelNode theNode = workspace.getRelationalModel();
+            CategoryMetaDataCollection theNode = workspace.getRelationalModel().getCategories();
             CategoryMetaData theCategory = new CategoryMetaData("" + retVal);
             boolean prevChangeState = workspace.isModelChanging();
             theCategory.validate();
@@ -621,7 +647,7 @@ public class ModelerController extends AbstractXulEventHandler {
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
           if (returnCode == Status.ACCEPT) {
             CategoryMetaData theCategory = (CategoryMetaData) catTreeHelper.getSelectedTreeItem();
-            FieldMetaData theField = new FieldMetaData(theCategory, "" + retVal);
+            FieldMetaData theField = new FieldMetaData(theCategory, "" + retVal, "", "" + retVal, workspaceHelper.getLocale());
 
             if (selectedFields.length > 0) {
               AvailableField f = selectedFields[0];

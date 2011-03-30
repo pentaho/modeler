@@ -16,7 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
-import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -25,9 +25,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
 
-public class MeasuresPropertiesForm extends AbstractModelerNodeForm<MeasureMetaData> {
+public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregationMetaDataNode> {
 
-  private MeasureMetaData fieldMeta;
+  private BaseAggregationMetaDataNode fieldMeta;
   private Vector aggTypes;
   private String colName;
   private String locale;
@@ -82,7 +82,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<MeasureMetaD
     setValidMessages(fieldMeta.getValidationMessagesString());
   }
 
-  public void setObject( MeasureMetaData t ) {
+  public void setObject( BaseAggregationMetaDataNode t ) {
     if (fieldMeta != null) {
       fieldMeta.removePropertyChangeListener(validListener);
       fieldMeta.removePropertyChangeListener(propListener);

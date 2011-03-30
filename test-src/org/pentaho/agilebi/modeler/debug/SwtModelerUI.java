@@ -86,6 +86,25 @@ public class SwtModelerUI {
       propController.setBindingFactory(bf);
       propController.init();
 
+      propController = new CategoryPropertiesForm();
+      container.addEventHandler(propController);
+      controller.addPropertyForm(propController);
+      propController.setBindingFactory(bf);
+      propController.init();
+
+      propController = new FieldsPropertiesForm(LocalizedString.DEFAULT_LOCALE);
+      container.addEventHandler(propController);
+      controller.addPropertyForm(propController);
+      propController.setBindingFactory(bf);
+      propController.init();
+
+      propController = new RelationalModelNodePropertiesForm();
+      container.addEventHandler(propController);
+      controller.addPropertyForm(propController);
+      propController.setBindingFactory(bf);
+      propController.init();
+
+
       ColResolverController colController = new ColResolverController();
       container.addEventHandler(colController);
       controller.setColResolver(colController);
@@ -105,6 +124,7 @@ public class SwtModelerUI {
    * Be sure to include a project reference to Kettle, otherwise libraries like log4j and swt won't be available
    */
   public static void main(String[] args) {
+    System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
     ModelerWorkspace workspace = new ModelerWorkspace(new ModelerWorkspaceHelper("en-US"));
     try {
@@ -126,8 +146,17 @@ public class SwtModelerUI {
   }
 
   private static DatabaseMeta getDatabaseMeta() {
-    DatabaseMeta dbMeta = new DatabaseMeta("test", "Hypersonic", "", "localhost", "SampleData", "9001", "pentaho_user", "password");
-    return dbMeta;
+    DatabaseMeta database = new DatabaseMeta();
+    //database.setDatabaseInterface(new HypersonicDatabaseMeta());
+    database.setDatabaseType("Hypersonic");//$NON-NLS-1$
+    //database.setUsername("sa");//$NON-NLS-1$
+    //database.setPassword("");//$NON-NLS-1$
+    database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
+    //database.setHostname(".");
+    database.setDBName("SampleData");//$NON-NLS-1$
+    //database.setDBPort("9001");//$NON-NLS-1$
+    database.setName("SampleData");//$NON-NLS-1$
+    return database;
   }
 
   public void startDebugWindow(){

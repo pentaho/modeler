@@ -16,239 +16,34 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.concept.types.DataType;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
 
 /**
  * @author wseyler
  */
 @SuppressWarnings("unchecked")
-public class MeasureMetaData extends AbstractMetaDataModelNode implements Serializable, ColumnBackedNode {
+public class MeasureMetaData extends BaseAggregationMetaDataNode {
 
-  public static final String FORMAT_NONE = "NONE"; //$NON-NLS-1$
+  private static final String IMAGE = "images/sm_measure_icon.png";
 
-  String name;
-  String format = FORMAT_NONE;
-  String displayName;
-  String fieldTypeDesc = "---";
-  String levelTypeDesc = "---";
-  String aggTypeDesc = null;
-  private String locale;
-
-  transient LogicalColumn logicalColumn;
-
-  private List<String> numericAggTypes = new ArrayList<String>();
-
-  {
-    numericAggTypes.add("SUM");
-    numericAggTypes.add("AVERAGE");
-    numericAggTypes.add("MINIMUM");
-    numericAggTypes.add("MAXIMUM");
-    numericAggTypes.add("COUNT");
-    numericAggTypes.add("COUNT_DISTINCT");
-    
-  }
-
-  private List<String> textAggTypes = new ArrayList<String>();
-  {
-    textAggTypes.add("COUNT");
-    textAggTypes.add("COUNT_DISTINCT");
-
-  }
-  
   public MeasureMetaData(String locale) {
-
-    this.locale = locale;
+    super(locale);
   }
 
   public MeasureMetaData( String fieldName, String format, String displayName, String locale ) {
-    super();
-    this.name = fieldName;
-    this.format = format;
-    this.displayName = displayName;
-    this.locale = locale;
-  }
-
-  public String toString() {
-    return name;
-  }
-
-  @Bindable
-  public String getName() {
-    return name;
-  }
-
-  @Bindable
-  public String getDisplayName() {
-    return getName();
-  }
-
-  @Bindable
-  public void setName( String name ) {
-    if (!(name == null)) {
-      String oldName = this.name;
-      this.name = name;
-      this.firePropertyChange("name", oldName, name); //$NON-NLS-1$
-      this.firePropertyChange("displayName", oldName, name); //$NON-NLS-1$
-      validateNode();
-      if (logicalColumn != null) {
-        //TODO: GWT i18n
-        logicalColumn.setName(new LocalizedString(locale, name));
-      }
-    }
-  }
-
-  @Bindable
-  public String getFormat() {
-    if (format == null || "".equals(format) || "#".equals(format)) {
-      return FORMAT_NONE;
-    }
-    return format;
-  }
-
-  @Bindable
-  public void setFormat( String format ) {
-    this.format = format;
-  }
-
-  @Bindable
-  public String getFieldTypeDesc() {
-    return fieldTypeDesc;
-  }
-
-  @Bindable
-  public void setFieldTypeDesc( String fieldTypeDesc ) {
-    this.fieldTypeDesc = fieldTypeDesc;
-  }
-
-  @Bindable
-  public String getLevelTypeDesc() {
-    return levelTypeDesc;
-  }
-
-  @Bindable
-  public void setLevelTypeDesc( String levelTypeDesc ) {
-    this.levelTypeDesc = levelTypeDesc;
-  }
-
-  @Bindable
-  public String getAggTypeDesc() {
-    if (logicalColumn == null) {
-      return null;
-    }
-    if (aggTypeDesc == null || "".equals(aggTypeDesc)) {
-      switch (logicalColumn.getDataType()) {
-        case NUMERIC:
-          aggTypeDesc = "SUM";
-          break;
-        default:
-          aggTypeDesc = "COUNT";
-      }
-    }
-    return aggTypeDesc;
-  }
-
-  @Bindable
-  public void setAggTypeDesc( String aggTypeDesc ) {
-    this.aggTypeDesc = aggTypeDesc;
-  }
-
-  // TODO: generate this based on field type
-
-  @Bindable
-  public Vector getAggTypeDescValues() {
-    if (logicalColumn == null) {
-      return null;
-    }
-    if (logicalColumn.getDataType() == DataType.NUMERIC) {
-      return new Vector<String>(numericAggTypes);
-    } else {
-      return new Vector<String>(textAggTypes);
-    }
-  }
-
-  public LogicalColumn getLogicalColumn() {
-    return logicalColumn;
-  }
-
-  public void setLogicalColumn( LogicalColumn col ) {
-    LogicalColumn prevVal = this.logicalColumn;
-    this.logicalColumn = col;
-    validateNode();
-    firePropertyChange("logicalColumn", prevVal, col);
-  }
-
-  public boolean equals( MeasureMetaData o ) {
-    if (o == null || o instanceof MeasureMetaData == false) {
-      return false;
-    }
-    MeasureMetaData f = (MeasureMetaData) o;
-
-    if (o == this) {
-      return true;
-    }
-
-    if (f.getLogicalColumn() == null || this.getLogicalColumn() == null) {
-      return false;
-    }
-
-    if (f.getLogicalColumn().getId().equals(this.getLogicalColumn().getId())) {
-      return true;
-    }
-    return false;
-  }
-
-  @Bindable
-  public void setUiExpanded() {
-
-  }
-
-  @Bindable
-  public boolean isUiExpanded() {
-    return true;
+    super(fieldName, format, displayName, locale);
   }
 
   @Override
   @Bindable
   public String getValidImage() {
-    return "images/sm_measure_icon.png"; //$NON-NLS-1$
+    return IMAGE; //$NON-NLS-1$
   }
 
   @Override
-  public void validate() {
-    valid = true;
-    validationMessages.clear();
-    // check name
-    if (name == null || "".equals(name)) {
-      validationMessages.add(
-          "Measure Name Missing");//BaseMessages.getString(ModelerWorkspace.class, "measure_name_missing"));
-//      validationMessages.add(BaseMessages.getString(ModelerWorkspace.class, "measure_name_missing"));
-      valid = false;
-    }
-    if (logicalColumn == null) {
-      validationMessages.add("The column mapped to the measure ("+getName()+") is missing or no longer available.");
-//      validationMessages.add(BaseMessages.getString(ModelerWorkspace.class, "measure_column_missing", getName()));
-      valid = false;
-    }
-  }
-
-  public boolean isEditingDisabled() {
-    return false;
-  }
-
-  @Override
-  public Class<? extends ModelerNodePropertiesForm<MeasureMetaData>> getPropertiesForm() {
+  public Class<? extends ModelerNodePropertiesForm<BaseAggregationMetaDataNode>> getPropertiesForm() {
     return MeasuresPropertiesForm.class;
   }
 

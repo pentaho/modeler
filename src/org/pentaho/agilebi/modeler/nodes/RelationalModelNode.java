@@ -1,3 +1,20 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
+ */
+
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
@@ -14,15 +31,19 @@ import java.io.Serializable;
  *
  * @author rfellows
  */
-public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaData> implements Serializable {
+public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaDataCollection> implements Serializable {
   private static final String IMAGE = "images/sm_model_icon.png";
   private static final long serialVersionUID = 818429477176656590L;
   String name = "Untitled";
+
+  private CategoryMetaDataCollection categories = new CategoryMetaDataCollection();
+
   private transient PropertyChangeListener listener;
 
   public RelationalModelNode() {
+    add(categories);
     setExpanded(true);
-    add(new CategoryMetaData("Category 1"));
+    categories.setExpanded(true);
   }
 
   @Bindable
@@ -62,6 +83,23 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
     this.changeSupport.firePropertyChange("children", null, this); //$NON-NLS-1$
   }
 
+
+  @Override
+  public void onAdd( CategoryMetaDataCollection child ) {
+    child.addPropertyChangeListener("children", getListener()); //$NON-NLS-1$
+    child.addPropertyChangeListener("valid", validListener); //$NON-NLS-1$
+  }
+
+  @Override
+  public void onRemove( CategoryMetaDataCollection child ) {
+    child.removePropertyChangeListener(getListener());
+    child.removePropertyChangeListener(validListener);
+  }
+
+  public CategoryMetaDataCollection getCategories() {
+    return categories;
+  }
+
   @Override
   public String getValidImage() {
     return IMAGE;
@@ -69,7 +107,17 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
 
   @Override
   public void validate() {
-    //To change body of implemented methods use File | Settings | File Templates.
+    valid = true;
+    this.validationMessages.clear();
+
+    if (this.children.size() != 1) {
+      valid = false;
+      this.validationMessages.add("Invalid Reporting Model Structure");
+    }
+    for (AbstractMetaDataModelNode child : children) {
+      valid &= child.isValid();
+      this.validationMessages.addAll(child.getValidationMessages());
+    }
   }
 
   @Override

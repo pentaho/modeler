@@ -1,0 +1,14 @@
+<pentaho-system>
+
+	<log-file>server.log</log-file>
+	<log-level>DEBUG</log-level>
+	
+	
+   <file-upload-defaults>
+   		<relative-path>/system/metadata/csvfiles/</relative-path>
+   		<max-file-limit>50000000</max-file-limit>
+   		<max-folder-limit>500000000</max-folder-limit>
+   </file-upload-defaults>  
+	
+
+</pentaho-system>

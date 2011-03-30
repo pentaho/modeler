@@ -4,22 +4,11 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
-import org.pentaho.agilebi.modeler.ColResolverController;
-import org.pentaho.agilebi.modeler.IModelerMessages;
-import org.pentaho.agilebi.modeler.ModelerController;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.propforms.AbstractModelerNodeForm;
-import org.pentaho.agilebi.modeler.propforms.DimensionPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.HierarchyPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.MainModelerNodePropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
+import org.pentaho.agilebi.modeler.*;
+import org.pentaho.agilebi.modeler.propforms.*;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -104,6 +93,24 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
 
 
     propController = new GenericPropertiesForm();
+    container.addEventHandler(propController);
+    controller.addPropertyForm(propController);
+    propController.setBindingFactory(bf);
+    propController.init();
+
+    propController = new CategoryPropertiesForm();
+    container.addEventHandler(propController);
+    controller.addPropertyForm(propController);
+    propController.setBindingFactory(bf);
+    propController.init();
+
+    propController = new FieldsPropertiesForm(helper.getLocale());
+    container.addEventHandler(propController);
+    controller.addPropertyForm(propController);
+    propController.setBindingFactory(bf);
+    propController.init();
+
+    propController = new RelationalModelNodePropertiesForm();
     container.addEventHandler(propController);
     controller.addPropertyForm(propController);
     propController.setBindingFactory(bf);

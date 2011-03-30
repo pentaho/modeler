@@ -1,9 +1,6 @@
 package org.pentaho.agilebi.modeler;
 
-import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
-import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
-import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
+import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dom.Document;
@@ -23,33 +20,39 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   public CategoryTreeHelper(Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> propertiesForms,
     XulDeck propsDeck,
     ModelerWorkspace workspace,
-    AvailableField[] availableFields,
     Document document) {
 
-    super(propertiesForms, propsDeck, workspace, availableFields, document);
+    super(propertiesForms, propsDeck, workspace, document);
   }
 
   @Override
   public void removeField() {
-    AbstractModelNode parent = ((AbstractModelNode) getSelectedTreeItem()).getParent();
-    if (parent == null) {
-      workspace.getRelationalModel().remove(getSelectedTreeItem());
-    } else {
-      parent.remove(getSelectedTreeItem());
+    if (getSelectedTreeItem() instanceof CategoryMetaDataCollection
+        || getSelectedTreeItem() instanceof RelationalModelNode
+        || getSelectedTreeItem() == null) {
+      return;
     }
+    ((AbstractModelNode) getSelectedTreeItem()).getParent().remove(getSelectedTreeItem());
     setTreeSelectionChanged(null);
+//    AbstractModelNode parent = ((AbstractModelNode) getSelectedTreeItem()).getParent();
+//    if (parent == null) {
+//      workspace.getRelationalModel().remove(getSelectedTreeItem());
+//    } else {
+//      parent.remove(getSelectedTreeItem());
+//    }
+//    setTreeSelectionChanged(null);
   }
 
   @Override
-  public void addField() {
+  public void addField(Object[] selectedFields) {
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
     AbstractMetaDataModelNode theNode = null;
     Object selectedTreeItem = getSelectedTreeItem();
-    Object[] selectedItems = getSelectedFields();
-    for (Object obj : selectedItems) {
+
+    for (Object obj : selectedFields) {
       if (obj instanceof AvailableField) {
-        AvailableField availableField = (AvailableField) obj;
+        AvailableField availableField = (AvailableField)obj;
         // depending on the parent
         if (selectedTreeItem == null) {
           // null - cannot add fields at this level
@@ -69,7 +72,7 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   @Override
   public void clearTreeModel(){
     workspace.setModelIsChanging(true);
-    workspace.getRelationalModel().clear();
+    workspace.getRelationalModel().getCategories().clear();
     workspace.setModelIsChanging(false, true);
   }
 }

@@ -1,7 +1,6 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
@@ -26,19 +25,17 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   private ModelerNodePropertiesForm selectedForm;
   private XulDeck propsDeck;
   protected ModelerWorkspace workspace;
-  private AvailableField[] availableFields;
+
   private Document document;
 
   public ModelerTreeHelper() {
   }
 
   public ModelerTreeHelper(Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> propertiesForms,
-                           XulDeck propsDeck, ModelerWorkspace workspace, AvailableField[] availableFields,
-                           Document document) {
+                           XulDeck propsDeck, ModelerWorkspace workspace, Document document) {
     this.propertiesForms = propertiesForms;
     this.propsDeck = propsDeck;
     this.workspace = workspace;
-    this.availableFields = availableFields;
     this.document = document;
   }
 
@@ -126,15 +123,7 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   public abstract void clearTreeModel();
 
   @Bindable
-  public abstract void addField();
-
-  @Bindable
-  public Object[] getSelectedFields() {
-    if (availableFields == null) {
-      availableFields = new AvailableField[]{};
-    }
-    return availableFields;
-  }
+  public abstract void addField(Object[] selectedFields);
 
   public Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> getPropertiesForms() {
     return propertiesForms;
@@ -166,14 +155,6 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
 
   public void setWorkspace(ModelerWorkspace workspace) {
     this.workspace = workspace;
-  }
-
-  public AvailableField[] getAvailableFields() {
-    return availableFields;
-  }
-
-  public void setAvailableFields(AvailableField[] availableFields) {
-    this.availableFields = availableFields;
   }
 
   public Document getDocument() {
