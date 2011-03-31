@@ -509,14 +509,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     LogicalTable table = domain.getLogicalModels().get(0).getLogicalTables().get(0);
     for (LogicalColumn c : table.getLogicalColumns()) {
-      if (!isColumnInAvailableFieldsList(c)) {
-        AvailableField fm = new AvailableField();
-        fm.setLogicalColumn(c);
-        fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
-        fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
-        fm.setAggTypeDesc(c.getAggregationType().toString());
-        availableFields.add(fm);
-      }
+      AvailableField fm = new AvailableField();
+      fm.setLogicalColumn(c);
+      fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
+      fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
+      fm.setAggTypeDesc(c.getAggregationType().toString());
+      availableFields.add(fm);
     }
 
     workspaceHelper.sortFields(availableFields);
@@ -584,6 +582,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
 
     int i = 1;
+
     for (Category cat : this.getDomain().getLogicalModels().get(0).getCategories()) {
       String catName = cat.getName() != null ? cat.getName().getString(workspaceHelper.getLocale()) : "Category " + i++;
       CategoryMetaData catMeta = new CategoryMetaData(catName);
@@ -609,17 +608,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     this.setModelIsChanging(false, true);
 
-  }
-
-  private boolean isColumnInAvailableFieldsList(LogicalColumn column) {
-    String colName, tableName;
-    for (AvailableField field : availableFields) {
-      colName = field.getName();
-      if (colName.equals(column.getName().getLocalizedString(workspaceHelper.getLocale()))) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public void resolveConnectionFromDomain() {

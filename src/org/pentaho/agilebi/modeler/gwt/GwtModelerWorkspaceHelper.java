@@ -24,16 +24,12 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
     BogoPojo bogo = new BogoPojo();
   }
 
-
-  
-
   public void autoModelFlatInBackground( ModelerWorkspace workspace ) throws ModelerException {
     autoModelFlat(workspace);
   }
 
   public void autoModelFlat( ModelerWorkspace workspace ) throws ModelerException {
     MainModelNode mainModel = null;
-    RelationalModelNode relationalModel = null;
     if (workspace.getModel() == null) {
       mainModel = new MainModelNode();
     } else {
@@ -41,20 +37,10 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
       workspace.getModel().getDimensions().clear();
       mainModel = workspace.getModel();
     }
-    if (workspace.getRelationalModel() == null) {
-      relationalModel = new RelationalModelNode();
-    } else {
-      workspace.getRelationalModel().getCategories().clear();
-      relationalModel = workspace.getRelationalModel();
-    }
 
     mainModel.setName(workspace.getModelName());
-    relationalModel.setName(workspace.getRelationalModelName());
 
     workspace.setModel(mainModel);
-    workspace.setRelationalModel(relationalModel);
-
-    CategoryMetaData category = new CategoryMetaData("Category");
 
     final boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
@@ -70,10 +56,7 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
       // create a dimension
       workspace.addDimensionFromNode(field);
 
-      category.add(workspace.createFieldForParentWithNode(category, field));
     }
-    relationalModel.getCategories().add(category);
-
     workspace.setModelIsChanging(prevChangeState);
     workspace.setSelectedNode(workspace.getModel());
 
@@ -101,5 +84,47 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
         return name1.compareToIgnoreCase(name2);
       }
     });
+  }
+
+  /**
+   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
+   * @param workspace
+   * @throws ModelerException
+   */
+  public void autoModelRelationalFlat(ModelerWorkspace workspace) throws ModelerException {
+    RelationalModelNode relationalModel = null;
+    if (workspace.getRelationalModel() == null) {
+      relationalModel = new RelationalModelNode();
+    } else {
+      workspace.getRelationalModel().getCategories().clear();
+      relationalModel = workspace.getRelationalModel();
+    }
+
+    relationalModel.setName(workspace.getRelationalModelName());
+
+    workspace.setRelationalModel(relationalModel);
+
+    CategoryMetaData category = new CategoryMetaData("Category");
+
+    final boolean prevChangeState = workspace.isModelChanging();
+    workspace.setModelIsChanging(true);
+
+    List<AvailableField> fields = workspace.getAvailableFields();
+    for( AvailableField field : fields ) {
+      category.add(workspace.createFieldForParentWithNode(category, field));
+    }
+    relationalModel.getCategories().add(category);
+
+    workspace.setModelIsChanging(prevChangeState);
+    workspace.setSelectedNode(workspace.getRelationalModel());
+  }
+  
+  /**
+   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
+   * @param workspace
+   * @throws ModelerException
+   */
+  public void autoModelRelationalFlatInBackground(ModelerWorkspace workspace) throws ModelerException {
+    autoModelRelationalFlat(workspace);
   }
 }

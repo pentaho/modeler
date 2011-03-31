@@ -65,7 +65,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     logicalModel.setId("MODEL_1");
     logicalModel.setName( new LocalizedString(locale, model.getModelName() ) );
 
-    populateCategories(model.getRelationalModel(), logicalModel);
+    populateCategories(model);
+
+
 
     // =========================== OLAP ===================================== //
 
@@ -147,6 +149,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       List<OlapCube> cubes = new ArrayList<OlapCube>();
       cubes.add(cube);
       lModel.setProperty("olap_cubes", cubes); //$NON-NLS-1$
+
   }
 
   public static final String uniquify(final String id, final List<? extends IConcept> concepts) {
@@ -180,8 +183,11 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     BaseModelerWorkspaceHelper.locale = locale;
   }
 
-  protected void populateCategories(RelationalModelNode model, LogicalModel logicalModel) {
+  protected void populateCategories(ModelerWorkspace workspace) {
+    RelationalModelNode model = workspace.getRelationalModel();
+    LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
     logicalModel.getCategories().clear();
+    List<AvailableField> availableFields = workspace.getAvailableFields().getChildren();
 
     for (CategoryMetaData catMeta : model.getCategories()) {
       Category cat = new Category();
@@ -191,15 +197,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       for (FieldMetaData fieldMeta : catMeta) {
         LogicalColumn lCol = fieldMeta.getLogicalColumn();
 
-        if (cat.getLogicalColumns().contains(lCol)) {
-          // clone the logical column
-          // all fields must have a unique logical column
-          // because of different names and aggregates
-          lCol = (LogicalColumn)lCol.clone();
-          lCol.setId(uniquify(lCol.getId(), logicalModel.getLogicalTables().get(0).getLogicalColumns()));
-          logicalModel.getLogicalTables().get(0).addLogicalColumn(lCol);
-          fieldMeta.setLogicalColumn(lCol);
-        }
         lCol.setName(new LocalizedString(locale, fieldMeta.getName()));
         AggregationType type = AggregationType.valueOf(fieldMeta.getAggTypeDesc());
         if (type != AggregationType.NONE) {
@@ -230,6 +227,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
       logicalModel.addCategory(cat);
     }
+    logicalModel.setProperty("categories", logicalModel.getCategories());
   }
 
 }

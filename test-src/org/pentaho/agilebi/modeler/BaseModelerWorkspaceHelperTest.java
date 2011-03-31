@@ -60,13 +60,16 @@ public class BaseModelerWorkspaceHelperTest {
   public void testPopulateCategories() throws ModelerException {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(LOCALE);
     LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
-
+    int fields = workspace.getAvailableFields().size();
     helper.autoModelFlat(workspace);
-    helper.populateCategories(workspace.getRelationalModel(), logicalModel);
+    helper.autoModelRelationalFlat(workspace);
+    helper.populateCategories(workspace);
 
     List<Category> categories = logicalModel.getCategories();
     
     assertEquals(1, categories.size());
+    assertEquals(fields, workspace.getAvailableFields().size());
+    System.out.println(logicalModel.getLogicalTables().get(0).getLogicalColumns().size());
     assertEquals(workspace.getAvailableFields().size(), categories.get(0).getLogicalColumns().size());
 
     for (LogicalColumn lCol : categories.get(0).getLogicalColumns()) {
@@ -96,13 +99,15 @@ public class BaseModelerWorkspaceHelperTest {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(LOCALE);
     LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
     helper.autoModelFlat(workspace);
-
+    helper.autoModelRelationalFlat(workspace);
     spiceUpRelationalModel(workspace.getRelationalModel());
-    helper.populateCategories(workspace.getRelationalModel(), logicalModel);
+    helper.populateCategories(workspace);
 
     List<Category> categories = logicalModel.getCategories();
     assertEquals(2, categories.size());
     assertEquals(workspace.getAvailableFields().size(), categories.get(0).getLogicalColumns().size());
+    System.out.println(logicalModel.getLogicalTables().get(0).getLogicalColumns().size());
+
     assertEquals(1, categories.get(1).getLogicalColumns().size());
 
     for (int i = 0; i < categories.size(); i++) {

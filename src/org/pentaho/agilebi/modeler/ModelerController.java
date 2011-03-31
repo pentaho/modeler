@@ -396,32 +396,55 @@ public class ModelerController extends AbstractXulEventHandler {
   @Bindable
   public void showAutopopulatePrompt() {
     try {
-      MainModelNode model = workspace.getModel();
-      if (model.getDimensions().isEmpty() && model.getMeasures().isEmpty()) {
-        autoPopulate();
+
+      if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
+        MainModelNode model = workspace.getModel();
+        if (model.getDimensions().isEmpty() && model.getMeasures().isEmpty()) {
+          autoPopulate();
+        } else {
+          showAutoModelConfirmDialog();
+        }
       } else {
-        XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); //$NON-NLS-1$
-        confirm.setTitle(ModelerMessagesHolder.getMessages().getString("auto_populate_title")); //$NON-NLS-1$
-        confirm.setMessage(ModelerMessagesHolder.getMessages().getString("auto_populate_msg")); //$NON-NLS-1$
-        confirm.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("yes")); //$NON-NLS-1$
-        confirm.setCancelLabel(ModelerMessagesHolder.getMessages().getString("no")); //$NON-NLS-1$
-
-        confirm.addDialogCallback(new XulDialogCallback() {
-          public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
-            if (returnCode == Status.ACCEPT) {
-              autoPopulate();
-            }
-          }
-
-          public void onError( XulComponent sender, Throwable t ) {
-          }
-        });
-        confirm.open();
+        RelationalModelNode model = workspace.getRelationalModel();
+        if (model.getCategories().isEmpty()) {
+          autoPopulate();
+        } else {
+          showAutoModelConfirmDialog();
+        }
       }
     } catch (XulException e) {
       e.printStackTrace();//logger.error(e);
     }
   }
+
+  private String getAutoPopulateMsg() {
+    if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
+      return ModelerMessagesHolder.getMessages().getString("auto_populate_msg"); //$NON-NLS-1$;
+    } else {
+      return ModelerMessagesHolder.getMessages().getString("auto_populate_relational_msg"); //$NON-NLS-1$;
+    }
+  }
+
+  private void showAutoModelConfirmDialog() throws XulException {
+    XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); //$NON-NLS-1$
+    confirm.setTitle(ModelerMessagesHolder.getMessages().getString("auto_populate_title")); //$NON-NLS-1$
+    confirm.setMessage(getAutoPopulateMsg());
+    confirm.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("yes")); //$NON-NLS-1$
+    confirm.setCancelLabel(ModelerMessagesHolder.getMessages().getString("no")); //$NON-NLS-1$
+
+    confirm.addDialogCallback(new XulDialogCallback() {
+      public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
+        if (returnCode == Status.ACCEPT) {
+          autoPopulate();
+        }
+      }
+
+      public void onError( XulComponent sender, Throwable t ) {
+      }
+    });
+    confirm.open();
+  }
+
 
   protected void fireBindings() throws ModelerException {
     try {
@@ -774,10 +797,19 @@ public class ModelerController extends AbstractXulEventHandler {
 
   public void autoPopulate() {
     try {
-    // TODO: GWT-ify
-    workspaceHelper.autoModelFlatInBackground(this.workspace);
-    workspace.setModelIsChanging(false, true);
-    this.dimensionTree.expandAll();
+      // TODO: GWT-ify
+      switch(getModelerPerspective()) {
+        case REPORTING:
+          workspaceHelper.autoModelRelationalFlatInBackground(this.workspace);
+          workspace.setModelIsChanging(false, true);
+          this.categoriesTree.expandAll();
+          break;
+        case ANALYSIS:
+          workspaceHelper.autoModelFlatInBackground(this.workspace);
+          workspace.setModelIsChanging(false, true);
+          this.dimensionTree.expandAll();
+          break;
+      }
     } catch (ModelerException e) {
       e.printStackTrace();//logger.error(e);
     }
