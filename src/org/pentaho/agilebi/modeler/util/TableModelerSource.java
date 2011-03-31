@@ -47,10 +47,15 @@ public class TableModelerSource implements ISpoonModelerSource {
 	}
 
 	public Domain generateDomain() throws ModelerException {
-		return ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName, datasourceName);
+		return ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName, datasourceName, true);
 	}
 
-	public void initialize(Domain domain) throws ModelerException {
+  @Override
+  public Domain generateDomain(boolean dualModelingMode) throws ModelerException {
+    return ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName, datasourceName, dualModelingMode);
+  }
+
+  public void initialize(Domain domain) throws ModelerException {
 		SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get(0);
 		SqlPhysicalTable table = model.getPhysicalTables().get(0);
 

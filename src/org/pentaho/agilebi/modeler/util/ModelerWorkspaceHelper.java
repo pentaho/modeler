@@ -36,7 +36,7 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
     workspace.setModel(mainModel);
     workspace.setModelIsChanging(true);
 
-    List<AvailableField> fields = workspace.getAvailableFields();
+    List<AvailableField> fields = workspace.getAvailableOlapFields();
     for( AvailableField field : fields ) {
       DataType dataType = field.getLogicalColumn().getDataType();
       if( dataType == DataType.NUMERIC) {

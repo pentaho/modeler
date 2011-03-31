@@ -29,6 +29,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   private static final List<AggregationType> DEFAULT_AGGREGATION_LIST = new ArrayList<AggregationType>();
   private static final List<AggregationType> DEFAULT_NON_NUMERIC_AGGREGATION_LIST = new ArrayList<AggregationType>();
   private static String locale;
+  public static final String OLAP_SUFFIX = "_OLAP";
 
   static {
     DEFAULT_AGGREGATION_LIST.add(AggregationType.NONE);
@@ -229,5 +230,13 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     }
     logicalModel.setProperty("categories", logicalModel.getCategories());
   }
+
+
+  public static String getCorrespondingOlapColumnId(LogicalColumn lc) {
+    String tableId = lc.getLogicalTable().getId().replaceAll("BT", "LC");
+    String olapColId = tableId + OLAP_SUFFIX + "_" + lc.getPhysicalColumn().getId();
+    return olapColId;
+  }
+
 
 }

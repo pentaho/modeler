@@ -45,7 +45,7 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
     final boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
 
-    List<AvailableField> fields = workspace.getAvailableFields();
+    List<AvailableField> fields = workspace.getAvailableOlapFields();
     for( AvailableField field : fields ) {
       DataType dataType = field.getLogicalColumn().getDataType();
       if( dataType == DataType.NUMERIC) {

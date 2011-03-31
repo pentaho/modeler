@@ -1,22 +1,14 @@
 package org.pentaho.agilebi.modeler.services.impl;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.ServiceDefTarget;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.services.IGwtModelerService;
 import org.pentaho.agilebi.modeler.gwt.services.IGwtModelerServiceAsync;
-import org.pentaho.agilebi.modeler.nodes.AvailableFieldCollection;
-import org.pentaho.agilebi.modeler.nodes.MainModelNode;
-import org.pentaho.agilebi.modeler.services.IModelerService;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.ui.xul.XulServiceCallback;
-
-import java.util.List;
 
 /**
  * User: nbaker
@@ -49,7 +41,7 @@ public class GwtModelerServiceImpl implements IModelerServiceAsync {
   public void generateDomain(String connectionName, String tableName, String dbType, String query, String datasourceName, final XulServiceCallback<Domain> callback){
     getDelegate().generateDomain(connectionName, tableName, dbType, query, datasourceName, new AsyncCallback<Domain>() {
       public void onFailure( Throwable throwable ) {
-        callback.error("Error generating Metadata Domain§", throwable);
+        callback.error("Error generating Metadata Domain", throwable);
       }
 
       public void onSuccess( Domain domain) {

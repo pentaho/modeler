@@ -27,7 +27,9 @@ import org.pentaho.metadata.model.Domain;
  * @author nbaker
  */
 public interface IModelerSource {
-	public Domain generateDomain() throws ModelerException;
+
+  public Domain generateDomain() throws ModelerException;
+  public Domain generateDomain(boolean dualModelingMode) throws ModelerException;
 
 	public String getDatabaseName();
 

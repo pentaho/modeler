@@ -19,23 +19,19 @@
 
 package org.pentaho.agilebi.modeler.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.automodel.SchemaTable;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalRelationship;
-import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.pentaho.pms.core.exception.PentahoMetadataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MultiTableModelerSource implements ISpoonModelerSource {
 
@@ -56,7 +52,12 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 		return this.generateDomain(this.databaseMeta, this.joinTemplates);
 	}
 
-	@Override
+  @Override
+  public Domain generateDomain(boolean dualModelingMode) throws ModelerException {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  @Override
 	public String getDatabaseName() {
 		String name = null;
 		if (this.databaseMeta != null) {

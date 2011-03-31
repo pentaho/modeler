@@ -2,6 +2,8 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.util.AbstractModelNode;
@@ -46,7 +48,10 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
 
     for (Object obj : selectedFields) {
       if (obj instanceof AvailableField) {
-        AvailableField availableField = (AvailableField)obj;
+        // olap fields are stored in a cloned LogicalTable with cloned columns
+        // this allows for individual editing of the 2 models (reporting & olap)
+        AvailableField availableField = convertToOlapField((AvailableField)obj, workspace.getDomain().getLogicalModels().get(0));
+
         // depending on the parent
         if (selectedTreeItem == null) {
           // null - cannot add fields at this level
@@ -78,6 +83,17 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
     }
     workspace.setModelIsChanging(prevChangeState);
   }
+
+  public static AvailableField convertToOlapField(AvailableField availableField, LogicalModel model) {
+    AvailableField newField = new AvailableField();
+    newField.setAggTypeDesc(availableField.getAggTypeDesc());
+    newField.setName(availableField.getName());
+    newField.setDisplayName(availableField.getDisplayName());
+    LogicalColumn lc = model.findLogicalColumn(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(availableField.getLogicalColumn()));
+    newField.setLogicalColumn(lc);
+    return newField;
+  }
+
   @Override
   public void clearTreeModel(){
     workspace.setModelIsChanging(true);

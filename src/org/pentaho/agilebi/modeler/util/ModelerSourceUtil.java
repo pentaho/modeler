@@ -1,8 +1,7 @@
 package org.pentaho.agilebi.modeler.util;
 
-import java.util.Locale;
-
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.di.core.database.Database;
@@ -11,6 +10,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.IConcept;
@@ -53,10 +53,14 @@ public class ModelerSourceUtil {
 
   
   public static Domain generateDomain(DatabaseMeta databaseMeta, String schemaName, String tableName) throws ModelerException{
-	  return generateDomain(databaseMeta, schemaName, tableName, tableName);
+	  return generateDomain(databaseMeta, schemaName, tableName, tableName, true);
   }
   
-  public static Domain generateDomain(DatabaseMeta databaseMeta, String schemaName, String tableName, String datasourceName)
+  public static Domain generateDomain(DatabaseMeta databaseMeta, String schemaName, String tableName, String datasourceName) throws ModelerException{
+	  return generateDomain(databaseMeta, schemaName, tableName, datasourceName, true);
+  }
+
+  public static Domain generateDomain(DatabaseMeta databaseMeta, String schemaName, String tableName, String datasourceName, boolean dualModelingMode)
       throws ModelerException {
 
     // before generating model, let's check that the table exists and can be quoted.
@@ -89,6 +93,12 @@ public class ModelerSourceUtil {
 	    LogicalTable businessTable = businessModel.getLogicalTables().get(0);
 	    businessTable.setName(new LocalizedString(locale, "Available Columns"));
 
+      // if it was requested to generate for dual-mode modeling (relational & olap)
+      // duplicate the tables
+      if (dualModelingMode) {
+        ModelerSourceUtil.duplicateLogicalTablesForDualModelingMode(businessModel);
+      }
+      
 	    // configuring security is necessary so when publishing a model to the bi-server
 	    // it can be viewed by everyone.  we will eventually have a security UI where this will
 	    // be configurable in the modeler tool
@@ -113,5 +123,24 @@ public class ModelerSourceUtil {
       concept.setProperty(DefaultPropertyID.SECURITY.getId(), security);
     }
     security.putOwnerRights(owner, rights);
+  }
+
+  public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
+    int tableCount = model.getLogicalTables().size();
+    for (int i = 0; i < tableCount; i++) {
+      LogicalTable table = model.getLogicalTables().get(i);
+      LogicalTable copiedTable = (LogicalTable) table.clone();
+      copiedTable.setId(copiedTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
+
+      // clone of LogicalTable does not clone it's columns, so we must do that here
+      copiedTable.getLogicalColumns().clear();
+      for(LogicalColumn lc : table.getLogicalColumns()) {
+        LogicalColumn copiedColumn = (LogicalColumn)lc.clone();
+        copiedColumn.setId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lc));
+        copiedTable.addLogicalColumn(copiedColumn);
+      }
+      
+      model.addLogicalTable(copiedTable);
+    }
   }
 }

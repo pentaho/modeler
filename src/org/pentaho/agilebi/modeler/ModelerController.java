@@ -465,7 +465,7 @@ public class ModelerController extends AbstractXulEventHandler {
    */
   @Bindable
   public void refreshFields() throws ModelerException {
-    workspace.refresh();
+    workspace.refresh(currentModellingMode);
   }
 
   public void setFileName( String fileName ) {

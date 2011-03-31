@@ -1,9 +1,6 @@
 package org.pentaho.agilebi.modeler.util;
 
-import org.pentaho.agilebi.modeler.IModelerSource;
-import org.pentaho.agilebi.modeler.IncompatibleModelerException;
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.*;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -94,7 +91,7 @@ public class ModelerWorkspaceUtil {
     	aModel.setDomain(domain);
     	aModel.setFileName(fileName);
     	aModel.resolveConnectionFromDomain();
-    	aModel.refresh();
+    	aModel.refresh(ModelerMode.ANALYSIS_AND_REPORTING);
         aModel.getWorkspaceHelper().populateDomain(aModel);
     	aModel.setDirty(false);
     } catch (Exception e){

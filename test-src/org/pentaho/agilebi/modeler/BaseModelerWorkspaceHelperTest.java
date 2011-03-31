@@ -14,10 +14,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.metadata.model.Category;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.DataType;
 
 import java.util.List;
@@ -166,5 +163,29 @@ public class BaseModelerWorkspaceHelperTest {
     database.setName("SampleData");//$NON-NLS-1$
     return database;
   }
+
+  @Test
+  public void testGetCorrespondingOlapColumnId() {
+    String origTableId = "BT_CUSTOMERS_CUSTOMERS";
+    String origColumnId = "LC_CUSTOMERS_CUSTOMERNUMBER";
+    String olapTableId = "BT_CUSTOMERS_CUSTOMERS_OLAP";
+    String olapColumnId = "LC_CUSTOMERS_CUSTOMERS_OLAP_CUSTOMERNUMBER";
+
+    LogicalTable ltOrig = new LogicalTable();
+    ltOrig.setId(origTableId);
+
+    LogicalColumn lcOrig = new LogicalColumn();
+    lcOrig.setId(origColumnId);
+    lcOrig.setLogicalTable(ltOrig);
+    IPhysicalColumn pc = new SqlPhysicalColumn();
+    pc.setId("CUSTOMERNUMBER");
+    lcOrig.setPhysicalColumn(pc);
+
+
+    assertEquals(olapColumnId, BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lcOrig));
+
+  }
+
+
 
 }

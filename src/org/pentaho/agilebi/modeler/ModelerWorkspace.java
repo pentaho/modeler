@@ -39,6 +39,7 @@ import java.util.*;
 public class ModelerWorkspace extends XulEventSourceAdapter implements Serializable{
 
   private AvailableFieldCollection availableFields = new AvailableFieldCollection();
+  private AvailableFieldCollection availableOlapFields = new AvailableFieldCollection();
 
   private MainModelNode model;
   private RelationalModelNode relationalModel;
@@ -217,6 +218,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return availableFields;
   }
 
+  @Bindable
+  public AvailableFieldCollection getAvailableOlapFields() {
+    return availableOlapFields;
+  }
+
 
   @Bindable
   public void setSelectedVisualization( String aVisualization ) {
@@ -348,60 +354,79 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.model.getMeasures().addAll(fields);
   }
 
-  public void refresh() throws ModelerException {
+  public void refresh(ModelerMode mode) throws ModelerException {
     if (source == null) {
       return;
     }
-    Domain newDomain = source.generateDomain();
+
+    Domain newDomain = source.generateDomain(mode == ModelerMode.ANALYSIS_AND_REPORTING);
     refresh(newDomain);
   }
   public void refresh(Domain newDomain) throws ModelerException {
 
-    // Add in new logicalColumns
-    for (LogicalColumn lc : newDomain.getLogicalModels().get(0).getLogicalTables().get(0).getLogicalColumns()) {
-      boolean exists = false;
-      inner:
-      for (AvailableField fmd : this.availableFields) {
-        if (fmd.getLogicalColumn().getId().equals(lc.getId()) || fmd.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lc.getName(workspaceHelper.getLocale()))) {
-          fmd.setLogicalColumn(lc);
-          exists = true;
-          break inner;
-        }
-      }
-      if (!exists) {
-        AvailableField fm = new AvailableField();
-        fm.setLogicalColumn(lc);
-        fm.setName(lc.getName(workspaceHelper.getLocale()));
-        fm.setDisplayName(lc.getName(workspaceHelper.getLocale()));
-        availableFields.add(fm);
-        Collections.sort(availableFields, new Comparator<AvailableField>() {
+    Comparator<AvailableField> fieldComparator = new Comparator<AvailableField>() {
           public int compare( AvailableField arg0, AvailableField arg1 ) {
             return arg0.getLogicalColumn().getId().compareTo(arg1.getLogicalColumn().getId());
           }
-        });
+    };
+
+    LogicalModel logicalModel = newDomain.getLogicalModels().get(0);
+
+    // Add in new logicalColumns
+    for (LogicalTable table : logicalModel.getLogicalTables()) {
+      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        for (LogicalColumn lc : table.getLogicalColumns()) {
+          boolean exists = false;
+          inner:
+          for (AvailableField fmd : this.availableFields) {
+            if (fmd.getLogicalColumn().getId().equals(lc.getId()) || fmd.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lc.getName(workspaceHelper.getLocale()))) {
+              fmd.setLogicalColumn(lc);
+              exists = true;
+              break inner;
+            }
+          }
+          if (!exists) {
+            AvailableField fm = new AvailableField();
+            fm.setLogicalColumn(lc);
+            fm.setName(lc.getName(workspaceHelper.getLocale()));
+            fm.setDisplayName(lc.getName(workspaceHelper.getLocale()));
+            availableFields.add(fm);
+            availableOlapFields.add(DimensionTreeHelper.convertToOlapField(fm, logicalModel));
+
+            Collections.sort(availableFields, fieldComparator);
+            Collections.sort(availableOlapFields, fieldComparator);
+          }
+        }
       }
     }
-
 
 
     // Remove logicalColumns that no longer exist.
     List<AvailableField> toRemove = new ArrayList<AvailableField>();
+    List<AvailableField> olapToRemove = new ArrayList<AvailableField>();
     for (AvailableField fm : availableFields) {
       boolean exists = false;
       LogicalColumn fmlc = fm.getLogicalColumn();
       inner:
-      for (LogicalColumn lc : newDomain.getLogicalModels().get(0).getLogicalTables().get(0).getLogicalColumns()) {
-        if (lc.getId().equals(fmlc.getId()) || lc.getName(workspaceHelper.getLocale()).equals(fmlc.getName(workspaceHelper.getLocale()))) {
-          exists = true;
-          break inner;
+      for(LogicalTable lt : logicalModel.getLogicalTables()) {
+        if (!lt.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+          for (LogicalColumn lc : lt.getLogicalColumns()) {
+            if (lc.getId().equals(fmlc.getId()) || lc.getName(workspaceHelper.getLocale()).equals(fmlc.getName(workspaceHelper.getLocale()))) {
+              exists = true;
+              break inner;
+            }
+          }
         }
       }
       if (!exists) {
         toRemove.add(fm);
+        olapToRemove.add(DimensionTreeHelper.convertToOlapField(fm, logicalModel));
       }
     }
     availableFields.removeAll(toRemove);
+    availableOlapFields.removeAll(olapToRemove);
     workspaceHelper.sortFields(availableFields);
+    workspaceHelper.sortFields(availableOlapFields);
 
     fireFieldsChanged();
 
@@ -409,7 +434,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for (MeasureMetaData measure : model.getMeasures()) {
       boolean found = false;
       if (measure.getLogicalColumn() != null) {
-        for (AvailableField fm : availableFields) {
+        for (AvailableField fm : availableOlapFields) {
           if (fm.getLogicalColumn().getId().equals(measure.getLogicalColumn().getId()) || fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(measure.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
             found = true;
           } else {
@@ -439,7 +464,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             boolean found = false;
             if (lm.getLogicalColumn() != null) {
               inner:
-              for (AvailableField fm : availableFields) {
+              for (AvailableField fm : availableOlapFields) {
                 if (fm.getLogicalColumn().getId().equals(lm.getLogicalColumn().getId()) || fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lm.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
                   found = true;
                   break inner;
@@ -505,19 +530,26 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.model.getMeasures().clear();
     this.relationalModel.getCategories().clear();
     this.availableFields.clear();
+    this.availableOlapFields.clear();
 
-
-    LogicalTable table = domain.getLogicalModels().get(0).getLogicalTables().get(0);
-    for (LogicalColumn c : table.getLogicalColumns()) {
-      AvailableField fm = new AvailableField();
-      fm.setLogicalColumn(c);
-      fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
-      fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
-      fm.setAggTypeDesc(c.getAggregationType().toString());
-      availableFields.add(fm);
+    // only show the columns from the non-olap specific tables (they are just duplicates)
+    for (LogicalTable table : domain.getLogicalModels().get(0).getLogicalTables()) {
+      for (LogicalColumn c : table.getLogicalColumns()) {
+        AvailableField fm = new AvailableField();
+        fm.setLogicalColumn(c);
+        fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
+        fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
+        fm.setAggTypeDesc(c.getAggregationType().toString());
+        if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+          availableOlapFields.add(fm);
+        } else {
+          availableFields.add(fm);
+        }
+      }
     }
 
     workspaceHelper.sortFields(availableFields);
+    workspaceHelper.sortFields(availableOlapFields);
 
     firePropertyChange("availableFields", null, getAvailableFields()); //$NON-NLS-1$
 
