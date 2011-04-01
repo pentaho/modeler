@@ -47,7 +47,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   }
 
   public BaseModelerWorkspaceHelper(String locale){
-    this.locale = locale;
+    BaseModelerWorkspaceHelper.locale = locale;
   }
   
   public void populateDomain(ModelerWorkspace model) throws ModelerException {
@@ -55,7 +55,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     Domain domain = model.getDomain();
     domain.setId( model.getModelName() );
 
-    List<Category> cats = domain.getLogicalModels().get(0).getCategories();
     LogicalTable logicalTable = domain.getLogicalModels().get(0).getLogicalTables().get(0);
 
     if (model.getModelSource() != null) {
@@ -188,7 +187,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     RelationalModelNode model = workspace.getRelationalModel();
     LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
     logicalModel.getCategories().clear();
-    List<AvailableField> availableFields = workspace.getAvailableFields().getChildren();
 
     for (CategoryMetaData catMeta : model.getCategories()) {
       Category cat = new Category();
@@ -228,7 +226,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
       logicalModel.addCategory(cat);
     }
-    logicalModel.setProperty("categories", logicalModel.getCategories());
   }
 
 

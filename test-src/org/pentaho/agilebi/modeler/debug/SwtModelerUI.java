@@ -1,10 +1,32 @@
 package org.pentaho.agilebi.modeler.debug;
 
-import org.codehaus.groovy.tools.shell.Shell;
-import org.pentaho.agilebi.modeler.*;
-import org.pentaho.agilebi.modeler.propforms.*;
+import java.io.FileInputStream;
+
+import org.apache.commons.io.IOUtils;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
+import org.pentaho.agilebi.modeler.ColResolverController;
+import org.pentaho.agilebi.modeler.ModelerController;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.propforms.AbstractModelerNodeForm;
+import org.pentaho.agilebi.modeler.propforms.CategoryPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.DimensionPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.FieldsPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.HierarchyPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.MainModelerNodePropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
+import org.pentaho.agilebi.modeler.propforms.RelationalModelNodePropertiesForm;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.util.ModelerWorkspaceUtil;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
@@ -19,6 +41,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
+import org.pentaho.ui.xul.swt.tags.SwtWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,12 +182,83 @@ public class SwtModelerUI {
     return database;
   }
 
+  Shell shell = null;
+  
+  public void setupTestMenuBar() {
+    SwtWindow window = (SwtWindow)runner.getXulDomContainers().get(0).getDocumentRoot().getRootElement();
+    shell = (Shell)window.getManagedObject();
+    Menu menuBar = new Menu(shell, SWT.BAR);
+    MenuItem fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+    fileMenuHeader.setText("&File");
+    Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
+    fileMenuHeader.setMenu(fileMenu);
+
+    MenuItem fileOpenItem = new MenuItem(fileMenu, SWT.PUSH);
+    fileOpenItem.setText("&Open...");
+
+    
+    MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
+    fileSaveItem.setText("&Save...");
+
+    MenuItem fileExitItem = new MenuItem(fileMenu, SWT.PUSH);
+    fileExitItem.setText("E&xit");
+    shell.setMenuBar(menuBar);
+    
+    fileOpenItem.addSelectionListener(new FileOpenItemListener());
+    fileSaveItem.addSelectionListener(new FileSaveItemListener());
+    fileExitItem.addSelectionListener(new FileExitItemListener());
+
+  }
+  
   public void startDebugWindow(){
     try {
+      setupTestMenuBar();
       runner.start();
     } catch (XulException e) {
       e.printStackTrace();
     }
   }
+  
+  class FileExitItemListener implements SelectionListener {
+    public void widgetSelected(SelectionEvent event) {
+      widgetDefaultSelected(event);
+    }
+
+    public void widgetDefaultSelected(SelectionEvent event) {
+      shell.close();
+    }
+  }
+  
+  class FileOpenItemListener implements SelectionListener {
+    public void widgetSelected(SelectionEvent event) {
+      widgetDefaultSelected(event);
+    }
+
+    public void widgetDefaultSelected(SelectionEvent event) {
+      System.out.println("Open...");
+      try {
+        String xmi = IOUtils.toString(new FileInputStream("testing.xmi"));
+        ModelerWorkspaceUtil.loadWorkspace("testing.xmi", xmi, controller.getModel());
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+  
+  class FileSaveItemListener implements SelectionListener {
+    public void widgetSelected(SelectionEvent event) {
+      widgetDefaultSelected(event);
+    }
+
+    public void widgetDefaultSelected(SelectionEvent event) {
+      System.out.println("Save...");
+      try {
+        ModelerWorkspaceUtil.saveWorkspace(controller.getModel(), "testing.xmi");
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
 
 }

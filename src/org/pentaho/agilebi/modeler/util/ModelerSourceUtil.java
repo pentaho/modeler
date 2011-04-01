@@ -39,7 +39,7 @@ public class ModelerSourceUtil {
     if (!StringUtils.isBlank(quotedTable)) {
       quotedTable = databaseMeta.getStartQuote() + quotedTable + databaseMeta.getEndQuote();
     }
-    String schemaTableCombination =  databaseMeta.getSchemaTableCombination(quotedSchema, quotedTable);
+    String schemaTableCombination =  databaseMeta.getQuotedSchemaTableCombination(quotedSchema, quotedTable);
 
     try {
       database.connect();
@@ -137,6 +137,7 @@ public class ModelerSourceUtil {
       for(LogicalColumn lc : table.getLogicalColumns()) {
         LogicalColumn copiedColumn = (LogicalColumn)lc.clone();
         copiedColumn.setId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lc));
+        copiedColumn.setLogicalTable(copiedTable);
         copiedTable.addLogicalColumn(copiedColumn);
       }
       
