@@ -10,7 +10,6 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.IConcept;
@@ -96,7 +95,7 @@ public class ModelerSourceUtil {
       // if it was requested to generate for dual-mode modeling (relational & olap)
       // duplicate the tables
       if (dualModelingMode) {
-        ModelerSourceUtil.duplicateLogicalTablesForDualModelingMode(businessModel);
+        BaseModelerWorkspaceHelper.duplicateLogicalTablesForDualModelingMode(businessModel);
       }
       
 	    // configuring security is necessary so when publishing a model to the bi-server
@@ -125,24 +124,24 @@ public class ModelerSourceUtil {
     security.putOwnerRights(owner, rights);
   }
 
-  public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
-    String locale = "en-US";
-    int tableCount = model.getLogicalTables().size();
-    for (int i = 0; i < tableCount; i++) {
-      LogicalTable table = model.getLogicalTables().get(i);
-      LogicalTable copiedTable = (LogicalTable) table.clone();
-      copiedTable.setId(copiedTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
-
-      // clone of LogicalTable does not clone it's columns, so we must do that here
-      copiedTable.getLogicalColumns().clear();
-      for(LogicalColumn lc : table.getLogicalColumns()) {
-        LogicalColumn copiedColumn = (LogicalColumn)lc.clone();
-        copiedColumn.setId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lc));
-        copiedColumn.setLogicalTable(copiedTable);
-        copiedTable.addLogicalColumn(copiedColumn);
-      }
-      
-      model.addLogicalTable(copiedTable);
-    }
-  }
+//  public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
+//    String locale = "en-US";
+//    int tableCount = model.getLogicalTables().size();
+//    for (int i = 0; i < tableCount; i++) {
+//      LogicalTable table = model.getLogicalTables().get(i);
+//      LogicalTable copiedTable = (LogicalTable) table.clone();
+//      copiedTable.setId(copiedTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
+//
+//      // clone of LogicalTable does not clone it's columns, so we must do that here
+//      copiedTable.getLogicalColumns().clear();
+//      for(LogicalColumn lc : table.getLogicalColumns()) {
+//        LogicalColumn copiedColumn = (LogicalColumn)lc.clone();
+//        copiedColumn.setId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lc));
+//        copiedColumn.setLogicalTable(copiedTable);
+//        copiedTable.addLogicalColumn(copiedColumn);
+//      }
+//
+//      model.addLogicalTable(copiedTable);
+//    }
+//  }
 }

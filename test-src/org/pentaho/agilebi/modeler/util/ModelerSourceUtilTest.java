@@ -19,6 +19,7 @@ package org.pentaho.agilebi.modeler.util;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.di.core.KettleEnvironment;
@@ -108,7 +109,7 @@ public class ModelerSourceUtilTest {
     int logicalColumns = d.getLogicalModels().get(0).getLogicalTables().get(0).getLogicalColumns().size();
     assertEquals(physicalColumns, logicalColumns);
 
-    ModelerSourceUtil.duplicateLogicalTablesForDualModelingMode(logicalModel);
+    BaseModelerWorkspaceHelper.duplicateLogicalTablesForDualModelingMode(logicalModel);
     logicalTables = d.getLogicalModels().get(0).getLogicalTables().size();
     assertEquals(physicalTables * 2, logicalTables);
 

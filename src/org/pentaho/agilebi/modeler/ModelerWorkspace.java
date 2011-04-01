@@ -524,6 +524,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
 
   public void setDomain( Domain d ) {
+    setDomain(d, true);
+  }
+
+  // this method signature is intended to provide a simpler path for unit testing the upConvert method on it's own
+  protected void setDomain(Domain d, boolean upConvertDesired) {
     this.domain = d;
     this.setModelIsChanging(true);
     this.model.getDimensions().clear();
@@ -531,6 +536,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.relationalModel.getCategories().clear();
     this.availableFields.clear();
     this.availableOlapFields.clear();
+
+    boolean needsUpConverted = false;
+    if (upConvertDesired) needsUpConverted = upConvertLegacyModel();
 
     // only show the columns from the non-olap specific tables (they are just duplicates)
     for (LogicalTable table : domain.getLogicalModels().get(0).getLogicalTables()) {
@@ -638,8 +646,55 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       this.getRelationalModel().getCategories().add(catMeta);
     }
 
+    if (needsUpConverted) upConvertMeasuresAndDimensions();
+
     this.setModelIsChanging(false, true);
 
+  }
+
+  private void upConvertMeasuresAndDimensions() {
+    LogicalModel model = domain.getLogicalModels().get(0);
+
+    // set the dimension logical column references to the new olap columns
+    for (DimensionMetaData dim : getModel().getDimensions()) {
+      for (HierarchyMetaData hier : dim) {
+        for (LevelMetaData level : hier) {
+          String olapColumnId = BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(level.getLogicalColumn());
+          LogicalColumn olapCol = model.findLogicalColumn(olapColumnId);
+          level.setLogicalColumn(olapCol);
+        }
+      }
+    }
+
+    // set the measure logical column references to the new olap columns
+    for (MeasureMetaData measure : getModel().getMeasures()) {
+      String olapColumnId = BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(measure.getLogicalColumn());
+      LogicalColumn olapCol = model.findLogicalColumn(olapColumnId);
+      measure.setLogicalColumn(olapCol);
+    }
+
+    return;
+  }
+
+  protected boolean upConvertLegacyModel() {
+    // first, determine if we need to up-convert models created before
+    // the separation of OLAP and Reporting models to the new style
+    int olapTableCount=0, reportingTableCount=0;
+    LogicalModel model = domain.getLogicalModels().get(0);
+    for (LogicalTable table : model.getLogicalTables()) {
+      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        olapTableCount++;
+      } else {
+        reportingTableCount++;
+      }
+    }
+    if (olapTableCount == 0) {
+      // need to forward port this model
+      BaseModelerWorkspaceHelper.duplicateLogicalTablesForDualModelingMode(domain.getLogicalModels().get(0));
+      return true;
+    }
+
+    return false;
   }
 
   public void resolveConnectionFromDomain() {

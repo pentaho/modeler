@@ -78,4 +78,20 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
     return FieldsPropertiesForm.class;
   }
 
+  @Override
+  public void validate() {
+    valid = true;
+    validationMessages.clear();
+    // check name
+    if (name == null || "".equals(name)) {
+      validationMessages.add(
+          "Field Name Missing");//BaseMessages.getString(ModelerWorkspace.class, "measure_name_missing"));
+      valid = false;
+    }
+    if (logicalColumn == null) {
+      validationMessages.add("The column mapped to the field ("+getName()+") is missing or no longer available.");
+      valid = false;
+    }
+  }
+
 }

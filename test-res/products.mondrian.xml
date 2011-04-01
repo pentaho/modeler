@@ -1,0 +1,120 @@
+<Schema name="products_38GA">
+  <Dimension name="BUYPRICE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="BUYPRICE" column="BUYPRICE" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="MSRP">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="MSRP" column="MSRP" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTCODE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTCODE" column="PRODUCTCODE" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTDESCRIPTION">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTDESCRIPTION" column="PRODUCTDESCRIPTION" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTLINE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTLINE" column="PRODUCTLINE" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTNAME">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTNAME" column="PRODUCTNAME" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTSCALE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTSCALE" column="PRODUCTSCALE" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTVENDOR">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTVENDOR" column="PRODUCTVENDOR" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="QUANTITYINSTOCK">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="QUANTITYINSTOCK" column="QUANTITYINSTOCK" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="products_38GA">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+    <DimensionUsage name="BUYPRICE" source="BUYPRICE"/>
+    <DimensionUsage name="MSRP" source="MSRP"/>
+    <DimensionUsage name="PRODUCTCODE" source="PRODUCTCODE"/>
+    <DimensionUsage name="PRODUCTDESCRIPTION" source="PRODUCTDESCRIPTION"/>
+    <DimensionUsage name="PRODUCTLINE" source="PRODUCTLINE"/>
+    <DimensionUsage name="PRODUCTNAME" source="PRODUCTNAME"/>
+    <DimensionUsage name="PRODUCTSCALE" source="PRODUCTSCALE"/>
+    <DimensionUsage name="PRODUCTVENDOR" source="PRODUCTVENDOR"/>
+    <DimensionUsage name="QUANTITYINSTOCK" source="QUANTITYINSTOCK"/>
+    <Measure name="BUYPRICE" column="BUYPRICE" aggregator="sum" formatString="#"/>
+    <Measure name="MSRP" column="MSRP" aggregator="sum" formatString="#"/>
+    <Measure name="QUANTITYINSTOCK" column="QUANTITYINSTOCK" aggregator="sum" formatString="#"/>
+  </Cube>
+</Schema>

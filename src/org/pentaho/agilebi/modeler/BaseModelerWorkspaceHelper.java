@@ -235,5 +235,25 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     return olapColId;
   }
 
+  public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
+    String locale = "en-US";
+    int tableCount = model.getLogicalTables().size();
+    for (int i = 0; i < tableCount; i++) {
+      LogicalTable table = model.getLogicalTables().get(i);
+      LogicalTable copiedTable = (LogicalTable) table.clone();
+      copiedTable.setId(copiedTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
+
+      // clone of LogicalTable does not clone it's columns, so we must do that here
+      copiedTable.getLogicalColumns().clear();
+      for(LogicalColumn lc : table.getLogicalColumns()) {
+        LogicalColumn copiedColumn = (LogicalColumn)lc.clone();
+        copiedColumn.setId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lc));
+        copiedColumn.setLogicalTable(copiedTable);
+        copiedTable.addLogicalColumn(copiedColumn);
+      }
+
+      model.addLogicalTable(copiedTable);
+    }
+  }
 
 }

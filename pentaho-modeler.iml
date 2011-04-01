@@ -28,7 +28,6 @@
     <orderEntry type="module" module-name="pentaho-xul-swt" />
     <orderEntry type="module" module-name="pentaho-xul-gwt" />
     <orderEntry type="module" module-name="pentaho-xul-core" />
-    <orderEntry type="module" module-name="PentahoMetaData" />
     <orderEntry type="module" module-name="Kettle trunk" />
     <orderEntry type="module-library">
       <library name="jars">
@@ -44,6 +43,7 @@
         <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="SWT" level="application" />
   </component>
 </module>
 
