@@ -78,7 +78,13 @@
       <artifact name="pentaho-metadata"/>
       <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
-    
+
+    <dependency org="log4j" name="log4j" rev="1.2.14"/>
+
+    <dependency org="org.eclipse.core" name="commands" rev="3.3.0-I20070605-0010" transitive="false" />
+    <dependency org="org.eclipse.equinox" name="common" rev="3.3.0-v20070426" transitive="false" />
+    <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" />
+
     <!-- test dependencies -->
     <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
 
