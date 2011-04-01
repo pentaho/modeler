@@ -5,6 +5,8 @@ import org.pentaho.agilebi.modeler.IModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.DataType;
 
 import java.util.Collections;
@@ -108,6 +110,51 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
 
     workspace.setModelIsChanging(false);
   }
+
+  /**
+   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
+   * @param workspace
+   * @throws ModelerException
+   */
+  public void autoModelMultiTableRelational(ModelerWorkspace workspace) throws ModelerException {
+    RelationalModelNode relationalModelNode = new RelationalModelNode();
+
+    relationalModelNode.setName(workspace.getRelationalModelName());
+
+    workspace.setRelationalModel(relationalModelNode);
+    workspace.setModelIsChanging(true);
+    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()){
+
+      CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
+
+      for(LogicalColumn col : table.getLogicalColumns()){
+        createFieldForCategoryWithColumn(category, col);
+      }
+
+      relationalModelNode.getCategories().add(category);
+
+    }
+    CategoryMetaData category = new CategoryMetaData("Category");
+
+    List<AvailableField> fields = workspace.getAvailableFields();
+    for( AvailableField field : fields ) {
+      category.add(workspace.createFieldForParentWithNode(category, field));
+    }
+    relationalModelNode.getCategories().add(category);
+
+    workspace.setModelIsChanging(false);
+  }
+
+
+  private FieldMetaData createFieldForCategoryWithColumn( CategoryMetaData parent, LogicalColumn column ) {
+    FieldMetaData field = new FieldMetaData(parent, column.getName(getLocale()), "",
+        column.getName(getLocale()), getLocale()); //$NON-NLS-1$
+    field.setLogicalColumn(column);
+    field.setFieldTypeDesc(column.getDataType().getName());
+    return field;
+  }
+
+
 
   /**
    * Builds a Relational Model that is attribute based, all available fields are added into a single Category
