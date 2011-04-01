@@ -91,7 +91,7 @@ public class ModelerSourceUtil {
 	        + datasourceName));
 
 	    LogicalTable businessTable = businessModel.getLogicalTables().get(0);
-	    businessTable.setName(new LocalizedString(locale, "Available Columns"));
+	    businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
 
       // if it was requested to generate for dual-mode modeling (relational & olap)
       // duplicate the tables
@@ -126,6 +126,7 @@ public class ModelerSourceUtil {
   }
 
   public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
+    String locale = "en-US";
     int tableCount = model.getLogicalTables().size();
     for (int i = 0; i < tableCount; i++) {
       LogicalTable table = model.getLogicalTables().get(i);

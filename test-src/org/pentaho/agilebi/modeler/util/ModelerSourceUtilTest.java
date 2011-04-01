@@ -29,7 +29,6 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.util.SerializationService;
 
 import java.util.List;
 
@@ -91,9 +90,6 @@ public class ModelerSourceUtilTest {
     }
     assertEquals(physicalColumns * 2, logicalColumns);
 
-    SerializationService ss = new SerializationService();
-    System.out.println(ss.serializeDomain(d));
-
   }
 
   @Test
@@ -139,7 +135,7 @@ public class ModelerSourceUtilTest {
   private void assertCopiesAreKosher(LogicalColumn lc1, LogicalColumn lc2) {
     assertEquals(lc1.getPhysicalColumn(), lc2.getPhysicalColumn());
 
-    String newColName = ((LogicalTable)(lc1.getParent())).getId().replaceAll("BT", "LC");
+    String newColName = lc1.getLogicalTable().getId().replaceAll("BT", "LC");
     newColName += "_OLAP_" + lc1.getPhysicalColumn().getId();
     
     assertEquals(newColName, lc2.getId());
