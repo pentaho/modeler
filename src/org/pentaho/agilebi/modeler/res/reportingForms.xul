@@ -96,6 +96,7 @@
         <label value="${aggregation}:" />
         <menulist id="fieldaggregationtype">
           <menupopup>
+            <menuitem label="NONE" />
             <menuitem label="SUM" />
             <menuitem label="AVERAGE" />
             <menuitem label="MINIMUM" />

@@ -198,9 +198,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
         lCol.setName(new LocalizedString(locale, fieldMeta.getName()));
         AggregationType type = AggregationType.valueOf(fieldMeta.getAggTypeDesc());
-        if (type != AggregationType.NONE) {
-          lCol.setAggregationType(type);
-        }
+        lCol.setAggregationType(type);
 
         String formatMask = fieldMeta.getFormat();
         if( BaseAggregationMetaDataNode.FORMAT_NONE.equals(formatMask) || (formatMask == null || formatMask.equals(""))) {

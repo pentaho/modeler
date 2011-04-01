@@ -192,10 +192,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   @Bindable
   public boolean isValid() {
-    model.validateTree();
-    relationalModel.validateTree();
-
-    return this.model.isValid() && relationalModel.isValid();
+    boolean valid = this.model.isValid() && relationalModel.isValid();
+    firePropertyChange("valid", null, valid);
+    return valid;
   }
 
   @Bindable
@@ -726,6 +725,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       fireFieldsChanged();
       model.validateTree();
       relationalModel.validateTree();
+      isValid();
       fireModelChanged();
       fireRelationalModelChanged();
     }
