@@ -112,7 +112,7 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
   }
 
   /**
-   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
+   * Builds a Relational Model from the existing collection of logical tables
    * @param workspace
    * @throws ModelerException
    */
