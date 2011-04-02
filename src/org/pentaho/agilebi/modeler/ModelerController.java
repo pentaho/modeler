@@ -804,4 +804,12 @@ public class ModelerController extends AbstractXulEventHandler {
   public void setModelerPerspective(String perspective) {
     this.currentModelerPerspective = ModelerPerspective.valueOf(perspective);
   }
+
+  public DimensionTreeHelper getDimTreeHelper() {
+    return dimTreeHelper;
+  }
+
+  public CategoryTreeHelper getCatTreeHelper() {
+    return catTreeHelper;
+  }
 }
