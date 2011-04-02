@@ -806,10 +806,16 @@ public class ModelerController extends AbstractXulEventHandler {
   }
 
   public DimensionTreeHelper getDimTreeHelper() {
+    if (dimTreeHelper == null) {
+      dimTreeHelper = new DimensionTreeHelper(propertiesForms, propDeck, workspace, document);
+    }
     return dimTreeHelper;
   }
 
   public CategoryTreeHelper getCatTreeHelper() {
+    if (catTreeHelper == null) {
+      catTreeHelper = new CategoryTreeHelper(propertiesForms, propDeck, workspace, document);
+    }
     return catTreeHelper;
   }
 }
