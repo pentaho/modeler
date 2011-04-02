@@ -249,6 +249,8 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public void showAutopopulatePrompt() {
+
+        setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
     try {
 
       if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {

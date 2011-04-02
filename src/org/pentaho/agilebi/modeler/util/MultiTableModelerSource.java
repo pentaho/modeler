@@ -121,10 +121,6 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
 			ModelerWorkspace workspace = new ModelerWorkspace(helper);
 			workspace.setDomain(domain);
-			
-			//TODO autoModelFlat and populateDomain must be adapted to support multitables.
-			helper.autoModelFlat(workspace);
-			helper.populateDomain(workspace);
 
 			// Create and add LogicalRelationships to the LogicalModel from the
 			// domain.
@@ -170,10 +166,18 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 				logicalRelationship.setToColumn(toColumn);
 				logicalModel.addLogicalRelationship(logicalRelationship);
 			}
+
+			//TODO autoModelFlat and populateDomain must be adapted to support multitables.
+			helper.autoModelMultiTableRelational(workspace);
+			helper.populateDomain(workspace);
+
 		} catch (PentahoMetadataException e) {
 			e.printStackTrace();
 			logger.info(e.getLocalizedMessage());
 		} catch (ModelerException e) {
+			e.printStackTrace();
+			logger.info(e.getLocalizedMessage());
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info(e.getLocalizedMessage());
 		}
