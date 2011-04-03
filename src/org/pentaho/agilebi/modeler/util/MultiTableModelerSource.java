@@ -122,6 +122,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			
 			ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
 			ModelerWorkspace workspace = new ModelerWorkspace(helper);
+			workspace.setModelName(datasourceName);
 			workspace.setDomain(domain);
 
 			// Create and add LogicalRelationships to the LogicalModel from the
@@ -178,6 +179,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 				logicalModel.addLogicalRelationship(logicalRelationship);
 			}
 			helper.autoModelMultiTableRelational(workspace);
+			helper.populateDomain(workspace);			
 		} catch (PentahoMetadataException e) {
 			e.printStackTrace();
 			logger.info(e.getLocalizedMessage());
