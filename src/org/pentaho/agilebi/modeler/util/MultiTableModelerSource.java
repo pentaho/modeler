@@ -188,9 +188,6 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 		} catch (ModelerException e) {
 			e.printStackTrace();
 			logger.info(e.getLocalizedMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info(e.getLocalizedMessage());
 		}
 		return domain;
 	}

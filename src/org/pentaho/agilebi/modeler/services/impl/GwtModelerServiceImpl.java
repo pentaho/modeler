@@ -72,6 +72,18 @@ public class GwtModelerServiceImpl implements IModelerServiceAsync {
     });
   }
 
+  public void serializeModels( Domain domain, String name, boolean doOlap, final XulServiceCallback<String> callback ) {
+    getDelegate().serializeModels(domain, name, doOlap, new AsyncCallback<String>() {
+      public void onFailure( Throwable throwable ) {
+        callback.error("Error saving models", throwable);
+      }
+
+      public void onSuccess( String v) {
+        callback.success(v);
+      }
+    });
+  }
+
   public void loadDomain(String id, final XulServiceCallback<Domain> callback) {
     getDelegate().loadDomain(id, new AsyncCallback<Domain>(){
       public void onFailure(Throwable throwable) {

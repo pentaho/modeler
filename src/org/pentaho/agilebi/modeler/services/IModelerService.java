@@ -18,5 +18,6 @@ public interface IModelerService {
   Domain generateDomain(String connectionName, String tableName, String dbType, String query, String datasourceName) throws Exception;
   BogoPojo gwtWorkaround ( BogoPojo pojo);
   String serializeModels(Domain domain, String name) throws Exception;
+  String serializeModels(Domain domain, String name, boolean doOlap) throws Exception;
   Domain loadDomain(String id) throws Exception;
 }

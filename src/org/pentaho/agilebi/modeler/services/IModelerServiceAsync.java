@@ -16,4 +16,6 @@ public interface IModelerServiceAsync {
   void serializeModels(Domain domain, String name, XulServiceCallback<String> callback);
   void loadDomain(String id, XulServiceCallback<Domain> callback);
   void gwtWorkaround (BogoPojo pojo, XulServiceCallback<BogoPojo> callback);
+
+  void serializeModels(Domain domain, String modelName, boolean doOlap, XulServiceCallback<String> xulServiceCallback);
 }
