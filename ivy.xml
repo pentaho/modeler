@@ -22,10 +22,6 @@
 
     <dependency org="commons-vfs" name="commons-vfs" rev="1.0" conf="default->default"/>
 
-    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}"
-                conf="default->default"
-                changing="true"/>
-
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" conf="default->default"
                 changing="true"/>
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
