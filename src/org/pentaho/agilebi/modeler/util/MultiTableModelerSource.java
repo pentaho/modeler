@@ -116,7 +116,6 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			tableNames = schemas.toArray(tableNames);
 			this.generator.setTableNames(tableNames);
 			domain = this.generator.generateDomain();
-			domain.setId(datasourceName);
 
 			// Automodel to create categories
 			
@@ -135,7 +134,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 		        + datasourceName));
 			
 		    LogicalTable businessTable = logicalModel.getLogicalTables().get(0);
-		    businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
+		    businessTable.setName(new LocalizedString(locale, datasourceName));
 			
 			for (LogicalRelationship joinTemplate : joinTemplates) {
 
@@ -181,6 +180,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			//TODO autoModelFlat and populateDomain must be adapted to support multitables.
 			helper.autoModelMultiTableRelational(workspace);
 			helper.populateDomain(workspace);
+			domain.setId(datasourceName);
 
 		} catch (PentahoMetadataException e) {
 			e.printStackTrace();
