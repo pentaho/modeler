@@ -179,6 +179,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 				logicalModel.addLogicalRelationship(logicalRelationship);
 			}
 			helper.autoModelMultiTableRelational(workspace);
+			workspace.setModelName(datasourceName);
 			helper.populateDomain(workspace);			
 		} catch (PentahoMetadataException e) {
 			e.printStackTrace();
