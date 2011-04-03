@@ -38,10 +38,12 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 	private ModelGenerator generator;
 	private DatabaseMeta databaseMeta;
 	private List<LogicalRelationship> joinTemplates;
+	private String datasourceName;
 	public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
 	private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSource.class);
 
-	public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates) {
+	public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates, String datasourceName) {
+		this.datasourceName = datasourceName;
 		this.databaseMeta = databaseMeta;
 		this.joinTemplates = joinTemplates;
 		this.generator = new ModelGenerator();
@@ -102,7 +104,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			String locale = LocalizedString.DEFAULT_LOCALE;
 			this.generator.setLocale(locale);
 			this.generator.setDatabaseMeta(databaseMeta);
-			this.generator.setModelName(databaseMeta.getName());
+			this.generator.setModelName(datasourceName);
 
 			List<SchemaTable> schemas = new ArrayList<SchemaTable>();
 			for (LogicalRelationship joinTemplate : joinTemplates) {
@@ -114,7 +116,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			tableNames = schemas.toArray(tableNames);
 			this.generator.setTableNames(tableNames);
 			domain = this.generator.generateDomain();
-			domain.setId(databaseMeta.getName());
+			domain.setId(datasourceName);
 
 			// Automodel to create categories
 			
@@ -128,9 +130,9 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			LogicalModel logicalModel = domain.getLogicalModels().get(0);
 			
 			// TODO do this with messages
-			logicalModel.setName(new LocalizedString(locale, databaseMeta.getName()));
+			logicalModel.setName(new LocalizedString(locale, datasourceName));
 			logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
-		        + databaseMeta.getName()));
+		        + datasourceName));
 			
 		    LogicalTable businessTable = logicalModel.getLogicalTables().get(0);
 		    businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
