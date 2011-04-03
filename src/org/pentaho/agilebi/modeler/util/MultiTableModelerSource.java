@@ -132,6 +132,9 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
 			logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
 		        + databaseMeta.getName()));
 			
+		    LogicalTable businessTable = logicalModel.getLogicalTables().get(0);
+		    businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
+			
 			for (LogicalRelationship joinTemplate : joinTemplates) {
 
 				String lTable = joinTemplate.getFromTable().getName(locale);
