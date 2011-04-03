@@ -81,4 +81,9 @@ public class GwtModelerDebugServlet extends RemoteServiceServlet implements IGwt
       throw e;
     }
   }
+
+  @Override
+  public String serializeModels(Domain domain, String name, boolean doOlap) throws Exception {
+    return null;
+  }
 }
