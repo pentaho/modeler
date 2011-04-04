@@ -9,9 +9,7 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.DataType;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -100,13 +98,24 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
     workspace.setRelationalModel(relationalModelNode);
     workspace.setRelationalModelIsChanging(true);
 
-    CategoryMetaData category = new CategoryMetaData("Category");
+    List<LogicalTable> tables = workspace.getDomain().getLogicalModels().get(0).getLogicalTables();
+    Set<String> tableIds = new HashSet<String>();
+    for (LogicalTable table : tables) {
+      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)
+        && !tableIds.contains(table.getId())) {
+        
+        tableIds.add(table.getId());
+        CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
 
-    List<AvailableField> fields = workspace.getAvailableFields();
-    for( AvailableField field : fields ) {
-      category.add(workspace.createFieldForParentWithNode(category, field));
+        List<AvailableField> fields = workspace.getAvailableFields();
+        for( AvailableField field : fields ) {
+          if (field.getLogicalColumn().getLogicalTable().getId().equals(table.getId())) {
+            category.add(workspace.createFieldForParentWithNode(category, field));
+          }
+        }
+        relationalModelNode.getCategories().add(category);
+      }
     }
-    relationalModelNode.getCategories().add(category);
 
     workspace.setRelationalModelIsChanging(false);
   }
