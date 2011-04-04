@@ -29,10 +29,7 @@ import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.components.XulTabpanel;
-import org.pentaho.ui.xul.containers.XulDeck;
-import org.pentaho.ui.xul.containers.XulHbox;
-import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.containers.XulVbox;
+import org.pentaho.ui.xul.containers.*;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -75,8 +72,9 @@ public class ModelerController extends AbstractXulEventHandler {
   private transient CategoryTreeHelper catTreeHelper;
 
   private IModelerWorkspaceHelper workspaceHelper;
-  private transient ModelerMode currentModellingMode = ModelerMode.ANALYSIS_AND_REPORTING;
-  private transient ModelerPerspective currentModelerPerspective = ModelerPerspective.ANALYSIS;
+  private XulTabbox modelTabbox;
+//  private transient ModelerMode currentModellingMode = ModelerMode.ANALYSIS_AND_REPORTING;
+//  private transient ModelerPerspective currentModelerPerspective = ModelerPerspective.ANALYSIS;
 
 //  protected IModelerMessages messages;
 //
@@ -134,6 +132,7 @@ public class ModelerController extends AbstractXulEventHandler {
     reportingPanel = (XulVbox) document.getElementById("reportingModelPanel");
     reportingTabPanel = (XulTabpanel) document.getElementById("reportingTabPanel");
     modelPanel = (XulHbox) document.getElementById("modelPanel");
+    modelTabbox = (XulTabbox) document.getElementById("modelTabbox");
 
     bf.setBindingType(Type.ONE_WAY);
     fieldListBinding = bf.createBinding(workspace, "availableFields", FIELD_LIST_ID,
@@ -319,7 +318,7 @@ public class ModelerController extends AbstractXulEventHandler {
    */
   @Bindable
   public void refreshFields() throws ModelerException {
-    workspace.refresh(currentModellingMode);
+    workspace.refresh(workspace.getCurrentModellingMode());
   }
 
   public void setFileName( String fileName ) {
@@ -632,7 +631,7 @@ public class ModelerController extends AbstractXulEventHandler {
   @Bindable
   public void changeColumn() {
     ModelerTreeHelper helper = null;
-    switch(currentModelerPerspective) {
+    switch(workspace.getCurrentModelerPerspective()) {
       case REPORTING:
         helper = catTreeHelper;
         break;
@@ -654,7 +653,7 @@ public class ModelerController extends AbstractXulEventHandler {
   public void autoPopulate() {
     try {
       // TODO: GWT-ify
-      switch(getModelerPerspective()) {
+      switch(workspace.getCurrentModelerPerspective()) {
         case REPORTING:
           workspaceHelper.autoModelRelationalFlatInBackground(this.workspace);
           workspace.setRelationalModelIsChanging(false, true);
@@ -761,7 +760,7 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public ModelerMode getModellingMode() {
-    return currentModellingMode;
+    return workspace.getCurrentModellingMode();
   }
   @Bindable
   public void setModellingMode(ModelerMode mode) {
@@ -771,15 +770,20 @@ public class ModelerController extends AbstractXulEventHandler {
         modelPanel.addComponent(reportingPanel);
       }
       modelDeck.setSelectedIndex(1);
-      currentModelerPerspective = ModelerPerspective.REPORTING;
+      workspace.setCurrentModelerPerspective(ModelerPerspective.REPORTING);
     } else {
       // put the reporting panel back in the tabset
       if (modelPanel.getChildNodes().size() > 0 && reportingTabPanel.getChildNodes().size() == 0) {
         reportingTabPanel.addComponent(reportingPanel);
       }
       modelDeck.setSelectedIndex(0);
+      if (modelTabbox.getSelectedIndex() == 0) {
+        workspace.setCurrentModelerPerspective(ModelerPerspective.ANALYSIS);
+      } else {
+        workspace.setCurrentModelerPerspective(ModelerPerspective.REPORTING);
+      }
     }
-    currentModellingMode = mode; 
+    workspace.setCurrentModellingMode(mode);
   }
 
   @Bindable
@@ -792,15 +796,15 @@ public class ModelerController extends AbstractXulEventHandler {
   }
 
   public ModelerPerspective getModelerPerspective() {
-    return this.currentModelerPerspective;
+    return workspace.getCurrentModelerPerspective();
   }
   
   public void setModelerPerspective(ModelerPerspective perspective) {
-    this.currentModelerPerspective = perspective;
+    workspace.setCurrentModelerPerspective(perspective);
   }
   @Bindable
   public void setModelerPerspective(String perspective) {
-    this.currentModelerPerspective = ModelerPerspective.valueOf(perspective);
+    workspace.setCurrentModelerPerspective(ModelerPerspective.valueOf(perspective));
   }
 
   public DimensionTreeHelper getDimTreeHelper() {

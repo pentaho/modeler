@@ -69,6 +69,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private IModelerWorkspaceHelper workspaceHelper;
   private AbstractMetaDataModelNode selectedRelationalNode;
 
+  private transient ModelerMode currentModellingMode = ModelerMode.ANALYSIS_AND_REPORTING;
+  private transient ModelerPerspective currentModelerPerspective = ModelerPerspective.ANALYSIS;
+
   public ModelerWorkspace(IModelerWorkspaceHelper helper) {
 
     this.isTemporary = true;
@@ -192,7 +195,14 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   @Bindable
   public boolean isValid() {
-    boolean valid = this.model.isValid() && relationalModel.isValid();
+    boolean valid = false;
+    switch (getCurrentModellingMode()) {
+      case ANALYSIS_AND_REPORTING:
+        valid = this.model.isValid() && relationalModel.isValid();
+        break;
+      case REPORTING_ONLY:
+        valid = relationalModel.isValid();
+    }
     firePropertyChange("valid", null, valid);
     return valid;
   }
@@ -799,5 +809,21 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   public void setWorkspaceHelper( IModelerWorkspaceHelper workspaceHelper ) {
     this.workspaceHelper = workspaceHelper;
+  }
+
+  public ModelerMode getCurrentModellingMode() {
+    return currentModellingMode;
+  }
+
+  public void setCurrentModellingMode(ModelerMode currentModellingMode) {
+    this.currentModellingMode = currentModellingMode;
+  }
+
+  public ModelerPerspective getCurrentModelerPerspective() {
+    return currentModelerPerspective;
+  }
+
+  public void setCurrentModelerPerspective(ModelerPerspective currentModelerPerspective) {
+    this.currentModelerPerspective = currentModelerPerspective;
   }
 }
