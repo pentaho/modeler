@@ -249,8 +249,6 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public void showAutopopulatePrompt() {
-
-        setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
     try {
 
       if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
@@ -499,10 +497,10 @@ public class ModelerController extends AbstractXulEventHandler {
             CategoryMetaData theCategory = new CategoryMetaData("" + retVal);
             boolean prevChangeState = workspace.isModelChanging();
             theCategory.validate();
-            workspace.setModelIsChanging(true);
+            workspace.setRelationalModelIsChanging(true);
             theNode.add(theCategory);
             theCategory.setExpanded(true);
-            workspace.setModelIsChanging(prevChangeState);
+            workspace.setRelationalModelIsChanging(prevChangeState);
           }
         }
 
@@ -538,10 +536,10 @@ public class ModelerController extends AbstractXulEventHandler {
 
             theField.validate();
             boolean prevChangeState = workspace.isModelChanging();
-            workspace.setModelIsChanging(true);
+            workspace.setRelationalModelIsChanging(true);
             theCategory.add(theField);
             theCategory.setExpanded(true);
-            workspace.setModelIsChanging(prevChangeState);
+            workspace.setRelationalModelIsChanging(prevChangeState);
 
           }
         }
@@ -659,7 +657,7 @@ public class ModelerController extends AbstractXulEventHandler {
       switch(getModelerPerspective()) {
         case REPORTING:
           workspaceHelper.autoModelRelationalFlatInBackground(this.workspace);
-          workspace.setModelIsChanging(false, true);
+          workspace.setRelationalModelIsChanging(false, true);
           this.categoriesTree.expandAll();
           break;
         case ANALYSIS:

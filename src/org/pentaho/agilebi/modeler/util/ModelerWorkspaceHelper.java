@@ -98,7 +98,7 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
     relationalModelNode.setName(workspace.getRelationalModelName());
 
     workspace.setRelationalModel(relationalModelNode);
-    workspace.setModelIsChanging(true);
+    workspace.setRelationalModelIsChanging(true);
 
     CategoryMetaData category = new CategoryMetaData("Category");
 
@@ -108,7 +108,7 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
     }
     relationalModelNode.getCategories().add(category);
 
-    workspace.setModelIsChanging(false);
+    workspace.setRelationalModelIsChanging(false);
   }
 
   /**
@@ -122,7 +122,7 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
     relationalModelNode.setName(workspace.getRelationalModelName());
 
     workspace.setRelationalModel(relationalModelNode);
-    workspace.setModelIsChanging(true);
+    workspace.setRelationalModelIsChanging(true);
     for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()){
       if(table.getId().endsWith("_OLAP")){
         return;
@@ -136,7 +136,7 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
       relationalModelNode.getCategories().add(category);
 
     }
-    workspace.setModelIsChanging(false);
+    workspace.setRelationalModelIsChanging(false);
   }
 
 

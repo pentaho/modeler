@@ -24,12 +24,7 @@
       
     </toolbar>
 
-    <!-- TODO: REMOVE THESE BUTTONS -->
-    <hbox spacing="0" padding="0">
-      <button id="showReportingOnlyButton" label="reporting only" onclick="modeler.showReportingOnlyMode()" />
-      <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
-    </hbox>
-
+    <hbox id="debugContainer" padding="0" spacing="0" />
 
     <hbox flex="1">
 

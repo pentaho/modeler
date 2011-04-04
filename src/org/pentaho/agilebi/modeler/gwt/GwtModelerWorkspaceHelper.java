@@ -107,7 +107,7 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
     CategoryMetaData category = new CategoryMetaData("Category");
 
     final boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true);
+    workspace.setRelationalModelIsChanging(true);
 
     List<AvailableField> fields = workspace.getAvailableFields();
     for( AvailableField field : fields ) {
@@ -115,7 +115,7 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implem
     }
     relationalModel.getCategories().add(category);
 
-    workspace.setModelIsChanging(prevChangeState);
+    workspace.setRelationalModelIsChanging(prevChangeState);
     workspace.setSelectedNode(workspace.getRelationalModel());
   }
   

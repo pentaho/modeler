@@ -265,6 +265,14 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.setModelIsChanging(prevChangeState);
   }
 
+  public void addCategory( CategoryMetaData cat ) {
+    boolean prevChangeState = this.modelIsChanging;
+    this.setRelationalModelIsChanging(true);
+    this.relationalModel.getCategories().add(cat);
+    this.setRelationalModelIsChanging(prevChangeState);
+  }
+
+
   public LevelMetaData createLevelForParentWithNode( HierarchyMetaData parent, ColumnBackedNode obj ) {
     LevelMetaData level = new LevelMetaData(parent, obj.getName());
     level.setParent(parent);
@@ -321,7 +329,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return meta;
   }
 
-  public void addMeasure( MeasureMetaData measure ) {
+  public void addMeasure( MeasureMetaData measure) {
 
     boolean prevChangeState = isModelChanging();
     this.setModelIsChanging(true);
@@ -530,6 +538,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   protected void setDomain(Domain d, boolean upConvertDesired) {
     this.domain = d;
     this.setModelIsChanging(true);
+    this.setRelationalModelIsChanging(true);
     this.model.getDimensions().clear();
     this.model.getMeasures().clear();
     this.relationalModel.getCategories().clear();
@@ -724,12 +733,24 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (!changing && fireChanged) {
       fireFieldsChanged();
       model.validateTree();
-      relationalModel.validateTree();
       isValid();
       fireModelChanged();
-      fireRelationalModelChanged();
     }
     model.setSupressEvents(changing);
+  }
+
+  public void setRelationalModelIsChanging( boolean changing ) {
+    setRelationalModelIsChanging(changing, true);
+  }
+
+  public void setRelationalModelIsChanging( boolean changing, boolean fireChanged ) {
+    this.modelIsChanging = changing;
+    if (!changing && fireChanged) {
+      fireFieldsChanged();
+      relationalModel.validateTree();
+      isValid();
+      fireRelationalModelChanged();
+    }
     relationalModel.setSupressEvents(changing);
   }
 

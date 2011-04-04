@@ -34,19 +34,12 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
     }
     ((AbstractModelNode) getSelectedTreeItem()).getParent().remove(getSelectedTreeItem());
     setTreeSelectionChanged(null);
-//    AbstractModelNode parent = ((AbstractModelNode) getSelectedTreeItem()).getParent();
-//    if (parent == null) {
-//      workspace.getRelationalModel().remove(getSelectedTreeItem());
-//    } else {
-//      parent.remove(getSelectedTreeItem());
-//    }
-//    setTreeSelectionChanged(null);
   }
 
   @Override
   public void addField(Object[] selectedFields) {
     boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true);
+    workspace.setRelationalModelIsChanging(true);
     AbstractMetaDataModelNode theNode = null;
     Object selectedTreeItem = getSelectedTreeItem();
 
@@ -67,12 +60,12 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
         }
       }
     }
-    workspace.setModelIsChanging(prevChangeState);
+    workspace.setRelationalModelIsChanging(prevChangeState);
   }
   @Override
   public void clearTreeModel(){
-    workspace.setModelIsChanging(true);
+    workspace.setRelationalModelIsChanging(true);
     workspace.getRelationalModel().getCategories().clear();
-    workspace.setModelIsChanging(false, true);
+    workspace.setRelationalModelIsChanging(false, true);
   }
 }

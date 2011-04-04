@@ -25,6 +25,15 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/test-src" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module" module-name="pentaho-xul-swt" />
     <orderEntry type="module" module-name="pentaho-xul-gwt" />
     <orderEntry type="module" module-name="pentaho-xul-core" />

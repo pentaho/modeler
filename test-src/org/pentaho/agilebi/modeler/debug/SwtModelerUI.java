@@ -1,7 +1,5 @@
 package org.pentaho.agilebi.modeler.debug;
 
-import java.io.FileInputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -9,21 +7,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.agilebi.modeler.ColResolverController;
-import org.pentaho.agilebi.modeler.ModelerController;
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.propforms.AbstractModelerNodeForm;
-import org.pentaho.agilebi.modeler.propforms.CategoryPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.DimensionPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.FieldsPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.HierarchyPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.MainModelerNodePropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.RelationalModelNodePropertiesForm;
+import org.pentaho.agilebi.modeler.*;
+import org.pentaho.agilebi.modeler.propforms.*;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceUtil;
@@ -45,6 +30,8 @@ import org.pentaho.ui.xul.swt.tags.SwtWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+
 /**
  * Created: 3/15/11
  *
@@ -63,6 +50,7 @@ public class SwtModelerUI {
       loader.registerClassLoader(getClass().getClassLoader());
       loader.setOuterContext(shell);
       container = loader.loadXul("org/pentaho/agilebi/modeler/res/panel.xul", new ModelerMessages(ModelerWorkspace.class)); //$NON-NLS-1$
+      container.loadOverlay("org/pentaho/agilebi/modeler/debug/panel_overlay.xul"); //$NON-NLS-1$
 
       controller = new ModelerController(model);
       BindingFactory bf = new DefaultBindingFactory();
