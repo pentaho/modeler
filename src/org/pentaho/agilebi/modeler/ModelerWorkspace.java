@@ -440,7 +440,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       }
       if (!exists) {
         toRemove.add(fm);
-        olapToRemove.add(DimensionTreeHelper.convertToOlapField(fm, logicalModel));
+        AvailableField olap = findAvailableOlapField(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(fm.getLogicalColumn()));
+        if (olap != null) {
+          olapToRemove.add(olap);
+        }
       }
     }
     availableFields.removeAll(toRemove);
@@ -466,7 +469,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
               // default aggregation and name
               LogicalColumn lCol = (LogicalColumn) fm.getLogicalColumn().clone();
               lCol.setId(measure.getLogicalColumn().getId());
-              newDomain.getLogicalModels().get(0).getLogicalTables().get(0).addLogicalColumn(lCol);
+              LogicalTable table = newDomain.getLogicalModels().get(0).findLogicalTable(lCol.getLogicalTable().getId());
+              table.addLogicalColumn(lCol);
               found = true;
             }
           }
@@ -485,7 +489,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             if (lm.getLogicalColumn() != null) {
               inner:
               for (AvailableField fm : availableOlapFields) {
-                if (fm.getLogicalColumn().getId().equals(lm.getLogicalColumn().getId()) || fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lm.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
+                if (fm.getLogicalColumn().getId().equals(lm.getLogicalColumn().getId()) ||
+                    fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lm.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
                   found = true;
                   break inner;
                 }
@@ -499,6 +504,25 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       }
     } catch(Exception e){
       e.printStackTrace();
+    }
+
+    for (CategoryMetaData category : relationalModel.getCategories()) {
+      for (FieldMetaData field : category) {
+        boolean found = false;
+        if (field.getLogicalColumn() != null) {
+          inner:
+          for (AvailableField af : availableFields) {
+            if (af.getLogicalColumn().getId().equals(field.getLogicalColumn().getId()) ||
+                af.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(field.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
+              found = true;
+              break inner;
+            }
+          }
+        }
+        if (!found) {
+          field.setLogicalColumn(null);
+        }
+      }
     }
 
     // If the new model was previously "auto-modeled" we need to clean that now
@@ -520,7 +544,16 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     setModelIsChanging(false);
     setRelationalModelIsChanging(false);
-    
+
+  }
+
+  private AvailableField findAvailableOlapField(String correspondingOlapColumnId) {
+    for (AvailableField field : availableOlapFields) {
+      if (field.getLogicalColumn().getId().equals(correspondingOlapColumnId)) {
+        return field;
+      }
+    }
+    return null;
   }
 
 
