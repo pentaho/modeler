@@ -17,8 +17,7 @@ import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: nbaker
@@ -253,5 +252,158 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       model.addLogicalTable(copiedTable);
     }
   }
+
+  /**
+   * Builds an OLAP model that is attribute based.
+   * @param workspace
+   */
+  public void autoModelFlat( ModelerWorkspace workspace ) throws ModelerException {
+
+    MainModelNode mainModel = getMainModelNode(workspace);
+    mainModel.setName(workspace.getModelName());
+    workspace.setModel(mainModel);
+
+    final boolean prevChangeState = workspace.isModelChanging();
+    workspace.setModelIsChanging(true);
+
+    List<AvailableField> fields = workspace.getAvailableOlapFields();
+    for( AvailableField field : fields ) {
+      DataType dataType = field.getLogicalColumn().getDataType();
+      if( dataType == DataType.NUMERIC) {
+        // create a measure
+        MeasureMetaData measure = workspace.createMeasureForNode(field);
+        workspace.getModel().getMeasures().add(measure);
+      }
+      // create a dimension
+      workspace.addDimensionFromNode(field);
+
+    }
+    workspace.setModelIsChanging(prevChangeState);
+    workspace.setSelectedNode(workspace.getModel());
+  }
+
+
+  /**
+   * Builds an OLAP model that is attribute based.
+   * @param workspace
+   */
+  public void autoModelFlatInBackground( final ModelerWorkspace workspace ) throws ModelerException {
+//    throw new UnsupportedOperationException("Not available outside of Spoon");
+    autoModelFlat(workspace);
+  }
+  public void sortFields( List<AvailableField> availableFields) {
+    Collections.sort(availableFields, new Comparator<AvailableField>() {
+      public int compare(AvailableField o1, AvailableField o2) {
+        if (o1 == null && o2 == null) {
+          return 0;
+        } else if (o1 == null) {
+          return -1;
+        } else if (o2 == null) {
+          return 1;
+        }
+        String name1 = ((AvailableField) o1).getDisplayName();
+        String name2 = ((AvailableField) o2).getDisplayName();
+        if (name1 == null && name2 == null) {
+          return 0;
+        } else if (name1 == null) {
+          return -1;
+        } else if (name2 == null) {
+          return 1;
+        }
+        return name1.compareToIgnoreCase(name2);
+      }
+    });
+  }
+
+  /**
+   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
+   * @param workspace
+   * @throws ModelerException
+   */
+  public void autoModelRelationalFlat(ModelerWorkspace workspace) throws ModelerException {
+    RelationalModelNode relationalModelNode = getRelationalModelNode(workspace);
+
+    relationalModelNode.setName(workspace.getRelationalModelName());
+
+    workspace.setRelationalModel(relationalModelNode);
+    final boolean prevChangeState = workspace.isModelChanging();
+
+    workspace.setRelationalModelIsChanging(true);
+
+    List<LogicalTable> tables = workspace.getDomain().getLogicalModels().get(0).getLogicalTables();
+    Set<String> tableIds = new HashSet<String>();
+    for (LogicalTable table : tables) {
+      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)
+        && !tableIds.contains(table.getId())) {
+
+        tableIds.add(table.getId());
+        CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
+
+        List<AvailableField> fields = workspace.getAvailableFields();
+        for( AvailableField field : fields ) {
+          if (field.getLogicalColumn().getLogicalTable().getId().equals(table.getId())) {
+            category.add(workspace.createFieldForParentWithNode(category, field));
+          }
+        }
+        relationalModelNode.getCategories().add(category);
+      }
+    }
+
+    workspace.setRelationalModelIsChanging(prevChangeState);
+    workspace.setSelectedNode(workspace.getRelationalModel());
+
+  }
+
+  /**
+   * Builds a Relational Model from the existing collection of logical tables
+   * @param workspace
+   * @throws ModelerException
+   */
+  public void autoModelMultiTableRelational(ModelerWorkspace workspace) throws ModelerException {
+    RelationalModelNode relationalModelNode = new RelationalModelNode();
+
+    relationalModelNode.setName(workspace.getRelationalModelName());
+
+    workspace.setRelationalModel(relationalModelNode);
+    workspace.setRelationalModelIsChanging(true);
+    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()){
+      if(table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){
+        continue;
+      }
+      CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
+
+      for(LogicalColumn col : table.getLogicalColumns()){
+        createFieldForCategoryWithColumn(category, col);
+      }
+
+      relationalModelNode.getCategories().add(category);
+
+    }
+    workspace.setRelationalModelIsChanging(false);
+  }
+
+
+  private FieldMetaData createFieldForCategoryWithColumn( CategoryMetaData parent, LogicalColumn column ) {
+    FieldMetaData field = new FieldMetaData(parent, column.getName(getLocale()), "",
+        column.getName(getLocale()), getLocale()); //$NON-NLS-1$
+    field.setLogicalColumn(column);
+    field.setFieldTypeDesc(column.getDataType().getName());
+    parent.add(field);
+    return field;
+  }
+
+
+
+  /**
+   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
+   * @param workspace
+   * @throws ModelerException
+   */
+  public void autoModelRelationalFlatInBackground(ModelerWorkspace workspace) throws ModelerException {
+    autoModelRelationalFlat(workspace);
+  }
+
+  protected abstract MainModelNode getMainModelNode(ModelerWorkspace workspace);
+  protected abstract RelationalModelNode getRelationalModelNode(ModelerWorkspace workspace);
 
 }

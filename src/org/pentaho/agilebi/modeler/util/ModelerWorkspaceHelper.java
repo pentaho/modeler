@@ -1,173 +1,30 @@
 package org.pentaho.agilebi.modeler.util;
 
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.IModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.nodes.*;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.model.concept.types.DataType;
-
-import java.util.*;
+import org.pentaho.agilebi.modeler.nodes.MainModelNode;
+import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
 
 
 /**
  * User: nbaker
  * Date: Jul 14, 2010
  */
-public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implements IModelerWorkspaceHelper {
-
+public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper {
 
   public ModelerWorkspaceHelper(String locale) {
     super(locale);
   }
 
-  /**
-   * Builds an OLAP model that is attribute based.
-   * @param workspace
-   */
-  public void autoModelFlat( ModelerWorkspace workspace ) throws ModelerException {
-
-    MainModelNode mainModel = new MainModelNode();
-
-    mainModel.setName(workspace.getModelName());
-
-    workspace.setModel(mainModel);
-    workspace.setModelIsChanging(true);
-
-    List<AvailableField> fields = workspace.getAvailableOlapFields();
-    for( AvailableField field : fields ) {
-      DataType dataType = field.getLogicalColumn().getDataType();
-      if( dataType == DataType.NUMERIC) {
-        // create a measure
-        MeasureMetaData measure = workspace.createMeasureForNode(field);
-        workspace.getModel().getMeasures().add(measure);
-      }
-      // create a dimension
-      workspace.addDimensionFromNode(field);
-
-    }
-    workspace.setModelIsChanging(false);
-
+  @Override
+  protected MainModelNode getMainModelNode(ModelerWorkspace workspace) {
+    return new MainModelNode();
+  }
+  @Override
+  protected RelationalModelNode getRelationalModelNode(ModelerWorkspace workspace) {
+    return new RelationalModelNode();
   }
 
-
-  /**
-   * Builds an OLAP model that is attribute based.
-   * @param workspace
-   */
-  public void autoModelFlatInBackground( final ModelerWorkspace workspace ) throws ModelerException {
-//    throw new UnsupportedOperationException("Not available outside of Spoon");
-    autoModelFlat(workspace);
-  }
-  public void sortFields( List<AvailableField> availableFields) {
-    Collections.sort(availableFields, new Comparator<AvailableField>() {
-      public int compare( AvailableField o1, AvailableField o2 ) {
-        if (o1 == null && o2 == null) {
-          return 0;
-        } else if (o1 == null) {
-          return -1;
-        } else if (o2 == null) {
-          return 1;
-        }
-        String name1 = ((AvailableField) o1).getDisplayName();
-        String name2 = ((AvailableField) o2).getDisplayName();
-        if (name1 == null && name2 == null) {
-          return 0;
-        } else if (name1 == null) {
-          return -1;
-        } else if (name2 == null) {
-          return 1;
-        }
-        return name1.compareToIgnoreCase(name2);
-      }
-    });
-  }
-
-  /**
-   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
-   * @param workspace
-   * @throws ModelerException
-   */
-  public void autoModelRelationalFlat(ModelerWorkspace workspace) throws ModelerException {
-    RelationalModelNode relationalModelNode = new RelationalModelNode();
-
-    relationalModelNode.setName(workspace.getRelationalModelName());
-
-    workspace.setRelationalModel(relationalModelNode);
-    workspace.setRelationalModelIsChanging(true);
-
-    List<LogicalTable> tables = workspace.getDomain().getLogicalModels().get(0).getLogicalTables();
-    Set<String> tableIds = new HashSet<String>();
-    for (LogicalTable table : tables) {
-      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)
-        && !tableIds.contains(table.getId())) {
-        
-        tableIds.add(table.getId());
-        CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
-
-        List<AvailableField> fields = workspace.getAvailableFields();
-        for( AvailableField field : fields ) {
-          if (field.getLogicalColumn().getLogicalTable().getId().equals(table.getId())) {
-            category.add(workspace.createFieldForParentWithNode(category, field));
-          }
-        }
-        relationalModelNode.getCategories().add(category);
-      }
-    }
-
-    workspace.setRelationalModelIsChanging(false);
-  }
-
-  /**
-   * Builds a Relational Model from the existing collection of logical tables
-   * @param workspace
-   * @throws ModelerException
-   */
-  public void autoModelMultiTableRelational(ModelerWorkspace workspace) throws ModelerException {
-    RelationalModelNode relationalModelNode = new RelationalModelNode();
-
-    relationalModelNode.setName(workspace.getRelationalModelName());
-
-    workspace.setRelationalModel(relationalModelNode);
-    workspace.setRelationalModelIsChanging(true);
-    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()){
-      if(table.getId().endsWith("_OLAP")){
-        continue;
-      }
-      CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
-
-      for(LogicalColumn col : table.getLogicalColumns()){
-        createFieldForCategoryWithColumn(category, col);
-      }
-
-      relationalModelNode.getCategories().add(category);
-
-    }
-    workspace.setRelationalModelIsChanging(false);
-  }
-
-
-  private FieldMetaData createFieldForCategoryWithColumn( CategoryMetaData parent, LogicalColumn column ) {
-    FieldMetaData field = new FieldMetaData(parent, column.getName(getLocale()), "",
-        column.getName(getLocale()), getLocale()); //$NON-NLS-1$
-    field.setLogicalColumn(column);
-    field.setFieldTypeDesc(column.getDataType().getName());
-    parent.add(field);
-    return field;
-  }
-
-
-
-  /**
-   * Builds a Relational Model that is attribute based, all available fields are added into a single Category
-   * @param workspace
-   * @throws ModelerException
-   */
-  public void autoModelRelationalFlatInBackground(ModelerWorkspace workspace) throws ModelerException {
-    autoModelRelationalFlat(workspace);
-  }
 }
 
 
