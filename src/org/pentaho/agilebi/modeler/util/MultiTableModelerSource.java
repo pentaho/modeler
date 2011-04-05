@@ -166,7 +166,8 @@
             if(logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){ // don't join on the olap tables
               continue;
             }
-            if (logicalTable.getName(locale).equals(lTable)) {
+
+            if (logicalTable.getPhysicalTable().getProperty("target_table").equals(lTable)) {
               fromTable = logicalTable;
 
               for (LogicalColumn logicalColumn : fromTable.getLogicalColumns()) {
@@ -175,7 +176,7 @@
                 }
               }
             }
-            if (logicalTable.getName(locale).equals(rTable)) {
+            if (logicalTable.getPhysicalTable().getProperty("target_table").equals(rTable)) {
               toTable = logicalTable;
 
               for (LogicalColumn logicalColumn : toTable.getLogicalColumns()) {
