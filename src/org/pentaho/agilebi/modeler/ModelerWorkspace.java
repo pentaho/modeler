@@ -391,7 +391,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     // Add in new logicalColumns
     for (LogicalTable table : logicalModel.getLogicalTables()) {
-      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
         for (LogicalColumn lc : table.getLogicalColumns()) {
           boolean exists = false;
           inner:
@@ -667,6 +667,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (needsUpConverted) upConvertMeasuresAndDimensions();
 
     this.setModelIsChanging(false, true);
+    this.setRelationalModelIsChanging(false, true);
 
   }
 
@@ -817,6 +818,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   public void setCurrentModellingMode(ModelerMode currentModellingMode) {
     this.currentModellingMode = currentModellingMode;
+    isValid();
   }
 
   public ModelerPerspective getCurrentModelerPerspective() {
