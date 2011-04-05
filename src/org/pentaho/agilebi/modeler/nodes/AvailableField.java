@@ -71,5 +71,18 @@ public class AvailableField implements Serializable, ColumnBackedNode {
   public String toString() {
     return name;
   }
+
+  public boolean isSameUnderlyingLogicalColumn(LogicalColumn column, String locale) {
+    LogicalColumn thisCol = this.getLogicalColumn();
+    if (thisCol.getId().equals(column.getId())
+        || (thisCol.getName(locale).equals(column.getName(locale)) &&
+            thisCol.getLogicalTable() != null && column.getLogicalTable() != null &&
+            thisCol.getLogicalTable().getName(locale).equals(column.getLogicalTable().getName(locale))
+           )
+        ) {
+      return true;
+    }
+    return false;
+  }
   
 }

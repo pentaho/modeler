@@ -399,7 +399,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           boolean exists = false;
           inner:
           for (AvailableField fmd : this.availableFields) {
-            if (fmd.getLogicalColumn().getId().equals(lc.getId()) || fmd.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lc.getName(workspaceHelper.getLocale()))) {
+            if (fmd.isSameUnderlyingLogicalColumn(lc, workspaceHelper.getLocale())) {
               fmd.setLogicalColumn(lc);
               exists = true;
               break inner;
@@ -431,7 +431,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       for(LogicalTable lt : logicalModel.getLogicalTables()) {
         if (!lt.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
           for (LogicalColumn lc : lt.getLogicalColumns()) {
-            if (lc.getId().equals(fmlc.getId()) || lc.getName(workspaceHelper.getLocale()).equals(fmlc.getName(workspaceHelper.getLocale()))) {
+            if (fm.isSameUnderlyingLogicalColumn(lc, workspaceHelper.getLocale())) {
               exists = true;
               break inner;
             }
@@ -440,7 +440,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       }
       if (!exists) {
         toRemove.add(fm);
-        AvailableField olap = findAvailableOlapField(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(fm.getLogicalColumn()));
+        AvailableField olap = availableOlapFields.findByLogicalColumnId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(fm.getLogicalColumn()));
         if (olap != null) {
           olapToRemove.add(olap);
         }
@@ -458,7 +458,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       boolean found = false;
       if (measure.getLogicalColumn() != null) {
         for (AvailableField fm : availableOlapFields) {
-          if (fm.getLogicalColumn().getId().equals(measure.getLogicalColumn().getId()) || fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(measure.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
+          if (fm.isSameUnderlyingLogicalColumn(measure.getLogicalColumn(), workspaceHelper.getLocale())) {
             found = true;
           } else {
             if (fm.getLogicalColumn().getProperty(SqlPhysicalColumn.TARGET_COLUMN).equals(
@@ -489,8 +489,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             if (lm.getLogicalColumn() != null) {
               inner:
               for (AvailableField fm : availableOlapFields) {
-                if (fm.getLogicalColumn().getId().equals(lm.getLogicalColumn().getId()) ||
-                    fm.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(lm.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
+                if (fm.isSameUnderlyingLogicalColumn(lm.getLogicalColumn(), workspaceHelper.getLocale())) {
                   found = true;
                   break inner;
                 }
@@ -512,8 +511,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         if (field.getLogicalColumn() != null) {
           inner:
           for (AvailableField af : availableFields) {
-            if (af.getLogicalColumn().getId().equals(field.getLogicalColumn().getId()) ||
-                af.getLogicalColumn().getName(workspaceHelper.getLocale()).equals(field.getLogicalColumn().getName(workspaceHelper.getLocale()))) {
+            if (af.isSameUnderlyingLogicalColumn(field.getLogicalColumn(), workspaceHelper.getLocale())) {
               found = true;
               break inner;
             }
@@ -546,16 +544,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setRelationalModelIsChanging(false);
 
   }
-
-  private AvailableField findAvailableOlapField(String correspondingOlapColumnId) {
-    for (AvailableField field : availableOlapFields) {
-      if (field.getLogicalColumn().getId().equals(correspondingOlapColumnId)) {
-        return field;
-      }
-    }
-    return null;
-  }
-
 
   public String getDatabaseName() {
     return source.getDatabaseName();

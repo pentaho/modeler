@@ -16,7 +16,6 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 import java.io.Serializable;
@@ -26,4 +25,13 @@ public class AvailableFieldCollection extends AbstractModelList<AvailableField> 
   public AvailableFieldCollection(){
 
   }
+
+  public AvailableField findByLogicalColumnId(String columnId) {
+    for (AvailableField field : this) {
+      if (field.getLogicalColumn().getId().equals(columnId)) {
+        return field;
+      }
+    }
+    return null;
+  }  
 }
