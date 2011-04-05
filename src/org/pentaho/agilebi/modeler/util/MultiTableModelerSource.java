@@ -19,6 +19,7 @@
 
   package org.pentaho.agilebi.modeler.util;
 
+  import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
   import org.pentaho.agilebi.modeler.ModelerException;
   import org.pentaho.agilebi.modeler.ModelerWorkspace;
   import org.pentaho.di.core.database.DatabaseMeta;
@@ -162,6 +163,9 @@
           LogicalColumn toColumn = null;
 
           for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
+            if(logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){ // don't join on the olap tables
+              continue;
+            }
             if (logicalTable.getName(locale).equals(lTable)) {
               fromTable = logicalTable;
 
