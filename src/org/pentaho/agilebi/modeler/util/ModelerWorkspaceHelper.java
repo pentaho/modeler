@@ -134,7 +134,7 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper implement
     workspace.setRelationalModelIsChanging(true);
     for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()){
       if(table.getId().endsWith("_OLAP")){
-        return;
+        continue;
       }
       CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
 
