@@ -381,6 +381,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
   public void refresh(Domain newDomain) throws ModelerException {
 
+    setModelIsChanging(true);
+    setRelationalModelIsChanging(true);
+
     Comparator<AvailableField> fieldComparator = new Comparator<AvailableField>() {
           public int compare( AvailableField arg0, AvailableField arg1 ) {
             return arg0.getLogicalColumn().getId().compareTo(arg1.getLogicalColumn().getId());
@@ -515,8 +518,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     // makes sure the physical and logical columns are accurate
     domain = newDomain;
 
-    model.validateTree();
-    relationalModel.validateTree();
+    setModelIsChanging(false);
+    setRelationalModelIsChanging(false);
+    
   }
 
 
