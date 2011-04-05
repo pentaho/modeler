@@ -41,20 +41,17 @@
     private ModelGenerator generator;
     private DatabaseMeta databaseMeta;
     private List<LogicalRelationship> joinTemplates;
+    private List<String> selectedTables;
     private String datasourceName;
     public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
     private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSource.class);
 
-    public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates, String datasourceName) {
+    public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates, String datasourceName, List<String> selectedTables) {
       this.datasourceName = datasourceName;
       this.databaseMeta = databaseMeta;
       this.joinTemplates = joinTemplates;
+      this.selectedTables = selectedTables;
       this.generator = new ModelGenerator();
-    }
-
-    @Override
-    public Domain generateDomain() throws ModelerException {
-      return this.generateDomain(this.databaseMeta, this.joinTemplates);
     }
 
     @Override
@@ -96,7 +93,7 @@
       return this.databaseMeta;
     }
 
-    public Domain generateDomain(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates) {
+    public Domain generateDomain() {
 
       Domain domain = null;
 
@@ -111,20 +108,23 @@
 
         Set<String> usedTables = new HashSet<String>();
         List<SchemaTable> schemas = new ArrayList<SchemaTable>();
-        for (LogicalRelationship joinTemplate : joinTemplates) {
-          String fromTable = joinTemplate.getFromTable().getName(locale);
-          String toTable = joinTemplate.getToTable().getName(locale);
+        if(selectedTables.size() == 1){   // special single table story BISERVER-5806
+          schemas.add(new SchemaTable("", selectedTables.get(0)));
+        } else {
+          for (LogicalRelationship joinTemplate : joinTemplates) {
+            String fromTable = joinTemplate.getFromTable().getName(locale);
+            String toTable = joinTemplate.getToTable().getName(locale);
 
-          if(!usedTables.contains(fromTable)){
-            schemas.add(new SchemaTable("", fromTable));
-            usedTables.add(fromTable);
-          }
-          if(!usedTables.contains(toTable)){
-            schemas.add(new SchemaTable("", toTable));
-            usedTables.add(toTable);
+            if(!usedTables.contains(fromTable)){
+              schemas.add(new SchemaTable("", fromTable));
+              usedTables.add(fromTable);
+            }
+            if(!usedTables.contains(toTable)){
+              schemas.add(new SchemaTable("", toTable));
+              usedTables.add(toTable);
+            }
           }
         }
-
         SchemaTable tableNames[] = new SchemaTable[schemas.size()];
         tableNames = schemas.toArray(tableNames);
         this.generator.setTableNames(tableNames);
