@@ -19,7 +19,6 @@ package org.pentaho.agilebi.modeler;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.*;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -666,16 +665,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
 
     int i = 1;
-
     for (Category cat : this.getDomain().getLogicalModels().get(0).getCategories()) {
-      if (cat.getName() != null && cat.getName(workspaceHelper.getLocale()).equals("LOGICAL_TABLE_1")) {
-        if (getModel().getName() != null) {
-          cat.setName(new LocalizedString(workspaceHelper.getLocale(), getModel().getName()));
-        } else {
-          cat.setName(null);
-        }
-      }
-      String catName = cat.getName() != null ? cat.getName().getString(workspaceHelper.getLocale()) : "Category " + i++;
+      String catName = BaseModelerWorkspaceHelper.getCleanCategoryName(cat.getName(workspaceHelper.getLocale()), this, i++);
       CategoryMetaData catMeta = new CategoryMetaData(catName);
       for (LogicalColumn col : cat.getLogicalColumns()) {
         Object formatMask = col.getProperty("mask");

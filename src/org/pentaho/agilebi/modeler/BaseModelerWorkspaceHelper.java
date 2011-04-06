@@ -337,7 +337,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         && !tableIds.contains(table.getId())) {
 
         tableIds.add(table.getId());
-        CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
+        String catName = getCleanCategoryName(table.getName(getLocale()), workspace, tableIds.size());
+        CategoryMetaData category = new CategoryMetaData(catName);
 
         List<AvailableField> fields = workspace.getAvailableFields();
         for( AvailableField field : fields ) {
@@ -366,11 +367,13 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     workspace.setRelationalModel(relationalModelNode);
     workspace.setRelationalModelIsChanging(true);
+    int tableCount = 0;
     for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()){
       if(table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){
         continue;
       }
-      CategoryMetaData category = new CategoryMetaData(table.getName(getLocale()));
+      String catName = getCleanCategoryName(table.getName(getLocale()), workspace, ++tableCount);
+      CategoryMetaData category = new CategoryMetaData(catName);
 
       for(LogicalColumn col : table.getLogicalColumns()){
         createFieldForCategoryWithColumn(category, col);
@@ -401,6 +404,20 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
    */
   public void autoModelRelationalFlatInBackground(ModelerWorkspace workspace) throws ModelerException {
     autoModelRelationalFlat(workspace);
+  }
+
+  public static String getCleanCategoryName(String name, ModelerWorkspace workspace, int index) {
+    if (name == null) {
+      return "Category " + index;
+    } else if (name.equals("LOGICAL_TABLE_1")) {
+      if (workspace.getModel().getName() != null) {
+        return workspace.getModel().getName();
+      } else {
+        return "Category " + index;
+      }
+    } else {
+      return name;
+    }
   }
 
   protected abstract MainModelNode getMainModelNode(ModelerWorkspace workspace);
