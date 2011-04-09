@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
@@ -15,6 +16,7 @@ import org.pentaho.metadata.model.Domain;
  * User: nbaker
  * Date: 4/8/11
  */
+@Ignore
 public class AbstractModelerTest {
 
   protected ModelerWorkspace workspace;

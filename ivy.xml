@@ -26,7 +26,7 @@
                 changing="true"/>
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
                 changing="true"/>
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" changing="true" conf="test->default"/>
+
 
     <dependency org="pentaho.kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho.kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
@@ -90,10 +90,18 @@
     <dependency org="pentaho" name="pentaho-bi-platform-engine-core" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default"/>
     <dependency org="simple-jndi" name="simple-jndi" rev="0.11.3" conf="test->default" transitive="false" />
 
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" changing="true" conf="test->default"/>
+
+    <dependency org="org.eclipse.core" name="commands" rev="3.3.0-I20070605-0010" transitive="false" conf="test->default"/>
+    <dependency org="org.eclipse.equinox" name="common" rev="3.3.0-v20070426" transitive="false" conf="test->default"/>
+
+    <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="test->default"/>
+    <dependency org="org.eclipse.core" name="runtime" rev="3.3.100-v20070530" transitive="false" conf="test->default"/>
+    <dependency org="org.eclipse.swt.win32.win32" name="x86" rev="3.3.0-v3346" transitive="false" conf="test->default"/>
+
     <exclude org="xerces" module="xerces" conf="default->default"/>
     <exclude org="xml-apis" module="xml-apis" conf="default->default"/>
     <exclude org="org.olap4j" module="olap4j" conf="default->default"/>
-
 
 
   </dependencies>
