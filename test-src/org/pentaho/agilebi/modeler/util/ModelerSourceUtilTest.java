@@ -19,6 +19,7 @@ package org.pentaho.agilebi.modeler.util;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
@@ -41,21 +42,9 @@ import static junit.framework.Assert.assertNotNull;
  *
  * @author rfellows
  */
-public class ModelerSourceUtilTest {
+public class ModelerSourceUtilTest extends AbstractModelerTest {
 
-  private static DatabaseMeta databaseMeta;
   private static String locale;
-
-  @BeforeClass
-  public static void setup() throws KettleException {
-    System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
-    ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
-    KettleEnvironment.init();
-    Props.init(Props.TYPE_PROPERTIES_EMPTY);
-
-    databaseMeta = getDatabaseMeta();
-    locale = "en-US";
-  }
 
   @Test
   public void testGenerateDomain_SingleModelingMode() throws ModelerException {

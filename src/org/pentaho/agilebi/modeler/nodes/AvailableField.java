@@ -29,9 +29,12 @@ public class AvailableField implements Serializable, ColumnBackedNode {
   private transient LogicalColumn logicalColumn;
   private String name, displayName, aggTypeDesc;
 
+  public static String MEASURE_PROP = "potential_measure";
+
   public AvailableField(){
     
   }
+
   public LogicalColumn getLogicalColumn() {
     return logicalColumn;
   }
@@ -74,15 +77,20 @@ public class AvailableField implements Serializable, ColumnBackedNode {
 
   public boolean isSameUnderlyingLogicalColumn(LogicalColumn column, String locale) {
     LogicalColumn thisCol = this.getLogicalColumn();
-    if (thisCol.getId().equals(column.getId())
+    return thisCol.getId().equals(column.getId())
         || (thisCol.getName(locale).equals(column.getName(locale)) &&
-            thisCol.getLogicalTable() != null && column.getLogicalTable() != null &&
-            thisCol.getLogicalTable().getName(locale).equals(column.getLogicalTable().getName(locale))
-           )
-        ) {
-      return true;
-    }
-    return false;
+        thisCol.getLogicalTable() != null && column.getLogicalTable() != null &&
+        thisCol.getLogicalTable().getName(locale).equals(column.getLogicalTable().getName(locale))
+    );
+  }
+
+  public boolean isPossibleMeasure(){
+    String measureProp = (String) getLogicalColumn().getPhysicalColumn().getProperty(MEASURE_PROP);
+    return measureProp != null && measureProp.equals("true");
+  }
+
+  public void setPossibleMeasure(boolean possibleMeasure){
+    getLogicalColumn().getPhysicalColumn().setProperty(MEASURE_PROP, ""+possibleMeasure);
   }
   
 }

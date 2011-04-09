@@ -49,13 +49,7 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
       return null;
     }
     if (aggTypeDesc == null || "".equals(aggTypeDesc)) {
-      switch (logicalColumn.getDataType()) {
-        case NUMERIC:
-          aggTypeDesc = "NONE";
-          break;
-        default:
-          aggTypeDesc = "NONE";
-      }
+      aggTypeDesc = logicalColumn.getAggregationType().name();
     }
     return aggTypeDesc;
   }

@@ -44,23 +44,7 @@ import static junit.framework.Assert.*;
  *
  * @author rfellows
  */
-public class ModelerWorkspaceTest {
-  private static final String LOCALE = "en-US";
-  RelationalModelNode relationalModelNode;
-  static ModelerWorkspace workspace;
-
-  @BeforeClass
-  public static void init() throws Exception {
-    System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
-    ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
-    workspace = new ModelerWorkspace(new ModelerWorkspaceHelper(LOCALE));
-    KettleEnvironment.init();
-    Props.init(Props.TYPE_PROPERTIES_EMPTY);
-  }
-
-  @Before
-  public void setUp() throws Exception {
-  }
+public class ModelerWorkspaceTest extends AbstractModelerTest{
 
   @Test
   public void testUpConvertLegacyModel() throws Exception {

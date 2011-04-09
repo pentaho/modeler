@@ -59,6 +59,9 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
         if (selectedTreeItem == null) {
           // null - cannot add fields at this level
         } else if (selectedTreeItem instanceof MeasuresCollection) {
+          if(availableField.isPossibleMeasure() == false){ // TODO: consider an Exception
+            return;
+          }
           // measure collection - add as a measure
           MeasuresCollection theMesaures = (MeasuresCollection) selectedTreeItem;
           theNode = workspace.createMeasureForNode(availableField);

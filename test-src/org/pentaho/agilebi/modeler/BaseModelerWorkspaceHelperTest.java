@@ -26,31 +26,15 @@ import static junit.framework.Assert.*;
  *
  * @author rfellows
  */
-public class BaseModelerWorkspaceHelperTest {
+public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
 
   private static final String LOCALE = "en-US";
   RelationalModelNode relationalModelNode;
-  static ModelerWorkspace workspace;
 
-  @BeforeClass
-  public static void init() throws KettleException {
-    System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
-    ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
-    workspace = new ModelerWorkspace(new ModelerWorkspaceHelper(LOCALE));
-    try {
-      KettleEnvironment.init();
-      Props.init(Props.TYPE_PROPERTIES_EMPTY);
-      Domain d = ModelerSourceUtil.generateDomain(getDatabaseMeta(), "", "CUSTOMERS");
-      workspace.setDomain(d);
-    } catch (ModelerException e) {
-      e.printStackTrace();
-    } catch (KettleException e) {
-      e.printStackTrace();
-    }
-  }
-
-  @Before
+  @Override
   public void setUp() throws Exception {
+    super.setUp();
+    super.generateTestDomain();
   }
 
   @Test
@@ -63,7 +47,7 @@ public class BaseModelerWorkspaceHelperTest {
     helper.populateCategories(workspace);
 
     List<Category> categories = logicalModel.getCategories();
-    
+
     assertEquals(1, categories.size());
     assertEquals(fields, workspace.getAvailableFields().size());
     System.out.println(logicalModel.getLogicalTables().get(0).getLogicalColumns().size());
@@ -121,7 +105,7 @@ public class BaseModelerWorkspaceHelperTest {
         assertEquals(orig.getAggTypeDesc(), lCol.getAggregationType().name());
         if (orig.getFormat().equals("NONE")) {
           if (orig.getLogicalColumn().getDataType() == DataType.NUMERIC) {
-            assertTrue(lCol.getProperty("mask") == "#");
+            assertTrue(((String) lCol.getProperty("mask")).indexOf("#") > -1);
           } else {
             assertTrue(lCol.getProperty("mask") == null);
           }
@@ -149,26 +133,15 @@ public class BaseModelerWorkspaceHelperTest {
     }
     field = workspace.createFieldForParentWithNode(cat, avaialbleField);
     field.setFormat("$#,###.##");
-    field.setAggTypeDesc("SUM");
     cat.add(field);
 
     return cat;
-  }
-
-  public static DatabaseMeta getDatabaseMeta() {
-    DatabaseMeta database = new DatabaseMeta();
-    database.setDatabaseType("Hypersonic");//$NON-NLS-1$
-    database.setAccessType(DatabaseMeta.TYPE_ACCESS_JNDI);
-    database.setDBName("SampleData");//$NON-NLS-1$
-    database.setName("SampleData");//$NON-NLS-1$
-    return database;
   }
 
   @Test
   public void testGetCorrespondingOlapColumnId() {
     String origTableId = "BT_CUSTOMERS_CUSTOMERS";
     String origColumnId = "LC_CUSTOMERS_CUSTOMERNUMBER";
-    String olapTableId = "BT_CUSTOMERS_CUSTOMERS_OLAP";
     String olapColumnId = "LC_CUSTOMERS_CUSTOMERS_OLAP_CUSTOMERNUMBER";
 
     LogicalTable ltOrig = new LogicalTable();
@@ -180,7 +153,6 @@ public class BaseModelerWorkspaceHelperTest {
     IPhysicalColumn pc = new SqlPhysicalColumn();
     pc.setId("CUSTOMERNUMBER");
     lcOrig.setPhysicalColumn(pc);
-
 
     assertEquals(olapColumnId, BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lcOrig));
 
