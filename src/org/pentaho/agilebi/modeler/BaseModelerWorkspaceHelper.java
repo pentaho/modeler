@@ -1,11 +1,7 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
-import org.pentaho.metadata.model.Category;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.IConcept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
@@ -94,9 +90,14 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
           for (LevelMetaData lvl : hier) {
             OlapHierarchyLevel level = new OlapHierarchyLevel(hierarchy);
             level.setName(lvl.getName());
-            if (lvl.getLogicalColumn() != null) {
-              LogicalColumn lvlColumn = logicalModel.findLogicalColumn(lvl.getLogicalColumn().getId());
-              level.setReferenceColumn(lvlColumn);
+            LogicalColumn lCol = lvl.getLogicalColumn();
+            if (lCol != null) {
+              LogicalTable lTable = lCol.getLogicalTable();
+
+              if (!lTable.getLogicalColumns().contains(lCol)) {
+                lTable.addLogicalColumn(lCol);
+              }
+              level.setReferenceColumn(lCol);
             }
             level.setHavingUniqueMembers(lvl.isUniqueMembers());
             levels.add(level);
@@ -129,12 +130,18 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       cube.setOlapDimensionUsages(usages);
 
       for (MeasureMetaData f : model.getModel().getMeasures()) {
+        LogicalColumn lCol = f.getLogicalColumn();
+        LogicalTable lTable = lCol.getLogicalTable();
+
+        if (!lTable.getLogicalColumns().contains(lCol)) {
+          lTable.addLogicalColumn(lCol);
+        }
 
         OlapMeasure measure = new OlapMeasure();
         if (f.getAggTypeDesc() != null) {
-          f.getLogicalColumn().setAggregationType(AggregationType.valueOf(f.getAggTypeDesc()));
+          lCol.setAggregationType(AggregationType.valueOf(f.getAggTypeDesc()));
         }
-        measure.setLogicalColumn(f.getLogicalColumn());
+        measure.setLogicalColumn(lCol);
         measures.add(measure);
       }
 
@@ -194,6 +201,11 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
       for (FieldMetaData fieldMeta : catMeta) {
         LogicalColumn lCol = fieldMeta.getLogicalColumn();
+        LogicalTable lTable = lCol.getLogicalTable();
+
+        if (!lTable.getLogicalColumns().contains(lCol)) {
+          lTable.addLogicalColumn(lCol);
+        }
 
         lCol.setName(new LocalizedString(locale, fieldMeta.getName()));
         AggregationType type = AggregationType.valueOf(fieldMeta.getAggTypeDesc());
@@ -220,6 +232,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
           lCol.setAggregationList(DEFAULT_AGGREGATION_LIST);
         }
         cat.addLogicalColumn(lCol);
+
       }
       logicalModel.addCategory(cat);
     }
@@ -239,16 +252,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       LogicalTable table = model.getLogicalTables().get(i);
       LogicalTable copiedTable = (LogicalTable) table.clone();
       copiedTable.setId(copiedTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
-
-      // clone of LogicalTable does not clone it's columns, so we must do that here
-      copiedTable.getLogicalColumns().clear();
-      for(LogicalColumn lc : table.getLogicalColumns()) {
-        LogicalColumn copiedColumn = (LogicalColumn)lc.clone();
-        copiedColumn.setId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lc));
-        copiedColumn.setLogicalTable(copiedTable);
-        copiedTable.addLogicalColumn(copiedColumn);
-      }
-
       model.addLogicalTable(copiedTable);
     }
   }
@@ -266,22 +269,29 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     final boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
 
-    List<AvailableField> fields = workspace.getAvailableOlapFields();
+    // remove all logical columns from existing logical tables
+    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        table.getLogicalColumns().clear();
+      }
+    }
+
+    List<AvailableField> fields = workspace.getAvailableFields();
     for( AvailableField field : fields ) {
-      DataType dataType = field.getLogicalColumn().getDataType();
+      LogicalTable parentTable = workspace.findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), ModelerPerspective.ANALYSIS);
+      DataType dataType = field.getPhysicalColumn().getDataType();
       if( dataType == DataType.NUMERIC) {
         // create a measure
         MeasureMetaData measure = workspace.createMeasureForNode(field);
         workspace.getModel().getMeasures().add(measure);
       }
       // create a dimension
-      workspace.addDimensionFromNode(field);
+      workspace.addDimensionFromNode(workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
 
     }
     workspace.setModelIsChanging(prevChangeState);
     workspace.setSelectedNode(workspace.getModel());
   }
-
 
   /**
    * Builds an OLAP model that is attribute based.
@@ -330,19 +340,24 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     workspace.setRelationalModelIsChanging(true);
 
-    List<LogicalTable> tables = workspace.getDomain().getLogicalModels().get(0).getLogicalTables();
-    Set<String> tableIds = new HashSet<String>();
-    for (LogicalTable table : tables) {
-      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)
-        && !tableIds.contains(table.getId())) {
+    // remove all logical columns from existing logical tables
+    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        table.getLogicalColumns().clear();
+      }
+    }
 
+    List<? extends IPhysicalTable> tables = workspace.getDomain().getPhysicalModels().get(0).getPhysicalTables();
+    Set<String> tableIds = new HashSet<String>();
+    for (IPhysicalTable table : tables) {
+      if (!tableIds.contains(table.getId())) {
         tableIds.add(table.getId());
         String catName = getCleanCategoryName(table.getName(getLocale()), workspace, tableIds.size());
         CategoryMetaData category = new CategoryMetaData(catName);
 
         List<AvailableField> fields = workspace.getAvailableFields();
         for( AvailableField field : fields ) {
-          if (field.getLogicalColumn().getLogicalTable().getId().equals(table.getId())) {
+          if (field.getPhysicalColumn().getPhysicalTable().getId().equals(table.getId())) {
             category.add(workspace.createFieldForParentWithNode(category, field));
           }
         }
@@ -361,28 +376,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
    * @throws ModelerException
    */
   public void autoModelMultiTableRelational(ModelerWorkspace workspace) throws ModelerException {
-    RelationalModelNode relationalModelNode = new RelationalModelNode();
-
-    relationalModelNode.setName(workspace.getRelationalModelName());
-
-    workspace.setRelationalModel(relationalModelNode);
-    workspace.setRelationalModelIsChanging(true);
-    int tableCount = 0;
-    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()){
-      if(table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){
-        continue;
-      }
-      String catName = getCleanCategoryName(table.getName(getLocale()), workspace, ++tableCount);
-      CategoryMetaData category = new CategoryMetaData(catName);
-
-      for(LogicalColumn col : table.getLogicalColumns()){
-        createFieldForCategoryWithColumn(category, col);
-      }
-
-      relationalModelNode.getCategories().add(category);
-
-    }
-    workspace.setRelationalModelIsChanging(false);
+    autoModelRelationalFlat(workspace);
   }
 
 

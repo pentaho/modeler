@@ -126,13 +126,14 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     FieldMetaData field = null;
     AvailableField avaialbleField = null;
     for (AvailableField af : workspace.getAvailableFields()) {
-      if (af.getLogicalColumn().getDataType() == DataType.NUMERIC) {
+      if (af.getPhysicalColumn().getDataType() == DataType.NUMERIC) {
         avaialbleField = af;
         break;
       }
     }
     field = workspace.createFieldForParentWithNode(cat, avaialbleField);
     field.setFormat("$#,###.##");
+    field.setAggTypeDesc("SUM");
     cat.add(field);
 
     return cat;

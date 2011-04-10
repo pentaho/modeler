@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.util.AbstractModelNode;
@@ -31,6 +32,14 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
         || getSelectedTreeItem() instanceof RelationalModelNode
         || getSelectedTreeItem() == null) {
       return;
+    } else if (getSelectedTreeItem() instanceof CategoryMetaData) {
+      // remove the logical columns associated with the fields in this category
+      CategoryMetaData cat = (CategoryMetaData)getSelectedTreeItem();
+      for(FieldMetaData field : cat) {
+        removeLogicalColumnFromParentTable(field);
+      }
+    } else if (getSelectedTreeItem() instanceof FieldMetaData) {
+      removeLogicalColumnFromParentTable((FieldMetaData)getSelectedTreeItem());
     }
     ((AbstractModelNode) getSelectedTreeItem()).getParent().remove(getSelectedTreeItem());
     setTreeSelectionChanged(null);
@@ -65,7 +74,16 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   @Override
   public void clearTreeModel(){
     workspace.setRelationalModelIsChanging(true);
+
+    // remove all logical columns from existing logical tables
+    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        table.getLogicalColumns().clear();
+      }
+    }
+
     workspace.getRelationalModel().getCategories().clear();
     workspace.setRelationalModelIsChanging(false, true);
   }
+
 }

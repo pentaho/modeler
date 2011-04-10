@@ -26,12 +26,4 @@ public class AvailableFieldCollection extends AbstractModelList<AvailableField> 
 
   }
 
-  public AvailableField findByLogicalColumnId(String columnId) {
-    for (AvailableField field : this) {
-      if (field.getLogicalColumn().getId().equals(columnId)) {
-        return field;
-      }
-    }
-    return null;
-  }  
 }

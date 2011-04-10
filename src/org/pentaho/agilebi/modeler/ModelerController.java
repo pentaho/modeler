@@ -343,8 +343,8 @@ public class ModelerController extends AbstractXulEventHandler {
             if (selectedFields.length > 0) {
               AvailableField f = selectedFields[0];
               if(f != null){
-                AvailableField olapField = DimensionTreeHelper.convertToOlapField(f, workspace.getDomain().getLogicalModels().get(0));
-                theMeasure.setLogicalColumn(olapField.getLogicalColumn());
+                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
+                theMeasure.setLogicalColumn(node.getLogicalColumn());
                 workspace.setDirty(true);
               }
             }
@@ -420,8 +420,8 @@ public class ModelerController extends AbstractXulEventHandler {
 
             if (selectedFields.length > 0) {
               AvailableField f = selectedFields[0];
-              AvailableField olapField = DimensionTreeHelper.convertToOlapField(f, workspace.getDomain().getLogicalModels().get(0));
-              theLevel.setLogicalColumn(olapField.getLogicalColumn());
+              ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
+              theLevel.setLogicalColumn(node.getLogicalColumn());
               workspace.setDirty(true);
             }
 
@@ -529,7 +529,8 @@ public class ModelerController extends AbstractXulEventHandler {
 
             if (selectedFields.length > 0) {
               AvailableField f = selectedFields[0];
-              theField.setLogicalColumn(f.getLogicalColumn());
+              ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.REPORTING);
+              theField.setLogicalColumn(node.getLogicalColumn());
               workspace.setDirty(true);
             }
 

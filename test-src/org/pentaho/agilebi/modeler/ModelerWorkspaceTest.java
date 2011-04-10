@@ -53,7 +53,6 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     LogicalModel model = d.getLogicalModels().get(0);
     workspace.setDomain(d, false);
 
-    assertEquals(0, workspace.getAvailableOlapFields().size());
     assertEquals(1, model.getLogicalTables().size());
 
     workspace.upConvertLegacyModel();
@@ -69,37 +68,58 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     LogicalModel model = d.getLogicalModels().get(0);
     workspace.setDomain(d);
 
-    assertEquals(workspace.getAvailableFields().size(), workspace.getAvailableOlapFields().size());
     assertEquals(2, model.getLogicalTables().size());
 
     // verify the OLAP measures & dimensions get their logical columns set to the new OLAP table's columns
     for (DimensionMetaData dim : workspace.getModel().getDimensions()) {
       for (HierarchyMetaData hier : dim) {
         for (LevelMetaData level : hier) {
-          assertTrue(isLogicalColumnReferencedInAvailableOlapFields(level.getLogicalColumn()));
-          assertFalse(isLogicalColumnReferencedInAvailableFields(level.getLogicalColumn()));
+          assertTrue(isColumnReferencedInAvailableFields(level.getLogicalColumn()));
+          assertTrue(isReferencedTableOlapVersion(level.getLogicalColumn()));
+          assertFalse(isReferencedTableReportingVersion(level.getLogicalColumn()));
         }
       }
     }
 
     for (MeasureMetaData measure : workspace.getModel().getMeasures()) {
-      assertTrue(isLogicalColumnReferencedInAvailableOlapFields(measure.getLogicalColumn()));
-      assertFalse(isLogicalColumnReferencedInAvailableFields(measure.getLogicalColumn()));
+      assertTrue(isColumnReferencedInAvailableFields(measure.getLogicalColumn()));
+      assertTrue(isReferencedTableOlapVersion(measure.getLogicalColumn()));
+      assertFalse(isReferencedTableReportingVersion(measure.getLogicalColumn()));
     }
 
+    // verify the reporting model is correct still
+    for (CategoryMetaData cat : workspace.getRelationalModel().getCategories()) {
+      for (FieldMetaData field : cat) {
+        assertTrue(isColumnReferencedInAvailableFields(field.getLogicalColumn()));
+        assertTrue(isReferencedTableReportingVersion(field.getLogicalColumn()));
+      }
+    }
   }
 
-  private boolean isLogicalColumnReferencedInAvailableOlapFields(LogicalColumn lc) {
-    for (AvailableField field : workspace.getAvailableOlapFields()) {
-      if (field.getLogicalColumn().getId().equals(lc.getId())) {
-        return true;
+  private boolean isReferencedTableOlapVersion(LogicalColumn logicalColumn) {
+    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+      if (table.getName("en-US").endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        if (table.getId().equals(logicalColumn.getLogicalTable().getId())) {
+          return true;
+        }
       }
     }
     return false;
   }
-  private boolean isLogicalColumnReferencedInAvailableFields(LogicalColumn lc) {
+  private boolean isReferencedTableReportingVersion(LogicalColumn logicalColumn) {
+    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+      if (!table.getName("en-US").endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        if (table.getId().equals(logicalColumn.getLogicalTable().getId())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private boolean isColumnReferencedInAvailableFields(LogicalColumn lc) {
     for (AvailableField field : workspace.getAvailableFields()) {
-      if (field.getLogicalColumn().getId().equals(lc.getId())) {
+      if (field.getPhysicalColumn().getId().equals(lc.getPhysicalColumn().getId())) {
         return true;
       }
     }

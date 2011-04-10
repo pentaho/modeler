@@ -19,6 +19,7 @@ package org.pentaho.agilebi.modeler;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.*;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -39,7 +40,7 @@ import java.util.*;
 public class ModelerWorkspace extends XulEventSourceAdapter implements Serializable{
 
   private AvailableFieldCollection availableFields = new AvailableFieldCollection();
-  private AvailableFieldCollection availableOlapFields = new AvailableFieldCollection();
+//  private AvailableFieldCollection availableOlapFields = new AvailableFieldCollection();
 
   private MainModelNode model;
   private RelationalModelNode relationalModel;
@@ -227,11 +228,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return availableFields;
   }
 
-  @Bindable
-  public AvailableFieldCollection getAvailableOlapFields() {
-    return availableOlapFields;
-  }
-
 
   @Bindable
   public void setSelectedVisualization( String aVisualization ) {
@@ -300,8 +296,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public FieldMetaData createFieldForParentWithNode( CategoryMetaData parent, AvailableField selectedField ) {
     FieldMetaData field = new FieldMetaData(parent, selectedField.getName(), "",
         selectedField.getDisplayName(), workspaceHelper.getLocale()); //$NON-NLS-1$
-    field.setLogicalColumn(selectedField.getLogicalColumn());
-    field.setFieldTypeDesc(selectedField.getLogicalColumn().getDataType().getName());
+    ColumnBackedNode node = createColumnBackedNode(selectedField, ModelerPerspective.REPORTING);
+    field.setLogicalColumn(node.getLogicalColumn());
+    field.setFieldTypeDesc(node.getLogicalColumn().getDataType().getName());
     return field;
   }
 
@@ -334,8 +331,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     MeasureMetaData meta = new MeasureMetaData(selectedField.getName(), "",
         selectedField.getDisplayName(), workspaceHelper.getLocale()); //$NON-NLS-1$
-    meta.setLogicalColumn(selectedField.getLogicalColumn());
-
+    ColumnBackedNode node = createColumnBackedNode(selectedField, ModelerPerspective.ANALYSIS);
+    meta.setLogicalColumn(node.getLogicalColumn());
     return meta;
   }
 
@@ -357,6 +354,24 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
     return col;
   }
+
+  public LogicalTable findLogicalTable(IPhysicalTable table) {
+    return findLogicalTable(table, currentModelerPerspective);
+  }
+  public LogicalTable findLogicalTable(IPhysicalTable table, ModelerPerspective perspective) {
+    for (LogicalTable logicalTable : domain.getLogicalModels().get(0).getLogicalTables()) {
+      if (logicalTable.getPhysicalTable().equals(table) || logicalTable.getId().equals(table.getId())) {
+        boolean isOlapTable = logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX);
+        if (perspective == ModelerPerspective.ANALYSIS && isOlapTable) {
+          return logicalTable;
+        } else if (perspective == ModelerPerspective.REPORTING && !isOlapTable) {
+          return logicalTable;
+        }
+      }
+    }
+    return null;
+  }
+
 
   public void setModelSource( IModelerSource source ) {
     this.source = source;
@@ -386,70 +401,50 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     Comparator<AvailableField> fieldComparator = new Comparator<AvailableField>() {
           public int compare( AvailableField arg0, AvailableField arg1 ) {
-            return arg0.getLogicalColumn().getId().compareTo(arg1.getLogicalColumn().getId());
+            return arg0.getPhysicalColumn().getId().compareTo(arg1.getPhysicalColumn().getId());
           }
     };
 
     LogicalModel logicalModel = newDomain.getLogicalModels().get(0);
 
-    // Add in new logicalColumns
-    for (LogicalTable table : logicalModel.getLogicalTables()) {
-      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        for (LogicalColumn lc : table.getLogicalColumns()) {
-          boolean exists = false;
-          inner:
-          for (AvailableField fmd : this.availableFields) {
-            if (fmd.isSameUnderlyingLogicalColumn(lc, workspaceHelper.getLocale())) {
-              fmd.setLogicalColumn(lc);
-              exists = true;
-              break inner;
-            }
+    // Add in new physical columns
+    for (IPhysicalTable table : newDomain.getPhysicalModels().get(0).getPhysicalTables()) {
+      for(IPhysicalColumn column : table.getPhysicalColumns()) {
+        boolean exists = false;
+        inner:
+        for(AvailableField field : this.availableFields) {
+          if (field.isSameUnderlyingPhysicalColumn(column)) {
+            exists = true;
+            break inner;
           }
-          if (!exists) {
-            AvailableField fm = new AvailableField();
-            fm.setLogicalColumn(lc);
-            fm.setName(lc.getName(workspaceHelper.getLocale()));
-            fm.setDisplayName(lc.getName(workspaceHelper.getLocale()));
-            availableFields.add(fm);
-            availableOlapFields.add(DimensionTreeHelper.convertToOlapField(fm, logicalModel));
-
-            Collections.sort(availableFields, fieldComparator);
-            Collections.sort(availableOlapFields, fieldComparator);
-          }
+        }
+        if (!exists) {
+          AvailableField field = new AvailableField(column);
+          availableFields.add(field);
+          Collections.sort(availableFields, fieldComparator);
         }
       }
     }
 
-
-    // Remove logicalColumns that no longer exist.
+    // Remove available fields that no longer exist correspond to an available physical column
     List<AvailableField> toRemove = new ArrayList<AvailableField>();
-    List<AvailableField> olapToRemove = new ArrayList<AvailableField>();
-    for (AvailableField fm : availableFields) {
+    for (AvailableField field : availableFields) {
       boolean exists = false;
-      LogicalColumn fmlc = fm.getLogicalColumn();
       inner:
-      for(LogicalTable lt : logicalModel.getLogicalTables()) {
-        if (!lt.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-          for (LogicalColumn lc : lt.getLogicalColumns()) {
-            if (fm.isSameUnderlyingLogicalColumn(lc, workspaceHelper.getLocale())) {
+      for (IPhysicalTable table : newDomain.getPhysicalModels().get(0).getPhysicalTables()) {
+        for(IPhysicalColumn column : table.getPhysicalColumns()) {
+          if (field.isSameUnderlyingPhysicalColumn(column)) {
               exists = true;
               break inner;
-            }
           }
         }
       }
       if (!exists) {
-        toRemove.add(fm);
-        AvailableField olap = availableOlapFields.findByLogicalColumnId(BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(fm.getLogicalColumn()));
-        if (olap != null) {
-          olapToRemove.add(olap);
-        }
+        toRemove.add(field);
       }
     }
     availableFields.removeAll(toRemove);
-    availableOlapFields.removeAll(olapToRemove);
     workspaceHelper.sortFields(availableFields);
-    workspaceHelper.sortFields(availableOlapFields);
 
     fireFieldsChanged();
 
@@ -457,26 +452,18 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for (MeasureMetaData measure : model.getMeasures()) {
       boolean found = false;
       if (measure.getLogicalColumn() != null) {
-        for (AvailableField fm : availableOlapFields) {
-          if (fm.isSameUnderlyingLogicalColumn(measure.getLogicalColumn(), workspaceHelper.getLocale())) {
+        inner:
+        for (AvailableField field : availableFields) {
+          if (field.isSameUnderlyingPhysicalColumn(measure.getLogicalColumn().getPhysicalColumn())) {
+            // the physical column backing this measure is still available, it is ok
             found = true;
-          } else {
-            if (fm.getLogicalColumn().getProperty(SqlPhysicalColumn.TARGET_COLUMN).equals(
-                measure.getLogicalColumn().getProperty(SqlPhysicalColumn.TARGET_COLUMN))) {
-              // clone the logical column into the new model
-              // this is necessary because a model may contain
-              // multiple measures, each with their own
-              // default aggregation and name
-              LogicalColumn lCol = (LogicalColumn) fm.getLogicalColumn().clone();
-              lCol.setId(measure.getLogicalColumn().getId());
-              LogicalTable table = newDomain.getLogicalModels().get(0).findLogicalTable(lCol.getLogicalTable().getId());
-              table.addLogicalColumn(lCol);
-              found = true;
-            }
+            break inner;
           }
         }
       }
       if (!found) {
+        // the physical column that backed this measure no longer exists in the model.
+        // therefore, we must invalidate it's logical column
         measure.setLogicalColumn(null);
       }
     }
@@ -488,14 +475,17 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             boolean found = false;
             if (lm.getLogicalColumn() != null) {
               inner:
-              for (AvailableField fm : availableOlapFields) {
-                if (fm.isSameUnderlyingLogicalColumn(lm.getLogicalColumn(), workspaceHelper.getLocale())) {
+              for (AvailableField field : availableFields) {
+                if (field.isSameUnderlyingPhysicalColumn(lm.getLogicalColumn().getPhysicalColumn())) {
+                  // the physical column backing this level is still available, it is ok
                   found = true;
                   break inner;
                 }
               }
             }
             if (!found) {
+              // the physical column that backed this level no longer exists in the model.
+              // therefore, we must invalidate it's logical column
               lm.setLogicalColumn(null);
             }
           }
@@ -511,13 +501,16 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         if (field.getLogicalColumn() != null) {
           inner:
           for (AvailableField af : availableFields) {
-            if (af.isSameUnderlyingLogicalColumn(field.getLogicalColumn(), workspaceHelper.getLocale())) {
+            if (af.isSameUnderlyingPhysicalColumn(field.getLogicalColumn().getPhysicalColumn())) {
+              // the physical column backing this field is still available, it is ok
               found = true;
               break inner;
             }
           }
         }
         if (!found) {
+          // the physical column that backed this field no longer exists in the model.
+          // therefore, we must invalidate it's logical column
           field.setLogicalColumn(null);
         }
       }
@@ -578,29 +571,23 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.model.getMeasures().clear();
     this.relationalModel.getCategories().clear();
     this.availableFields.clear();
-    this.availableOlapFields.clear();
+
+    // remove all logical columns from existing logical tables
+    for (LogicalTable table : d.getLogicalModels().get(0).getLogicalTables()) {
+      table.getLogicalColumns().clear();
+    }
 
     boolean needsUpConverted = false;
     if (upConvertDesired) needsUpConverted = upConvertLegacyModel();
 
-    // only show the columns from the non-olap specific tables (they are just duplicates)
-    for (LogicalTable table : domain.getLogicalModels().get(0).getLogicalTables()) {
-      for (LogicalColumn c : table.getLogicalColumns()) {
-        AvailableField fm = new AvailableField();
-        fm.setLogicalColumn(c);
-        fm.setName(c.getPhysicalColumn().getName(workspaceHelper.getLocale()));
-        fm.setDisplayName(c.getName(workspaceHelper.getLocale()));
-        fm.setAggTypeDesc(c.getAggregationType().toString());
-        if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-          availableOlapFields.add(fm);
-        } else {
-          availableFields.add(fm);
-        }
+    for (IPhysicalTable table : domain.getPhysicalModels().get(0).getPhysicalTables()) {
+      for (IPhysicalColumn column : table.getPhysicalColumns()) {
+        AvailableField field = new AvailableField(column);
+        availableFields.add(field);
       }
     }
 
     workspaceHelper.sortFields(availableFields);
-    workspaceHelper.sortFields(availableOlapFields);
 
     firePropertyChange("availableFields", null, getAvailableFields()); //$NON-NLS-1$
 
@@ -669,9 +656,16 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       String catName = BaseModelerWorkspaceHelper.getCleanCategoryName(cat.getName(workspaceHelper.getLocale()), this, i++);
       CategoryMetaData catMeta = new CategoryMetaData(catName);
       for (LogicalColumn col : cat.getLogicalColumns()) {
+        LogicalTable table = col.getLogicalTable();
+
+        if (!table.getLogicalColumns().contains(col)) {
+          table.addLogicalColumn(col);
+        }
+        
         Object formatMask = col.getProperty("mask");
         String colName = col.getName(workspaceHelper.getLocale());
         AggregationType aggType = col.getAggregationType();
+
         FieldMetaData field = new FieldMetaData(catMeta,
             colName,
             formatMask == null ? null : formatMask.toString(),
@@ -683,6 +677,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           field.setAggTypeDesc(AggregationType.NONE.name());
         }
         field.setLogicalColumn(col);
+
         catMeta.add(field);
       }
       this.getRelationalModel().getCategories().add(catMeta);
@@ -852,4 +847,33 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public void setCurrentModelerPerspective(ModelerPerspective currentModelerPerspective) {
     this.currentModelerPerspective = currentModelerPerspective;
   }
+
+  public ColumnBackedNode createColumnBackedNode(AvailableField field, ModelerPerspective perspective) {
+    String locale = workspaceHelper.getLocale();
+    ColumnBackedNode node = new BaseColumnBackedMetaData(field.getName());
+    LogicalColumn lCol = new LogicalColumn();
+    LogicalTable lTab = findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), perspective);
+    lCol.setLogicalTable(lTab);
+    lCol.setParentConcept(lTab);
+    lCol.setPhysicalColumn(field.getPhysicalColumn());
+    lCol.setDataType(field.getPhysicalColumn().getDataType());
+    lCol.setAggregationList(field.getPhysicalColumn().getAggregationList());
+    lCol.setAggregationType(field.getPhysicalColumn().getAggregationType());
+    lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
+
+    String colId = "LC_" + lTab.getName(locale) + "_" + field.getName();
+
+    if (perspective == ModelerPerspective.ANALYSIS) {
+      colId += BaseModelerWorkspaceHelper.OLAP_SUFFIX;
+    }
+
+    colId = BaseModelerWorkspaceHelper.uniquify(colId, lTab.getLogicalColumns());
+    lCol.setId(colId);
+
+    lTab.addLogicalColumn(lCol);
+    node.setLogicalColumn(lCol);
+    return node;
+  }
+
+
 }

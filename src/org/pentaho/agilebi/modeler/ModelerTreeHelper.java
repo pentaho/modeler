@@ -2,6 +2,8 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.components.XulConfirmBox;
@@ -163,5 +165,11 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
 
   public void setDocument(Document document) {
     this.document = document;
+  }
+
+  protected void removeLogicalColumnFromParentTable(ColumnBackedNode node) {
+    LogicalColumn lCol = node.getLogicalColumn();
+    LogicalTable lTab = lCol.getLogicalTable();
+    lTab.getLogicalColumns().remove(lCol);
   }
 }

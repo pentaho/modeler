@@ -57,7 +57,8 @@ public class ColResolverController extends AbstractXulEventHandler {
   public void done() {
     int idx = this.availableCols.getSelectedIndex();
     if (idx > -1) {
-      LogicalColumn lCol = workspace.getAvailableFields().get(idx).getLogicalColumn();
+      ColumnBackedNode cnode = workspace.createColumnBackedNode(workspace.getAvailableFields().get(idx), workspace.getCurrentModelerPerspective());
+      LogicalColumn lCol = cnode.getLogicalColumn();
       node.setLogicalColumn(lCol);
       workspace.setDirty(true);
     }

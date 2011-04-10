@@ -16,18 +16,19 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.agilebi.modeler.ColumnBackedNode;
-import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.IPhysicalColumn;
+import org.pentaho.metadata.model.IPhysicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
 
-public class AvailableField implements Serializable, ColumnBackedNode {
+public class AvailableField implements Serializable {
 
   private static final long serialVersionUID = -4430951279551589688L;
   
-  private transient LogicalColumn logicalColumn;
-  private String name, displayName, aggTypeDesc;
+  private transient IPhysicalColumn physicalColumn;
+  private String name, displayName;
 
   public static String MEASURE_PROP = "potential_measure";
 
@@ -35,12 +36,11 @@ public class AvailableField implements Serializable, ColumnBackedNode {
     
   }
 
-  public LogicalColumn getLogicalColumn() {
-    return logicalColumn;
-  }
 
-  public void setLogicalColumn(LogicalColumn logicalColumn) {
-    this.logicalColumn = logicalColumn;
+  public AvailableField(IPhysicalColumn physicalColumn) {
+    setPhysicalColumn(physicalColumn);
+    setName(physicalColumn.getName(LocalizedString.DEFAULT_LOCALE));
+    setDisplayName(physicalColumn.getName(LocalizedString.DEFAULT_LOCALE));
   }
 
   @Bindable
@@ -63,27 +63,28 @@ public class AvailableField implements Serializable, ColumnBackedNode {
     this.displayName = displayName;
   }
 
-  public String getAggTypeDesc() {
-    return aggTypeDesc;
-  }
 
-  public void setAggTypeDesc(String aggTypeDesc) {
-    this.aggTypeDesc = aggTypeDesc;
-  }
 
   public String toString() {
     return name;
   }
 
-  public boolean isSameUnderlyingLogicalColumn(LogicalColumn column, String locale) {
-    LogicalColumn thisCol = this.getLogicalColumn();
-    return thisCol.getId().equals(column.getId())
-        || (thisCol.getName(locale).equals(column.getName(locale)) &&
-        thisCol.getLogicalTable() != null && column.getLogicalTable() != null &&
-        thisCol.getLogicalTable().getName(locale).equals(column.getLogicalTable().getName(locale))
-    );
+  public IPhysicalColumn getPhysicalColumn() {
+    return physicalColumn;
   }
 
+  public void setPhysicalColumn(IPhysicalColumn physicalColumn) {
+    this.physicalColumn = physicalColumn;
+  }
+
+  public boolean isSameUnderlyingPhysicalColumn(IPhysicalColumn column) {
+    IPhysicalTable table = column.getPhysicalTable();
+
+    return getPhysicalColumn().getId().equals(column.getId()) &&
+           getPhysicalColumn().getPhysicalTable().getId().equals(table.getId());
+
+  }
+    
   public boolean isPossibleMeasure(){
     String measureProp = (String) getLogicalColumn().getPhysicalColumn().getProperty(MEASURE_PROP);
     return measureProp != null && measureProp.equals("true");
