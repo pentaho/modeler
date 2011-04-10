@@ -37,7 +37,7 @@ public class AvailableColumnsTest extends AbstractModelerTest{
     controller.getDimTreeHelper().setSelectedTreeItem(workspace.getModel().getMeasures());
     controller.addField();
     assertTrue(workspace.getModel().getMeasures().size() == 1);
-    assertEquals(field1.getLogicalColumn().getPhysicalColumn(), workspace.getModel().getMeasures().get(0).getLogicalColumn().getPhysicalColumn());
+    assertEquals(field1.getPhysicalColumn(), workspace.getModel().getMeasures().get(0).getLogicalColumn().getPhysicalColumn());
 
     // Attempt to add the second field as a measure. It should fail and the list remain the same
     controller.setSelectedFields(new Object[]{field2});

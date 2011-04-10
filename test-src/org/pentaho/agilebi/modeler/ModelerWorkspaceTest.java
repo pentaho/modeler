@@ -17,17 +17,12 @@
 
 package org.pentaho.agilebi.modeler;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.nodes.*;
-import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.Props;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 

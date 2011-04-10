@@ -821,4 +821,6 @@ public class ModelerController extends AbstractXulEventHandler {
     }
     return catTreeHelper;
   }
+
+  
 }

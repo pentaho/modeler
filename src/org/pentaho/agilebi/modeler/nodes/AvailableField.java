@@ -86,12 +86,12 @@ public class AvailableField implements Serializable {
   }
     
   public boolean isPossibleMeasure(){
-    String measureProp = (String) getLogicalColumn().getPhysicalColumn().getProperty(MEASURE_PROP);
+    String measureProp = (String) getPhysicalColumn().getProperty(MEASURE_PROP);
     return measureProp != null && measureProp.equals("true");
   }
 
   public void setPossibleMeasure(boolean possibleMeasure){
-    getLogicalColumn().getPhysicalColumn().setProperty(MEASURE_PROP, ""+possibleMeasure);
+    getPhysicalColumn().setProperty(MEASURE_PROP, ""+possibleMeasure);
   }
   
 }
