@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.propforms.FieldsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
@@ -49,7 +50,18 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
       return null;
     }
     if (aggTypeDesc == null || "".equals(aggTypeDesc)) {
-      aggTypeDesc = logicalColumn.getAggregationType().name();
+      if (logicalColumn.getAggregationType() != null) {
+        aggTypeDesc = logicalColumn.getAggregationType().name();
+      } else {
+        switch (logicalColumn.getDataType()) {
+          case NUMERIC:
+            aggTypeDesc = AggregationType.SUM.toString();
+            break;
+          default:
+            aggTypeDesc = "NONE";
+        }
+      }
+
     }
     return aggTypeDesc;
   }

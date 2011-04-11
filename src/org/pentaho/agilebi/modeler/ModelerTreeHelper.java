@@ -169,7 +169,9 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
 
   protected void removeLogicalColumnFromParentTable(ColumnBackedNode node) {
     LogicalColumn lCol = node.getLogicalColumn();
-    LogicalTable lTab = lCol.getLogicalTable();
-    lTab.getLogicalColumns().remove(lCol);
+    if (lCol != null && lCol.getLogicalTable() != null) {
+      LogicalTable lTab = lCol.getLogicalTable();
+      lTab.getLogicalColumns().remove(lCol);
+    }
   }
 }

@@ -1,0 +1,7 @@
+test-lib/
+lib/
+bin/
+dist/
+test-res/data/sampledata.lck
+test-res/data/sampledata.log
+

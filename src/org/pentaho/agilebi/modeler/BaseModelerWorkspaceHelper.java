@@ -403,7 +403,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   public static String getCleanCategoryName(String name, ModelerWorkspace workspace, int index) {
     if (name == null) {
       return "Category " + index;
-    } else if (name.equals("LOGICAL_TABLE_1")) {
+    } else if (name.equals("LOGICAL_TABLE_1") || name.equals("INLINE_SQL_1")) {
       if (workspace.getModel().getName() != null) {
         return workspace.getModel().getName();
       } else {
