@@ -15,8 +15,13 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.*;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.model.olap.OlapCube;
+import org.pentaho.metadata.model.olap.OlapDimension;
+import org.pentaho.metadata.model.olap.OlapMeasure;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.*;
@@ -35,6 +40,38 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
   public void setUp() throws Exception {
     super.setUp();
     super.generateTestDomain();
+  }
+
+  @Test
+  public void testFieldAggregations() throws ModelerException{
+
+    ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(LOCALE);
+    helper.autoModelFlat(workspace);
+    helper.autoModelRelationalFlat(workspace);
+
+    FieldMetaData firstField = workspace.getRelationalModel().get(0).get(0).get(0);
+    assertEquals( firstField.getTextAggregationTypes(), firstField.getSelectedAggregations());
+    assertEquals(AggregationType.NONE, firstField.getDefaultAggregation());
+    firstField.setDefaultAggregation(AggregationType.COUNT);
+    assertEquals(AggregationType.COUNT, firstField.getDefaultAggregation());
+    firstField.setSelectedAggregations(Arrays.asList(AggregationType.COUNT));
+
+    //Test Olap side
+    assertEquals(workspace.getModel().getMeasures().get(0).getDefaultAggregation(), AggregationType.SUM);
+
+    helper.populateDomain(workspace);
+
+    // Now verify with the generated models
+    LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
+    LogicalColumn lCol = logicalModel.getCategories().get(0).getLogicalColumns().get(0);
+    assertEquals(firstField.getDefaultAggregation(), lCol.getAggregationType());
+    assertEquals(firstField.getSelectedAggregations(), lCol.getAggregationList());
+
+
+    List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty("olap_cubes");
+    OlapMeasure measure = cubes.get(0).getOlapMeasures().get(0);
+    assertEquals(AggregationType.SUM, measure.getLogicalColumn().getAggregationType());
+
   }
 
   @Test
@@ -62,7 +99,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
         }
       }
       assertNotNull(orig);
-      assertEquals(orig.getAggTypeDesc(), lCol.getAggregationType().name());
+      assertEquals(orig.getDefaultAggregation(), lCol.getAggregationType());
       if (orig.getFormat().equals("NONE")) {
         if (orig.getLogicalColumn().getDataType() == DataType.NUMERIC) {
           assertTrue(lCol.getProperty("mask") == "#");
@@ -76,7 +113,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
   }
 
   @Test
-  public void testPopulateCategories_MultipleCategoriesAggTypesAndFormatMasks() throws ModelerException {
+  public void testPopulateCategories_MultipleCategoriesAggregationTypesAndFormatMasks() throws ModelerException {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(LOCALE);
     LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
     helper.autoModelFlat(workspace);
@@ -102,7 +139,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
           }
         }
         assertNotNull(orig);
-        assertEquals(orig.getAggTypeDesc(), lCol.getAggregationType().name());
+        assertEquals(orig.getDefaultAggregation(), lCol.getAggregationType());
         if (orig.getFormat().equals("NONE")) {
           if (orig.getLogicalColumn().getDataType() == DataType.NUMERIC) {
             assertTrue(((String) lCol.getProperty("mask")).indexOf("#") > -1);
@@ -133,7 +170,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     }
     field = workspace.createFieldForParentWithNode(cat, avaialbleField);
     field.setFormat("$#,###.##");
-    field.setAggTypeDesc("SUM");
+    field.setDefaultAggregation(AggregationType.SUM);
     cat.add(field);
 
     return cat;

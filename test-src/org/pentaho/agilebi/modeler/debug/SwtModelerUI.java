@@ -195,7 +195,7 @@ public class SwtModelerUI {
     fileOpenItem.addSelectionListener(new FileOpenItemListener());
     fileSaveItem.addSelectionListener(new FileSaveItemListener());
     fileExitItem.addSelectionListener(new FileExitItemListener());
-
+    
   }
   
   public void startDebugWindow(){

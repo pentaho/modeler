@@ -18,19 +18,21 @@ package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Vector;
+import java.util.*;
 
 public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregationMetaDataNode> {
 
-  private BaseAggregationMetaDataNode fieldMeta;
-  private Vector aggTypes;
+  protected BaseAggregationMetaDataNode fieldMeta;
+  protected Vector aggTypes;
   private String colName;
   private String locale;
+  protected AggregationType defaultAggregation;
 
   public MeasuresPropertiesForm(String panelId, String locale) {
     super(panelId);
@@ -69,8 +71,9 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     bf.createBinding(this, "notValid", "messages2", "visible");
     bf.createBinding(this, "validMessages", "messages2label", "value");
     bf.createBinding(this, "displayName", "displayname", "value");
-    bf.createBinding(this, "aggTypes", "aggregationtype", "elements");
-    bf.createBinding(this, "aggTypeDesc", "aggregationtype", "selectedItem");
+    bf.createBinding(this, "possibleAggregations", "defaultAggregation", "elements");
+    bf.createBinding(this, "defaultAggregation", "defaultAggregation", "selectedItem");
+
     bf.createBinding(this, "format", "formatstring", "selectedItem", new FormatStringConverter());
     bf.createBinding(this, "notValid", "fixMeasuresColumnsBtn", "visible");
     bf.createBinding(this, "columnName", "measure_column_name", "value");
@@ -97,10 +100,11 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
     setDisplayName(t.getName());
     setFormat(t.getFormat());
-    setAggTypes(t.getAggTypeDescValues());
-    setAggTypeDesc(t.getAggTypeDesc());
+    setPossibleAggregations(new Vector(t.getPossibleAggregations()));
+    setDefaultAggregation(t.getDefaultAggregation());
     setValidMessages(t.getValidationMessagesString());
     setColumnName(t.getLogicalColumn());
+    this.setDefaultAggregation(t.getDefaultAggregation());
     this.fieldMeta = t;
     showValidations();
   }
@@ -186,38 +190,33 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     this.firePropertyChange("format", null, format);
   }
 
-  @Bindable
-  public String getAggTypeDesc() {
-    if (fieldMeta == null) {
-      return null;
-    }
-    return fieldMeta.getAggTypeDesc();
-  }
 
   @Bindable
-  public void setAggTypeDesc( String aggTypeDesc ) {
-    String prevVal = null;
-
-    if (fieldMeta != null) {
-      fieldMeta.getAggTypeDesc();
-      fieldMeta.setAggTypeDesc(aggTypeDesc);
-    }
-    this.firePropertyChange("aggTypeDesc", prevVal, aggTypeDesc);
-  }
-
-
-  @Bindable
-  public Vector getAggTypes() {
+  public Vector getPossibleAggregations() {
     return aggTypes;
   }
 
 
   @Bindable
-  public void setAggTypes( Vector aggTypes ) {
+  public void setPossibleAggregations( Vector aggTypes ) {
     this.aggTypes = aggTypes;
-    this.firePropertyChange("aggTypes", null, aggTypes);
+    this.firePropertyChange("possibleAggregations", null, aggTypes);
   }
 
+  @Bindable
+  public AggregationType getDefaultAggregation() {
+    return defaultAggregation;
+  }
+
+  @Bindable
+  public void setDefaultAggregation(AggregationType defaultAggregation) {
+    AggregationType previousAggregation = this.defaultAggregation;
+    this.defaultAggregation = defaultAggregation;
+    if (fieldMeta != null) {
+      fieldMeta.setDefaultAggregation(defaultAggregation);
+    }
+    this.firePropertyChange("defaultAggregation", previousAggregation, defaultAggregation);
+  }
 
   /**
    * @author wseyler

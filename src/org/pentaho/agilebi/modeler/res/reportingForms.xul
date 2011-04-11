@@ -93,17 +93,29 @@
 
         <label value="${display_name}:" />
         <textbox id="fielddisplayname" />
+        
+        <label value="${possible_aggregations}:" />
+        <listbox id="field_possibleAggregationTypes" seltype="multi">
+            <listitem label="NONE" />
+            <listitem label="SUM" />
+            <listitem label="AVERAGE" />
+            <listitem label="MINIMUM" />
+            <listitem label="MAXIMUM" />
+            <listitem label="COUNT_DISTINCT" />
+        </listbox>
+
         <label value="${aggregation}:" />
-        <menulist id="fieldaggregationtype">
+        <menulist id="field_defaultAggregation">
           <menupopup>
             <menuitem label="NONE" />
-            <menuitem label="SUM" />
-            <menuitem label="AVERAGE" />
-            <menuitem label="MINIMUM" />
-            <menuitem label="MAXIMUM" />
-            <menuitem label="COUNT_DISTINCT" />
+            <menuitem label="#,###;(#,###)" />
+            <menuitem label="#,###.00;(#,###.00)" />
+            <menuitem label="$ #,###;($ #,###)" />
+            <menuitem label="$ #,###.00;($ #,###.00)" />
+            <menuitem label="#.#%;(#.#%)" />
           </menupopup>
         </menulist>
+
         <label value="${format}:" />
         <menulist id="fieldformatstring">
           <menupopup>

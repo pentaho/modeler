@@ -138,8 +138,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         }
 
         OlapMeasure measure = new OlapMeasure();
-        if (f.getAggTypeDesc() != null) {
-          lCol.setAggregationType(AggregationType.valueOf(f.getAggTypeDesc()));
+        if (f.getDefaultAggregation() != null) {
+          lCol.setAggregationType(f.getDefaultAggregation());
         }
         measure.setLogicalColumn(lCol);
         measures.add(measure);
@@ -208,7 +208,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         }
 
         lCol.setName(new LocalizedString(locale, fieldMeta.getName()));
-        AggregationType type = AggregationType.valueOf(fieldMeta.getAggTypeDesc());
+        AggregationType type = fieldMeta.getDefaultAggregation();
         lCol.setAggregationType(type);
 
         String formatMask = fieldMeta.getFormat();
@@ -225,12 +225,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             lCol.removeChildProperty("mask"); //$NON-NLS-1$
           }
         }
-
-        if (lCol.getDataType() != DataType.NUMERIC) {
-          lCol.setAggregationList(DEFAULT_NON_NUMERIC_AGGREGATION_LIST);
-        } else {
-          lCol.setAggregationList(DEFAULT_AGGREGATION_LIST);
-        }
+        lCol.setAggregationList(fieldMeta.getSelectedAggregations());
         cat.addLogicalColumn(lCol);
 
       }

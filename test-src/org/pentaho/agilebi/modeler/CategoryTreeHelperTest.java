@@ -32,6 +32,7 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.IPhysicalColumn;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.util.SQLModelGenerator;
 
 import java.util.ArrayList;
@@ -143,9 +144,9 @@ public class CategoryTreeHelperTest {
     assertFalse("newName".equals(two.getName()));
 
     // make sure we can independently manage agg types
-    one.setAggTypeDesc("SUM");
-    assertEquals("SUM", one.getAggTypeDesc());
-    assertEquals("NONE", two.getAggTypeDesc());
+    one.setDefaultAggregation(AggregationType.SUM);
+    assertEquals(AggregationType.SUM, one.getDefaultAggregation());
+    assertEquals(AggregationType.NONE, two.getDefaultAggregation());
 
   }
 

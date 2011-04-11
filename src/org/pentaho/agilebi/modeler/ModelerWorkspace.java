@@ -643,7 +643,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           theMeasureMD.setName(
               theMeasure.getLogicalColumn().getName(workspaceHelper.getLocale()));
           theMeasureMD.setFormat((String) theMeasure.getLogicalColumn().getProperty("mask")); //$NON-NLS-1$
-          theMeasureMD.setAggTypeDesc(theMeasure.getLogicalColumn().getAggregationType().toString());
+          theMeasureMD.setDefaultAggregation(theMeasure.getLogicalColumn().getAggregationType());
 
           theMeasureMD.setLogicalColumn(theMeasure.getLogicalColumn());
           this.model.getMeasures().add(theMeasureMD);
@@ -672,9 +672,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             colName,
             workspaceHelper.getLocale());
         if (aggType != null) {
-          field.setAggTypeDesc(aggType.name());
+          field.setDefaultAggregation(aggType);
         } else {
-          field.setAggTypeDesc(AggregationType.NONE.name());
+          field.setDefaultAggregation(AggregationType.NONE);
         }
         field.setLogicalColumn(col);
 
