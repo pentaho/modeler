@@ -17,22 +17,14 @@
 
 package org.pentaho.agilebi.modeler.util;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
-
-import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -114,23 +106,6 @@ public class ModelerSourceUtilTest extends AbstractModelerTest {
     LogicalTable copyTable = logicalModel.getLogicalTables().get(1);
     assertEquals(origTable.getId() + "_OLAP", copyTable.getId());
 
-    // make sure the column id's & names are not equal between the copies
-    List<LogicalColumn> orig = logicalModel.getLogicalTables().get(0).getLogicalColumns();
-    List<LogicalColumn> copy = logicalModel.getLogicalTables().get(1).getLogicalColumns();
-    for(int i = 0; i < physicalColumns; i++) {
-      assertCopiesAreKosher(orig.get(i), copy.get(i));
-    }
-  }
-
-  private void assertCopiesAreKosher(LogicalColumn lc1, LogicalColumn lc2) {
-    assertEquals(lc1.getPhysicalColumn(), lc2.getPhysicalColumn());
-
-    String newColName = lc1.getLogicalTable().getId().replaceAll("BT", "LC");
-    newColName += "_OLAP_" + lc1.getPhysicalColumn().getId();
-    
-    assertEquals(newColName, lc2.getId());
-    assertEquals(lc1.getAggregationType(), lc2.getAggregationType());
-    assertEquals(lc1.getDataType(), lc2.getDataType());
   }
 
   public static DatabaseMeta getDatabaseMeta() {

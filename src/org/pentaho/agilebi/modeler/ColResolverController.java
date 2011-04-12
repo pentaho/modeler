@@ -43,7 +43,7 @@ public class ColResolverController extends AbstractXulEventHandler {
   public void show( ModelerWorkspace workspace, ColumnBackedNode node ) {
     this.workspace = workspace;
     this.node = node;
-    availableCols.setElements(workspace.getAvailableFields());
+    availableCols.setElements(workspace.getAvailableTables().getAsAvailableTablesList().get(0).getAvailableFields());
     dialog.show();
   }
 
@@ -57,7 +57,7 @@ public class ColResolverController extends AbstractXulEventHandler {
   public void done() {
     int idx = this.availableCols.getSelectedIndex();
     if (idx > -1) {
-      ColumnBackedNode cnode = workspace.createColumnBackedNode(workspace.getAvailableFields().get(idx), workspace.getCurrentModelerPerspective());
+      ColumnBackedNode cnode = workspace.createColumnBackedNode(workspace.getAvailableTables().getAsAvailableTablesList().get(0).getAvailableFields().get(idx), workspace.getCurrentModelerPerspective());
       LogicalColumn lCol = cnode.getLogicalColumn();
       node.setLogicalColumn(lCol);
       workspace.setDirty(true);

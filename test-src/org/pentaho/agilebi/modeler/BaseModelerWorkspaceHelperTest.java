@@ -1,19 +1,8 @@
 package org.pentaho.agilebi.modeler;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
-import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
-import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
-import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
-import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
+import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.DataType;
 
@@ -41,7 +30,9 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
   public void testPopulateCategories() throws ModelerException {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(LOCALE);
     LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
-    int fields = workspace.getAvailableFields().size();
+    List<AvailableTable> tablesList = workspace.getAvailableTables().getAsAvailableTablesList();
+
+    int fields = tablesList.get(0).getAvailableFields().size();
     helper.autoModelFlat(workspace);
     helper.autoModelRelationalFlat(workspace);
     helper.populateCategories(workspace);
@@ -49,9 +40,9 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     List<Category> categories = logicalModel.getCategories();
 
     assertEquals(1, categories.size());
-    assertEquals(fields, workspace.getAvailableFields().size());
+    assertEquals(fields, tablesList.get(0).getAvailableFields().size());
     System.out.println(logicalModel.getLogicalTables().get(0).getLogicalColumns().size());
-    assertEquals(workspace.getAvailableFields().size(), categories.get(0).getLogicalColumns().size());
+    assertEquals(tablesList.get(0).getAvailableFields().size(), categories.get(0).getLogicalColumns().size());
 
     for (LogicalColumn lCol : categories.get(0).getLogicalColumns()) {
       FieldMetaData orig = null;
@@ -84,9 +75,11 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     spiceUpRelationalModel(workspace.getRelationalModel());
     helper.populateCategories(workspace);
 
+    List<AvailableTable> tablesList = workspace.getAvailableTables().getAsAvailableTablesList();
+
     List<Category> categories = logicalModel.getCategories();
     assertEquals(2, categories.size());
-    assertEquals(workspace.getAvailableFields().size(), categories.get(0).getLogicalColumns().size());
+    assertEquals(tablesList.get(0).getAvailableFields().size(), categories.get(0).getLogicalColumns().size());
     System.out.println(logicalModel.getLogicalTables().get(0).getLogicalColumns().size());
 
     assertEquals(1, categories.get(1).getLogicalColumns().size());
@@ -122,10 +115,11 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
 
   private CategoryMetaData createCategoryMetaData(String name) {
     CategoryMetaData cat = new CategoryMetaData(name);
+    List<AvailableTable> tablesList = workspace.getAvailableTables().getAsAvailableTablesList();
 
     FieldMetaData field = null;
     AvailableField avaialbleField = null;
-    for (AvailableField af : workspace.getAvailableFields()) {
+    for (AvailableField af : tablesList.get(0).getAvailableFields()) {
       if (af.getPhysicalColumn().getDataType() == DataType.NUMERIC) {
         avaialbleField = af;
         break;
@@ -138,27 +132,5 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
 
     return cat;
   }
-
-  @Test
-  public void testGetCorrespondingOlapColumnId() {
-    String origTableId = "BT_CUSTOMERS_CUSTOMERS";
-    String origColumnId = "LC_CUSTOMERS_CUSTOMERNUMBER";
-    String olapColumnId = "LC_CUSTOMERS_CUSTOMERS_OLAP_CUSTOMERNUMBER";
-
-    LogicalTable ltOrig = new LogicalTable();
-    ltOrig.setId(origTableId);
-
-    LogicalColumn lcOrig = new LogicalColumn();
-    lcOrig.setId(origColumnId);
-    lcOrig.setLogicalTable(ltOrig);
-    IPhysicalColumn pc = new SqlPhysicalColumn();
-    pc.setId("CUSTOMERNUMBER");
-    lcOrig.setPhysicalColumn(pc);
-
-    assertEquals(olapColumnId, BaseModelerWorkspaceHelper.getCorrespondingOlapColumnId(lcOrig));
-
-  }
-
-
 
 }

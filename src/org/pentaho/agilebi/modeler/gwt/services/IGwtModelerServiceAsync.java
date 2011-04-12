@@ -1,10 +1,7 @@
 package org.pentaho.agilebi.modeler.gwt.services;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.gwt.BogoPojo;
-import org.pentaho.agilebi.modeler.nodes.AvailableFieldCollection;
-import org.pentaho.agilebi.modeler.nodes.MainModelNode;
 import org.pentaho.metadata.model.Domain;
 
 /**

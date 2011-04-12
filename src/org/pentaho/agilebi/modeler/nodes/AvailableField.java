@@ -19,54 +19,31 @@ package org.pentaho.agilebi.modeler.nodes;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
 
-public class AvailableField implements Serializable {
+public class AvailableField extends AbstractAvailableItem implements Serializable, IAvailableItem {
 
   private static final long serialVersionUID = -4430951279551589688L;
   
   private transient IPhysicalColumn physicalColumn;
-  private String name, displayName;
+
+  private static final String FIELD_IMAGE = "";
 
   public static String MEASURE_PROP = "potential_measure";
 
   public AvailableField(){
-    
+    setImage(FIELD_IMAGE);
   }
-
 
   public AvailableField(IPhysicalColumn physicalColumn) {
     setPhysicalColumn(physicalColumn);
     setName(physicalColumn.getName(LocalizedString.DEFAULT_LOCALE));
-    setDisplayName(physicalColumn.getName(LocalizedString.DEFAULT_LOCALE));
+    setImage(FIELD_IMAGE);
   }
-
-  @Bindable
-  public String getName() {
-    return name;
-  }
-
-  @Bindable
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  @Bindable
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  @Bindable
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
-
 
   public String toString() {
-    return name;
+    return getName();
   }
 
   public IPhysicalColumn getPhysicalColumn() {
@@ -93,5 +70,5 @@ public class AvailableField implements Serializable {
   public void setPossibleMeasure(boolean possibleMeasure){
     getPhysicalColumn().setProperty(MEASURE_PROP, ""+possibleMeasure);
   }
-  
+
 }
