@@ -49,28 +49,38 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   public void addField(Object[] selectedFields) {
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setRelationalModelIsChanging(true);
-    AbstractMetaDataModelNode theNode = null;
-    Object selectedTreeItem = getSelectedTreeItem();
 
     for (Object obj : selectedFields) {
-      if (obj instanceof AvailableField) {
+      if (obj instanceof AvailableTable) {
+        AvailableTable table = (AvailableTable)obj;
+        for (AvailableField field : table.getAvailableFields()) {
+          addAvailableField(field);
+        }
+      } else if (obj instanceof AvailableField) {
         AvailableField availableField = (AvailableField)obj;
-        // depending on the parent
-        if (selectedTreeItem == null) {
-          // null - cannot add fields at this level
-        } else if (selectedTreeItem instanceof CategoryMetaData) {
-          // category - add as a field
-          theNode = workspace.createFieldForParentWithNode((CategoryMetaData) selectedTreeItem, availableField);
-          CategoryMetaData theCategory = (CategoryMetaData) selectedTreeItem;
-          theCategory.add((FieldMetaData) theNode);
-        }
-        if (theNode != null) {
-          theNode.setParent((AbstractMetaDataModelNode) selectedTreeItem);
-        }
+        addAvailableField(availableField);
       }
     }
     workspace.setRelationalModelIsChanging(prevChangeState);
   }
+
+  private void addAvailableField(AvailableField availableField) {
+    AbstractMetaDataModelNode theNode = null;
+    Object selectedTreeItem = getSelectedTreeItem();
+    // depending on the parent
+    if (selectedTreeItem == null) {
+      // null - cannot add fields at this level
+    } else if (selectedTreeItem instanceof CategoryMetaData) {
+      // category - add as a field
+      theNode = workspace.createFieldForParentWithNode((CategoryMetaData) selectedTreeItem, availableField);
+      CategoryMetaData theCategory = (CategoryMetaData) selectedTreeItem;
+      theCategory.add((FieldMetaData) theNode);
+    }
+    if (theNode != null) {
+      theNode.setParent((AbstractMetaDataModelNode) selectedTreeItem);
+    }
+  }
+
   @Override
   public void clearTreeModel(){
     workspace.setRelationalModelIsChanging(true);

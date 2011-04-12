@@ -1,11 +1,13 @@
 package org.pentaho.agilebi.modeler;
 
-import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
+import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.metadata.model.LogicalModel;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * User: nbaker
@@ -17,14 +19,15 @@ public class AvailableColumnsTest extends AbstractModelerTest{
   public void testAvailableColumnPossibleMeasure() throws ModelerException {
     super.generateTestDomain();
     LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
-    int fields = workspace.getAvailableFields().size();
+    List<AvailableTable> tablesList = workspace.getAvailableTables().getAsAvailableTablesList();
+    int fields = tablesList.get(0).getAvailableFields().size();
     assertTrue(fields > 2);
 
     // replicating work that would be done by the auto-modeler
-    AvailableField field1 = workspace.getAvailableFields().get(0);
+    AvailableField field1 = tablesList.get(0).getAvailableFields().get(0);
     field1.setPossibleMeasure(true);
 
-    AvailableField field2 = workspace.getAvailableFields().get(1);
+    AvailableField field2 = tablesList.get(0).getAvailableFields().get(1);
     field2.setPossibleMeasure(false);
 
     assertTrue(field1.isPossibleMeasure());

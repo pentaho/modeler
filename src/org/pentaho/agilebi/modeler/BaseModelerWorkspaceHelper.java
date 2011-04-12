@@ -234,12 +234,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   }
 
 
-  public static String getCorrespondingOlapColumnId(LogicalColumn lc) {
-    String tableId = lc.getLogicalTable().getId().replaceAll("BT", "LC");
-    String olapColId = tableId + OLAP_SUFFIX + "_" + lc.getPhysicalColumn().getId();
-    return olapColId;
-  }
-
   public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
     String locale = "en-US";
     int tableCount = model.getLogicalTables().size();
@@ -271,18 +265,19 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
     }
 
-    List<AvailableField> fields = workspace.getAvailableFields();
-    for( AvailableField field : fields ) {
-      LogicalTable parentTable = workspace.findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), ModelerPerspective.ANALYSIS);
-      DataType dataType = field.getPhysicalColumn().getDataType();
-      if( dataType == DataType.NUMERIC) {
-        // create a measure
-        MeasureMetaData measure = workspace.createMeasureForNode(field);
-        workspace.getModel().getMeasures().add(measure);
-      }
-      // create a dimension
-      workspace.addDimensionFromNode(workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
+    for (AvailableTable table : workspace.getAvailableTables().getAsAvailableTablesList()) {
+      for( AvailableField field : table.getAvailableFields() ) {
+        LogicalTable parentTable = workspace.findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), ModelerPerspective.ANALYSIS);
+        DataType dataType = field.getPhysicalColumn().getDataType();
+        if( dataType == DataType.NUMERIC) {
+          // create a measure
+          MeasureMetaData measure = workspace.createMeasureForNode(field);
+          workspace.getModel().getMeasures().add(measure);
+        }
+        // create a dimension
+        workspace.addDimensionFromNode(workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
 
+      }
     }
     workspace.setModelIsChanging(prevChangeState);
     workspace.setSelectedNode(workspace.getModel());
@@ -344,18 +339,25 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     List<? extends IPhysicalTable> tables = workspace.getDomain().getPhysicalModels().get(0).getPhysicalTables();
     Set<String> tableIds = new HashSet<String>();
+
+    List<AvailableTable> tablesList = workspace.getAvailableTables().getAsAvailableTablesList();
+
     for (IPhysicalTable table : tables) {
       if (!tableIds.contains(table.getId())) {
         tableIds.add(table.getId());
         String catName = getCleanCategoryName(table.getName(getLocale()), workspace, tableIds.size());
         CategoryMetaData category = new CategoryMetaData(catName);
 
-        List<AvailableField> fields = workspace.getAvailableFields();
-        for( AvailableField field : fields ) {
-          if (field.getPhysicalColumn().getPhysicalTable().getId().equals(table.getId())) {
-            category.add(workspace.createFieldForParentWithNode(category, field));
+        for (AvailableTable aTable : tablesList) {
+          if (aTable.isSameUnderlyingPhysicalTable(table)) {
+            for( AvailableField field : aTable.getAvailableFields() ) {
+              if (field.getPhysicalColumn().getPhysicalTable().getId().equals(table.getId())) {
+                category.add(workspace.createFieldForParentWithNode(category, field));
+              }
+            }
           }
         }
+
         relationalModelNode.getCategories().add(category);
       }
     }

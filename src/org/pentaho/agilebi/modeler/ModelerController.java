@@ -35,7 +35,10 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * XUL Event Handler for the modeling interface. This class interacts with a ModelerModel to store state.
@@ -55,7 +58,7 @@ public class ModelerController extends AbstractXulEventHandler {
   private XulTree dimensionTree;
   private XulTree categoriesTree;
   private XulDeck propDeck;
-  private AvailableField[] selectedFields;
+  private IAvailableItem[] selectedFields = new IAvailableItem[]{};
 
   private XulDeck modelDeck;
   private XulVbox reportingPanel;
@@ -118,6 +121,13 @@ public class ModelerController extends AbstractXulEventHandler {
   }
 
   @Bindable
+  public void setSelectedFieldsChanged(Object selected) {
+    if (selected != null && selected instanceof IAvailableItem) {
+      selectedFields = new IAvailableItem[]{(IAvailableItem)selected};
+    }
+  }
+
+  @Bindable
   public void init() throws ModelerException {
 
     bf.setDocument(document);
@@ -135,10 +145,10 @@ public class ModelerController extends AbstractXulEventHandler {
     modelTabbox = (XulTabbox) document.getElementById("modelTabbox");
 
     bf.setBindingType(Type.ONE_WAY);
-    fieldListBinding = bf.createBinding(workspace, "availableFields", FIELD_LIST_ID,
+    fieldListBinding = bf.createBinding(workspace.getAvailableTables(), "children", FIELD_LIST_ID,
         "elements"); //$NON-NLS-1$ //$NON-NLS-2$
-    selectedFieldsBinding = bf.createBinding(FIELD_LIST_ID, "selectedItems", this,
-        "selectedFields"); //$NON-NLS-1$//$NON-NLS-2$
+    selectedFieldsBinding = bf.createBinding(FIELD_LIST_ID, "selectedItem", this,
+        "selectedFieldsChanged"); //$NON-NLS-1$//$NON-NLS-2$
 
     modelTreeBinding = bf.createBinding(workspace, "model", dimensionTree, "elements"); //$NON-NLS-1$//$NON-NLS-2$
     relModelTreeBinding = bf.createBinding(workspace, "relationalModel", categoriesTree, "elements"); //$NON-NLS-1$//$NON-NLS-2$
@@ -341,11 +351,14 @@ public class ModelerController extends AbstractXulEventHandler {
                 "" + retVal, workspaceHelper.getLocale()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
             if (selectedFields.length > 0) {
-              AvailableField f = selectedFields[0];
-              if(f != null){
-                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
-                theMeasure.setLogicalColumn(node.getLogicalColumn());
-                workspace.setDirty(true);
+              IAvailableItem item = selectedFields[0];
+              if (item instanceof AvailableField) {
+                AvailableField f = (AvailableField)selectedFields[0];
+                if(f != null){
+                  ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
+                  theMeasure.setLogicalColumn(node.getLogicalColumn());
+                  workspace.setDirty(true);
+                }
               }
             }
 
@@ -419,10 +432,13 @@ public class ModelerController extends AbstractXulEventHandler {
             LevelMetaData theLevel = new LevelMetaData(theHierarchy, "" + retVal);
 
             if (selectedFields.length > 0) {
-              AvailableField f = selectedFields[0];
-              ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
-              theLevel.setLogicalColumn(node.getLogicalColumn());
-              workspace.setDirty(true);
+              IAvailableItem item = selectedFields[0];
+              if (item instanceof AvailableField) {
+                AvailableField f = (AvailableField)selectedFields[0];
+                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
+                theLevel.setLogicalColumn(node.getLogicalColumn());
+                workspace.setDirty(true);
+              }
             }
 
             theLevel.validate();
@@ -528,10 +544,13 @@ public class ModelerController extends AbstractXulEventHandler {
             FieldMetaData theField = new FieldMetaData(theCategory, "" + retVal, "", "" + retVal, workspaceHelper.getLocale());
 
             if (selectedFields.length > 0) {
-              AvailableField f = selectedFields[0];
-              ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.REPORTING);
-              theField.setLogicalColumn(node.getLogicalColumn());
-              workspace.setDirty(true);
+              IAvailableItem item = selectedFields[0];
+              if (item instanceof AvailableField) {
+                AvailableField f = (AvailableField)selectedFields[0];
+                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.REPORTING);
+                theField.setLogicalColumn(node.getLogicalColumn());
+                workspace.setDirty(true);
+              }
             }
 
             theField.validate();
@@ -707,9 +726,13 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public void setSelectedFields( Object[] aFields ) {
-    AvailableField[] f = new AvailableField[aFields.length];
+    IAvailableItem[] f = new IAvailableItem[aFields.length];
     for(int i=0; i<aFields.length; i++){
-      f[i] = (AvailableField)aFields[i];
+      if (aFields[i] instanceof AvailableField) {
+        f[i] = (AvailableField)aFields[i];
+      } else if (aFields[i] instanceof AvailableTable) {
+        f[i] = (AvailableTable)aFields[i];
+      }
     }
     selectedFields = f;
   }
@@ -717,7 +740,7 @@ public class ModelerController extends AbstractXulEventHandler {
   @Bindable
   public Object[] getSelectedFields() {
     if (selectedFields == null) {
-      selectedFields = new AvailableField[]{};
+      selectedFields = new IAvailableItem[]{};
     }
     return selectedFields;
   }

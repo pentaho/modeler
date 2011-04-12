@@ -41,18 +41,25 @@
           <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()" tooltiptext="${add}"/>
         </toolbar>
 
-        <listbox id="fieldList" flex="1" seltype="multi"
-          pen:binding="name" ondrag="modeler.onFieldListDrag()"
-          pen:drageffect="copy">
-          <listitem label="field" />
-          <listitem label="field" />
-          <listitem label="field" />
-          <listitem label="field" />
-          <listitem label="field" />
-          <listitem label="field" />
-        </listbox>
-      </editpanel>
+        <tree id="fieldList" flex="1" editable="false" hiddenrootnode="true" preserveselection="true">
+          <treecols>
+            <treecol flex="1" label="" primary="true"
+              pen:binding="name" pen:childrenbinding="children"
+              pen:imagebinding="image" editable="false"
+              pen:expandedbinding="expanded"/>
+          </treecols>
+          <treechildren>
+            <treeitem container="true" open="true">
+              <treerow>
+                <treecell label="" />
+              </treerow>
+              <treechildren></treechildren>
+            </treeitem>
+          </treechildren>
 
+        </tree>
+
+      </editpanel>
       <deck id="modelDeck" flex="1">
 
         <tabbox id="modelTabbox" flex="1" >

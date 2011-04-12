@@ -12,18 +12,18 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2010 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
  */
+
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.ui.xul.util.AbstractModelList;
-
-import java.io.Serializable;
-
-public class AvailableFieldCollection extends AbstractModelList<AvailableField> implements Serializable {
-
-  public AvailableFieldCollection(){
-
-  }
-
+/**
+ * Created: 4/11/11
+ *
+ * @author rfellows
+ */
+public interface IAvailableItem {
+  String getName();
+  String getDisplayName();
+  String getImage();
 }

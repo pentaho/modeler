@@ -113,10 +113,10 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
   }
 
   private boolean isColumnReferencedInAvailableFields(LogicalColumn lc) {
-    for (AvailableField field : workspace.getAvailableFields()) {
-      if (field.getPhysicalColumn().getId().equals(lc.getPhysicalColumn().getId())) {
-        return true;
-      }
+    for (AvailableTable table : workspace.getAvailableTables().getAsAvailableTablesList()) {
+        if (table.containsUnderlyingPhysicalColumn(lc.getPhysicalColumn())) {
+          return true;
+        }
     }
     return false;
   }

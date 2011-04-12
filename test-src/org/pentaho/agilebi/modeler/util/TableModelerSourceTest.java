@@ -17,10 +17,16 @@
 
 package org.pentaho.agilebi.modeler.util;
 
+import org.junit.Test;
+
 /**
  * Created: 3/31/11
  *
  * @author rfellows
  */
 public class TableModelerSourceTest {
+  @Test
+  public void test() {
+    // come back to this
+  }
 }
