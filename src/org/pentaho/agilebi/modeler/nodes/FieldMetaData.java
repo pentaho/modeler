@@ -5,6 +5,9 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created: 3/18/11
  *
@@ -26,44 +29,20 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
   }
 
   @Override
-  protected void setNumericAggTypes() {
-    numericAggTypes.add("NONE");
-    numericAggTypes.add("SUM");
-    numericAggTypes.add("AVERAGE");
-    numericAggTypes.add("MINIMUM");
-    numericAggTypes.add("MAXIMUM");
-    numericAggTypes.add("COUNT");
-    numericAggTypes.add("COUNT_DISTINCT");
+  public List<AggregationType> getNumericAggregationTypes() {
+    return Arrays.asList(AggregationType.NONE,
+        AggregationType.SUM,
+        AggregationType.AVERAGE,
+        AggregationType.MINIMUM,
+        AggregationType.MAXIMUM,
+        AggregationType.COUNT,
+        AggregationType.COUNT_DISTINCT);
   }
 
 
   @Override
-  protected void setTextAggTypes() {
-    textAggTypes.add("NONE");
-    textAggTypes.add("COUNT");
-    textAggTypes.add("COUNT_DISTINCT");
-  }
-
-  @Bindable
-  public String getAggTypeDesc() {
-    if (logicalColumn == null) {
-      return null;
-    }
-    if (aggTypeDesc == null || "".equals(aggTypeDesc)) {
-      if (logicalColumn.getAggregationType() != null) {
-        aggTypeDesc = logicalColumn.getAggregationType().name();
-      } else {
-        switch (logicalColumn.getDataType()) {
-          case NUMERIC:
-            aggTypeDesc = AggregationType.SUM.toString();
-            break;
-          default:
-            aggTypeDesc = "NONE";
-        }
-      }
-
-    }
-    return aggTypeDesc;
+  public List<AggregationType> getTextAggregationTypes() {
+    return Arrays.asList(AggregationType.NONE, AggregationType.COUNT, AggregationType.COUNT_DISTINCT);
   }
 
   public CategoryMetaData getParent() {
@@ -98,6 +77,24 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
       validationMessages.add("The column mapped to the field ("+getName()+") is missing or no longer available.");
       valid = false;
     }
+  }
+
+
+  @Bindable
+  public AggregationType getDefaultAggregation() {
+    if (logicalColumn == null) {
+      return null;
+    }
+    if (defaultAggregation == null) {
+      switch (logicalColumn.getDataType()) {
+        case NUMERIC:
+          defaultAggregation = AggregationType.SUM;
+          break;
+        default:
+          defaultAggregation = AggregationType.NONE;
+      }
+    }
+    return defaultAggregation;
   }
 
 }

@@ -1,10 +1,12 @@
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -20,35 +22,25 @@ public class BaseAggregationMetaDataNode extends BaseColumnBackedMetaData {
   protected String format = FORMAT_NONE;
   protected String fieldTypeDesc = "---";
   protected String levelTypeDesc = "---";
-  protected String aggTypeDesc = null;
+  protected AggregationType defaultAggregation;
   protected String displayName;
 
   protected String locale;
 
-  protected List<String> numericAggTypes = new ArrayList<String>();
+  protected List<AggregationType> selectedAggregations = new Vector<AggregationType>();
+  private List<AggregationType> possibleAggregations;
 
-  {
-    setNumericAggTypes();
+  public List<AggregationType> getNumericAggregationTypes() {
+    return Arrays.asList(AggregationType.SUM
+        , AggregationType.AVERAGE
+        , AggregationType.MINIMUM
+        , AggregationType.MAXIMUM
+        , AggregationType.COUNT
+        , AggregationType.COUNT_DISTINCT);
   }
 
-  protected void setNumericAggTypes() {
-    numericAggTypes.add("SUM");
-    numericAggTypes.add("AVERAGE");
-    numericAggTypes.add("MINIMUM");
-    numericAggTypes.add("MAXIMUM");
-    numericAggTypes.add("COUNT");
-    numericAggTypes.add("COUNT_DISTINCT");
-  }
-
-  protected List<String> textAggTypes = new ArrayList<String>();
-
-  {
-    setTextAggTypes();
-  }
-
-  protected void setTextAggTypes() {
-    textAggTypes.add("COUNT");
-    textAggTypes.add("COUNT_DISTINCT");
+  public List<AggregationType> getTextAggregationTypes() {
+    return Arrays.asList(AggregationType.COUNT, AggregationType.COUNT_DISTINCT);
   }
 
   public BaseAggregationMetaDataNode(String locale) {
@@ -105,42 +97,67 @@ public class BaseAggregationMetaDataNode extends BaseColumnBackedMetaData {
   }
 
   @Bindable
-  public String getAggTypeDesc() {
+  public AggregationType getDefaultAggregation() {
     if (logicalColumn == null) {
       return null;
     }
-    if (aggTypeDesc == null || "".equals(aggTypeDesc)) {
+    if (defaultAggregation == null) {
       switch (logicalColumn.getDataType()) {
         case NUMERIC:
-          aggTypeDesc = "SUM";
+          defaultAggregation = AggregationType.SUM;
           break;
         default:
-          aggTypeDesc = "COUNT";
+          defaultAggregation = AggregationType.COUNT;
       }
     }
-    return aggTypeDesc;
+    return defaultAggregation;
   }
 
   @Bindable
-  public void setAggTypeDesc( String aggTypeDesc ) {
-    this.aggTypeDesc = aggTypeDesc;
+  public void setDefaultAggregation( AggregationType aggType ) {
+    this.defaultAggregation = aggType;
   }
 
-  // TODO: generate this based on field type
+  @Override
+  public void setLogicalColumn(LogicalColumn col) {
+    DataType previousDataType = null;
+    if(logicalColumn != null){
+      previousDataType = logicalColumn.getDataType();
+    }
+    super.setLogicalColumn(col);
+    DataType newDataType = logicalColumn.getDataType();
+    if(previousDataType == null || previousDataType != newDataType){
+      if (logicalColumn.getDataType() == DataType.NUMERIC) {
+        setPossibleAggregations(getNumericAggregationTypes());
+      } else {
+        setPossibleAggregations(getTextAggregationTypes());
+      }
+    }
+  }
+
+  private void setPossibleAggregations(List<AggregationType> aggregationTypes) {
+    this.possibleAggregations = aggregationTypes;
+    firePropertyChange("possibleAggregations", null, this.possibleAggregations);
+    setSelectedAggregations(aggregationTypes);
+  }
+
+  public List<AggregationType> getPossibleAggregations() {
+    return possibleAggregations;
+  }
 
   @Bindable
-  public Vector getAggTypeDescValues() {
-    if (logicalColumn == null) {
-      return null;
-    }
-    if (logicalColumn.getDataType() == DataType.NUMERIC) {
-      return new Vector<String>(numericAggTypes);
-    } else {
-      return new Vector<String>(textAggTypes);
-    }
+  public List<AggregationType> getSelectedAggregations() {
+    return selectedAggregations;
   }
 
-  public boolean equals( BaseAggregationMetaDataNode o ) {
+  @Bindable
+  public void setSelectedAggregations(List<AggregationType> selectedAggregations) {
+    this.selectedAggregations = selectedAggregations;
+    firePropertyChange("selectedAggregations", null, this.selectedAggregations);
+  }
+
+
+  public boolean equals( Object o ) {
     if (o == null || o instanceof BaseAggregationMetaDataNode == false) {
       return false;
     }

@@ -148,10 +148,10 @@ public class BogoPojo implements Serializable {
   public void setDataType(DataType dataType) {
     this.dataType = dataType;
   }
-  public AggregationType getAggType() {
+  public AggregationType getAggregationType() {
     return aggType;
   }
-  public void setAggType(AggregationType aggType) {
+  public void setAggregationType(AggregationType aggType) {
     this.aggType = aggType;
   }
   public TargetColumnType getTargetColumnType() {

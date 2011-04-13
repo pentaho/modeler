@@ -44,16 +44,19 @@
       
       <label value="${display_name}:" />
       <textbox id="displayname" />
-      <label value="${aggregation}:" />
-      <menulist id="aggregationtype">
-        <menupopup>
-          <menuitem label="SUM" />
-          <menuitem label="AVERAGE" />
-          <menuitem label="MINIMUM" />
-          <menuitem label="MAXIMUM" />
-          <menuitem label="COUNT_DISTINCT" />
-        </menupopup>
-      </menulist>
+
+        <label value="${aggregation}:" />
+        <menulist id="defaultAggregation">
+          <menupopup>
+            <menuitem label="NONE" />
+            <menuitem label="#,###;(#,###)" />
+            <menuitem label="#,###.00;(#,###.00)" />
+            <menuitem label="$ #,###;($ #,###)" />
+            <menuitem label="$ #,###.00;($ #,###.00)" />
+            <menuitem label="#.#%;(#.#%)" />
+          </menupopup>
+        </menulist>
+
       <label value="${format}:" />
       <menulist id="formatstring">
         <menupopup>
