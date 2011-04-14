@@ -49,6 +49,7 @@ public class BogoPojo implements Serializable {
   LogicalColumn lColumn;
   LogicalRelationship lRelationship;
   Domain domain;
+  private AggregationType[] aggTypes;
 
   public Domain getDomain() {
     return domain;
@@ -154,6 +155,14 @@ public class BogoPojo implements Serializable {
   public void setAggregationType(AggregationType aggType) {
     this.aggType = aggType;
   }
+
+  public AggregationType[] getAggregationTypes() {
+    return aggTypes;
+  }
+  public void setAggregationTypes(AggregationType[] aggTypes) {
+    this.aggTypes = aggTypes;
+  }
+
   public TargetColumnType getTargetColumnType() {
     return targetColumnType;
   }
