@@ -21,10 +21,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created: 4/11/11
@@ -52,16 +49,24 @@ public class AvailableItemCollection extends AbstractModelList<IAvailableItem> i
   @Bindable
   @Override
   public List<IAvailableItem> getChildren() {
-    if (getAvailableTableCount() > 1) {
-      Collections.sort(this, itemComparator);
-      return super.getChildren();
-    } else {
+    int tableCount = getAvailableTableCount();
+    if (tableCount == 1) {
       return getAsFlatAvailableFieldsList();
+    } else {
+      Collections.sort(children, itemComparator);
+      return children;
     }
   }
 
+  @Bindable
+  @Override
+  public void setChildren(List<IAvailableItem> children) {
+    this.children = children;
+    fireCollectionChanged();
+  }
+
   public AvailableTable findAvailableTable(String tableName) {
-    for (IAvailableItem item : this) {
+    for (IAvailableItem item : children) {
       if (item instanceof AvailableTable) {
         AvailableTable table = (AvailableTable)item;
         if (table.getName().equals(tableName)) {
@@ -74,7 +79,7 @@ public class AvailableItemCollection extends AbstractModelList<IAvailableItem> i
 
   public int getAvailableTableCount() {
     int count = 0;
-    for (IAvailableItem item : this) {
+    for (IAvailableItem item : children) {
       if (item instanceof AvailableTable) {
         count++;
       }
@@ -84,7 +89,7 @@ public class AvailableItemCollection extends AbstractModelList<IAvailableItem> i
 
   public List<AvailableTable> getAsAvailableTablesList() {
     List<AvailableTable> tables = new ArrayList<AvailableTable>();
-    for (IAvailableItem item : this) {
+    for (IAvailableItem item : children) {
       if (item instanceof AvailableTable) {
         tables.add((AvailableTable)item);
       }
@@ -94,9 +99,10 @@ public class AvailableItemCollection extends AbstractModelList<IAvailableItem> i
 
   protected List<IAvailableItem> getAsFlatAvailableFieldsList() {
     List<IAvailableItem> fields = new ArrayList<IAvailableItem>();
-    for (IAvailableItem item : this) {
+    for (IAvailableItem item : children) {
       if (item instanceof AvailableTable) {
-        for (AvailableField field : ((AvailableTable)item).getAvailableFields()) {
+        AvailableTable table = (AvailableTable)item;
+        for (AvailableField field : table.getAvailableFields()) {
           fields.add(field);
         }
       }
@@ -140,4 +146,4 @@ public class AvailableItemCollection extends AbstractModelList<IAvailableItem> i
     }
   };
 
-}
+  }
