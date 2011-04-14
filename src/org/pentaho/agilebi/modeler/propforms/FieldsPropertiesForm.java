@@ -52,6 +52,9 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
   public void setObject(BaseAggregationMetaDataNode t) {
     selectedAggregations = null;
     super.setObject(t);
+    if(t == null){
+      return;
+    }
 
     // curent aggregation is blown away when setting the potential list. Cache it and reset it on the other-side
     AggregationType aggType = t.getDefaultAggregation();
