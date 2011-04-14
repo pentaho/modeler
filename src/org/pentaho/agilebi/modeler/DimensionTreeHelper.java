@@ -103,7 +103,7 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
     workspace.setModelIsChanging(prevChangeState);
   }
 
-  public void onDimensionTreeDrop( DropEvent event ) {
+  public void onModelDrop(DropEvent event) {
 
 
     boolean prevChangeState = workspace.isModelChanging();
@@ -183,8 +183,6 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
       } else if (obj instanceof MeasureMetaData) {
         if (event.getDropParent() instanceof MeasuresCollection) {
           MeasureMetaData measure = (MeasureMetaData) obj;
-          LogicalColumn col = workspace.findLogicalColumn(obj.toString());
-          measure.setLogicalColumn(col);
           newdata.add(measure);
         }
       }
@@ -202,6 +200,10 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
 
     List<Object> data = event.getDataTransfer().getData();
     for (Object obj : data) {
+
+      if(obj instanceof AbstractMetaDataModelNode && event.getDropParent() != null){
+        event.setAccepted(((AbstractMetaDataModelNode) event.getDropParent()).acceptsDrop(obj));
+      }
       if (obj instanceof AvailableField) {
         AvailableField availableField = (AvailableField) obj;
         // depending on the parent

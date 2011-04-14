@@ -111,4 +111,10 @@ public class LevelMetaData extends BaseColumnBackedMetaData implements Serializa
   }
 
 
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return false;
+  }
+
+
 }

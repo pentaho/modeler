@@ -161,4 +161,10 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
     }
     return true;
   }
+
+
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return obj instanceof AvailableField || obj instanceof FieldMetaData || obj instanceof AvailableTable;
+  }
 }

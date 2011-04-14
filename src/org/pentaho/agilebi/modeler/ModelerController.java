@@ -35,10 +35,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * XUL Event Handler for the modeling interface. This class interacts with a ModelerModel to store state.
@@ -96,19 +93,28 @@ public class ModelerController extends AbstractXulEventHandler {
     // nothing to do here
   }
 
-  public void onDimensionTreeDrag( DropEvent event ) {
+  public void onModelTreeDrag( DropEvent event ) {
     // todo, disable dragging of Root elements once we've updated the tree UI
   }
 
 
   @Bindable
   public void checkDropLocation(DropEvent event){
-    dimTreeHelper.checkDropLocation(event);
+    List<Object> data = event.getDataTransfer().getData();
+    for (Object obj : data) {
+      if(obj instanceof AbstractMetaDataModelNode && event.getDropParent() != null){
+        event.setAccepted(((AbstractMetaDataModelNode) event.getDropParent()).acceptsDrop(obj));
+      }
+    }
   }
 
   @Bindable
-  public void onDimensionTreeDrop( DropEvent event ) {
-    dimTreeHelper.onDimensionTreeDrop(event);
+  public void onModelTreeDrop( DropEvent event ) {
+    if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
+      dimTreeHelper.onModelDrop(event);
+    } else {
+      catTreeHelper.onModelDrop(event);
+    }
   }
 
   @Bindable

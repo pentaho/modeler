@@ -117,4 +117,8 @@ public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implemen
     return false;
   }
 
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return false;
+  }
 }

@@ -157,4 +157,8 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
   }
 
 
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof DimensionMetaData;
+  }
 }

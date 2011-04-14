@@ -97,4 +97,10 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
     return defaultAggregation;
   }
 
+
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return false;
+  }
+
 }

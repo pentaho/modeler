@@ -142,4 +142,9 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   }
 
 
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return obj instanceof AvailableField || obj instanceof HierarchyMetaData || obj instanceof LevelMetaData || obj instanceof MeasureMetaData;
+  }
+
 }
