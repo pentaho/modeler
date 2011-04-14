@@ -97,4 +97,8 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
     validateNode();
   }
 
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return obj instanceof AvailableField || obj instanceof FieldMetaData;
+  }
 }

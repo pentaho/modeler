@@ -48,4 +48,8 @@ public class MeasureMetaData extends BaseAggregationMetaDataNode {
   }
 
 
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return false;
+  }
 }

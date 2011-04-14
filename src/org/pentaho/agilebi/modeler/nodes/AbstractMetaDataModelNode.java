@@ -188,4 +188,5 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     this.expanded = expanded;
   }
 
+  public abstract boolean acceptsDrop(Object obj);
 }
