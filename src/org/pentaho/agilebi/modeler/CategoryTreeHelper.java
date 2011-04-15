@@ -6,6 +6,7 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
+import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
 import java.util.ArrayList;
@@ -111,6 +112,7 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
     workspace.setRelationalModelIsChanging(false, true);
   }
 
+  @Bindable
   public void onModelDrop(DropEvent event) {
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setRelationalModelIsChanging(true);
@@ -160,6 +162,41 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
     }
 
     workspace.setRelationalModelIsChanging(prevChangeState);
+  }
+
+  @Bindable
+  public void checkDropLocation(DropEvent event){
+    List<Object> data = event.getDataTransfer().getData();
+    Object dropTarget = event.getDropParent();
+    if (dropTarget == null) {
+      event.setAccepted(false);
+      return;
+    }
+
+    for (Object obj : data) {
+
+      if(obj instanceof AbstractMetaDataModelNode && event.getDropParent() != null){
+        event.setAccepted(((AbstractMetaDataModelNode) event.getDropParent()).acceptsDrop(obj));
+      }
+      if (obj instanceof AvailableTable) {
+        // dropping an AvailableTable, see if the drop location is valid
+        event.setAccepted(dropTarget instanceof CategoryMetaData || dropTarget instanceof CategoryMetaDataCollection);
+        return;
+      } else if (obj instanceof AvailableField) {
+        // dropping an AvailableField
+        event.setAccepted(dropTarget instanceof CategoryMetaData);
+        return;
+      } else if (obj instanceof FieldMetaData) {
+        // moving a field object around
+        event.setAccepted(dropTarget instanceof CategoryMetaData);
+        return;
+      } else if (obj instanceof CategoryMetaData) {
+        event.setAccepted(dropTarget instanceof CategoryMetaDataCollection);
+        return;
+      }
+      event.setAccepted(false);
+      return;
+    }
   }
 
 }

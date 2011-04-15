@@ -104,8 +104,6 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   }
 
   public void onModelDrop(DropEvent event) {
-
-
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
     List<Object> data = event.getDataTransfer().getData();
