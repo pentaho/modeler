@@ -41,7 +41,7 @@
           <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()" tooltiptext="${add}"/>
         </toolbar>
 
-        <tree id="fieldList" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" ondrag="modeler.onModelTreeDrag()" pen:drageffect="move">
+        <tree id="fieldList" flex="1" editable="false" hiddenrootnode="true" preserveselection="true" ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy">
           <treecols>
             <treecol flex="1" label="" primary="true"
               pen:binding="name" pen:childrenbinding="children"
