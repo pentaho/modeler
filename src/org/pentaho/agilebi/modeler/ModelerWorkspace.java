@@ -601,11 +601,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     boolean needsUpConverted = false;
     if (upConvertDesired) needsUpConverted = upConvertLegacyModel();
-
+    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
     for (IPhysicalTable table : domain.getPhysicalModels().get(0).getPhysicalTables()) {
-      availableTables.add(new AvailableTable(table));
+      items.add(new AvailableTable(table));
     }
-
+    availableTables.setChildren(items);
+    
     firePropertyChange("availableTables", null, getAvailableTables()); //$NON-NLS-1$
 
     LogicalModel lModel = domain.getLogicalModels().get(0);

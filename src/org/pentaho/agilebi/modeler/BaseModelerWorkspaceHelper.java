@@ -50,7 +50,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     Domain domain = model.getDomain();
     domain.setId( model.getModelName() );
 
-    LogicalTable logicalTable = domain.getLogicalModels().get(0).getLogicalTables().get(0);
+    LogicalTable logicalTable = model.getDomain().getLogicalModels().get(0).getLogicalTables().get(0);
 
     if (model.getModelSource() != null) {
       model.getModelSource().serializeIntoDomain(domain);
@@ -84,7 +84,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         for (HierarchyMetaData hier : dim) {
           OlapHierarchy hierarchy = new OlapHierarchy(dimension);
           hierarchy.setName(hier.getName());
-          hierarchy.setLogicalTable(logicalTable);
+//          hierarchy.setLogicalTable(logicalTable);
           List<OlapHierarchyLevel> levels = new ArrayList<OlapHierarchyLevel>();
 
           for (LevelMetaData lvl : hier) {
@@ -98,6 +98,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
                 lTable.addLogicalColumn(lCol);
               }
               level.setReferenceColumn(lCol);
+              hierarchy.setLogicalTable(lTable);
             }
             level.setHavingUniqueMembers(lvl.isUniqueMembers());
             levels.add(level);
@@ -110,7 +111,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         if(hierarchies.isEmpty()) {
           // create a default hierarchy
           OlapHierarchy defaultHierarchy = new OlapHierarchy(dimension);
-          defaultHierarchy.setLogicalTable(logicalTable);
+
+          defaultHierarchy.setLogicalTable(logicalTable);  // TODO: set this to what???
+
           hierarchies.add(defaultHierarchy);
         }
 
@@ -123,7 +126,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
 
       OlapCube cube = new OlapCube();
-      cube.setLogicalTable(logicalTable);
+
+      cube.setLogicalTable(logicalTable);  // TODO: set this to the fact table
+
       // TODO find a better way to generate default names
       //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
       cube.setName( model.getModelName() ); //$NON-NLS-1$
@@ -265,7 +270,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
     }
 
-    for (AvailableTable table : workspace.getAvailableTables().getAsAvailableTablesList()) {
+    List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
+    for (AvailableTable table : tableList) {
       for( AvailableField field : table.getAvailableFields() ) {
         LogicalTable parentTable = workspace.findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), ModelerPerspective.ANALYSIS);
         DataType dataType = field.getPhysicalColumn().getDataType();

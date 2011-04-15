@@ -19,8 +19,8 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 
-import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 
 /**
@@ -28,7 +28,7 @@ import java.io.Serializable;
  *
  * @author rfellows
  */
-public class AbstractAvailableItem implements XulEventSource, Serializable, IAvailableItem {
+public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractModelNode<T> implements XulEventSource, Serializable, IAvailableItem {
 
   private static final long serialVersionUID = 2938604837324271097L;
   private boolean expanded = true;
@@ -68,15 +68,5 @@ public class AbstractAvailableItem implements XulEventSource, Serializable, IAva
   @Bindable
   public void setImage(String image) {
     this.image = image;
-  }
-
-  @Override
-  public void addPropertyChangeListener(PropertyChangeListener listener) {
-    //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  @Override
-  public void removePropertyChangeListener(PropertyChangeListener listener) {
-    //To change body of implemented methods use File | Settings | File Templates.
   }
 }
