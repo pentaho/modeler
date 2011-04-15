@@ -33,10 +33,10 @@ import java.util.List;
  *
  * @author rfellows
  */
-public class AvailableTable extends AbstractAvailableItem implements Serializable, IAvailableItem {
+public class AvailableTable extends AbstractAvailableItem<AvailableField> implements Serializable, IAvailableItem {
 
-  private static final String FACT_TABLE_IMAGE = "";
-  private static final String DIM_TABLE_IMAGE = "";
+  private static final String FACT_TABLE_IMAGE = "images/table_fact.png";
+  private static final String DIM_TABLE_IMAGE = "images/table.png";
   private static final long serialVersionUID = -6428366981250876565L;
 
   private List<AvailableField> availableFields;
@@ -69,10 +69,6 @@ public class AvailableTable extends AbstractAvailableItem implements Serializabl
       }
     }
     Collections.sort(this.availableFields, itemComparator);
-  }
-
-  public String toString() {
-    return getName();
   }
 
   public List<AvailableField> getAvailableFields() {

@@ -211,4 +211,8 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
 
   }
 
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return false;
+  }
 }

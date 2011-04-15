@@ -98,6 +98,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
                 lTable.addLogicalColumn(lCol);
               }
               level.setReferenceColumn(lCol);
+              hierarchy.setLogicalTable(lTable);
             }
             level.setHavingUniqueMembers(lvl.isUniqueMembers());
             levels.add(level);
@@ -110,7 +111,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         if(hierarchies.isEmpty()) {
           // create a default hierarchy
           OlapHierarchy defaultHierarchy = new OlapHierarchy(dimension);
-          defaultHierarchy.setLogicalTable(logicalTable);
+
+          defaultHierarchy.setLogicalTable(logicalTable);  // TODO: set this to what???
+
           hierarchies.add(defaultHierarchy);
         }
 
@@ -121,21 +124,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         usages.add(usage);
 
       }
-	  
-      //Get fact table
-      LogicalTable factTable = null;
-	  /*LogicalTable factTable = logicalModel.getLogicalRelationships().get(0).getFromTable();
-	  for (LogicalTable lTable : logicalModel.getLogicalTables()) {
-          if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        	  if(factTable.getName(locale).equals(lTable.getName(locale))) {
-        		  factTable = lTable;
-        		  break;
-        	  }
-          }
-	  }*/
-	  
+      
       OlapCube cube = new OlapCube();	  
-      cube.setLogicalTable(factTable != null ? factTable : logicalTable);
+      cube.setLogicalTable(logicalTable);
       // TODO find a better way to generate default names
       //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
       cube.setName( model.getModelName() ); //$NON-NLS-1$
@@ -275,7 +266,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
     }
 
-    for (AvailableTable table : workspace.getAvailableTables().getAsAvailableTablesList()) {
+    List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
+    for (AvailableTable table : tableList) {
       for( AvailableField field : table.getAvailableFields() ) {
         LogicalTable parentTable = workspace.findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), ModelerPerspective.ANALYSIS);
         DataType dataType = field.getPhysicalColumn().getDataType();

@@ -128,7 +128,22 @@ import java.util.Set;
            generateLogicalRelationships(logicalModel, false);
            if(doOlap) {
         	   generateLogicalRelationships(logicalModel, true);
+        	   
+               //Get fact table
+               LogicalTable factTable = logicalModel.getLogicalRelationships().get(0).getFromTable();
+          	   for (LogicalTable lTable : logicalModel.getLogicalTables()) {
+          		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+          			   if(factTable.getName(locale).equals(lTable.getName(locale))) {
+          				   factTable = lTable;
+          				   break;
+          			   }
+          		   }
+          	   }
+          	   List<OlapCube> cubes = (List) logicalModel.getProperty("olap_cubes");
+          	   OlapCube cube = cubes.get(0);
+          	   cube.setLogicalTable(factTable);
            }
+           
          } catch (PentahoMetadataException e) {
            e.printStackTrace();
            logger.info(e.getLocalizedMessage());

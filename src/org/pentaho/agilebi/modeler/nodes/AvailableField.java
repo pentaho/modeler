@@ -28,7 +28,7 @@ public class AvailableField extends AbstractAvailableItem implements Serializabl
   
   private transient IPhysicalColumn physicalColumn;
 
-  private static final String FIELD_IMAGE = "";
+  private static final String FIELD_IMAGE = "images/column.png";
 
   public static String MEASURE_PROP = "potential_measure";
 
@@ -40,10 +40,6 @@ public class AvailableField extends AbstractAvailableItem implements Serializabl
     setPhysicalColumn(physicalColumn);
     setName(physicalColumn.getName(LocalizedString.DEFAULT_LOCALE));
     setImage(FIELD_IMAGE);
-  }
-
-  public String toString() {
-    return getName();
   }
 
   public IPhysicalColumn getPhysicalColumn() {

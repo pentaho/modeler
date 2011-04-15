@@ -144,9 +144,9 @@ public class CategoryTreeHelperTest {
     assertFalse("newName".equals(two.getName()));
 
     // make sure we can independently manage agg types
-    one.setDefaultAggregation(AggregationType.SUM);
-    assertEquals(AggregationType.SUM, one.getDefaultAggregation());
-    assertEquals(AggregationType.NONE, two.getDefaultAggregation());
+    one.setDefaultAggregation(AggregationType.MAXIMUM);
+    assertEquals(AggregationType.MAXIMUM, one.getDefaultAggregation());
+    assertEquals(AggregationType.SUM, two.getDefaultAggregation());
 
   }
 

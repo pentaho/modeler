@@ -146,4 +146,10 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
     firePropertyChange("valid", !isValid(), isValid());
 
   }
+
+
+  @Override
+  public boolean acceptsDrop(Object obj) {
+    return false;
+  }
 }
