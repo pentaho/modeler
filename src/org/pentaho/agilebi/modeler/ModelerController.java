@@ -203,7 +203,7 @@ public class ModelerController extends AbstractXulEventHandler {
             if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
               return getSelectedFields().length == 0 || dimTreeHelper.getSelectedTreeItem() == null || dimTreeHelper.getSelectedTreeItem() instanceof LevelMetaData || dimTreeHelper.getSelectedTreeItem() instanceof MainModelNode;
             } else {
-              return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || !(catTreeHelper.getSelectedTreeItem() instanceof CategoryMetaData);
+              return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || catTreeHelper.getSelectedTreeItem() instanceof FieldMetaData || catTreeHelper.getSelectedTreeItem() instanceof RelationalModelNode;
             }
           }
 

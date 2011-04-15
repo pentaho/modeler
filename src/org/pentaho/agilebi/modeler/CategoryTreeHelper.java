@@ -8,6 +8,8 @@ import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,35 +53,47 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setRelationalModelIsChanging(true);
 
+    Object targetParent = getSelectedTreeItem();
     for (Object obj : selectedFields) {
       if (obj instanceof AvailableTable) {
         AvailableTable table = (AvailableTable)obj;
+        if (targetParent instanceof CategoryMetaDataCollection) {
+          // create a new category for this table
+          CategoryMetaDataCollection catCollection = ((CategoryMetaDataCollection)targetParent);
+          CategoryMetaData cat = new CategoryMetaData(table.getName());
+          cat.setParent(catCollection);
+          catCollection.add(cat);
+          
+          targetParent = cat;
+        }
         for (AvailableField field : table.getAvailableFields()) {
-          addAvailableField(field);
+          addAvailableField(field, targetParent);
         }
       } else if (obj instanceof AvailableField) {
         AvailableField availableField = (AvailableField)obj;
-        addAvailableField(availableField);
+        addAvailableField(availableField, targetParent);
       }
     }
     workspace.setRelationalModelIsChanging(prevChangeState);
   }
 
-  private void addAvailableField(AvailableField availableField) {
+  private AbstractMetaDataModelNode addAvailableField(AvailableField availableField, Object targetParent) {
     AbstractMetaDataModelNode theNode = null;
-    Object selectedTreeItem = getSelectedTreeItem();
     // depending on the parent
-    if (selectedTreeItem == null) {
+    if (targetParent == null) {
       // null - cannot add fields at this level
-    } else if (selectedTreeItem instanceof CategoryMetaData) {
+    } else if (targetParent instanceof CategoryMetaData) {
       // category - add as a field
-      theNode = workspace.createFieldForParentWithNode((CategoryMetaData) selectedTreeItem, availableField);
-      CategoryMetaData theCategory = (CategoryMetaData) selectedTreeItem;
+      theNode = workspace.createFieldForParentWithNode((CategoryMetaData) targetParent, availableField);
+      CategoryMetaData theCategory = (CategoryMetaData) targetParent;
       theCategory.add((FieldMetaData) theNode);
+    } else if (targetParent instanceof FieldMetaData) {
+      // cant add field to a field
     }
     if (theNode != null) {
-      theNode.setParent((AbstractMetaDataModelNode) selectedTreeItem);
+      theNode.setParent((AbstractMetaDataModelNode) targetParent);
     }
+    return theNode;
   }
 
   @Override
@@ -98,6 +112,54 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   }
 
   public void onModelDrop(DropEvent event) {
-    // TODO: add drop logic here
+    boolean prevChangeState = workspace.isModelChanging();
+    workspace.setRelationalModelIsChanging(true);
+    List<Object> data = event.getDataTransfer().getData();
+    List<Object> newdata = new ArrayList<Object>();
+
+    for (Object obj : data) {
+      if (obj instanceof AvailableTable) {
+        AvailableTable table = (AvailableTable)obj;
+        if (event.getDropParent() instanceof CategoryMetaData) {
+          for (AvailableField field : table.getAvailableFields()) {
+            newdata.add(workspace.createFieldForParentWithNode((CategoryMetaData) event.getDropParent(), field));
+          }
+        } else if (event.getDropParent() instanceof CategoryMetaDataCollection ) {
+          // create a new category for this table?
+          CategoryMetaData cat = new CategoryMetaData(table.getName());
+          for (AvailableField field : table.getAvailableFields()) {
+            cat.add(workspace.createFieldForParentWithNode(cat, field));
+          }
+          newdata.add(cat);
+        } else {
+          event.setAccepted(false);
+          workspace.setModelIsChanging(prevChangeState, false);
+          return;
+        }
+      } else if (obj instanceof AvailableField) {
+        AvailableField availableField = (AvailableField)obj;
+        if (event.getDropParent() instanceof CategoryMetaData) {
+          newdata.add(workspace.createFieldForParentWithNode((CategoryMetaData) event.getDropParent(), availableField));
+        } else {
+          event.setAccepted(false);
+          workspace.setModelIsChanging(prevChangeState, false);
+          return;
+        }
+      } else if (obj instanceof FieldMetaData) {
+        FieldMetaData field = (FieldMetaData)obj;
+        if (event.getDropParent() instanceof CategoryMetaData) {
+          field.setParent((CategoryMetaData)event.getDropParent());
+          newdata.add(field);
+        }
+      }
+    }
+    if (newdata.size() == 0) {
+      event.setAccepted(false);
+    } else {
+      event.getDataTransfer().setData(newdata);
+    }
+
+    workspace.setRelationalModelIsChanging(prevChangeState);
   }
+
 }
