@@ -20,6 +20,7 @@ import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.pentaho.metadata.model.olap.*;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -593,11 +594,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.model.getMeasures().clear();
     this.relationalModel.getCategories().clear();
     this.availableTables.clear();
-
-    // remove all logical columns from existing logical tables
-    for (LogicalTable table : d.getLogicalModels().get(0).getLogicalTables()) {
-      table.getLogicalColumns().clear();
-    }
 
     boolean needsUpConverted = false;
     if (upConvertDesired) needsUpConverted = upConvertLegacyModel();

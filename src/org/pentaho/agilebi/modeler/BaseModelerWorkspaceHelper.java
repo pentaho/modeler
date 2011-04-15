@@ -45,24 +45,25 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     BaseModelerWorkspaceHelper.locale = locale;
   }
   
+  
+
+  
   public void populateDomain(ModelerWorkspace model) throws ModelerException {
 
     Domain domain = model.getDomain();
-    domain.setId( model.getModelName() );
+    domain.setId(model.getModelName());
 
-    LogicalTable logicalTable = domain.getLogicalModels().get(0).getLogicalTables().get(0);
+    LogicalModel logicalModel = domain.getLogicalModels().get(0);
+    LogicalTable logicalTable = logicalModel.getLogicalTables().get(0);
 
     if (model.getModelSource() != null) {
       model.getModelSource().serializeIntoDomain(domain);
     }
 
-    LogicalModel logicalModel = domain.getLogicalModels().get(0);
     logicalModel.setId("MODEL_1");
     logicalModel.setName( new LocalizedString(locale, model.getModelName() ) );
 
     populateCategories(model);
-
-
 
     // =========================== OLAP ===================================== //
 
@@ -84,7 +85,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         for (HierarchyMetaData hier : dim) {
           OlapHierarchy hierarchy = new OlapHierarchy(dimension);
           hierarchy.setName(hier.getName());
-          hierarchy.setLogicalTable(logicalTable);
           List<OlapHierarchyLevel> levels = new ArrayList<OlapHierarchyLevel>();
 
           for (LevelMetaData lvl : hier) {
@@ -93,7 +93,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             LogicalColumn lCol = lvl.getLogicalColumn();
             if (lCol != null) {
               LogicalTable lTable = lCol.getLogicalTable();
-
+              hierarchy.setLogicalTable(lTable);
               if (!lTable.getLogicalColumns().contains(lCol)) {
                 lTable.addLogicalColumn(lCol);
               }
@@ -121,9 +121,21 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         usages.add(usage);
 
       }
-
-      OlapCube cube = new OlapCube();
-      cube.setLogicalTable(logicalTable);
+	  
+      //Get fact table
+      LogicalTable factTable = null;
+	  /*LogicalTable factTable = logicalModel.getLogicalRelationships().get(0).getFromTable();
+	  for (LogicalTable lTable : logicalModel.getLogicalTables()) {
+          if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+        	  if(factTable.getName(locale).equals(lTable.getName(locale))) {
+        		  factTable = lTable;
+        		  break;
+        	  }
+          }
+	  }*/
+	  
+      OlapCube cube = new OlapCube();	  
+      cube.setLogicalTable(factTable != null ? factTable : logicalTable);
       // TODO find a better way to generate default names
       //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
       cube.setName( model.getModelName() ); //$NON-NLS-1$
@@ -147,14 +159,12 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
       cube.setOlapMeasures(measures);
 
-      LogicalModel lModel = domain.getLogicalModels().get(0);
-
       if (olapDimensions.size() > 0) { // Metadata OLAP generator doesn't like empty lists.
-        lModel.setProperty("olap_dimensions", olapDimensions); //$NON-NLS-1$
+    	  logicalModel.setProperty("olap_dimensions", olapDimensions); //$NON-NLS-1$
       }
       List<OlapCube> cubes = new ArrayList<OlapCube>();
       cubes.add(cube);
-      lModel.setProperty("olap_cubes", cubes); //$NON-NLS-1$
+      logicalModel.setProperty("olap_cubes", cubes); //$NON-NLS-1$
 
   }
 
