@@ -171,7 +171,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return obj instanceof AvailableField || obj instanceof LevelMetaData;
+    return obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData;
   }
 
 
