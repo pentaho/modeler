@@ -148,6 +148,10 @@
         logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
               + datasourceName));
 
+        workspace.setModelName(datasourceName);
+        helper.autoModelMultiTableRelational(workspace);
+        helper.populateDomain(workspace);
+
         for(LogicalTable businessTable : logicalModel.getLogicalTables()) {
           businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
         }
@@ -196,9 +200,6 @@
           logicalRelationship.setToColumn(toColumn);
           logicalModel.addLogicalRelationship(logicalRelationship);
         }
-        helper.autoModelMultiTableRelational(workspace);
-        workspace.setModelName(datasourceName);
-        helper.populateDomain(workspace);
       } catch (PentahoMetadataException e) {
         e.printStackTrace();
         logger.info(e.getLocalizedMessage());
