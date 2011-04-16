@@ -19,46 +19,43 @@
 
   package org.pentaho.agilebi.modeler.util;
 
-  import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
-  import org.pentaho.agilebi.modeler.ModelerException;
-  import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.nodes.AvailableTable;
-import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
-import org.pentaho.agilebi.modeler.nodes.MainModelNode;
-import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
-  import org.pentaho.di.core.database.DatabaseMeta;
-  import org.pentaho.metadata.automodel.SchemaTable;
-  import org.pentaho.metadata.model.*;
-  import org.pentaho.metadata.model.concept.types.LocalizedString;
-  import org.pentaho.metadata.model.concept.types.RelationshipType;
-import org.pentaho.metadata.model.olap.OlapCube;
-import org.pentaho.metadata.model.olap.OlapDimension;
-import org.pentaho.metadata.model.olap.OlapDimensionUsage;
-import org.pentaho.metadata.model.olap.OlapHierarchy;
-import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
-  import org.pentaho.pms.core.exception.PentahoMetadataException;
-  import org.slf4j.Logger;
-  import org.slf4j.LoggerFactory;
-
   import java.util.ArrayList;
-  import java.util.HashSet;
-  import java.util.List;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.multitable.JoinDTO;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.metadata.automodel.SchemaTable;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.RelationshipType;
+import org.pentaho.metadata.model.olap.OlapCube;
+import org.pentaho.pms.core.exception.PentahoMetadataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
   public class MultiTableModelerSource implements ISpoonModelerSource {
 
     private ModelGenerator generator;
     private DatabaseMeta databaseMeta;
-    private List<LogicalRelationship> joinTemplates;
+    private List<JoinDTO> joinModels;
     private List<String> selectedTables;
     private String datasourceName;
     public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
     private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSource.class);
 
-    public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates, String datasourceName, List<String> selectedTables) {
+    public MultiTableModelerSource(DatabaseMeta databaseMeta, List<JoinDTO> joinModels, String datasourceName, List<String> selectedTables) {
       this.datasourceName = datasourceName;
       this.databaseMeta = databaseMeta;
-      this.joinTemplates = joinTemplates;
+      this.joinModels = joinModels;
       this.selectedTables = selectedTables;
       this.generator = new ModelGenerator();
     }
@@ -80,10 +77,11 @@ import java.util.Set;
            if(selectedTables.size() == 1){   // special single table story BISERVER-5806
              schemas.add(new SchemaTable("", selectedTables.get(0)));
            } else {
-             for (LogicalRelationship joinTemplate : joinTemplates) {
-               String fromTable = joinTemplate.getFromTable().getName(locale);
-               String toTable = joinTemplate.getToTable().getName(locale);
-
+        	 for(JoinDTO joinModel : joinModels) {   
+                 
+        	   String fromTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
+        	   String toTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
+        		 
                if(!usedTables.contains(fromTable)){
                  schemas.add(new SchemaTable("", fromTable));
                  usedTables.add(fromTable);
@@ -155,19 +153,17 @@ import java.util.Set;
     }
     
     private void generateLogicalRelationships(LogicalModel logicalModel, boolean doOlap) {
-    	String locale = LocalizedString.DEFAULT_LOCALE;
-    	for (LogicalRelationship joinTemplate : joinTemplates) {
-
-    		String lTable = joinTemplate.getFromTable().getName(locale);
-            String rTable = joinTemplate.getToTable().getName(locale);
-
+    	for(JoinDTO joinModel : joinModels) {
+    	  	String lTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
+        	String rTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
+    		
             LogicalTable fromTable = null;
             LogicalColumn fromColumn = null;
             LogicalTable toTable = null;
             LogicalColumn toColumn = null;
 
             for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
-              if(logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !doOlap){ // don't join on the olap tables
+              if(logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !doOlap){ 
                 continue;
               }
 
@@ -175,7 +171,7 @@ import java.util.Set;
                 fromTable = logicalTable;
 
                 for (LogicalColumn logicalColumn : fromTable.getLogicalColumns()) {
-                  if (logicalColumn.getName(locale).equals(joinTemplate.getFromColumn().getName(locale))) {
+                  if (logicalColumn.getPhysicalColumn().getProperty("target_column").equals(joinModel.getLeftKeyFieldModel().getName())) {
                     fromColumn = logicalColumn;
                   }
                 }
@@ -184,7 +180,7 @@ import java.util.Set;
                 toTable = logicalTable;
 
                 for (LogicalColumn logicalColumn : toTable.getLogicalColumns()) {
-                  if (logicalColumn.getName(locale).equals(joinTemplate.getToColumn().getName(locale))) {
+                  if (logicalColumn.getPhysicalColumn().getProperty("target_column").equals(joinModel.getRightKeyFieldModel().getName())) {
                     toColumn = logicalColumn;
                   }
                 }
