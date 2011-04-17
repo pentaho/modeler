@@ -19,46 +19,186 @@
 
   package org.pentaho.agilebi.modeler.util;
 
-  import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
-  import org.pentaho.agilebi.modeler.ModelerException;
-  import org.pentaho.agilebi.modeler.ModelerWorkspace;
-  import org.pentaho.di.core.database.DatabaseMeta;
-  import org.pentaho.metadata.automodel.SchemaTable;
-  import org.pentaho.metadata.model.*;
-  import org.pentaho.metadata.model.concept.types.LocalizedString;
-  import org.pentaho.metadata.model.concept.types.RelationshipType;
-  import org.pentaho.pms.core.exception.PentahoMetadataException;
-  import org.slf4j.Logger;
-  import org.slf4j.LoggerFactory;
-
   import java.util.ArrayList;
-  import java.util.HashSet;
-  import java.util.List;
-  import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+  import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+  import org.pentaho.agilebi.modeler.models.SchemaModel;
+  import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.metadata.automodel.SchemaTable;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.RelationshipType;
+import org.pentaho.metadata.model.olap.OlapCube;
+import org.pentaho.pms.core.exception.PentahoMetadataException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
   public class MultiTableModelerSource implements ISpoonModelerSource {
 
     private ModelGenerator generator;
     private DatabaseMeta databaseMeta;
-    private List<LogicalRelationship> joinTemplates;
+    private SchemaModel schemaModel;
     private List<String> selectedTables;
     private String datasourceName;
     public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
     private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSource.class);
 
-    public MultiTableModelerSource(DatabaseMeta databaseMeta, List<LogicalRelationship> joinTemplates, String datasourceName, List<String> selectedTables) {
+    public MultiTableModelerSource(DatabaseMeta databaseMeta, SchemaModel schemaModel, String datasourceName, List<String> selectedTables) {
       this.datasourceName = datasourceName;
       this.databaseMeta = databaseMeta;
-      this.joinTemplates = joinTemplates;
+      this.schemaModel = schemaModel;
       this.selectedTables = selectedTables;
       this.generator = new ModelGenerator();
     }
 
     @Override
-    public Domain generateDomain(boolean dualModelingMode) throws ModelerException {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public Domain generateDomain(boolean doOlap) throws ModelerException {
+    	
+    	 Domain domain = null;
+         try {
+           // Generate domain based on the table names.
+
+           String locale = LocalizedString.DEFAULT_LOCALE;
+           this.generator.setLocale(locale);
+           this.generator.setDatabaseMeta(databaseMeta);
+           this.generator.setModelName(datasourceName);
+
+           Set<String> usedTables = new HashSet<String>();
+           List<SchemaTable> schemas = new ArrayList<SchemaTable>();
+           if(selectedTables.size() == 1){   // special single table story BISERVER-5806
+             schemas.add(new SchemaTable("", selectedTables.get(0)));
+           } else {
+        	 for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
+                 
+        	   String fromTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
+        	   String toTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
+        		 
+               if(!usedTables.contains(fromTable)){
+                 schemas.add(new SchemaTable("", fromTable));
+                 usedTables.add(fromTable);
+               }
+               if(!usedTables.contains(toTable)){
+                 schemas.add(new SchemaTable("", toTable));
+                 usedTables.add(toTable);
+               }
+             }
+           }
+           SchemaTable tableNames[] = new SchemaTable[schemas.size()];
+           tableNames = schemas.toArray(tableNames);
+           this.generator.setTableNames(tableNames);
+           domain = this.generator.generateDomain();
+           domain.setId(datasourceName);
+           
+           ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
+           ModelerWorkspace workspace = new ModelerWorkspace(helper);
+           workspace.setDomain(domain);
+           
+           LogicalModel logicalModel = domain.getLogicalModels().get(0);
+           logicalModel.setName(new LocalizedString(locale, datasourceName));
+           logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
+                 + datasourceName));  // TODO do this with messages
+           
+           workspace.setModelName(datasourceName);
+           helper.autoModelMultiTableRelational(workspace);
+           if(doOlap) {
+        	   helper.autoModelFlat(workspace);
+           }           
+           helper.populateDomain(workspace);
+
+           for(LogicalTable businessTable : logicalModel.getLogicalTables()) {
+             businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
+           }
+
+           //Create olap tables
+           //BaseModelerWorkspaceHelper.duplicateLogicalTablesForDualModelingMode(logicalModel);
+           
+           // Create and add LogicalRelationships to the LogicalModel from the
+           // domain.
+           generateLogicalRelationships(logicalModel, false);
+           if(doOlap) {
+        	   generateLogicalRelationships(logicalModel, true);
+        	   
+               //Get fact table
+               LogicalTable factTable = logicalModel.getLogicalRelationships().get(0).getFromTable();
+          	   for (LogicalTable lTable : logicalModel.getLogicalTables()) {
+          		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+          			   if(factTable.getName(locale).equals(lTable.getName(locale))) {
+          				   factTable = lTable;
+          				   break;
+          			   }
+          		   }
+          	   }
+          	   List<OlapCube> cubes = (List) logicalModel.getProperty("olap_cubes");
+          	   OlapCube cube = cubes.get(0);
+          	   cube.setLogicalTable(factTable);
+           }
+           
+         } catch (PentahoMetadataException e) {
+           e.printStackTrace();
+           logger.info(e.getLocalizedMessage());
+         } catch (ModelerException e) {
+           e.printStackTrace();
+           logger.info(e.getLocalizedMessage());
+         }
+         return domain;
+    }
+    
+    private void generateLogicalRelationships(LogicalModel logicalModel, boolean doOlap) {
+    	for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
+    	  	String lTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
+        	String rTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
+    		
+            LogicalTable fromTable = null;
+            LogicalColumn fromColumn = null;
+            LogicalTable toTable = null;
+            LogicalColumn toColumn = null;
+
+            for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
+              if(logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !doOlap){ 
+                continue;
+              }
+
+              if (logicalTable.getPhysicalTable().getProperty("target_table").equals(lTable)) {
+                fromTable = logicalTable;
+
+                for (LogicalColumn logicalColumn : fromTable.getLogicalColumns()) {
+                  if (logicalColumn.getPhysicalColumn().getProperty("target_column").equals(joinModel.getLeftKeyFieldModel().getName())) {
+                    fromColumn = logicalColumn;
+                  }
+                }
+              }
+              if (logicalTable.getPhysicalTable().getProperty("target_table").equals(rTable)) {
+                toTable = logicalTable;
+
+                for (LogicalColumn logicalColumn : toTable.getLogicalColumns()) {
+                  if (logicalColumn.getPhysicalColumn().getProperty("target_column").equals(joinModel.getRightKeyFieldModel().getName())) {
+                    toColumn = logicalColumn;
+                  }
+                }
+              }
+            }
+
+            LogicalRelationship logicalRelationship = new LogicalRelationship();
+            logicalRelationship.setRelationshipType(RelationshipType._1_1);
+            logicalRelationship.setFromTable(fromTable);
+            logicalRelationship.setFromColumn(fromColumn);
+            logicalRelationship.setToTable(toTable);
+            logicalRelationship.setToColumn(toColumn);
+            logicalModel.addLogicalRelationship(logicalRelationship);
+          }
     }
 
+    
     @Override
     public String getDatabaseName() {
       String name = null;
@@ -93,120 +233,7 @@
       return this.databaseMeta;
     }
 
-    public Domain generateDomain() {
-
-      Domain domain = null;
-
-      try {
-
-        // Generate domain based on the table names.
-
-        String locale = LocalizedString.DEFAULT_LOCALE;
-        this.generator.setLocale(locale);
-        this.generator.setDatabaseMeta(databaseMeta);
-        this.generator.setModelName(datasourceName);
-
-        Set<String> usedTables = new HashSet<String>();
-        List<SchemaTable> schemas = new ArrayList<SchemaTable>();
-        if(selectedTables.size() == 1){   // special single table story BISERVER-5806
-          schemas.add(new SchemaTable("", selectedTables.get(0)));
-        } else {
-          for (LogicalRelationship joinTemplate : joinTemplates) {
-            String fromTable = joinTemplate.getFromTable().getName(locale);
-            String toTable = joinTemplate.getToTable().getName(locale);
-
-            if(!usedTables.contains(fromTable)){
-              schemas.add(new SchemaTable("", fromTable));
-              usedTables.add(fromTable);
-            }
-            if(!usedTables.contains(toTable)){
-              schemas.add(new SchemaTable("", toTable));
-              usedTables.add(toTable);
-            }
-          }
-        }
-        SchemaTable tableNames[] = new SchemaTable[schemas.size()];
-        tableNames = schemas.toArray(tableNames);
-        this.generator.setTableNames(tableNames);
-        domain = this.generator.generateDomain();
-        domain.setId(datasourceName);
-
-        // Automodel to create categories
-
-        ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
-        ModelerWorkspace workspace = new ModelerWorkspace(helper);
-        workspace.setModelName(datasourceName);
-        workspace.setDomain(domain);
-
-        // Create and add LogicalRelationships to the LogicalModel from the
-        // domain.
-
-        LogicalModel logicalModel = domain.getLogicalModels().get(0);
-
-        // TODO do this with messages
-        logicalModel.setName(new LocalizedString(locale, datasourceName));
-        logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
-              + datasourceName));
-
-        workspace.setModelName(datasourceName);
-        helper.autoModelMultiTableRelational(workspace);
-        helper.populateDomain(workspace);
-
-        for(LogicalTable businessTable : logicalModel.getLogicalTables()) {
-          businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
-        }
-
-        for (LogicalRelationship joinTemplate : joinTemplates) {
-
-          String lTable = joinTemplate.getFromTable().getName(locale);
-          String rTable = joinTemplate.getToTable().getName(locale);
-
-          LogicalTable fromTable = null;
-          LogicalColumn fromColumn = null;
-          LogicalTable toTable = null;
-          LogicalColumn toColumn = null;
-
-          for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
-            if(logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){ // don't join on the olap tables
-              continue;
-            }
-
-            if (logicalTable.getPhysicalTable().getProperty("target_table").equals(lTable)) {
-              fromTable = logicalTable;
-
-              for (LogicalColumn logicalColumn : fromTable.getLogicalColumns()) {
-                if (logicalColumn.getName(locale).equals(joinTemplate.getFromColumn().getName(locale))) {
-                  fromColumn = logicalColumn;
-                }
-              }
-            }
-            if (logicalTable.getPhysicalTable().getProperty("target_table").equals(rTable)) {
-              toTable = logicalTable;
-
-              for (LogicalColumn logicalColumn : toTable.getLogicalColumns()) {
-                if (logicalColumn.getName(locale).equals(joinTemplate.getToColumn().getName(locale))) {
-                  toColumn = logicalColumn;
-                }
-              }
-            }
-          }
-
-          LogicalRelationship logicalRelationship = new LogicalRelationship();
-          // TODO is this INNER JOIN?
-          logicalRelationship.setRelationshipType(RelationshipType._1_1);
-          logicalRelationship.setFromTable(fromTable);
-          logicalRelationship.setFromColumn(fromColumn);
-          logicalRelationship.setToTable(toTable);
-          logicalRelationship.setToColumn(toColumn);
-          logicalModel.addLogicalRelationship(logicalRelationship);
-        }
-      } catch (PentahoMetadataException e) {
-        e.printStackTrace();
-        logger.info(e.getLocalizedMessage());
-      } catch (ModelerException e) {
-        e.printStackTrace();
-        logger.info(e.getLocalizedMessage());
-      }
-      return domain;
+    public Domain generateDomain() throws ModelerException {
+    	return generateDomain(false);
     }
   }

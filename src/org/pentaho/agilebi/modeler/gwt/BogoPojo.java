@@ -1,6 +1,8 @@
 package org.pentaho.agilebi.modeler.gwt;
 
-
+import org.pentaho.agilebi.modeler.models.JoinFieldModel;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
@@ -49,6 +51,10 @@ public class BogoPojo implements Serializable {
   LogicalColumn lColumn;
   LogicalRelationship lRelationship;
   Domain domain;
+  JoinRelationshipModel joinDTO;
+  JoinFieldModel joinFieldDTO;
+  JoinTableModel joinTableDTO;
+  
   private AggregationType[] aggTypes;
 
   public Domain getDomain() {
@@ -248,11 +254,27 @@ public class BogoPojo implements Serializable {
     this.dimUsage = dimUsage;
   }
 
-  public LogicalRelationship getlRelationship() {
-	return lRelationship;
+  public JoinRelationshipModel getJoinDTO() {
+    return joinDTO;
   }
 
-  public void setlRelationship(LogicalRelationship lRelationship) {
-	this.lRelationship = lRelationship;
+  public void setJoinDTO(JoinRelationshipModel joinDTO) {
+    this.joinDTO = joinDTO;
+  }
+
+  public JoinFieldModel getJoinFieldDTO() {
+    return joinFieldDTO;
+  }
+
+  public void setJoinFieldDTO(JoinFieldModel joinFieldDTO) {
+    this.joinFieldDTO = joinFieldDTO;
+  }
+
+  public JoinTableModel getJoinTableDTO() {
+    return joinTableDTO;
+  }
+
+  public void setJoinTableDTO(JoinTableModel joinTableDTO) {
+    this.joinTableDTO = joinTableDTO;
   }
 }
