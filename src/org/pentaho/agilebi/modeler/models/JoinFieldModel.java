@@ -17,31 +17,39 @@
  * @author Ezequiel Cuellar
  */
 
-package org.pentaho.agilebi.modeler.multitable;
+package org.pentaho.agilebi.modeler.models;
+
+import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
 
-public class JoinFieldDTO  implements Serializable {
+public class JoinFieldModel extends XulEventSourceAdapter implements Serializable {
 
 	private String name;
-	private JoinTableDTO parentTable;
-	
-	public JoinFieldDTO() {
-	}
+	private JoinTableModel parentTable;
 
+  public JoinFieldModel(){
+    
+  }
+
+	@Bindable
 	public String getName() {
 		return this.name;
 	}
 
+	@Bindable
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public JoinTableDTO getParentTable() {
+	@Bindable
+	public JoinTableModel getParentTable() {
 		return this.parentTable;
 	}
 
-	public void setParentTable(JoinTableDTO parentTable) {
+	@Bindable
+	public void setParentTable(JoinTableModel parentTable) {
 		this.parentTable = parentTable;
 	}
 }

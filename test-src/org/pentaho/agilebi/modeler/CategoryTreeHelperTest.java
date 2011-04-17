@@ -57,10 +57,16 @@ public class CategoryTreeHelperTest {
   @BeforeClass
   public static void init() throws Exception {
     System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
-    ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+    if(ModelerMessagesHolder.getMessages() == null){
+      ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
+    }
     workspace = new ModelerWorkspace(new ModelerWorkspaceHelper(LOCALE));
-    KettleEnvironment.init();
-    Props.init(Props.TYPE_PROPERTIES_EMPTY);
+    try{
+      KettleEnvironment.init();
+      Props.init(Props.TYPE_PROPERTIES_EMPTY);
+    } catch(Exception e){
+      // may already be initiaized
+    }
     SQLModelGenerator gen = new SQLModelGenerator();
     Domain d = ModelerSourceUtil.generateDomain(getDatabaseMeta(), "", "CUSTOMERS");
     workspace.setDomain(d);

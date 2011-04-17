@@ -27,8 +27,9 @@ import java.util.Set;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.multitable.JoinDTO;
-import org.pentaho.di.core.database.DatabaseMeta;
+  import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+  import org.pentaho.agilebi.modeler.models.SchemaModel;
+  import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -46,16 +47,16 @@ import org.slf4j.LoggerFactory;
 
     private ModelGenerator generator;
     private DatabaseMeta databaseMeta;
-    private List<JoinDTO> joinModels;
+    private SchemaModel schemaModel;
     private List<String> selectedTables;
     private String datasourceName;
     public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
     private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSource.class);
 
-    public MultiTableModelerSource(DatabaseMeta databaseMeta, List<JoinDTO> joinModels, String datasourceName, List<String> selectedTables) {
+    public MultiTableModelerSource(DatabaseMeta databaseMeta, SchemaModel schemaModel, String datasourceName, List<String> selectedTables) {
       this.datasourceName = datasourceName;
       this.databaseMeta = databaseMeta;
-      this.joinModels = joinModels;
+      this.schemaModel = schemaModel;
       this.selectedTables = selectedTables;
       this.generator = new ModelGenerator();
     }
@@ -77,7 +78,7 @@ import org.slf4j.LoggerFactory;
            if(selectedTables.size() == 1){   // special single table story BISERVER-5806
              schemas.add(new SchemaTable("", selectedTables.get(0)));
            } else {
-        	 for(JoinDTO joinModel : joinModels) {   
+        	 for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
                  
         	   String fromTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
         	   String toTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
@@ -153,7 +154,7 @@ import org.slf4j.LoggerFactory;
     }
     
     private void generateLogicalRelationships(LogicalModel logicalModel, boolean doOlap) {
-    	for(JoinDTO joinModel : joinModels) {
+    	for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
     	  	String lTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
         	String rTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
     		
