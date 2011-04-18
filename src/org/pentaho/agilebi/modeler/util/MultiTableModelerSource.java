@@ -28,6 +28,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
   import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinTableModel;
   import org.pentaho.agilebi.modeler.models.SchemaModel;
   import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.automodel.SchemaTable;
@@ -128,16 +129,7 @@ import org.slf4j.LoggerFactory;
            if(doOlap) {
         	   generateLogicalRelationships(logicalModel, true);
         	   
-               //Get fact table
-               LogicalTable factTable = logicalModel.getLogicalRelationships().get(0).getFromTable();
-          	   for (LogicalTable lTable : logicalModel.getLogicalTables()) {
-          		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-          			   if(factTable.getName(locale).equals(lTable.getName(locale))) {
-          				   factTable = lTable;
-          				   break;
-          			   }
-          		   }
-          	   }
+        	   LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
           	   List<OlapCube> cubes = (List) logicalModel.getProperty("olap_cubes");
           	   OlapCube cube = cubes.get(0);
           	   cube.setLogicalTable(factTable);
@@ -153,6 +145,20 @@ import org.slf4j.LoggerFactory;
          return domain;
     }
     
+    private LogicalTable findFactTable(JoinTableModel table, LogicalModel logicalModel) {
+       LogicalTable factTable = null;
+   	   for (LogicalTable lTable : logicalModel.getLogicalTables()) {
+   		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) { 
+	   		   if(lTable.getPhysicalTable().getProperty("target_table").equals(table.getName())) {
+	   			  lTable.getPhysicalTable().setProperty("FACT_TABLE", true);
+	   		      factTable = lTable;
+	   		      break;
+	   		   }
+   		   }
+   	   }
+   	   return factTable;
+    }
+    
     private void generateLogicalRelationships(LogicalModel logicalModel, boolean doOlap) {
     	for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
     	  	String lTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
@@ -164,8 +170,11 @@ import org.slf4j.LoggerFactory;
             LogicalColumn toColumn = null;
 
             for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
-              if(logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !doOlap){ 
-                continue;
+            	
+              if(doOlap && !logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+            	  continue;
+              } else if(!doOlap && logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+            	  continue;
               }
 
               if (logicalTable.getPhysicalTable().getProperty("target_table").equals(lTable)) {
