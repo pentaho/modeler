@@ -18,7 +18,7 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.AbstractModelNode;
+import org.pentaho.agilebi.modeler.models.AbstractModelNode;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

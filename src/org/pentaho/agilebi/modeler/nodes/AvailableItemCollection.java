@@ -18,7 +18,7 @@
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.AbstractModelList;
+import org.pentaho.agilebi.modeler.models.AbstractModelList;
 
 import java.io.Serializable;
 import java.util.*;
