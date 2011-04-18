@@ -203,8 +203,12 @@ public class ModelerController extends AbstractXulEventHandler {
             if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
               return getSelectedFields().length == 0 || dimTreeHelper.getSelectedTreeItem() == null || dimTreeHelper.getSelectedTreeItem() instanceof LevelMetaData || dimTreeHelper.getSelectedTreeItem() instanceof MainModelNode;
             } else {
-              return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || catTreeHelper.getSelectedTreeItem() instanceof FieldMetaData || catTreeHelper.getSelectedTreeItem() instanceof RelationalModelNode;
-            }
+              if (value instanceof AvailableTable) {
+                return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || catTreeHelper.getSelectedTreeItem() instanceof FieldMetaData || catTreeHelper.getSelectedTreeItem() instanceof RelationalModelNode;
+              } else {
+                return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || catTreeHelper.getSelectedTreeItem() instanceof FieldMetaData || catTreeHelper.getSelectedTreeItem() instanceof RelationalModelNode || catTreeHelper.getSelectedTreeItem() instanceof CategoryMetaDataCollection;
+              }
+          }
           }
 
           public Object targetToSource( Boolean value ) {

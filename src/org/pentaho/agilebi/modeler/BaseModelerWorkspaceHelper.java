@@ -137,9 +137,21 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       cube.setName( model.getModelName() ); //$NON-NLS-1$
       cube.setOlapDimensionUsages(usages);
 
+      Map<String, LogicalColumn> backingColumns = new HashMap<String, LogicalColumn>();
       for (MeasureMetaData f : model.getModel().getMeasures()) {
         LogicalColumn lCol = f.getLogicalColumn();
         LogicalTable lTable = lCol.getLogicalTable();
+
+        String colKey = lTable.getId() + "." + lCol.getId();
+        // see if any measures already are using this LogicalColumn. if so, clone it.
+        if (backingColumns.containsKey(colKey)) {
+          // already used, duplicate it
+          LogicalColumn clone = (LogicalColumn)lCol.clone();
+          clone.setId(uniquify(clone.getId(), lTable.getLogicalColumns()));
+          lCol = clone;
+        } else {
+          backingColumns.put(colKey, lCol);
+        }
 
         if (!lTable.getLogicalColumns().contains(lCol)) {
           lTable.addLogicalColumn(lCol);
@@ -149,6 +161,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         if (f.getDefaultAggregation() != null) {
           lCol.setAggregationType(f.getDefaultAggregation());
         }
+        measure.setName(f.getName());
         measure.setLogicalColumn(lCol);
         measures.add(measure);
       }

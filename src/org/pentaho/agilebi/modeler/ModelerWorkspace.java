@@ -17,6 +17,7 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -654,8 +655,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           OlapMeasure theMeasure = theMeasuresItr.next();
 
           MeasureMetaData theMeasureMD = new MeasureMetaData(workspaceHelper.getLocale());
-          theMeasureMD.setName(
-              theMeasure.getLogicalColumn().getName(workspaceHelper.getLocale()));
+
+          if (StringUtils.isEmpty(theMeasure.getName())) {
+            theMeasureMD.setName(theMeasure.getLogicalColumn().getName(workspaceHelper.getLocale()));
+          } else {
+            theMeasureMD.setName(theMeasure.getName());
+          }
           theMeasureMD.setFormat((String) theMeasure.getLogicalColumn().getProperty("mask")); //$NON-NLS-1$
           theMeasureMD.setDefaultAggregation(theMeasure.getLogicalColumn().getAggregationType());
 
@@ -866,28 +871,59 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public ColumnBackedNode createColumnBackedNode(AvailableField field, ModelerPerspective perspective) {
     String locale = workspaceHelper.getLocale();
     ColumnBackedNode node = new BaseColumnBackedMetaData(field.getName());
-    LogicalColumn lCol = new LogicalColumn();
     LogicalTable lTab = findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), perspective);
-    lCol.setLogicalTable(lTab);
-    lCol.setParentConcept(lTab);
-    lCol.setPhysicalColumn(field.getPhysicalColumn());
-    lCol.setDataType(field.getPhysicalColumn().getDataType());
-    lCol.setAggregationList(field.getPhysicalColumn().getAggregationList());
-    lCol.setAggregationType(field.getPhysicalColumn().getAggregationType());
-    lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
-
-    String colId = "LC_" + lTab.getName(locale) + "_" + field.getName();
+    LogicalColumn lCol = null;
 
     if (perspective == ModelerPerspective.ANALYSIS) {
-      colId += BaseModelerWorkspaceHelper.OLAP_SUFFIX;
+      // try to find the existing OLAP logical column, since we keep them around
+      lCol = findLogicalColumn(field.getPhysicalColumn(), perspective);
     }
 
-    colId = BaseModelerWorkspaceHelper.uniquify(colId, lTab.getLogicalColumns());
-    lCol.setId(colId);
+    if (lCol == null) {
+      lCol = new LogicalColumn();
+      lCol.setLogicalTable(lTab);
+      lCol.setParentConcept(lTab);
+      lCol.setPhysicalColumn(field.getPhysicalColumn());
+      lCol.setDataType(field.getPhysicalColumn().getDataType());
+      lCol.setAggregationList(field.getPhysicalColumn().getAggregationList());
+      lCol.setAggregationType(field.getPhysicalColumn().getAggregationType());
+      lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
 
-    lTab.addLogicalColumn(lCol);
+      String colId = "LC_" + lTab.getName(locale) + "_" + field.getName();
+
+      if (perspective == ModelerPerspective.ANALYSIS) {
+        colId += BaseModelerWorkspaceHelper.OLAP_SUFFIX;
+      }
+
+      colId = BaseModelerWorkspaceHelper.uniquify(colId, lTab.getLogicalColumns());
+      lCol.setId(colId);
+
+      lTab.addLogicalColumn(lCol);
+    }
+
     node.setLogicalColumn(lCol);
     return node;
+  }
+
+  protected LogicalColumn findLogicalColumn(IPhysicalColumn column, ModelerPerspective perspective) {
+    LogicalColumn col = null;
+    IPhysicalTable physicalTable = column.getPhysicalTable();
+    for (LogicalTable table : getDomain().getLogicalModels().get(0).getLogicalTables()) {
+      if (table.getPhysicalTable().getId().equals(physicalTable.getId())) {
+        if ((perspective == ModelerPerspective.ANALYSIS && table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX))
+            || perspective == ModelerPerspective.REPORTING) {
+
+          for (LogicalColumn lCol : table.getLogicalColumns()) {
+            if (lCol.getPhysicalColumn().getId().equals(column.getId())) {
+              return lCol;
+            }
+          }
+          
+        }
+      }
+    }
+
+    return col;
   }
 
 

@@ -2,8 +2,6 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
@@ -38,21 +36,25 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
         || item instanceof MainModelNode
         || item == null) {
       return;
-    } else if (item instanceof ColumnBackedNode) {
-      removeLogicalColumnFromParentTable((ColumnBackedNode)item);
-    } else if (item instanceof DimensionMetaData) {
-      for (HierarchyMetaData hier : (DimensionMetaData)item) {
-        for(LevelMetaData level : hier) {
-          removeLogicalColumnFromParentTable(level);
-        }
-      }
-    } else if (item instanceof HierarchyMetaData) {
-      for(LevelMetaData level : (HierarchyMetaData)item) {
-        removeLogicalColumnFromParentTable(level);
-      }
+//    } else if (item instanceof ColumnBackedNode) {
+//      removeLogicalColumnFromParentTable((ColumnBackedNode)item);
+//    } else if (item instanceof DimensionMetaData) {
+//      for (HierarchyMetaData hier : (DimensionMetaData)item) {
+//        for(LevelMetaData level : hier) {
+//          removeLogicalColumnFromParentTable(level);
+//        }
+//      }
+//    } else if (item instanceof HierarchyMetaData) {
+//      for(LevelMetaData level : (HierarchyMetaData)item) {
+//        removeLogicalColumnFromParentTable(level);
+//      }
     }
+    workspace.setModelIsChanging(true);
+
     ((AbstractModelNode) getSelectedTreeItem()).getParent().remove(getSelectedTreeItem());
     setTreeSelectionChanged(null);
+    workspace.setModelIsChanging(false, true);
+    
   }
 
   @Override
@@ -71,9 +73,6 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
         if (selectedTreeItem == null) {
           // null - cannot add fields at this level
         } else if (selectedTreeItem instanceof MeasuresCollection) {
-          if(availableField.isPossibleMeasure() == false){ // TODO: consider an Exception
-            return;
-          }
           // measure collection - add as a measure
           MeasuresCollection theMesaures = (MeasuresCollection) selectedTreeItem;
           theNode = workspace.createMeasureForNode(availableField);
@@ -262,12 +261,12 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   public void clearTreeModel(){
     workspace.setModelIsChanging(true);
 
-    // remove all logical columns from existing logical tables
-    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        table.getLogicalColumns().clear();
-      }
-    }
+//    // remove all logical columns from existing logical tables
+//    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+//      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+//        table.getLogicalColumns().clear();
+//      }
+//    }
 
     workspace.getModel().getDimensions().clear();
     workspace.getModel().getMeasures().clear();

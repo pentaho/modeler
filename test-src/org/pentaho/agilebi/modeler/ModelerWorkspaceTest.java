@@ -19,10 +19,8 @@ package org.pentaho.agilebi.modeler;
 
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.nodes.*;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 
@@ -151,7 +149,27 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
         if (f != null) try { f.close(); } catch (IOException ignored) { }
     }
     return new String(buffer);
-}
+  }
+
+
+  @Test
+  public void testFindLogicalColumn() throws Exception {
+    generateTestDomain();
+    ModelerWorkspaceHelper workspaceHelper = new ModelerWorkspaceHelper("en-US");
+    workspaceHelper.autoModelFlat(workspace);
+    workspaceHelper.autoModelRelationalFlat(workspace);
+
+    LogicalColumn logicalColumn = workspace.getModel().getMeasures().get(0).getLogicalColumn();
+    IPhysicalColumn physicalColumn = logicalColumn.getPhysicalColumn();
+
+    LogicalColumn lCol = workspace.findLogicalColumn(physicalColumn, ModelerPerspective.ANALYSIS);
+    assertSame(logicalColumn, lCol);
+
+    lCol = workspace.findLogicalColumn(physicalColumn, ModelerPerspective.REPORTING);
+    assertNotNull(lCol);
+    assertEquals(physicalColumn, lCol.getPhysicalColumn());
+    assertNotSame(logicalColumn, lCol);
+  }
 
 }
 

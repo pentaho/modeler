@@ -45,8 +45,11 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
     } else if (getSelectedTreeItem() instanceof FieldMetaData) {
       removeLogicalColumnFromParentTable((FieldMetaData)getSelectedTreeItem());
     }
+
+    workspace.setRelationalModelIsChanging(true);
     ((AbstractModelNode) getSelectedTreeItem()).getParent().remove(getSelectedTreeItem());
     setTreeSelectionChanged(null);
+    workspace.setRelationalModelIsChanging(false, true);
   }
 
   @Override
