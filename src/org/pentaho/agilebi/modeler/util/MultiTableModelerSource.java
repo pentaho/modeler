@@ -130,6 +130,9 @@ import org.slf4j.LoggerFactory;
         	   generateLogicalRelationships(logicalModel, true);
         	   
         	   LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
+        	   if(factTable == null) {
+        		   throw new IllegalStateException("Fact table not found");
+        	   }
           	   List<OlapCube> cubes = (List) logicalModel.getProperty("olap_cubes");
           	   OlapCube cube = cubes.get(0);
           	   cube.setLogicalTable(factTable);
@@ -139,6 +142,9 @@ import org.slf4j.LoggerFactory;
            e.printStackTrace();
            logger.info(e.getLocalizedMessage());
          } catch (ModelerException e) {
+           e.printStackTrace();
+           logger.info(e.getLocalizedMessage());
+         } catch (IllegalStateException e) {
            e.printStackTrace();
            logger.info(e.getLocalizedMessage());
          }
@@ -159,7 +165,7 @@ import org.slf4j.LoggerFactory;
    	   return factTable;
     }
     
-    private void generateLogicalRelationships(LogicalModel logicalModel, boolean doOlap) {
+    private void generateLogicalRelationships(LogicalModel logicalModel, boolean doOlap) throws IllegalStateException {
     	for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
     	  	String lTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
         	String rTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
@@ -195,6 +201,10 @@ import org.slf4j.LoggerFactory;
                   }
                 }
               }
+            }
+            
+            if(fromTable == null || fromColumn == null || toTable == null || toColumn == null) {
+            	throw new IllegalStateException("Invalid Relationship");
             }
 
             LogicalRelationship logicalRelationship = new LogicalRelationship();
