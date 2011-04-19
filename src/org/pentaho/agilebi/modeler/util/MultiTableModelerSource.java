@@ -105,6 +105,7 @@ import org.slf4j.LoggerFactory;
            workspace.setDomain(domain);
            
            LogicalModel logicalModel = domain.getLogicalModels().get(0);
+           logicalModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
            logicalModel.setName(new LocalizedString(locale, datasourceName));
            logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
                  + datasourceName));  // TODO do this with messages
