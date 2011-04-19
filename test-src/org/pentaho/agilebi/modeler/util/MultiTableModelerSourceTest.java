@@ -61,63 +61,38 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 	}
 
 	@Test
-	public void testStarSchema() {
+	public void testStarSchema() throws Exception {
 
-		Domain domain = null;
-		try {
-			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
-			domain = multiTable.generateDomain(true);
-			assertNotNull(domain);
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+		Domain domain = multiTable.generateDomain(true);
+		assertNotNull(domain);
 
-			List<OlapCube> cubes = (List) domain.getLogicalModels().get(0).getProperty("olap_cubes");
-			OlapCube cube = cubes.get(0);
+		List<OlapCube> cubes = (List) domain.getLogicalModels().get(0).getProperty("olap_cubes");
+		OlapCube cube = cubes.get(0);
 
-			// Ensure cube has a fact table.
-			assertNotNull(cube.getLogicalTable());
-			// Ensure we have logical relationships (joins).
-			assertEquals(true, domain.getLogicalModels().get(0).getLogicalRelationships().size() > 0);
-			// Ensure all joins use Olap tables.
-			for (LogicalRelationship logicalRelationship : domain.getLogicalModels().get(0).getLogicalRelationships()) {
-				assertEquals(true, logicalRelationship.getToTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
-				assertEquals(true, logicalRelationship.getFromTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
-			}
-
-			multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel2(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
-			domain = multiTable.generateDomain(true);
-			// Used wrong columns on purpose. Ensure there are no logical
-			// relationships. IllegalStateException should have been thrown.
-			assertEquals(true, domain.getLogicalModels().get(0).getLogicalRelationships().size() == 0);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// Ensure cube has a fact table.
+		assertNotNull(cube.getLogicalTable());
+		// Ensure we have logical relationships (joins).
+		assertEquals(true, domain.getLogicalModels().get(0).getLogicalRelationships().size() > 0);
+		// Ensure all joins use Olap tables.
+		LogicalRelationship logicalRelationship = domain.getLogicalModels().get(0).getLogicalRelationships().get(1);
+		assertEquals(true, logicalRelationship.getToTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
+		assertEquals(true, logicalRelationship.getFromTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
 	}
 
 	@Test
-	public void testReportingSchema() {
+	public void testReportingSchema() throws Exception {
 
-		Domain domain = null;
-		try {
-			MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
-			domain = multiTable.generateDomain(false);
-			// Ensure domain was created.
-			assertNotNull(domain);
-			// Ensure we have logical relationships (joins).
-			assertEquals(true, domain.getLogicalModels().get(0).getLogicalRelationships().size() > 0);
-			// Ensure all joins DO NOT use Olap tables.
-			for (LogicalRelationship logicalRelationship : domain.getLogicalModels().get(0).getLogicalRelationships()) {
-				assertEquals(true, !logicalRelationship.getToTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
-				assertEquals(true, !logicalRelationship.getFromTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
-			}
-
-			multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel2(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
-			domain = multiTable.generateDomain(false);
-			// Used wrong columns on purpose. Ensure there are no logical
-			// relationships. IllegalStateException should have been thrown.
-			assertEquals(true, domain.getLogicalModels().get(0).getLogicalRelationships().size() == 0);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+		Domain domain = multiTable.generateDomain(false);
+		// Ensure domain was created.
+		assertNotNull(domain);
+		// Ensure we have logical relationships (joins).
+		assertEquals(true, domain.getLogicalModels().get(0).getLogicalRelationships().size() > 0);
+		// Ensure all joins DO NOT use Olap tables.
+		for (LogicalRelationship logicalRelationship : domain.getLogicalModels().get(0).getLogicalRelationships()) {
+			assertEquals(true, !logicalRelationship.getToTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
+			assertEquals(true, !logicalRelationship.getFromTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
 		}
 	}
 
@@ -125,50 +100,25 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 		List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
 
 		JoinTableModel joinTable1 = new JoinTableModel();
-		joinTable1.setName("CUSTOMERS");
+		joinTable1.setName("ORDERFACT");
 
 		JoinTableModel joinTable2 = new JoinTableModel();
-		joinTable2.setName("PRODUCTS");
+		joinTable2.setName("CUSTOMERS");
 
 		JoinRelationshipModel join1 = new JoinRelationshipModel();
 		JoinFieldModel lField1 = new JoinFieldModel();
-		lField1.setName("CUSTOMERNAME");
+		lField1.setName("CUSTOMERNUMBER");
 		lField1.setParentTable(joinTable1);
 		join1.setLeftKeyFieldModel(lField1);
 
 		JoinFieldModel rField1 = new JoinFieldModel();
-		rField1.setName("PRODUCTCODE");
+		rField1.setName("CUSTOMERNUMBER");
 		rField1.setParentTable(joinTable2);
 		join1.setRightKeyFieldModel(rField1);
 
 		joins.add(join1);
 		SchemaModel model = new SchemaModel();
-		model.setJoins(joins);
-		return model;
-	}
-
-	private SchemaModel getSchemaModel2() {
-		List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
-
-		JoinTableModel joinTable1 = new JoinTableModel();
-		joinTable1.setName("CUSTOMERS");
-
-		JoinTableModel joinTable2 = new JoinTableModel();
-		joinTable2.setName("PRODUCTS");
-
-		JoinRelationshipModel join1 = new JoinRelationshipModel();
-		JoinFieldModel lField1 = new JoinFieldModel();
-		lField1.setName("BAD_COLUMN");
-		lField1.setParentTable(joinTable1);
-		join1.setLeftKeyFieldModel(lField1);
-
-		JoinFieldModel rField1 = new JoinFieldModel();
-		rField1.setName("BAD_COLUMN");
-		rField1.setParentTable(joinTable2);
-		join1.setRightKeyFieldModel(rField1);
-
-		joins.add(join1);
-		SchemaModel model = new SchemaModel();
+		model.setFactTable(joinTable1);
 		model.setJoins(joins);
 		return model;
 	}

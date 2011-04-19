@@ -138,15 +138,10 @@ import org.slf4j.LoggerFactory;
           	   cube.setLogicalTable(factTable);
            }
            
-         } catch (PentahoMetadataException e) {
+         } catch (Exception e) {
            e.printStackTrace();
            logger.info(e.getLocalizedMessage());
-         } catch (ModelerException e) {
-           e.printStackTrace();
-           logger.info(e.getLocalizedMessage());
-         } catch (IllegalStateException e) {
-           e.printStackTrace();
-           logger.info(e.getLocalizedMessage());
+           throw new ModelerException(e.getLocalizedMessage());
          }
          return domain;
     }
