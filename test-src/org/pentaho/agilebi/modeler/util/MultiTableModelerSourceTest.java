@@ -13,18 +13,9 @@
  * See the GNU Lesser General Public License for more details.
  *
  * Copyright (c) 2011 Pentaho Corporation..  All rights reserved.
- * 
- * @author Ezequiel Cuellar
  */
 
 package org.pentaho.agilebi.modeler.util;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
@@ -42,6 +33,13 @@ import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class MultiTableModelerSourceTest extends AbstractModelerTest {
 
@@ -96,7 +94,7 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 		}
 	}
 
-	private SchemaModel getSchemaModel1() {
+	public static SchemaModel getSchemaModel1() {
 		List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
 
 		JoinTableModel joinTable1 = new JoinTableModel();

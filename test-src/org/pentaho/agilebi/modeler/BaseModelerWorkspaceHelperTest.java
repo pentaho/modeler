@@ -3,11 +3,12 @@ package org.pentaho.agilebi.modeler;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import org.pentaho.metadata.model.*;
+import org.pentaho.metadata.model.Category;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.olap.OlapCube;
-import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.model.olap.OlapMeasure;
 
 import java.util.Arrays;

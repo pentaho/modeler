@@ -1,6 +1,8 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.strategy.AutoModelStrategy;
+import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.IConcept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
@@ -26,6 +28,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   private static String locale;
   public static final String OLAP_SUFFIX = "_OLAP";
 
+  private AutoModelStrategy autoModelStrategy;
+
   static {
     DEFAULT_AGGREGATION_LIST.add(AggregationType.NONE);
     DEFAULT_AGGREGATION_LIST.add(AggregationType.SUM);
@@ -43,11 +47,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
   public BaseModelerWorkspaceHelper(String locale){
     BaseModelerWorkspaceHelper.locale = locale;
+    autoModelStrategy = new SimpleAutoModelStrategy(locale);
   }
-  
-  
 
-  
   public void populateDomain(ModelerWorkspace model) throws ModelerException {
 
     Domain domain = model.getDomain();
@@ -269,38 +271,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
    * @param workspace
    */
   public void autoModelFlat( ModelerWorkspace workspace ) throws ModelerException {
-
-    MainModelNode mainModel = getMainModelNode(workspace);
-    mainModel.setName(workspace.getModelName());
-    workspace.setModel(mainModel);
-
-    final boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true);
-
-    // remove all logical columns from existing logical tables
-    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        table.getLogicalColumns().clear();
-      }
-    }
-
-    List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
-    for (AvailableTable table : tableList) {
-      for( AvailableField field : table.getAvailableFields() ) {
-        LogicalTable parentTable = workspace.findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), ModelerPerspective.ANALYSIS);
-        DataType dataType = field.getPhysicalColumn().getDataType();
-        if( dataType == DataType.NUMERIC) {
-          // create a measure
-          MeasureMetaData measure = workspace.createMeasureForNode(field);
-          workspace.getModel().getMeasures().add(measure);
-        }
-        // create a dimension
-        workspace.addDimensionFromNode(workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
-
-      }
-    }
-    workspace.setModelIsChanging(prevChangeState);
-    workspace.setSelectedNode(workspace.getModel());
+    autoModelStrategy.autoModelOlap(workspace, getMainModelNode(workspace));
   }
 
   /**
@@ -308,7 +279,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
    * @param workspace
    */
   public void autoModelFlatInBackground( final ModelerWorkspace workspace ) throws ModelerException {
-//    throw new UnsupportedOperationException("Not available outside of Spoon");
     autoModelFlat(workspace);
   }
   public void sortFields( List<AvailableField> availableFields) {
@@ -341,61 +311,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
    * @throws ModelerException
    */
   public void autoModelRelationalFlat(ModelerWorkspace workspace) throws ModelerException {
-    RelationalModelNode relationalModelNode = getRelationalModelNode(workspace);
-
-    relationalModelNode.setName(workspace.getRelationalModelName());
-
-    workspace.setRelationalModel(relationalModelNode);
-    final boolean prevChangeState = workspace.isModelChanging();
-
-    workspace.setRelationalModelIsChanging(true);
-
-    // remove all logical columns from existing logical tables
-    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        table.getLogicalColumns().clear();
-      }
-    }
-
-    List<? extends IPhysicalTable> tables = workspace.getDomain().getPhysicalModels().get(0).getPhysicalTables();
-    Set<String> tableIds = new HashSet<String>();
-
-    List<AvailableTable> tablesList = workspace.getAvailableTables().getAsAvailableTablesList();
-
-    for (IPhysicalTable table : tables) {
-      if (!tableIds.contains(table.getId())) {
-        tableIds.add(table.getId());
-        String catName = getCleanCategoryName(table.getName(getLocale()), workspace, tableIds.size());
-        CategoryMetaData category = new CategoryMetaData(catName);
-
-        for (AvailableTable aTable : tablesList) {
-          if (aTable.isSameUnderlyingPhysicalTable(table)) {
-            for( AvailableField field : aTable.getAvailableFields() ) {
-              if (field.getPhysicalColumn().getPhysicalTable().getId().equals(table.getId())) {
-                category.add(workspace.createFieldForParentWithNode(category, field));
-              }
-            }
-          }
-        }
-
-        relationalModelNode.getCategories().add(category);
-      }
-    }
-
-    workspace.setRelationalModelIsChanging(prevChangeState);
-    workspace.setSelectedNode(workspace.getRelationalModel());
-
+    autoModelStrategy.autoModelRelational(workspace, getRelationalModelNode(workspace));
   }
-
-  /**
-   * Builds a Relational Model from the existing collection of logical tables
-   * @param workspace
-   * @throws ModelerException
-   */
-  public void autoModelMultiTableRelational(ModelerWorkspace workspace) throws ModelerException {
-    autoModelRelationalFlat(workspace);
-  }
-
 
   private FieldMetaData createFieldForCategoryWithColumn( CategoryMetaData parent, LogicalColumn column ) {
     FieldMetaData field = new FieldMetaData(parent, column.getName(getLocale()), "",
@@ -434,4 +351,11 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   protected abstract MainModelNode getMainModelNode(ModelerWorkspace workspace);
   protected abstract RelationalModelNode getRelationalModelNode(ModelerWorkspace workspace);
 
+  public AutoModelStrategy getAutoModelStrategy() {
+    return autoModelStrategy;
+  }
+
+  public void setAutoModelStrategy(AutoModelStrategy autoModelStrategy) {
+    this.autoModelStrategy = autoModelStrategy;
+  }
 }

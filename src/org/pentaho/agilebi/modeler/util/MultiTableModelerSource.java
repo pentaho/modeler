@@ -19,30 +19,26 @@
 
   package org.pentaho.agilebi.modeler.util;
 
-  import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
+  import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-  import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
-  import org.pentaho.agilebi.modeler.models.SchemaModel;
-  import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.agilebi.modeler.models.SchemaModel;
+import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.automodel.SchemaTable;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalRelationship;
-import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.pentaho.metadata.model.olap.OlapCube;
-import org.pentaho.pms.core.exception.PentahoMetadataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
   public class MultiTableModelerSource implements ISpoonModelerSource {
 
@@ -101,6 +97,9 @@ import org.slf4j.LoggerFactory;
            domain.setId(datasourceName);
            
            ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
+
+           helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
+
            ModelerWorkspace workspace = new ModelerWorkspace(helper);
            workspace.setDomain(domain);
            
@@ -111,7 +110,8 @@ import org.slf4j.LoggerFactory;
                  + datasourceName));  // TODO do this with messages
            
            workspace.setModelName(datasourceName);
-           helper.autoModelMultiTableRelational(workspace);
+           helper.autoModelRelationalFlat(workspace);
+
            if(doOlap) {
         	   helper.autoModelFlat(workspace);
            }           

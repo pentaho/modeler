@@ -1,16 +1,16 @@
 package org.pentaho.agilebi.modeler;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
-import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
+import org.pentaho.agilebi.modeler.models.SchemaModel;
+import org.pentaho.agilebi.modeler.util.*;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
+
+import java.util.Arrays;
 
 /**
  * User: nbaker
@@ -50,7 +50,14 @@ public class AbstractModelerTest {
     workspace.setDomain(d);
   }
 
-  
+  protected void generateMultiTableTestDomain() throws ModelerException {
+    SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1();
+
+    MultiTableModelerSource modelerSource = new MultiTableModelerSource(getDatabaseMeta(), schemaModel, "TEST", Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+    
+    Domain d = modelerSource.generateDomain(true);
+    workspace.setDomain(d);
+  }
 
   public static DatabaseMeta getDatabaseMeta() {
     DatabaseMeta database = new DatabaseMeta();
