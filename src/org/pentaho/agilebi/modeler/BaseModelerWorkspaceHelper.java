@@ -54,7 +54,12 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     domain.setId(model.getModelName());
 
     LogicalModel logicalModel = domain.getLogicalModels().get(0);
-    LogicalTable logicalTable = logicalModel.getLogicalTables().get(0);
+    LogicalTable logicalTable = null;
+    for(LogicalTable lTable : logicalModel.getLogicalTables()) {
+    	if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+    		logicalTable = lTable;
+    	}
+    }
 
     if (model.getModelSource() != null) {
       model.getModelSource().serializeIntoDomain(domain);
