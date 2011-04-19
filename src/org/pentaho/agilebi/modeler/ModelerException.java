@@ -16,7 +16,12 @@
  */
 package org.pentaho.agilebi.modeler;
 
-public class ModelerException extends Exception{
+import java.io.Serializable;
+
+public class ModelerException extends Exception implements Serializable {
+  
+  public ModelerException() {
+  }
   
   public ModelerException(String msg){
     super(msg);
