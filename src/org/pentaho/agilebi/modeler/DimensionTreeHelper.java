@@ -7,7 +7,7 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
-import org.pentaho.ui.xul.util.AbstractModelNode;
+import org.pentaho.agilebi.modeler.models.AbstractModelNode;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,12 +5,12 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.XulComponent;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.AbstractModelNode;
+import org.pentaho.agilebi.modeler.models.AbstractModelNode;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 import java.util.Map;

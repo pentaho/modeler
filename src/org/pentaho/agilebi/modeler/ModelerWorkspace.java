@@ -22,7 +22,7 @@ import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.pentaho.metadata.model.olap.*;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.beans.PropertyChangeEvent;
