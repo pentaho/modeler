@@ -138,7 +138,7 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
           newdata.add(cat);
         } else {
           event.setAccepted(false);
-          workspace.setModelIsChanging(prevChangeState, false);
+          workspace.setRelationalModelIsChanging(prevChangeState, false);
           return;
         }
       } else if (obj instanceof AvailableField) {
@@ -147,7 +147,7 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
           newdata.add(workspace.createFieldForParentWithNode((CategoryMetaData) event.getDropParent(), availableField));
         } else {
           event.setAccepted(false);
-          workspace.setModelIsChanging(prevChangeState, false);
+          workspace.setRelationalModelIsChanging(prevChangeState, false);
           return;
         }
       } else if (obj instanceof FieldMetaData) {
@@ -164,7 +164,7 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
       event.getDataTransfer().setData(newdata);
     }
 
-    workspace.setRelationalModelIsChanging(prevChangeState);
+    workspace.setRelationalModelIsChanging(prevChangeState, true);
   }
 
   @Bindable

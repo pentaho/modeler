@@ -16,14 +16,12 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.agilebi.modeler.nodes.*;
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.pentaho.metadata.model.olap.*;
-import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.beans.PropertyChangeEvent;
@@ -656,7 +654,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
           MeasureMetaData theMeasureMD = new MeasureMetaData(workspaceHelper.getLocale());
 
-          if (StringUtils.isEmpty(theMeasure.getName())) {
+          if (theMeasure.getName() == null || theMeasure.getName().length() == 0) {
             theMeasureMD.setName(theMeasure.getLogicalColumn().getName(workspaceHelper.getLocale()));
           } else {
             theMeasureMD.setName(theMeasure.getName());

@@ -36,18 +36,6 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
         || item instanceof MainModelNode
         || item == null) {
       return;
-//    } else if (item instanceof ColumnBackedNode) {
-//      removeLogicalColumnFromParentTable((ColumnBackedNode)item);
-//    } else if (item instanceof DimensionMetaData) {
-//      for (HierarchyMetaData hier : (DimensionMetaData)item) {
-//        for(LevelMetaData level : hier) {
-//          removeLogicalColumnFromParentTable(level);
-//        }
-//      }
-//    } else if (item instanceof HierarchyMetaData) {
-//      for(LevelMetaData level : (HierarchyMetaData)item) {
-//        removeLogicalColumnFromParentTable(level);
-//      }
     }
     workspace.setModelIsChanging(true);
 
@@ -190,7 +178,7 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
     } else {
       event.getDataTransfer().setData(newdata);
     }
-    workspace.setModelIsChanging(prevChangeState, false);
+    workspace.setModelIsChanging(prevChangeState, true);
   }
 
   public void checkDropLocation(DropEvent event){
@@ -260,13 +248,6 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   @Override
   public void clearTreeModel(){
     workspace.setModelIsChanging(true);
-
-//    // remove all logical columns from existing logical tables
-//    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-//      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-//        table.getLogicalColumns().clear();
-//      }
-//    }
 
     workspace.getModel().getDimensions().clear();
     workspace.getModel().getMeasures().clear();
