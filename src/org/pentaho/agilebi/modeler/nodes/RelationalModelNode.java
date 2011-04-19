@@ -17,7 +17,9 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.RelationalModelNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -31,7 +33,7 @@ import java.io.Serializable;
  *
  * @author rfellows
  */
-public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaDataCollection> implements Serializable {
+public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaDataCollection> implements Serializable, IRootModelNode {
   private static final String IMAGE = "images/sm_model_icon.png";
   private static final long serialVersionUID = 818429477176656590L;
   String name = "Untitled";
@@ -39,11 +41,17 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   private CategoryMetaDataCollection categories = new CategoryMetaDataCollection();
 
   private transient PropertyChangeListener listener;
+  private ModelerWorkspace workspace;
 
   public RelationalModelNode() {
     add(categories);
     setExpanded(true);
     categories.setExpanded(true);
+  }
+
+  public RelationalModelNode(ModelerWorkspace workspace) {
+    this();
+    this.workspace = workspace;
   }
 
   @Bindable
@@ -151,5 +159,19 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   @Override
   public boolean acceptsDrop(Object obj) {
     return false;
+  }
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    return null;
+  }
+
+  @Override
+  public ModelerWorkspace getWorkspace() {
+    return workspace;
+  }
+
+  public void setWorkspace(ModelerWorkspace workspace) {
+    this.workspace = workspace;
   }
 }

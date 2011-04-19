@@ -52,4 +52,5 @@ public class MeasureMetaData extends BaseAggregationMetaDataNode {
   public boolean acceptsDrop(Object obj) {
     return false;
   }
+
 }

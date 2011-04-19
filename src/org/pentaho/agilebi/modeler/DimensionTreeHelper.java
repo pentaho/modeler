@@ -8,6 +8,7 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.agilebi.modeler.models.AbstractModelNode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,8 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
     for (Object obj : selectedFields) {
       if (obj instanceof AvailableField) {
         AvailableField availableField = (AvailableField)obj;
+
+        // create the logicalColumn and new node fronting it
         ColumnBackedNode node = workspace.createColumnBackedNode(availableField, ModelerPerspective.ANALYSIS);
 
         // depending on the parent
@@ -90,7 +93,23 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
     workspace.setModelIsChanging(prevChangeState);
   }
 
-  public void onModelDrop(DropEvent event) {
+  public void onModelDrop(DropEvent event) throws ModelerException{
+    boolean prevChangeState = workspace.isModelChanging();
+    workspace.setModelIsChanging(true);
+    IDropTarget dropNode = (IDropTarget) event.getDropParent();
+    Object newData = null;
+    for(Object data : event.getDataTransfer().getData()){
+      newData = dropNode.onDrop(data);
+    }
+    if (newData == null) {
+      event.setAccepted(false);
+    } else {
+      event.getDataTransfer().setData(Collections.singletonList(newData));
+    }
+    workspace.setModelIsChanging(prevChangeState, false);
+  }
+
+  public void oldonModelDrop(DropEvent event) {
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true);
     List<Object> data = event.getDataTransfer().getData();

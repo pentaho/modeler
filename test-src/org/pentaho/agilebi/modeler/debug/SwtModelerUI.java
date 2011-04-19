@@ -19,6 +19,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
@@ -30,6 +31,7 @@ import org.pentaho.ui.xul.swt.tags.SwtWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 
 /**
@@ -142,7 +144,15 @@ public class SwtModelerUI {
       KettleEnvironment.init();
       Props.init(Props.TYPE_PROPERTIES_EMPTY);
       Domain d = ModelerSourceUtil.generateDomain(getDatabaseMeta(), "", "CUSTOMERS");
-      workspace.setDomain(d);
+
+      XmiParser parser = new XmiParser();
+      try {
+        Domain domain = parser.parseXmi(new FileInputStream(new File("test-res/testMulti.xmi")));
+        workspace.setDomain(domain);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+//      workspace.setDomain(d);
     } catch (ModelerException e) {
       e.printStackTrace();
     } catch (KettleException e) {

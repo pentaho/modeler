@@ -16,6 +16,9 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.IDropTarget;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.agilebi.modeler.models.AbstractModelNode;
@@ -27,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T> implements
-                                                                                                                  Serializable {
+                                                                                                                  Serializable, IDropTarget {
 
   private static final long serialVersionUID = 1547202580713108254L;
 
@@ -189,4 +192,21 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   }
 
   public abstract boolean acceptsDrop(Object obj);
+
+  private ModelerWorkspace workspace;
+  public ModelerWorkspace getWorkspace(){
+    if(workspace == null){
+      AbstractModelNode parent = this.getParent();
+      while(true){
+        if(parent.getParent() == null){
+          break;
+        }
+        parent = parent.getParent();
+      }
+      if(parent != null){
+        workspace = ((IRootModelNode) parent).getWorkspace();
+     }
+    }
+    return workspace;
+  }
 }

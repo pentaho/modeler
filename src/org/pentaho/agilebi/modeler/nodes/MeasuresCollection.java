@@ -16,6 +16,8 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -26,6 +28,8 @@ import java.util.List;
 
 public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaData> implements Serializable {
   private String name = "Measures";//BaseMessages.getString(ModelerWorkspace.class, "measures");
+
+  public static String MEASURE_PROP = "potential_measure";
 
   public MeasuresCollection() {
     this.valid = false;
@@ -112,6 +116,40 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData;
+    if(obj instanceof AvailableField){
+      // check to see if the backing column is flagged as a potential Measure
+      return ((AvailableField) obj).getPhysicalColumn().getProperty(MEASURE_PROP).equals(Boolean.TRUE);
+    } else if(obj instanceof LevelMetaData){
+      // check to see if the backing column is flagged as a potential Measure
+      // this really only makes sense in the single-table modeling scenario
+      return ((LevelMetaData) obj).getLogicalColumn().getProperty(MEASURE_PROP).equals(Boolean.TRUE);
+    } else {
+      return(obj instanceof MeasureMetaData);
+    }
+  }
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    try{
+      MeasureMetaData measure = null;
+      if(data instanceof AvailableField){
+        measure = getWorkspace().createMeasureForNode((AvailableField) data);
+      } else if(data instanceof MeasureMetaData){
+        measure = (MeasureMetaData) data;
+      } else {
+        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+      }
+      String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
+
+      if(measure != null && agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0 ){
+        Object factProp = measure.getLogicalColumn().getLogicalTable().getPhysicalTable().getProperty("FACT_TABLE");
+        if(factProp == null || factProp.equals(Boolean.FALSE)){
+          throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEASURE_NOT_FROM_FACT"));
+        }
+      }
+      return measure;
+    } catch(Exception e){
+      throw new ModelerException(e);
+    }
   }
 }

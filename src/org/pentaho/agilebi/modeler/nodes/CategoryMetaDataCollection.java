@@ -17,6 +17,7 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -166,5 +167,11 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
   @Override
   public boolean acceptsDrop(Object obj) {
     return obj instanceof AvailableField || obj instanceof FieldMetaData || obj instanceof AvailableTable;
+  }
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    return null;
+    
   }
 }

@@ -20,12 +20,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.propforms.MainModelerNodePropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataModelNode> implements Serializable {
+public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataModelNode> implements Serializable, IRootModelNode {
 
   private static final long serialVersionUID = 2399128598598210134L;
 
@@ -35,6 +37,7 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
   private DimensionMetaDataCollection dimensions = new DimensionMetaDataCollection();
 
   private transient PropertyChangeListener listener;
+  private ModelerWorkspace workspace;
 
   public MainModelNode() {
     add(measures);
@@ -42,6 +45,11 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
     setExpanded(true);
     measures.setExpanded(true);
     dimensions.setExpanded(true);
+  }
+
+  public MainModelNode(ModelerWorkspace workspace) {
+    this();
+    this.workspace = workspace;
   }
 
   @Bindable
@@ -214,5 +222,19 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
   @Override
   public boolean acceptsDrop(Object obj) {
     return false;
+  }
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    return null;
+  }
+
+  @Override
+  public ModelerWorkspace getWorkspace() {
+    return workspace;
+  }
+
+  public void setWorkspace(ModelerWorkspace workspace) {
+    this.workspace = workspace;
   }
 }

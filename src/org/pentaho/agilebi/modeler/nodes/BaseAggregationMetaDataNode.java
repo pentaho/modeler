@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
@@ -15,7 +16,7 @@ import java.util.Vector;
  *
  * @author rfellows
  */
-public class BaseAggregationMetaDataNode extends BaseColumnBackedMetaData {
+public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaData {
 
   public static final String FORMAT_NONE = "NONE"; //$NON-NLS-1$
 
@@ -199,4 +200,8 @@ public class BaseAggregationMetaDataNode extends BaseColumnBackedMetaData {
     return name;
   }
 
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    return null;
+  }
 }

@@ -110,10 +110,25 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public void onModelTreeDrop( DropEvent event ) {
-    if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
-      dimTreeHelper.onModelDrop(event);
-    } else {
-      catTreeHelper.onModelDrop(event);
+    try {
+      if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
+       dimTreeHelper.onModelDrop(event);
+      } else {
+        catTreeHelper.onModelDrop(event);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      event.setAccepted(false);
+
+      try {
+        XulMessageBox msg = null; //$NON-NLS-1$
+        msg = (XulMessageBox) document.createElement("messagebox");
+        msg.setTitle(ModelerMessagesHolder.getMessages().getString("error")); //$NON-NLS-1$
+        msg.setMessage(ModelerMessagesHolder.getMessages().getString("error_dropping")+": "+e.getMessage());
+        msg.open();
+      } catch (XulException e1) {
+        e1.printStackTrace();
+      }
     }
   }
 

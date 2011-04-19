@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.propforms.CategoryPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -100,5 +101,11 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
   @Override
   public boolean acceptsDrop(Object obj) {
     return obj instanceof AvailableField || obj instanceof FieldMetaData;
+  }
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    return null;
+    
   }
 }

@@ -16,8 +16,13 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ColumnBackedNode;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.HierarchyPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
@@ -174,5 +179,32 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
     return obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData;
   }
 
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    try{
+      LevelMetaData level = null;
+      if(data instanceof AvailableField){
+        ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
+        level = getWorkspace().createLevelForParentWithNode(this, node);
+      } else if(data instanceof MeasureMetaData){
+        MeasureMetaData measure = (MeasureMetaData) data;
+        level = getWorkspace().createLevelForParentWithNode(this, measure);
+        level.setName(measure.getName());
+      } else if(data instanceof LevelMetaData){
+        level = (LevelMetaData) data;
+      } else {
+        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+      }
+      if(size() > 0){
+        LogicalTable existingTable = get(0).getLogicalColumn().getLogicalTable();
+        if(level.getLogicalColumn().getLogicalTable() != existingTable){
+          throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.TWO_TABLES_IN_HIERARCHY"));
+        }
+      }
+      return level;
+    } catch(Exception e){
+      throw new ModelerException(e);
+    }
+  }
 
 }

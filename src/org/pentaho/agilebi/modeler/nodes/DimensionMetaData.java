@@ -16,6 +16,10 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ColumnBackedNode;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.DimensionPropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -147,4 +151,32 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
     return obj instanceof AvailableField || obj instanceof HierarchyMetaData || obj instanceof LevelMetaData || obj instanceof MeasureMetaData;
   }
 
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    try{
+      if(data instanceof AvailableField){
+        ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
+        return getWorkspace().createHierarchyForParentWithNode(this, node);
+      } else if(data instanceof HierarchyMetaData){
+        return data;
+      } else if(data instanceof LevelMetaData){
+        LevelMetaData level = (LevelMetaData) data;
+        HierarchyMetaData hier = getWorkspace().createHierarchyForParentWithNode(this, level);
+        hier.setName(level.getName());
+        hier.get(0).setName(level.getName());
+        return hier;
+      } else if(data instanceof MeasureMetaData){
+        MeasureMetaData measure = (MeasureMetaData) data;
+        HierarchyMetaData hier = getWorkspace().createHierarchyForParentWithNode(this, measure);
+        hier.setName(measure.getName());
+        hier.get(0).setName(measure.getName());
+        return hier;
+      } else {
+        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+      }
+    } catch(Exception e){
+      throw new ModelerException(e);
+    }
+  }
 }

@@ -16,6 +16,10 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ColumnBackedNode;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -160,5 +164,24 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
   @Override
   public boolean acceptsDrop(Object obj) {
     return obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof DimensionMetaData;
+  }
+
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    try{
+      if(data instanceof AvailableField){
+        ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
+        return getWorkspace().createDimensionFromNode(node);
+      } else if(data instanceof MeasureMetaData){
+        return getWorkspace().createDimensionFromNode((MeasureMetaData) data);
+      } else if(data instanceof LevelMetaData){
+        return getWorkspace().createDimensionFromNode((LevelMetaData) data);
+      } else {
+        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+      }
+    } catch(Exception e){
+      throw new ModelerException(e);
+    }
   }
 }

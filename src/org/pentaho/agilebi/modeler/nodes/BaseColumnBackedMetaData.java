@@ -1,6 +1,7 @@
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -120,5 +121,10 @@ public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implemen
   @Override
   public boolean acceptsDrop(Object obj) {
     return false;
+  }
+
+  @Override
+  public Object onDrop(Object data) throws ModelerException {
+    return null;
   }
 }

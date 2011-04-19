@@ -25,13 +25,12 @@ public class AvailableColumnsTest extends AbstractModelerTest{
 
     // replicating work that would be done by the auto-modeler
     AvailableField field1 = tablesList.get(0).getAvailableFields().get(0);
-    field1.setPossibleMeasure(true);
+    field1.getPhysicalColumn().setProperty("potential_measure", true);
 
     AvailableField field2 = tablesList.get(0).getAvailableFields().get(1);
-    field2.setPossibleMeasure(false);
 
-    assertTrue(field1.isPossibleMeasure());
-    assertFalse(field2.isPossibleMeasure());
+    field1.getPhysicalColumn().setProperty("potential_measure", false);
+
 
     // Add the first available field as a measure. This should work
     workspace.getModel().getMeasures().clear();

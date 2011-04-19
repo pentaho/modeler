@@ -23,6 +23,7 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper {
     MainModelNode mainModel = null;
     if (workspace.getModel() == null) {
       mainModel = new MainModelNode();
+      mainModel.setWorkspace(workspace);
     } else {
       workspace.getModel().getMeasures().clear();
       workspace.getModel().getDimensions().clear();
@@ -36,6 +37,7 @@ public class GwtModelerWorkspaceHelper extends BaseModelerWorkspaceHelper {
     RelationalModelNode relationalModel = null;
     if (workspace.getRelationalModel() == null) {
       relationalModel = new RelationalModelNode();
+      relationalModel.setWorkspace(workspace);
     } else {
       workspace.getRelationalModel().getCategories().clear();
       relationalModel = workspace.getRelationalModel();

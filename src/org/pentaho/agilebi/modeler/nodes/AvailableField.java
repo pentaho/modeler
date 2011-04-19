@@ -57,14 +57,4 @@ public class AvailableField extends AbstractAvailableItem implements Serializabl
            getPhysicalColumn().getPhysicalTable().getId().equals(table.getId());
 
   }
-    
-  public boolean isPossibleMeasure(){
-    String measureProp = (String) getPhysicalColumn().getProperty(MEASURE_PROP);
-    return measureProp != null && measureProp.equals("true");
-  }
-
-  public void setPossibleMeasure(boolean possibleMeasure){
-    getPhysicalColumn().setProperty(MEASURE_PROP, ""+possibleMeasure);
-  }
-
 }

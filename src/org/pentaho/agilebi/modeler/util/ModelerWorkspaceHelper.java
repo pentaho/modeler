@@ -18,11 +18,11 @@ public class ModelerWorkspaceHelper extends BaseModelerWorkspaceHelper {
 
   @Override
   protected MainModelNode getMainModelNode(ModelerWorkspace workspace) {
-    return new MainModelNode();
+    return new MainModelNode(workspace);
   }
   @Override
   protected RelationalModelNode getRelationalModelNode(ModelerWorkspace workspace) {
-    return new RelationalModelNode();
+    return new RelationalModelNode(workspace);
   }
 
 }

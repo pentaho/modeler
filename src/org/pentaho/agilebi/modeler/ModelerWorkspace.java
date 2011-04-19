@@ -83,8 +83,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.isTemporary = true;
     this.workspaceHelper = helper;
 
-    setModel(new MainModelNode());
-    setRelationalModel(new RelationalModelNode());
+    setModel(new MainModelNode(this));
+    setRelationalModel(new RelationalModelNode(this));
 
     simpleAutoModelStrategy = new SimpleAutoModelStrategy(workspaceHelper.getLocale());
     multiTableAutoModelStrategy = new MultiTableAutoModelStrategy(workspaceHelper.getLocale());

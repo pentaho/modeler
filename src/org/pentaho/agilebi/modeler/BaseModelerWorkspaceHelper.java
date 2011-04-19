@@ -69,6 +69,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     logicalModel.setId("MODEL_1");
     logicalModel.setName( new LocalizedString(locale, model.getModelName() ) );
+    logicalModel.setProperty("AGILE_BI_VERSION","2.0");
 
     populateCategories(model);
 
