@@ -62,9 +62,11 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
   public void autoModelOlap(ModelerWorkspace workspace, MainModelNode mainModel) throws ModelerException {
     mainModel.setName(workspace.getModelName());
     workspace.setModel(mainModel);
+    workspace.getModel().getDimensions().clear();
+    workspace.getModel().getMeasures().clear();
 
     final boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true);
+    workspace.setModelIsChanging(true, !mainModel.getSuppressEvents());
 
     // remove all logical columns from existing logical tables
     for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
@@ -92,8 +94,10 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
 
       }
     }
-    workspace.setModelIsChanging(prevChangeState);
-    workspace.setSelectedNode(workspace.getModel());
+    if (!mainModel.getSuppressEvents()) {
+      workspace.setModelIsChanging(prevChangeState);
+      workspace.setSelectedNode(workspace.getModel());
+    }
   }
 
   /**
@@ -110,7 +114,9 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
     workspace.setRelationalModel(relationalModelNode);
     final boolean prevChangeState = workspace.isModelChanging();
 
-    workspace.setRelationalModelIsChanging(true);
+    workspace.getRelationalModel().getCategories().clear();
+
+    workspace.setRelationalModelIsChanging(true, !relationalModelNode.getSuppressEvents());
 
     // remove all logical columns from existing logical tables
     for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
@@ -131,7 +137,7 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
             workspace, tableIds.size());
 
         CategoryMetaData category = new CategoryMetaData(catName);
-
+        category.setExpanded(true);
         for (AvailableTable aTable : tablesList) {
           if (aTable.isSameUnderlyingPhysicalTable(table)) {
             for( AvailableField field : aTable.getAvailableFields() ) {
@@ -146,7 +152,9 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
       }
     }
 
-    workspace.setRelationalModelIsChanging(prevChangeState);
-    workspace.setSelectedNode(workspace.getRelationalModel());
+    if (!relationalModelNode.getSuppressEvents()) {
+      workspace.setRelationalModelIsChanging(prevChangeState);
+      workspace.setSelectedRelationalNode(workspace.getRelationalModel());
+    }
   }
 }

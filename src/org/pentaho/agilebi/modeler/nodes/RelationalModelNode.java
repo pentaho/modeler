@@ -142,7 +142,9 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
     if(listener == null){
       listener = new PropertyChangeListener() {
         public void propertyChange( PropertyChangeEvent evt ) {
-          fireCollectionChanged();
+          if (!suppressEvents) {
+            fireCollectionChanged();
+          }
         }
       };
     }
@@ -151,10 +153,14 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
 
   public void setSupressEvents( boolean suppress ) {
     super.setSupressEvents(suppress);
-    firePropertyChange("valid", !isValid(), isValid());
-
+    if (!suppress) {
+      firePropertyChange("valid", !isValid(), isValid());
+    }
   }
 
+  public boolean getSuppressEvents() {
+    return suppressEvents;
+  }
 
   @Override
   public boolean acceptsDrop(Object obj) {

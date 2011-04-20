@@ -819,7 +819,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       isValid();
       fireModelChanged();
     }
-    model.setSupressEvents(changing);
   }
 
   public void setRelationalModelIsChanging( boolean changing ) {
@@ -834,7 +833,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       isValid();
       fireRelationalModelChanged();
     }
-    relationalModel.setSupressEvents(changing);
   }
 
   @Bindable

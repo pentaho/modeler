@@ -700,12 +700,10 @@ public class ModelerController extends AbstractXulEventHandler {
       switch(workspace.getCurrentModelerPerspective()) {
         case REPORTING:
           workspace.getWorkspaceHelper().autoModelRelationalFlatInBackground(this.workspace);
-          workspace.setRelationalModelIsChanging(false, true);
           this.categoriesTree.expandAll();
           break;
         case ANALYSIS:
           workspace.getWorkspaceHelper().autoModelFlatInBackground(this.workspace);
-          workspace.setModelIsChanging(false, true);
           this.dimensionTree.expandAll();
           break;
       }

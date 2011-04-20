@@ -42,9 +42,11 @@ public class MultiTableAutoModelStrategy extends SimpleAutoModelStrategy {
   public void autoModelOlap(ModelerWorkspace workspace, MainModelNode mainModel) throws ModelerException {
     mainModel.setName(workspace.getModelName());
     workspace.setModel(mainModel);
+    workspace.getModel().getDimensions().clear();
+    workspace.getModel().getMeasures().clear();
 
     final boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true);
+    workspace.setModelIsChanging(true, !mainModel.getSuppressEvents());
 
     // remove all logical columns from existing logical tables
     for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
@@ -88,8 +90,10 @@ public class MultiTableAutoModelStrategy extends SimpleAutoModelStrategy {
       workspace.addDimension(dim);
       
     }
-    workspace.setModelIsChanging(prevChangeState);
-    workspace.setSelectedNode(workspace.getModel());
+    if (!mainModel.getSuppressEvents()) {
+      workspace.setModelIsChanging(prevChangeState);
+      workspace.setSelectedNode(workspace.getModel());
+    }
   }
 
 }

@@ -125,6 +125,10 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
     if(logicalColumn != null){
       previousDataType = logicalColumn.getDataType();
     }
+    if (col == null) {
+      super.setLogicalColumn(col);
+      return;
+    }
     super.setLogicalColumn(col);
     DataType newDataType = logicalColumn.getDataType();
     if(previousDataType == null || previousDataType != newDataType){
