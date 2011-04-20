@@ -18,6 +18,8 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
+import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -73,6 +75,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private transient ModelerMode currentModellingMode = ModelerMode.ANALYSIS_AND_REPORTING;
   private transient ModelerPerspective currentModelerPerspective = ModelerPerspective.ANALYSIS;
 
+  private transient SimpleAutoModelStrategy simpleAutoModelStrategy;
+  private transient MultiTableAutoModelStrategy multiTableAutoModelStrategy;
+
   public ModelerWorkspace(IModelerWorkspaceHelper helper) {
 
     this.isTemporary = true;
@@ -80,6 +85,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     setModel(new MainModelNode());
     setRelationalModel(new RelationalModelNode());
+
+    simpleAutoModelStrategy = new SimpleAutoModelStrategy(workspaceHelper.getLocale());
+    multiTableAutoModelStrategy = new MultiTableAutoModelStrategy(workspaceHelper.getLocale());
+
   }
 
   @Bindable
@@ -313,6 +322,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
 
   private void fireTablesChanged() {
+    // set the automodel strategy based on the number of available tables
+    if (availableTables.size() > 1) {
+      workspaceHelper.setAutoModelStrategy(multiTableAutoModelStrategy);
+    } else {
+      workspaceHelper.setAutoModelStrategy(simpleAutoModelStrategy);
+    }
     firePropertyChange("availableTables", null, this.availableTables); //$NON-NLS-1$
   }
 
@@ -576,7 +591,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   public void setAvailableTables(AvailableItemCollection tables){
     this.availableTables = tables;
-    firePropertyChange("availableTables", null, getAvailableTables()); //$NON-NLS-1$
+    fireTablesChanged();
   }
 
 
@@ -600,9 +615,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for (IPhysicalTable table : domain.getPhysicalModels().get(0).getPhysicalTables()) {
       items.add(new AvailableTable(table));
     }
+
     availableTables.setChildren(items);
     
-    firePropertyChange("availableTables", null, getAvailableTables()); //$NON-NLS-1$
+    fireTablesChanged();
 
     LogicalModel lModel = domain.getLogicalModels().get(0);
 

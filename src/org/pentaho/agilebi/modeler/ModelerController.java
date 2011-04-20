@@ -71,7 +71,7 @@ public class ModelerController extends AbstractXulEventHandler {
   private transient DimensionTreeHelper dimTreeHelper;
   private transient CategoryTreeHelper catTreeHelper;
 
-  private IModelerWorkspaceHelper workspaceHelper;
+//  private IModelerWorkspaceHelper workspaceHelper;
   private XulTabbox modelTabbox;
 //  private transient ModelerMode currentModellingMode = ModelerMode.ANALYSIS_AND_REPORTING;
 //  private transient ModelerPerspective currentModelerPerspective = ModelerPerspective.ANALYSIS;
@@ -358,7 +358,7 @@ public class ModelerController extends AbstractXulEventHandler {
           if (returnCode == Status.ACCEPT) {
             MeasuresCollection theMesaures = (MeasuresCollection) dimTreeHelper.getSelectedTreeItem();
             MeasureMetaData theMeasure = new MeasureMetaData("" + retVal, "",
-                "" + retVal, workspaceHelper.getLocale()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+                "" + retVal, workspace.getWorkspaceHelper().getLocale()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
             if (selectedFields.length > 0) {
               IAvailableItem item = selectedFields[0];
@@ -551,7 +551,7 @@ public class ModelerController extends AbstractXulEventHandler {
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
           if (returnCode == Status.ACCEPT) {
             CategoryMetaData theCategory = (CategoryMetaData) catTreeHelper.getSelectedTreeItem();
-            FieldMetaData theField = new FieldMetaData(theCategory, "" + retVal, "", "" + retVal, workspaceHelper.getLocale());
+            FieldMetaData theField = new FieldMetaData(theCategory, "" + retVal, "", "" + retVal, workspace.getWorkspaceHelper().getLocale());
 
             if (selectedFields.length > 0) {
               IAvailableItem item = selectedFields[0];
@@ -685,12 +685,12 @@ public class ModelerController extends AbstractXulEventHandler {
       // TODO: GWT-ify
       switch(workspace.getCurrentModelerPerspective()) {
         case REPORTING:
-          workspaceHelper.autoModelRelationalFlatInBackground(this.workspace);
+          workspace.getWorkspaceHelper().autoModelRelationalFlatInBackground(this.workspace);
           workspace.setRelationalModelIsChanging(false, true);
           this.categoriesTree.expandAll();
           break;
         case ANALYSIS:
-          workspaceHelper.autoModelFlatInBackground(this.workspace);
+          workspace.getWorkspaceHelper().autoModelFlatInBackground(this.workspace);
           workspace.setModelIsChanging(false, true);
           this.dimensionTree.expandAll();
           break;
@@ -760,11 +760,11 @@ public class ModelerController extends AbstractXulEventHandler {
   }
 
   public IModelerWorkspaceHelper getWorkspaceHelper() {
-    return workspaceHelper;
+    return workspace.getWorkspaceHelper();
   }
 
   public void setWorkspaceHelper( IModelerWorkspaceHelper workspaceHelper ) {
-    this.workspaceHelper = workspaceHelper;
+    workspace.setWorkspaceHelper(workspaceHelper);
   }
 
   public boolean saveWorkspace( String fileName ) throws ModelerException {

@@ -1,6 +1,7 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
+import org.pentaho.agilebi.modeler.strategy.AutoModelStrategy;
 
 import java.util.List;
 
@@ -18,4 +19,8 @@ public interface IModelerWorkspaceHelper {
   void sortFields( List<AvailableField> availableFields);
   void populateDomain(ModelerWorkspace model) throws ModelerException;
   String getLocale();
+
+  public AutoModelStrategy getAutoModelStrategy();
+  public void setAutoModelStrategy(AutoModelStrategy autoModelStrategy);
+  
 }
