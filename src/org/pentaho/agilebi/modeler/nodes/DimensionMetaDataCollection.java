@@ -170,7 +170,11 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
   @Override
   public Object onDrop(Object data) throws ModelerException {
     try{
-      if(data instanceof AvailableField){
+      if(data instanceof AvailableTable){
+        AvailableTable tbl = (AvailableTable) data;
+        DimensionMetaData dim = getWorkspace().createDimensionFromAvailableTable(tbl);
+        return dim;
+      } else if(data instanceof AvailableField){
         ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
         return getWorkspace().createDimensionFromNode(node);
       } else if(data instanceof MeasureMetaData){
@@ -180,6 +184,7 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }
+
     } catch(Exception e){
       throw new ModelerException(e);
     }

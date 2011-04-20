@@ -5,14 +5,16 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.XulComponent;
-import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.containers.XulDeck;
+import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.agilebi.modeler.models.AbstractModelNode;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -173,5 +175,21 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
       LogicalTable lTab = lCol.getLogicalTable();
       lTab.getLogicalColumns().remove(lCol);
     }
+  }
+
+  public void onModelDrop(DropEvent event) throws ModelerException{
+    boolean prevChangeState = workspace.isModelChanging();
+    workspace.setModelIsChanging(true);
+    IDropTarget dropNode = (IDropTarget) event.getDropParent();
+    Object newData = null;
+    for(Object data : event.getDataTransfer().getData()){
+      newData = dropNode.onDrop(data);
+    }
+    if (newData == null) {
+      event.setAccepted(false);
+    } else {
+      event.getDataTransfer().setData(Collections.singletonList(newData));
+    }
+    workspace.setModelIsChanging(prevChangeState, false);
   }
 }

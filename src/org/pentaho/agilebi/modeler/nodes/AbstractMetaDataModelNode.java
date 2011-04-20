@@ -21,7 +21,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.agilebi.modeler.models.AbstractModelNode;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -197,7 +197,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   public ModelerWorkspace getWorkspace(){
     if(workspace == null){
       AbstractModelNode parent = this.getParent();
-      while(true){
+      while(parent != null){
         if(parent.getParent() == null){
           break;
         }

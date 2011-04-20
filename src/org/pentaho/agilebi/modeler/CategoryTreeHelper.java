@@ -7,9 +7,10 @@ import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.agilebi.modeler.models.AbstractModelNode;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -113,93 +114,6 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
 
     workspace.getRelationalModel().getCategories().clear();
     workspace.setRelationalModelIsChanging(false, true);
-  }
-
-  @Bindable
-  public void onModelDrop(DropEvent event) {
-    boolean prevChangeState = workspace.isModelChanging();
-    workspace.setRelationalModelIsChanging(true);
-    List<Object> data = event.getDataTransfer().getData();
-    List<Object> newdata = new ArrayList<Object>();
-
-    for (Object obj : data) {
-      if (obj instanceof AvailableTable) {
-        AvailableTable table = (AvailableTable)obj;
-        if (event.getDropParent() instanceof CategoryMetaData) {
-          for (AvailableField field : table.getAvailableFields()) {
-            newdata.add(workspace.createFieldForParentWithNode((CategoryMetaData) event.getDropParent(), field));
-          }
-        } else if (event.getDropParent() instanceof CategoryMetaDataCollection ) {
-          // create a new category for this table?
-          CategoryMetaData cat = new CategoryMetaData(table.getName());
-          for (AvailableField field : table.getAvailableFields()) {
-            cat.add(workspace.createFieldForParentWithNode(cat, field));
-          }
-          newdata.add(cat);
-        } else {
-          event.setAccepted(false);
-          workspace.setRelationalModelIsChanging(prevChangeState, false);
-          return;
-        }
-      } else if (obj instanceof AvailableField) {
-        AvailableField availableField = (AvailableField)obj;
-        if (event.getDropParent() instanceof CategoryMetaData) {
-          newdata.add(workspace.createFieldForParentWithNode((CategoryMetaData) event.getDropParent(), availableField));
-        } else {
-          event.setAccepted(false);
-          workspace.setRelationalModelIsChanging(prevChangeState, false);
-          return;
-        }
-      } else if (obj instanceof FieldMetaData) {
-        FieldMetaData field = (FieldMetaData)obj;
-        if (event.getDropParent() instanceof CategoryMetaData) {
-          field.setParent((CategoryMetaData)event.getDropParent());
-          newdata.add(field);
-        }
-      }
-    }
-    if (newdata.size() == 0) {
-      event.setAccepted(false);
-    } else {
-      event.getDataTransfer().setData(newdata);
-    }
-
-    workspace.setRelationalModelIsChanging(prevChangeState, true);
-  }
-
-  @Bindable
-  public void checkDropLocation(DropEvent event){
-    List<Object> data = event.getDataTransfer().getData();
-    Object dropTarget = event.getDropParent();
-    if (dropTarget == null) {
-      event.setAccepted(false);
-      return;
-    }
-
-    for (Object obj : data) {
-
-      if(obj instanceof AbstractMetaDataModelNode && event.getDropParent() != null){
-        event.setAccepted(((AbstractMetaDataModelNode) event.getDropParent()).acceptsDrop(obj));
-      }
-      if (obj instanceof AvailableTable) {
-        // dropping an AvailableTable, see if the drop location is valid
-        event.setAccepted(dropTarget instanceof CategoryMetaData || dropTarget instanceof CategoryMetaDataCollection);
-        return;
-      } else if (obj instanceof AvailableField) {
-        // dropping an AvailableField
-        event.setAccepted(dropTarget instanceof CategoryMetaData);
-        return;
-      } else if (obj instanceof FieldMetaData) {
-        // moving a field object around
-        event.setAccepted(dropTarget instanceof CategoryMetaData);
-        return;
-      } else if (obj instanceof CategoryMetaData) {
-        event.setAccepted(dropTarget instanceof CategoryMetaDataCollection);
-        return;
-      }
-      event.setAccepted(false);
-      return;
-    }
   }
 
 }

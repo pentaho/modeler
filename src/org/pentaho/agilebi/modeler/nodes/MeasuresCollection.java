@@ -116,16 +116,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    if(obj instanceof AvailableField){
-      // check to see if the backing column is flagged as a potential Measure
-      return ((AvailableField) obj).getPhysicalColumn().getProperty(MEASURE_PROP).equals(Boolean.TRUE);
-    } else if(obj instanceof LevelMetaData){
-      // check to see if the backing column is flagged as a potential Measure
-      // this really only makes sense in the single-table modeling scenario
-      return ((LevelMetaData) obj).getLogicalColumn().getProperty(MEASURE_PROP).equals(Boolean.TRUE);
-    } else {
-      return(obj instanceof MeasureMetaData);
-    }
+    return (obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof AvailableTable || obj instanceof MeasureMetaData);
   }
 
   @Override
@@ -134,6 +125,29 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
       MeasureMetaData measure = null;
       if(data instanceof AvailableField){
         measure = getWorkspace().createMeasureForNode((AvailableField) data);
+      } else if(data instanceof AvailableTable){
+        AvailableTable table = (AvailableTable) data;
+        String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
+
+        if(measure != null && agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0 ){
+          Object factProp = table.getPhysicalTable().getProperty("FACT_TABLE");
+          if(factProp == null || factProp.equals(Boolean.FALSE)){
+            throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEASURE_NOT_FROM_FACT"));
+          }
+        }
+        List<MeasureMetaData> measureList = new ArrayList<MeasureMetaData>();
+
+        for(AvailableField field : table.getChildren()){
+          measureList.add(getWorkspace().createMeasureForNode(field));
+        }
+        // We need to return something back which will be added to the top of the children list. So we'll return the first
+        // element we've added. The mechanics following this return will be invisible to the user
+        MeasureMetaData firstField = measureList.size() > 0 ? measureList.get(0) : null;
+        if(firstField != null){
+          measureList.remove(firstField);
+        }
+        addAll(measureList);
+        return firstField;
       } else if(data instanceof MeasureMetaData){
         measure = (MeasureMetaData) data;
       } else {

@@ -16,7 +16,7 @@
  */
 package org.pentaho.agilebi.modeler;
 
-import org.pentaho.agilebi.modeler.models.XulEventSourceAdapter;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
@@ -251,6 +251,25 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     DimensionMetaData dimension = new DimensionMetaData(obj.getName());
     dimension.setExpanded(true);
     HierarchyMetaData hierarchy = createHierarchyForParentWithNode(dimension, obj);
+    hierarchy.setParent(dimension);
+    hierarchy.setExpanded(true);
+    dimension.add(hierarchy);
+    return dimension;
+  }
+
+
+  public DimensionMetaData createDimensionFromAvailableTable(AvailableTable tbl) {
+    DimensionMetaData dimension = new DimensionMetaData(tbl.getName());
+    dimension.setExpanded(true);
+    HierarchyMetaData hierarchy = new HierarchyMetaData(tbl.getName());
+
+    hierarchy.setExpanded(true);
+    for(AvailableField field : tbl.getChildren()){
+      ColumnBackedNode node = this.createColumnBackedNode(field, ModelerPerspective.ANALYSIS);
+      LevelMetaData level = createLevelForParentWithNode(hierarchy, node);
+      hierarchy.add(level);
+    }
+    
     hierarchy.setParent(dimension);
     hierarchy.setExpanded(true);
     dimension.add(hierarchy);

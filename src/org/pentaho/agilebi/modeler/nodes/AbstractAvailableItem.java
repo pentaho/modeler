@@ -19,7 +19,7 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.agilebi.modeler.models.AbstractModelNode;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 
 import java.io.Serializable;
 

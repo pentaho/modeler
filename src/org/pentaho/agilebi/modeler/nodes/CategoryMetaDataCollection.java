@@ -18,6 +18,7 @@
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -171,7 +172,24 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
 
   @Override
   public Object onDrop(Object data) throws ModelerException {
-    return null;
-    
+    try{
+      if(data instanceof AvailableTable){
+        AvailableTable table = (AvailableTable) data;
+        CategoryMetaData cat = new CategoryMetaData(table.getName());
+        for (AvailableField field : table.getAvailableFields()) {
+          cat.add(getWorkspace().createFieldForParentWithNode(cat, field));
+        }
+        return cat;
+      } else if(data instanceof AvailableField){
+        AvailableField field = (AvailableField) data;
+        CategoryMetaData cat = new CategoryMetaData(field.getName());
+        cat.add(getWorkspace().createFieldForParentWithNode(cat, field));
+        return cat;
+      } else {
+        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+      }
+    } catch(Exception e){
+      throw new ModelerException(e);
+    }
   }
 }
