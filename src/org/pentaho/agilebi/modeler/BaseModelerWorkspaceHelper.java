@@ -1,7 +1,31 @@
 package org.pentaho.agilebi.modeler;
 
-import org.pentaho.agilebi.modeler.nodes.*;
-import org.pentaho.metadata.model.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.pentaho.agilebi.modeler.nodes.AvailableField;
+import org.pentaho.agilebi.modeler.nodes.AvailableTable;
+import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
+import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
+import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
+import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
+import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
+import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.MainModelNode;
+import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
+import org.pentaho.metadata.model.Category;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.IPhysicalTable;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.IConcept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
@@ -12,8 +36,6 @@ import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
-
-import java.util.*;
 
 /**
  * User: nbaker
@@ -54,12 +76,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     domain.setId(model.getModelName());
 
     LogicalModel logicalModel = domain.getLogicalModels().get(0);
-    LogicalTable logicalTable = null;
-    for(LogicalTable lTable : logicalModel.getLogicalTables()) {
-    	if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-    		logicalTable = lTable;
-    	}
-    }
 
     if (model.getModelSource() != null) {
       model.getModelSource().serializeIntoDomain(domain);
@@ -70,6 +86,32 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     populateCategories(model);
 
+	LogicalTable factTable = null;
+    if(model.getCurrentModellingMode().equals(ModelerMode.ANALYSIS_AND_REPORTING)) {
+    	    //check to see if there's only one effective table
+   	    if(logicalModel.getLogicalTables().size() <= 2){
+   	    	for(LogicalTable lTable : logicalModel.getLogicalTables()) {
+   	        	if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+   	           		factTable = lTable;
+   	        	}
+   	        }
+   	    } else { // otherwise we're in a multi-table situation, find the table flagged as the fact table
+   	    	for(LogicalTable lTable : logicalModel.getLogicalTables()) {
+   	        	if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+   	        		boolean isFact = lTable.getPhysicalTable().getProperty("FACT_TABLE") != null ? (Boolean) lTable.getPhysicalTable().getProperty("FACT_TABLE") : false;
+   	    	    	if(isFact) {
+   	            		factTable = lTable;
+   	    	    		break;
+   	    	    	}
+   	        	}
+   	        }	
+   	    }
+    	    
+   	    if(factTable == null) {
+   	    	throw new IllegalStateException("Fact table is missing.");
+   	    }
+    }
+    
     // =========================== OLAP ===================================== //
 
 
@@ -117,7 +159,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
           // create a default hierarchy
           OlapHierarchy defaultHierarchy = new OlapHierarchy(dimension);
 
-          defaultHierarchy.setLogicalTable(logicalTable);  // TODO: set this to what???
+          defaultHierarchy.setLogicalTable(factTable);  // TODO: set this to what???
 
           hierarchies.add(defaultHierarchy);
         }
@@ -131,7 +173,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
       
       OlapCube cube = new OlapCube();	  
-      cube.setLogicalTable(logicalTable);
+      cube.setLogicalTable(factTable);
       // TODO find a better way to generate default names
       //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
       cube.setName( model.getModelName() ); //$NON-NLS-1$
