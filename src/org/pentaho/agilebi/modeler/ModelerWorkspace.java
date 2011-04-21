@@ -206,7 +206,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   @Bindable
   public boolean isValid() {
     boolean valid = false;
-    switch (getCurrentModellingMode()) {
+    switch (getModellingMode()) {
       case ANALYSIS_AND_REPORTING:
         valid = this.model.isValid() && relationalModel.isValid();
         break;
@@ -644,6 +644,13 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setModelName(lModel.getName(workspaceHelper.getLocale()));
     setRelationalModelName(lModel.getName(workspaceHelper.getLocale()));
 
+    // Set the type of modeling session. This will propigate to the UI
+    if(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef") != null){
+      this.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
+    } else {
+      this.setModellingMode(ModelerMode.REPORTING_ONLY);
+    }
+
     List<OlapDimension> theDimensions = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_DIMS); //$NON-NLS-1$
     if (theDimensions != null) {
       Iterator<OlapDimension> theDimensionItr = theDimensions.iterator();
@@ -882,12 +889,16 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.workspaceHelper = workspaceHelper;
   }
 
-  public ModelerMode getCurrentModellingMode() {
+  @Bindable
+  public ModelerMode getModellingMode() {
     return currentModellingMode;
   }
 
-  public void setCurrentModellingMode(ModelerMode currentModellingMode) {
+  @Bindable
+  public void setModellingMode(ModelerMode currentModellingMode) {
+    ModelerMode prevVal = this.currentModellingMode;
     this.currentModellingMode = currentModellingMode;
+    firePropertyChange("modellingMode", prevVal, this.currentModellingMode);
     isValid();
   }
 

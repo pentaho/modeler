@@ -15,7 +15,10 @@
 
   <source path="modeler">
     <exclude name="**/*Servlet*"/>
+    <exclude name="**/MultitableDatasourceService*"/>
     <exclude name="**/util/*"/>
+    <exclude name="**/*Test*"/>
+    <exclude name="**/debug/*"/>
   </source>
 
   <public path="modeler/res"/>

@@ -8,12 +8,7 @@ import org.pentaho.metadata.model.concept.IConcept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.metadata.model.olap.OlapCube;
-import org.pentaho.metadata.model.olap.OlapDimension;
-import org.pentaho.metadata.model.olap.OlapDimensionUsage;
-import org.pentaho.metadata.model.olap.OlapHierarchy;
-import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
-import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metadata.model.olap.*;
 
 import java.util.*;
 
@@ -56,12 +51,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     domain.setId(model.getModelName());
 
     LogicalModel logicalModel = domain.getLogicalModels().get(0);
-    LogicalTable logicalTable = null;
-    for(LogicalTable lTable : logicalModel.getLogicalTables()) {
-    	if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-    		logicalTable = lTable;
-    	}
-    }
 
     if (model.getModelSource() != null) {
       model.getModelSource().serializeIntoDomain(domain);
@@ -73,9 +62,35 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     populateCategories(model);
 
+    
     // =========================== OLAP ===================================== //
 
 
+    if(model.getModellingMode().equals(ModelerMode.ANALYSIS_AND_REPORTING)) {
+      System.out.println("Made it in olap");
+	    LogicalTable factTable = null;
+      //check to see if there's only one effective table
+      if(logicalModel.getLogicalTables().size() <= 2){
+        for(LogicalTable lTable : logicalModel.getLogicalTables()) {
+            if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+                factTable = lTable;
+            }
+          }
+      } else { // otherwise we're in a multi-table situation, find the table flagged as the fact table
+        for(LogicalTable lTable : logicalModel.getLogicalTables()) {
+            if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+              boolean isFact = lTable.getPhysicalTable().getProperty("FACT_TABLE") != null ? (Boolean) lTable.getPhysicalTable().getProperty("FACT_TABLE") : false;
+              if(isFact) {
+                  factTable = lTable;
+                break;
+              }
+            }
+          }
+      }
+
+      if(factTable == null) {
+        throw new IllegalStateException("Fact table is missing.");
+      }
       List<OlapDimensionUsage> usages = new ArrayList<OlapDimensionUsage>();
       List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
       List<OlapMeasure> measures = new ArrayList<OlapMeasure>();
@@ -120,7 +135,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
           // create a default hierarchy
           OlapHierarchy defaultHierarchy = new OlapHierarchy(dimension);
 
-          defaultHierarchy.setLogicalTable(logicalTable);  // TODO: set this to what???
+          defaultHierarchy.setLogicalTable(factTable);  // TODO: set this to what???
 
           hierarchies.add(defaultHierarchy);
         }
@@ -134,7 +149,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
       
       OlapCube cube = new OlapCube();	  
-      cube.setLogicalTable(logicalTable);
+      cube.setLogicalTable(factTable);
       // TODO find a better way to generate default names
       //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
       cube.setName( model.getModelName() ); //$NON-NLS-1$
@@ -177,6 +192,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       List<OlapCube> cubes = new ArrayList<OlapCube>();
       cubes.add(cube);
       logicalModel.setProperty("olap_cubes", cubes); //$NON-NLS-1$
+    }
 
   }
 

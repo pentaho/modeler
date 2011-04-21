@@ -21,12 +21,13 @@
 
   import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMode;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.agilebi.modeler.models.SchemaModel;
-import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
-import org.pentaho.di.core.database.DatabaseMeta;
+  import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
+  import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -107,14 +108,27 @@ import java.util.Set;
            logicalModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
            logicalModel.setName(new LocalizedString(locale, datasourceName));
            logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
-                 + datasourceName));  // TODO do this with messages
+               + datasourceName));  // TODO do this with messages
            
            workspace.setModelName(datasourceName);
            helper.autoModelRelationalFlat(workspace);
 
            if(doOlap) {
         	   helper.autoModelFlat(workspace);
-           }           
+             workspace.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
+           } else {
+             workspace.setModellingMode(ModelerMode.REPORTING_ONLY);
+           }
+           
+           LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
+           if(doOlap) {
+             if(factTable == null) {
+               throw new IllegalStateException("Fact table not found");
+             } else {
+               factTable.getPhysicalTable().setProperty("FACT_TABLE", true);
+             }
+           } 
+           
            helper.populateDomain(workspace);
 
            for(LogicalTable businessTable : logicalModel.getLogicalTables()) {
@@ -129,14 +143,6 @@ import java.util.Set;
            generateLogicalRelationships(logicalModel, false);
            if(doOlap) {
         	   generateLogicalRelationships(logicalModel, true);
-        	   
-        	   LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
-        	   if(factTable == null) {
-        		   throw new IllegalStateException("Fact table not found");
-        	   }
-          	   List<OlapCube> cubes = (List) logicalModel.getProperty("olap_cubes");
-          	   OlapCube cube = cubes.get(0);
-          	   cube.setLogicalTable(factTable);
            }
            
          } catch (Exception e) {
@@ -152,7 +158,6 @@ import java.util.Set;
    	   for (LogicalTable lTable : logicalModel.getLogicalTables()) {
    		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) { 
 	   		   if(lTable.getPhysicalTable().getProperty("target_table").equals(table.getName())) {
-	   			  lTable.getPhysicalTable().setProperty("FACT_TABLE", true);
 	   		      factTable = lTable;
 	   		      break;
 	   		   }

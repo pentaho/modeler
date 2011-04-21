@@ -35,6 +35,7 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -173,6 +174,8 @@ public class ModelerController extends AbstractXulEventHandler {
     modelTreeBinding = bf.createBinding(workspace, "model", dimensionTree, "elements"); //$NON-NLS-1$//$NON-NLS-2$
     relModelTreeBinding = bf.createBinding(workspace, "relationalModel", categoriesTree, "elements"); //$NON-NLS-1$//$NON-NLS-2$
 
+    modelerModeBinding = bf.createBinding(workspace, "modellingMode", this, "modellingMode");
+
     bf.createBinding(dimensionTree, "selectedItem", dimTreeHelper, "treeSelectionChanged"); //$NON-NLS-1$//$NON-NLS-2$
     bf.createBinding(categoriesTree, "selectedItem", catTreeHelper, "treeSelectionChanged"); //$NON-NLS-1$//$NON-NLS-2$
 
@@ -277,7 +280,6 @@ public class ModelerController extends AbstractXulEventHandler {
     if (workspace.getRelationalModel().size() > 0) {
       categoriesTree.setSelectedItems(Collections.singletonList(workspace.getRelationalModel()));
     }
-
   }
 
   @Bindable
@@ -335,6 +337,7 @@ public class ModelerController extends AbstractXulEventHandler {
 
   protected void fireBindings() throws ModelerException {
     try {
+      modelerModeBinding.fireSourceChanged();
       fieldListBinding.fireSourceChanged();
       selectedFieldsBinding.fireSourceChanged();
       modelTreeBinding.fireSourceChanged();
@@ -352,7 +355,7 @@ public class ModelerController extends AbstractXulEventHandler {
    */
   @Bindable
   public void refreshFields() throws ModelerException {
-    workspace.refresh(workspace.getCurrentModellingMode());
+    workspace.refresh(workspace.getModellingMode());
   }
 
   public void setFileName( String fileName ) {
@@ -603,6 +606,7 @@ public class ModelerController extends AbstractXulEventHandler {
 
   private Binding modelTreeBinding;
   private Binding relModelTreeBinding;
+  private Binding modelerModeBinding;
   
   @Bindable
   public void removeField() {
@@ -806,7 +810,7 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public ModelerMode getModellingMode() {
-    return workspace.getCurrentModellingMode();
+    return workspace.getModellingMode();
   }
   @Bindable
   public void setModellingMode(ModelerMode mode) {
@@ -829,7 +833,7 @@ public class ModelerController extends AbstractXulEventHandler {
         workspace.setCurrentModelerPerspective(ModelerPerspective.REPORTING);
       }
     }
-    workspace.setCurrentModellingMode(mode);
+    workspace.setModellingMode(mode);
   }
 
   @Bindable
