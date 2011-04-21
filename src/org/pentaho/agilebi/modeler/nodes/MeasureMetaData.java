@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -53,4 +54,18 @@ public class MeasureMetaData extends BaseAggregationMetaDataNode {
     return false;
   }
 
+  @Override
+  public void validate() {
+    valid = true;
+    validationMessages.clear();
+    // check name
+    if (name == null || "".equals(name)) {
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.columnnode.MISSING_NAME"));
+      valid = false;
+    }
+    if (logicalColumn == null) {
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.columnnode.MISSING_BACKING_COLUMN", getName()));
+      valid = false;
+    }
+  }
 }

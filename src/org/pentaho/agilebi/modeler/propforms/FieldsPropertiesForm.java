@@ -2,7 +2,6 @@ package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -43,7 +42,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     bf.createBinding(this, "defaultAggregation", "field_defaultAggregation", "selectedItem");
 
     bf.createBinding(this, "format", "fieldformatstring", "selectedItem", new FormatStringConverter());
-    bf.createBinding(this, "notValid", "fixFieldColumnsBtn", "visible");
+    bf.createBinding(this, "backingColumnAvailable", "fixFieldColumnsBtn", "!visible");
     bf.createBinding(this, "columnName", "field_column_name", "value");
 
   }

@@ -26,8 +26,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 
 
@@ -104,21 +103,35 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
     valid = true;
     validationMessages.clear();
     if (size() == 0) {
-      validationMessages.add("Reporting Model requires at least one Category");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.categorycollecion.REQUIRES_AT_LEAST_ONE_CATEGORY"));
       valid = false;
     }
-    List<String> usedNames = new ArrayList<String>();
 
+
+    HashMap<String, CategoryMetaData> usedNames = new HashMap<String, CategoryMetaData>();
     for (CategoryMetaData cat : children) {
       valid &= cat.isValid();
       validationMessages.addAll(cat.getValidationMessages());
-      if (usedNames.contains(cat.getName())) {
+      if (usedNames.containsKey(cat.getName())) {
         valid = false;
-        //TODO: GWT i18n
-        validationMessages.add(
-            "Duplicate Category Names");//BaseMessages.getString(ModelerWorkspace.class, "duplicate_dimension_names"));
+        String msg = ModelerMessagesHolder.getMessages().getString("validation.categorycollecion.DUPLICATE_CATEGORY_NAMES", cat.getName());
+        validationMessages.add(msg);
+
+        cat.invalidate();
+        if (!cat.getValidationMessages().contains(msg)) {
+          cat.getValidationMessages().add(msg);
+        }
+        CategoryMetaData c = usedNames.get(cat.getName());
+        if (c.isValid()) {
+          c.invalidate();
+          if (!c.getValidationMessages().contains(msg)) {
+            c.getValidationMessages().add(msg);
+          }
+        }
+
+      } else {
+        usedNames.put(cat.getName(), cat);
       }
-      usedNames.add(cat.getName());
     }
     if (this.suppressEvents == false) {
       this.firePropertyChange("valid", prevValid, valid);

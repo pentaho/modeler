@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.FieldsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.concept.types.AggregationType;
@@ -69,12 +70,11 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
     validationMessages.clear();
     // check name
     if (name == null || "".equals(name)) {
-      validationMessages.add(
-          "Field Name Missing");//BaseMessages.getString(ModelerWorkspace.class, "measure_name_missing"));
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.field.MISSING_NAME"));
       valid = false;
     }
     if (logicalColumn == null) {
-      validationMessages.add("The column mapped to the field ("+getName()+") is missing or no longer available.");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.field.MISSING_BACKING_COLUMN", getName()));
       valid = false;
     }
   }

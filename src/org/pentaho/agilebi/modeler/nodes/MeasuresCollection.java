@@ -24,6 +24,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaData> implements Serializable {
@@ -68,20 +69,34 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
     validationMessages.clear();
 
     if (size() == 0) {
-      validationMessages.add("Need a measure");//BaseMessages.getString(ModelerWorkspace.class, "need_one_measure"));
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.measurecollecion.REQUIRES_AT_LEAST_ONE_MEASURE"));
       valid = false;
     }
-    List<String> usedNames = new ArrayList<String>();
+
+    HashMap<String, MeasureMetaData> usedNames = new HashMap<String, MeasureMetaData>();
     for (MeasureMetaData measure : children) {
       valid &= measure.isValid();
       validationMessages.addAll(measure.getValidationMessages());
-      if (usedNames.contains(measure.getName())) {
+      if (usedNames.containsKey(measure.getName())) {
         valid = false;
-        validationMessages.add(
-            "duplicate measure");//BaseMessages.getString(ModelerWorkspace.class, "duplicate_measure_name"));
-      }
+        String msg = ModelerMessagesHolder.getMessages().getString("validation.measurecollecion.DUPLICATE_MEASURE_NAMES", measure.getName());
+        validationMessages.add(msg);
 
-      usedNames.add(measure.getName());
+        measure.invalidate();
+        if (!measure.getValidationMessages().contains(msg)) {
+          measure.getValidationMessages().add(msg);
+        }
+        MeasureMetaData m = usedNames.get(measure.getName());
+        if (m.isValid()) {
+          m.invalidate();
+          if (!m.getValidationMessages().contains(msg)) {
+            m.getValidationMessages().add(msg);
+          }
+        }
+
+      } else {
+        usedNames.put(measure.getName(), measure);
+      }
 
     }
     this.firePropertyChange("valid", prevVal, valid);

@@ -120,7 +120,7 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
 
     if (this.children.size() != 1) {
       valid = false;
-      this.validationMessages.add("Invalid Reporting Model Structure");
+      this.validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.relationalmodel.INVALID_STRUCTURE"));
     }
     for (AbstractMetaDataModelNode child : children) {
       valid &= child.isValid();

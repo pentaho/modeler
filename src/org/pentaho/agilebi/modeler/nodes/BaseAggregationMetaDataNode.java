@@ -182,24 +182,6 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
     return false;
   }
 
-  @Override
-  public void validate() {
-    valid = true;
-    validationMessages.clear();
-    // check name
-    if (name == null || "".equals(name)) {
-      validationMessages.add(
-          "Measure Name Missing");//BaseMessages.getString(ModelerWorkspace.class, "measure_name_missing"));
-//      validationMessages.add(BaseMessages.getString(ModelerWorkspace.class, "measure_name_missing"));
-      valid = false;
-    }
-    if (logicalColumn == null) {
-      validationMessages.add("The column mapped to the measure ("+getName()+") is missing or no longer available.");
-//      validationMessages.add(BaseMessages.getString(ModelerWorkspace.class, "measure_column_missing", getName()));
-      valid = false;
-    }
-  }
-
   public String toString() {
     return name;
   }

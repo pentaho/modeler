@@ -26,8 +26,7 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Event aware node class that also listens to it's children's events and propagates them up.
@@ -74,31 +73,42 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
     validationMessages.clear();
     // check name
     if (name == null || "".equals(name)) {
-      validationMessages.add("Name is empty");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.hierarchy.MISSING_NAME"));
       valid = false;
     }
     if (size() == 0) {
-      validationMessages.add("Hierarchy must have at least one level");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL"));
       valid = false;
     }
-    List<String> usedNames = new ArrayList<String>();
 
+    HashMap<String, LevelMetaData> usedNames = new HashMap<String, LevelMetaData>();
     if (children.size() == 0) {
       valid = false;
-      //TODO: GWT i18n
-      validationMessages.add(
-          "Need at least one level");//BaseMessages.getString(ModelerWorkspace.class, "missing_level_from_heirarchy"));
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL"));
     }
     for (LevelMetaData level : children) {
       valid &= level.isValid();
       validationMessages.addAll(level.getValidationMessages());
-      if (usedNames.contains(level.getName())) {
+      if (usedNames.containsKey(level.getName())) {
         valid = false;
-        //TODO: GWT i18n
-        validationMessages.add(
-            "Duplicate Level names");//BaseMessages.getString(ModelerWorkspace.class, "duplicate_level_names"));
+        String dupeString = ModelerMessagesHolder.getMessages().getString("validation.hierarchy.DUPLICATE_LEVEL_NAMES");
+        validationMessages.add(dupeString);
+
+        level.invalidate();
+        if (!level.getValidationMessages().contains(dupeString)) {
+          level.getValidationMessages().add(dupeString);
+        }
+
+        LevelMetaData l = usedNames.get(level.getName());
+        if (l.isValid()) {
+          l.invalidate();
+          if (!l.getValidationMessages().contains(dupeString)) {
+            l.getValidationMessages().add(dupeString);
+          }
+        }
+      } else {
+        usedNames.put(level.getName(), level);
       }
-      usedNames.add(level.getName());
     }
   }
 

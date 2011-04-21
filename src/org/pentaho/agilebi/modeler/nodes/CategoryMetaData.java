@@ -7,6 +7,7 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created: 3/18/11
@@ -55,16 +56,42 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
   @Override
   public void validate() {
     // make sure there is at least one field
+    boolean prevValid = valid;
     valid = true;
     this.validationMessages.clear();
 
     if (this.children.size() == 0) {
       valid = false;
-      this.validationMessages.add("Categories require at least one Field");
+      this.validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.category.REQUIRES_AT_LEAST_ONE_FIELD"));
     }
-    for (AbstractMetaDataModelNode child : children) {
+
+    HashMap<String, FieldMetaData> usedNames = new HashMap<String, FieldMetaData>();
+    for (FieldMetaData child : children) {
       valid &= child.isValid();
       this.validationMessages.addAll(child.getValidationMessages());
+      if (usedNames.containsKey(child.getName())) {
+        valid = false;
+        String dupeString = ModelerMessagesHolder.getMessages().getString("validation.category.DUPLICATE_FIELD_NAMES", child.getName());
+        validationMessages.add(dupeString);
+
+        child.invalidate();
+        if (!child.getValidationMessages().contains(dupeString)) {
+          child.getValidationMessages().add(dupeString);
+        }
+
+        FieldMetaData dupe = usedNames.get(child.getName());
+        if (dupe.isValid()) {
+          dupe.invalidate();
+          if (!dupe.getValidationMessages().contains(dupeString)) {
+            dupe.getValidationMessages().add(dupeString);
+          }
+        }
+      } else {
+        usedNames.put(child.getName(), child);
+      }
+    }
+    if (this.suppressEvents == false) {
+      this.firePropertyChange("valid", prevValid, valid);
     }
   }
 

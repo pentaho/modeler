@@ -24,8 +24,7 @@ import org.pentaho.agilebi.modeler.propforms.DimensionPropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * Event aware node class that also listens to it's children's events and propagates them up.
@@ -80,24 +79,36 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
     validationMessages.clear();
     valid = true;
     if (name == null || "".equals(name)) {
-      validationMessages.add("Name is empty");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.dimension.MISSING_NAME"));
       valid = false;
     }
     if (size() == 0) {
-      validationMessages.add("Dimension must have at least one hierarchy.");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.dimension.REQUIRES_AT_LEAST_ONE_HIERARCHY"));
       valid = false;
     }
-    List<String> usedNames = new ArrayList<String>();
+    HashMap<String, HierarchyMetaData> usedNames = new HashMap<String, HierarchyMetaData>();
     for (HierarchyMetaData hier : children) {
       valid &= hier.isValid();
       validationMessages.addAll(hier.getValidationMessages());
-      if (usedNames.contains(hier.getName())) {
+      if (usedNames.containsKey(hier.getName())) {
         valid = false;
-        //TODO: GWT i18n
-        validationMessages.add(
-            "duplicate Heirarchy names");//BaseMessages.getString(ModelerWorkspace.class, "duplicate_hier_names"));
+        String msg = ModelerMessagesHolder.getMessages().getString("validation.dimension.DUPLICATE_HIERARCHY_NAMES", hier.getName());
+        validationMessages.add(msg);
+        hier.invalidate();
+        if (!hier.getValidationMessages().contains(msg)) {
+          hier.getValidationMessages().add(msg);
+        }
+        HierarchyMetaData h = usedNames.get(hier.getName());
+        if (h.isValid()) {
+          h.invalidate();
+          if (!h.getValidationMessages().contains(msg)) {
+            h.getValidationMessages().add(msg);
+          }
+        }
+
+      } else {
+        usedNames.put(hier.getName(), hier);
       }
-      usedNames.add(hier.getName());
     }
   }
 

@@ -17,7 +17,6 @@
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.IDropTarget;
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -169,6 +168,11 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
 
   public boolean isValid() {
     return valid;
+  }
+  public void invalidate() {
+    boolean prevValid = this.valid;
+    this.valid = false;
+    this.firePropertyChange("valid", prevValid, valid);
   }
 
 

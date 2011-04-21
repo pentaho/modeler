@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -94,11 +95,11 @@ public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implemen
     validationMessages.clear();
     // check name
     if (name == null || "".equals(name)) {
-      validationMessages.add("Name is empty");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.measure.MISSING_NAME"));
       valid = false;
     }
     if (logicalColumn == null) {
-      validationMessages.add("Column is missing");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.measure.MISSING_BACKING_COLUMN", getName()));
       valid = false;
     }
   }

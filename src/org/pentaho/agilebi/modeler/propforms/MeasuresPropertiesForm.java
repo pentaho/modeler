@@ -75,13 +75,14 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     bf.createBinding(this, "defaultAggregation", "defaultAggregation", "selectedItem");
 
     bf.createBinding(this, "format", "formatstring", "selectedItem", new FormatStringConverter());
-    bf.createBinding(this, "notValid", "fixMeasuresColumnsBtn", "visible");
+    bf.createBinding(this, "backingColumnAvailable", "fixMeasuresColumnsBtn", "!visible");
     bf.createBinding(this, "columnName", "measure_column_name", "value");
 
   }
 
   private void showValidations() {
     setNotValid(!fieldMeta.isValid());
+    setBackingColumnAvailable(fieldMeta.getLogicalColumn()!=null);
     setValidMessages(fieldMeta.getValidationMessagesString());
   }
 
@@ -135,6 +136,20 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   @Bindable
   public void setNotValid( boolean notValid ) {
     this.firePropertyChange("notValid", null, notValid);
+  }
+
+  @Bindable
+  public boolean isBackingColumnAvailable() {
+    if (fieldMeta != null) {
+      return fieldMeta.getLogicalColumn() != null;
+    } else {
+      return false;
+    }
+  }
+
+  @Bindable
+  public void setBackingColumnAvailable(boolean available) {
+    this.firePropertyChange("backingColumnAvailable", null, available);
   }
 
   @Bindable

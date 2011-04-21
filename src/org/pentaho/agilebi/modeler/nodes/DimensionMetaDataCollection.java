@@ -27,8 +27,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<DimensionMetaData> implements Serializable {
 
@@ -100,21 +99,33 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
     valid = true;
     validationMessages.clear();
     if (size() == 0) {
-      validationMessages.add("Model requires at least one Dimension");
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.dimcollecion.REQUIRES_AT_LEAST_ONE_MEASURE"));
       valid = false;
     }
-    List<String> usedNames = new ArrayList<String>();
 
+    HashMap<String, DimensionMetaData> usedNames = new HashMap<String, DimensionMetaData>();
     for (DimensionMetaData dim : children) {
       valid &= dim.isValid();
       validationMessages.addAll(dim.getValidationMessages());
-      if (usedNames.contains(dim.getName())) {
+      if (usedNames.containsKey(dim.getName())) {
         valid = false;
-        //TODO: GWT i18n
-        validationMessages.add(
-            "Duplicate Dimension Names");//BaseMessages.getString(ModelerWorkspace.class, "duplicate_dimension_names"));
+        String msg = ModelerMessagesHolder.getMessages().getString("validation.dimcollection.DUPLICATE_DIMENSION_NAMES", dim.getName());
+        validationMessages.add(msg);
+
+        dim.invalidate();
+        if (!dim.getValidationMessages().contains(msg)) {
+          dim.getValidationMessages().add(msg);
+        }
+        DimensionMetaData d = usedNames.get(dim.getName());
+        if (d.isValid()) {
+          d.invalidate();
+          if (!d.getValidationMessages().contains(msg)) {
+            d.getValidationMessages().add(msg);
+          }
+        }
+      } else {
+        usedNames.put(dim.getName(), dim);
       }
-      usedNames.add(dim.getName());
     }
     if (this.suppressEvents == false) {
       this.firePropertyChange("valid", prevValid, valid);
