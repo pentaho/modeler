@@ -128,18 +128,29 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   public void validateNode() {
     boolean prevValid = valid;
     String prevMessages = getValidationMessagesString();
+
     validate();
+
     if (suppressEvents == false) {
       this.firePropertyChange("validationMessagesString", prevMessages, getValidationMessagesString());
       this.firePropertyChange("valid", prevValid, valid);
     }
+
+    if (valid) {
+      setImage(getValidImage());
+    } else {
+      setImage(getInvalidImage());
+    }
+
     if (prevValid != valid) {
-      if (valid) {
-        setImage(getValidImage());
-      } else {
-        setImage(getInvalidImage());
+      // changing of one element could cause others to become valid or invalid
+      AbstractModelNode root = getRoot();
+      if (root != null && root instanceof AbstractMetaDataModelNode) {
+        AbstractMetaDataModelNode rootNode = (AbstractMetaDataModelNode)root;
+        rootNode.validateTree();
       }
     }
+
   }
 
 
@@ -172,7 +183,9 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   public void invalidate() {
     boolean prevValid = this.valid;
     this.valid = false;
-    this.firePropertyChange("valid", prevValid, valid);
+    if (suppressEvents == false) {
+      this.firePropertyChange("valid", prevValid, valid);
+    }
   }
 
 
@@ -200,17 +213,23 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   private ModelerWorkspace workspace;
   public ModelerWorkspace getWorkspace(){
     if(workspace == null){
-      AbstractModelNode parent = this.getParent();
-      while(parent != null){
-        if(parent.getParent() == null){
-          break;
-        }
-        parent = parent.getParent();
-      }
+      AbstractModelNode parent = getRoot();
       if(parent != null){
         workspace = ((IRootModelNode) parent).getWorkspace();
      }
     }
     return workspace;
+  }
+
+
+  protected AbstractModelNode getRoot() {
+    AbstractModelNode parent = this.getParent();
+    while(parent != null){
+      if(parent.getParent() == null){
+        break;
+      }
+      parent = parent.getParent();
+    }
+    return parent;
   }
 }
