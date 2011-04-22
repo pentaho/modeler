@@ -66,8 +66,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     // =========================== OLAP ===================================== //
 
 
-    if(model.getModellingMode().equals(ModelerMode.ANALYSIS_AND_REPORTING)) {
-      System.out.println("Made it in olap");
+    if(model.getModel() != null && model.getModel().getDimensions().size() > 0) {
 	    LogicalTable factTable = null;
       //check to see if there's only one effective table
       if(logicalModel.getLogicalTables().size() <= 2){
@@ -122,7 +121,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
               }
               level.setReferenceColumn(lCol);
               hierarchy.setLogicalTable(lTable);
-              hierarchy.setPrimaryKey(findPrimaryKeyFor(lTable));
+              if(logicalModel.getLogicalTables().size() > 2){ //only do this for multi-table situations
+                hierarchy.setPrimaryKey(findPrimaryKeyFor(logicalModel, factTable, lTable));
+              }
             }
             level.setHavingUniqueMembers(lvl.isUniqueMembers());
             levels.add(level);
@@ -197,16 +198,17 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
   }
 
-  private LogicalColumn findPrimaryKeyFor(LogicalTable lTable) {
-    for(LogicalRelationship ship : lTable.getLogicalModel().getLogicalRelationships()){
-      if(ship.getFromTable() == lTable){
-        return ship.getFromColumn();
-      }
-      if(ship.getToTable() == lTable){
-        return ship.getToColumn();
-      }
+  private LogicalColumn findPrimaryKeyFor(LogicalModel model, LogicalTable factTable, LogicalTable dimTable) {
+    LogicalRelationship ship = model.findRelationshipUsing(dimTable, factTable);
+    if(ship == null){
+      throw new IllegalStateException("Unable to find a primary key for table: "+dimTable.getName());
     }
-    throw new IllegalStateException("Unable to find a primary key for table: "+lTable.getName());
+    
+    if (ship.getFromTable().equals(dimTable)){
+      return ship.getToColumn();
+    } else {
+      return ship.getFromColumn();
+    }
   }
 
   public static final String uniquify(final String id, final List<? extends IConcept> concepts) {

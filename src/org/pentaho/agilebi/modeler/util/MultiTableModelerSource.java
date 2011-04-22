@@ -128,22 +128,20 @@ import java.util.Set;
                factTable.getPhysicalTable().setProperty("FACT_TABLE", true);
              }
            } 
-           
-           helper.populateDomain(workspace);
 
-           for(LogicalTable businessTable : logicalModel.getLogicalTables()) {
-             businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
-           }
-
-           //Create olap tables
-           //BaseModelerWorkspaceHelper.duplicateLogicalTablesForDualModelingMode(logicalModel);
-           
            // Create and add LogicalRelationships to the LogicalModel from the
            // domain.
            generateLogicalRelationships(logicalModel, false);
            if(doOlap) {
         	   generateLogicalRelationships(logicalModel, true);
            }
+
+           helper.populateDomain(workspace);
+
+           for(LogicalTable businessTable : logicalModel.getLogicalTables()) {
+             businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
+           }
+
            
          } catch (Exception e) {
            e.printStackTrace();
