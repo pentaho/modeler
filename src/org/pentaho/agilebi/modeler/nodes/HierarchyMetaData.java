@@ -91,7 +91,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
       validationMessages.addAll(level.getValidationMessages());
       if (usedNames.containsKey(level.getName())) {
         valid = false;
-        String dupeString = ModelerMessagesHolder.getMessages().getString("validation.hierarchy.DUPLICATE_LEVEL_NAMES");
+        String dupeString = ModelerMessagesHolder.getMessages().getString("validation.hierarchy.DUPLICATE_LEVEL_NAMES", level.getName());
         validationMessages.add(dupeString);
 
         level.invalidate();

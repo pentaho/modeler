@@ -4,14 +4,9 @@ import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.containers.XulDeck;
-import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
-import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -116,4 +111,13 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
     workspace.setRelationalModelIsChanging(false, true);
   }
 
+  @Override
+  protected boolean isTreeModelChanging() {
+    return workspace.isModelChanging();
+  }
+
+  @Override
+  protected void setModelIsChanging(boolean changing) {
+    workspace.setRelationalModelIsChanging(changing);
+  }
 }

@@ -79,6 +79,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     messageBox.setVisible(dim.getValidationMessages().size() > 0);
     level_message_label.setValue(dim.getValidationMessagesString());
     setNotValid(!dim.isValid());
+    setBackingColumnAvailable(dim.getLogicalColumn()!=null);
     setColumnName(dim.getLogicalColumn());
   }
 
@@ -89,7 +90,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     sourceLabel = (XulLabel) document.getElementById("level_source_col");
     level_message_label = (XulLabel) document.getElementById("level_message_label");
     messageBox = (XulVbox) document.getElementById("level_message");
-    bf.createBinding(this, "notValid", "fixLevelColumnsBtn", "visible");
+    bf.createBinding(this, "backingColumnAvailable", "fixLevelColumnsBtn", "!visible");
 
     bf.createBinding(this, "columnName", sourceLabel, "value");
 
@@ -140,6 +141,20 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   @Bindable
   public void setNotValid( boolean notValid ) {
     this.firePropertyChange("notValid", null, notValid);
+  }
+
+  @Bindable
+  public boolean isBackingColumnAvailable() {
+    if (dim != null) {
+      return dim.getLogicalColumn() != null;
+    } else {
+      return false;
+    }
+  }
+
+  @Bindable
+  public void setBackingColumnAvailable(boolean available) {
+    this.firePropertyChange("backingColumnAvailable", null, available);
   }
 
 }

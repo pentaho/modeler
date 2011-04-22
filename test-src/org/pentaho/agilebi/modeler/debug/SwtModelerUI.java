@@ -23,6 +23,8 @@ import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
+import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
@@ -117,6 +119,9 @@ public class SwtModelerUI {
       propController.setBindingFactory(bf);
       propController.init();
 
+
+      bf.setBindingType(Binding.Type.ONE_WAY);
+      bf.createBinding(model, "valid", "modelValidationStatus", "value", BindingConvertor.boolean2String());
 
       ColResolverController colController = new ColResolverController();
       container.addEventHandler(colController);

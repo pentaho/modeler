@@ -26,6 +26,9 @@
   <hbox id="debugContainer" spacing="0" padding="0">
     <button id="showReportingOnlyButton" label="reporting only" onclick="modeler.showReportingOnlyMode()" />
     <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
+    <spacer flex="1"/>
+    <label value="Model isValid =" />
+    <label id="modelValidationStatus" value="?" />
   </hbox>
 
 </overlay>

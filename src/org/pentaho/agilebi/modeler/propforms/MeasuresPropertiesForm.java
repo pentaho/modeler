@@ -101,7 +101,9 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
     setDisplayName(t.getName());
     setFormat(t.getFormat());
-    setPossibleAggregations(new Vector(t.getPossibleAggregations()));
+    if (t.getPossibleAggregations() != null) {
+      setPossibleAggregations(new Vector(t.getPossibleAggregations()));
+    }
     setDefaultAggregation(t.getDefaultAggregation());
     setValidMessages(t.getValidationMessagesString());
     setColumnName(t.getLogicalColumn());

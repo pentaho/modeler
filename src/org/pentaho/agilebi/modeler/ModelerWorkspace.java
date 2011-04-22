@@ -107,6 +107,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         }
       }
     });
+    model.addPropertyChangeListener("valid", new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        isValid();
+      }
+    });
   }
 
   @Bindable
@@ -122,6 +127,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         if (!modelIsChanging) {
           fireRelationalModelChanged();
         }
+      }
+    });
+    relationalModel.addPropertyChangeListener("valid", new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent evt) {
+        isValid();
       }
     });
   }

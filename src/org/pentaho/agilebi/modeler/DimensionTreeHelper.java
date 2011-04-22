@@ -3,13 +3,9 @@ package org.pentaho.agilebi.modeler;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.containers.XulDeck;
-import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,6 +87,16 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
       }
     }
     workspace.setModelIsChanging(prevChangeState);
+  }
+
+  @Override
+  protected boolean isTreeModelChanging() {
+    return workspace.isModelChanging();
+  }
+
+  @Override
+  protected void setModelIsChanging(boolean changing) {
+    workspace.setModelIsChanging(changing);
   }
 
   @Override
