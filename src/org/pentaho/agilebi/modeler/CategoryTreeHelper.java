@@ -112,7 +112,7 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   }
 
   @Override
-  protected boolean isTreeModelChanging() {
+  protected boolean isModelChanging() {
     return workspace.isModelChanging();
   }
 

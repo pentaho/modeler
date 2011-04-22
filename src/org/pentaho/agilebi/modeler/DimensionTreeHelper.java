@@ -90,7 +90,7 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   }
 
   @Override
-  protected boolean isTreeModelChanging() {
+  protected boolean isModelChanging() {
     return workspace.isModelChanging();
   }
 

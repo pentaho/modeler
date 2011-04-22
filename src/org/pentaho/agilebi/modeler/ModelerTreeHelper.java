@@ -178,7 +178,7 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   }
 
   public void onModelDrop(DropEvent event) throws ModelerException{
-    boolean prevChangeState = isTreeModelChanging();
+    boolean prevChangeState = isModelChanging();
     setModelIsChanging(true);
     IDropTarget dropNode = (IDropTarget) event.getDropParent();
     Object newData = null;
@@ -193,7 +193,7 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
     setModelIsChanging(false);
   }
 
-  protected abstract boolean isTreeModelChanging();
+  protected abstract boolean isModelChanging();
   protected abstract void setModelIsChanging(boolean changing);
 
 }
