@@ -122,6 +122,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
               }
               level.setReferenceColumn(lCol);
               hierarchy.setLogicalTable(lTable);
+              hierarchy.setPrimaryKey(findPrimaryKeyFor(lTable));
             }
             level.setHavingUniqueMembers(lvl.isUniqueMembers());
             levels.add(level);
@@ -196,6 +197,18 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
   }
 
+  private LogicalColumn findPrimaryKeyFor(LogicalTable lTable) {
+    for(LogicalRelationship ship : lTable.getLogicalModel().getLogicalRelationships()){
+      if(ship.getFromTable() == lTable){
+        return ship.getFromColumn();
+      }
+      if(ship.getToTable() == lTable){
+        return ship.getToColumn();
+      }
+    }
+    throw new IllegalStateException("Unable to find a primary key for table: "+lTable.getName());
+  }
+
   public static final String uniquify(final String id, final List<? extends IConcept> concepts) {
     boolean gotNew = false;
     boolean found = false;
@@ -263,7 +276,10 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             lCol.removeChildProperty("mask"); //$NON-NLS-1$
           }
         }
-        lCol.setAggregationList(fieldMeta.getSelectedAggregations());
+        List<AggregationType> possibleAggs = new ArrayList<AggregationType>();
+        possibleAggs.add(fieldMeta.getDefaultAggregation());
+        possibleAggs.addAll(fieldMeta.getSelectedAggregations());
+        lCol.setAggregationList(possibleAggs);
         cat.addLogicalColumn(lCol);
 
       }

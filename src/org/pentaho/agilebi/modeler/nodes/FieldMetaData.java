@@ -86,13 +86,7 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
       return null;
     }
     if (defaultAggregation == null) {
-      switch (logicalColumn.getDataType()) {
-        case NUMERIC:
-          defaultAggregation = AggregationType.SUM;
-          break;
-        default:
-          defaultAggregation = AggregationType.NONE;
-      }
+      defaultAggregation = AggregationType.NONE;
     }
     return defaultAggregation;
   }

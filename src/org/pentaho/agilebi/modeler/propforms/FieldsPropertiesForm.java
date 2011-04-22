@@ -36,9 +36,9 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     bf.createBinding(this, "notValid", "fieldmessages", "visible");
     bf.createBinding(this, "validMessages", "fieldmessageslabel", "value");
     bf.createBinding(this, "displayName", "fielddisplayname", "value");
-    bf.createBinding(this, "possibleAggregations", "field_possibleAggregationTypes", "elements");
-    bf.createBinding(this, "selectedAggregations", "field_possibleAggregationTypes", "selectedItems", BindingConvertor.collection2ObjectArray());
-    bf.createBinding(this, "selectedAggregations", "field_defaultAggregation", "elements");
+    bf.createBinding(this, "possibleAggregations", "field_optionalAggregationTypes", "elements");
+    bf.createBinding(this, "selectedAggregations", "field_optionalAggregationTypes", "selectedItems", BindingConvertor.collection2ObjectArray());
+    bf.createBinding(this, "possibleAggregations", "field_defaultAggregation", "elements");
     bf.createBinding(this, "defaultAggregation", "field_defaultAggregation", "selectedItem");
 
     bf.createBinding(this, "format", "fieldformatstring", "selectedItem", new FormatStringConverter());
