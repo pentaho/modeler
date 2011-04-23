@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
@@ -77,6 +78,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   private transient SimpleAutoModelStrategy simpleAutoModelStrategy;
   private transient MultiTableAutoModelStrategy multiTableAutoModelStrategy;
+  private transient StarSchemaAutoModelStrategy starSchemaAutoModelStrategy;
 
   public ModelerWorkspace(IModelerWorkspaceHelper helper) {
 
@@ -88,7 +90,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     simpleAutoModelStrategy = new SimpleAutoModelStrategy(workspaceHelper.getLocale());
     multiTableAutoModelStrategy = new MultiTableAutoModelStrategy(workspaceHelper.getLocale());
-
+    starSchemaAutoModelStrategy = new StarSchemaAutoModelStrategy(workspaceHelper.getLocale());
   }
 
   @Bindable
@@ -353,7 +355,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private void fireTablesChanged() {
     // set the automodel strategy based on the number of available tables
     if (availableTables.size() > 1) {
-      workspaceHelper.setAutoModelStrategy(multiTableAutoModelStrategy);
+      if (availableTables.findFactTable() != null) {
+        workspaceHelper.setAutoModelStrategy(starSchemaAutoModelStrategy);
+      } else {
+        workspaceHelper.setAutoModelStrategy(multiTableAutoModelStrategy);
+      }
     } else {
       workspaceHelper.setAutoModelStrategy(simpleAutoModelStrategy);
     }
@@ -642,7 +648,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (upConvertDesired) needsUpConverted = upConvertLegacyModel();
     List<IAvailableItem> items = new ArrayList<IAvailableItem>();
     for (IPhysicalTable table : domain.getPhysicalModels().get(0).getPhysicalTables()) {
-      items.add(new AvailableTable(table));
+      boolean isFact = table.getProperty("FACT_TABLE") != null ? (Boolean) table.getProperty("FACT_TABLE") : false;
+      items.add(new AvailableTable(table, isFact));
     }
 
     availableTables.setChildren(items);
@@ -977,6 +984,5 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     return col;
   }
-
 
 }

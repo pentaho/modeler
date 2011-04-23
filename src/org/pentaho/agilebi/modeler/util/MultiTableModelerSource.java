@@ -20,26 +20,26 @@
   package org.pentaho.agilebi.modeler.util;
 
   import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerMode;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
-import org.pentaho.agilebi.modeler.models.JoinTableModel;
-import org.pentaho.agilebi.modeler.models.SchemaModel;
+  import org.pentaho.agilebi.modeler.ModelerException;
+  import org.pentaho.agilebi.modeler.ModelerMode;
+  import org.pentaho.agilebi.modeler.ModelerWorkspace;
+  import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+  import org.pentaho.agilebi.modeler.models.JoinTableModel;
+  import org.pentaho.agilebi.modeler.models.SchemaModel;
   import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
+  import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
   import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.metadata.automodel.SchemaTable;
-import org.pentaho.metadata.model.*;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.metadata.model.concept.types.RelationshipType;
-import org.pentaho.metadata.model.olap.OlapCube;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+  import org.pentaho.metadata.automodel.SchemaTable;
+  import org.pentaho.metadata.model.*;
+  import org.pentaho.metadata.model.concept.types.LocalizedString;
+  import org.pentaho.metadata.model.concept.types.RelationshipType;
+  import org.slf4j.Logger;
+  import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+  import java.util.ArrayList;
+  import java.util.HashSet;
+  import java.util.List;
+  import java.util.Set;
 
   public class MultiTableModelerSource implements ISpoonModelerSource {
 
@@ -99,8 +99,6 @@ import java.util.Set;
            
            ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
 
-           helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
-
            ModelerWorkspace workspace = new ModelerWorkspace(helper);
            workspace.setDomain(domain);
            
@@ -109,25 +107,28 @@ import java.util.Set;
            logicalModel.setName(new LocalizedString(locale, datasourceName));
            logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
                + datasourceName));  // TODO do this with messages
-           
+
            workspace.setModelName(datasourceName);
            helper.autoModelRelationalFlat(workspace);
 
-           if(doOlap) {
-        	   helper.autoModelFlat(workspace);
-             workspace.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
-           } else {
-             workspace.setModellingMode(ModelerMode.REPORTING_ONLY);
-           }
-           
            LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
            if(doOlap) {
              if(factTable == null) {
                throw new IllegalStateException("Fact table not found");
              } else {
                factTable.getPhysicalTable().setProperty("FACT_TABLE", true);
+               workspace.getAvailableTables().setFactTable(factTable.getPhysicalTable());
              }
-           } 
+           }
+
+           if(doOlap) {
+             helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale));
+        	   helper.autoModelFlat(workspace);
+             workspace.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
+           } else {
+             helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
+             workspace.setModellingMode(ModelerMode.REPORTING_ONLY);
+           }
 
            // Create and add LogicalRelationships to the LogicalModel from the
            // domain.

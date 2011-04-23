@@ -29,12 +29,12 @@ import java.util.HashSet;
 import java.util.List;
 
 /**
- * Created: 4/19/11
+ * Created: 4/22/11
  *
  * @author rfellows
  */
-public class MultiTableAutoModelStrategy extends SimpleAutoModelStrategy {
-  public MultiTableAutoModelStrategy(String locale) {
+public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
+  public StarSchemaAutoModelStrategy(String locale) {
     super(locale);
   }
 
@@ -58,38 +58,43 @@ public class MultiTableAutoModelStrategy extends SimpleAutoModelStrategy {
     HashSet<String> existingMeasures = new HashSet<String>();
     List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
     for (AvailableTable table : tableList) {
-
-      // create a new dimension per table
-      DimensionMetaData dim = new DimensionMetaData(table.getName());
-      dim.setExpanded(false);
-
-      for( AvailableField field : table.getAvailableFields() ) {
-
-        // create a hierarchy per field
-        HierarchyMetaData hierarchy = new HierarchyMetaData(field.getName());
-        hierarchy.setParent(dim);
-        hierarchy.setExpanded(false);
-        dim.add(hierarchy);
-
-        // create a level & measure per field
-        DataType dataType = field.getPhysicalColumn().getDataType();
-        if( dataType == DataType.NUMERIC) {
-          if (!existingMeasures.contains(field.getName())) {
-            // create a measure
-            MeasureMetaData measure = workspace.createMeasureForNode(field);
-            workspace.getModel().getMeasures().add(measure);
-            existingMeasures.add(field.getName());
+      boolean isFact = table.isFactTable();
+      if (isFact) {
+        for( AvailableField field : table.getAvailableFields() ) {
+          // create measures from the numeric
+          DataType dataType = field.getPhysicalColumn().getDataType();
+          if( dataType == DataType.NUMERIC) {
+            if (!existingMeasures.contains(field.getName())) {
+              // create a measure
+              MeasureMetaData measure = workspace.createMeasureForNode(field);
+              workspace.getModel().getMeasures().add(measure);
+              existingMeasures.add(field.getName());
+            }
           }
         }
-        // create a level
-        LevelMetaData level = workspace.createLevelForParentWithNode(hierarchy, workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
-        if (level != null) {
-          hierarchy.add(level);
-        }
+      } else {
+        // create a new dimension per table since it is not the fact table
+        DimensionMetaData dim = new DimensionMetaData(table.getName());
+        dim.setExpanded(false);
 
+        for( AvailableField field : table.getAvailableFields() ) {
+
+          // create a hierarchy per field
+          HierarchyMetaData hierarchy = new HierarchyMetaData(field.getName());
+          hierarchy.setParent(dim);
+          hierarchy.setExpanded(false);
+          dim.add(hierarchy);
+
+          // create a level
+          LevelMetaData level = workspace.createLevelForParentWithNode(hierarchy, workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
+          if (level != null) {
+            hierarchy.add(level);
+          }
+
+        }
+        workspace.addDimension(dim);
       }
-      workspace.addDimension(dim);
-      
+
     }
     if (!mainModel.getSuppressEvents()) {
       workspace.setModelIsChanging(prevChangeState);

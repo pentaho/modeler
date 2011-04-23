@@ -17,6 +17,7 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
@@ -146,4 +147,30 @@ public class AvailableItemCollection extends AbstractModelList<IAvailableItem> i
     }
   };
 
+  public AvailableTable findFactTable(){
+    for (IAvailableItem item : children) {
+      if (item instanceof AvailableTable) {
+        AvailableTable table = (AvailableTable)item;
+        if (table.isFactTable()) {
+          return table;
+        }
+      }
+    }
+    return null;
   }
+
+  public void setFactTable(IPhysicalTable table) {
+    for (IAvailableItem item : children) {
+      if (item instanceof AvailableTable) {
+        AvailableTable t = (AvailableTable)item;
+        if (!t.isSameUnderlyingPhysicalTable(table) && t.isFactTable()) {
+          // clear the previous fact table setting
+          t.setFactTable(false);
+        } else if (t.isSameUnderlyingPhysicalTable(table)) {
+          t.setFactTable(true);
+        }
+      }
+    }
+  }
+
+}

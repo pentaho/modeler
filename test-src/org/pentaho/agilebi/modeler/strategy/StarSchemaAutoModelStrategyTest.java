@@ -29,12 +29,11 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 /**
- * Created: 4/19/11
+ * Created: 4/22/11
  *
  * @author rfellows
  */
-public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {
-
+public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
   private static final String LOCALE = "en-US";
 
   @Override
@@ -45,29 +44,34 @@ public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {
 
   @Test
   public void testAutoModelOlap() throws Exception {
-    // expect one dim per table, one hierarchy per column, one level per hierarchy
+    // expect one dim per non-fact table, one hierarchy per column, one level per hierarchy
+    // expect only numeric fields from the fact table to be created as measures
 
-    MultiTableAutoModelStrategy strategy = new MultiTableAutoModelStrategy(LOCALE);
+    StarSchemaAutoModelStrategy strategy = new StarSchemaAutoModelStrategy(LOCALE);
 
     strategy.autoModelOlap(workspace, new MainModelNode());
 
-    HashMap<String, Integer> tables = new HashMap<String, Integer>();
-    HashSet<String> numericColumns = new HashSet<String>();
+    HashMap<String, Integer> dimTables = new HashMap<String, Integer>();
+    HashSet<String> numericFactColumns = new HashSet<String>();
 
     for(AvailableTable table : workspace.getAvailableTables().getAsAvailableTablesList()) {
-      tables.put(table.getName(), table.getAvailableFields().size());
-      for (AvailableField field : table.getAvailableFields()) {
-        if (field.getPhysicalColumn().getDataType() == DataType.NUMERIC && !numericColumns.contains(field.getName())) {
-          numericColumns.add(field.getName());
+      if (table.getPhysicalTable().getProperty("FACT_TABLE") == null) {
+        dimTables.put(table.getName(), table.getAvailableFields().size());
+      } else {
+        // this is the fact table
+        for (AvailableField field : table.getAvailableFields()) {
+          if (field.getPhysicalColumn().getDataType() == DataType.NUMERIC && !numericFactColumns.contains(field.getName())) {
+            numericFactColumns.add(field.getName());
+          }
         }
       }
     }
-
-    assertEquals(workspace.getAvailableTables().size(), workspace.getModel().getDimensions().size());
+    assertEquals(workspace.getAvailableTables().size() - 1, dimTables.size());
+    assertEquals(dimTables.size(), workspace.getModel().getDimensions().size());
     for(DimensionMetaData dim : workspace.getModel().getDimensions()) {
-      assertTrue(tables.containsKey(dim.getName()));
+      assertTrue(dimTables.containsKey(dim.getName()));
       // there should be one hierarchy per column
-      assertEquals(tables.get(dim.getName()).intValue(), dim.size());
+      assertEquals(dimTables.get(dim.getName()).intValue(), dim.size());
       for (HierarchyMetaData hier : dim) {
         // should only have one level
         assertEquals(1, hier.size());
@@ -77,7 +81,7 @@ public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {
     }
 
     // make sure the measures are accounted for too
-    assertEquals(numericColumns.size(), workspace.getModel().getMeasures().size());
+    assertEquals(numericFactColumns.size(), workspace.getModel().getMeasures().size());
   }
 
   @Test
