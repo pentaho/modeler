@@ -20,10 +20,7 @@ package org.pentaho.agilebi.modeler;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.agilebi.modeler.nodes.AvailableField;
-import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
-import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
-import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
+import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
@@ -53,6 +50,7 @@ public class CategoryTreeHelperTest {
   private static final String LOCALE = "en-US";
   RelationalModelNode relationalModelNode;
   static ModelerWorkspace workspace;
+  MainModelNode rootNode;
 
   @BeforeClass
   public static void init() throws Exception {
@@ -86,13 +84,15 @@ public class CategoryTreeHelperTest {
   public void setup() {
     helper = new CategoryTreeHelper();
     helper.setWorkspace(workspace);
+    rootNode = new MainModelNode(workspace);
   }
 
 
   @Test
-  public void testAddField() {
+  public void testAddField() throws ModelerException {
 
     CategoryMetaData cat = new CategoryMetaData("Category");
+    rootNode.add(cat);
     helper.setSelectedTreeItem(cat);
     helper.clearTreeModel();
     assertEquals(0, cat.size());
@@ -109,8 +109,9 @@ public class CategoryTreeHelperTest {
   }
 
   @Test
-  public void testAddSameFieldMultipleTimes() {
+  public void testAddSameFieldMultipleTimes() throws ModelerException {
     CategoryMetaData cat = new CategoryMetaData("Category");
+    rootNode.add(cat);
     helper.setSelectedTreeItem(cat);
     helper.clearTreeModel();
     assertEquals(0, cat.size());
@@ -152,7 +153,7 @@ public class CategoryTreeHelperTest {
     // make sure we can independently manage agg types
     one.setDefaultAggregation(AggregationType.MAXIMUM);
     assertEquals(AggregationType.MAXIMUM, one.getDefaultAggregation());
-    assertEquals(AggregationType.SUM, two.getDefaultAggregation());
+    assertEquals(AggregationType.NONE, two.getDefaultAggregation());
 
   }
 

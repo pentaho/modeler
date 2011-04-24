@@ -278,10 +278,10 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             lCol.removeChildProperty("mask"); //$NON-NLS-1$
           }
         }
-        List<AggregationType> possibleAggs = new ArrayList<AggregationType>();
+        Set<AggregationType> possibleAggs = new HashSet<AggregationType>();
         possibleAggs.add(fieldMeta.getDefaultAggregation());
         possibleAggs.addAll(fieldMeta.getSelectedAggregations());
-        lCol.setAggregationList(possibleAggs);
+        lCol.setAggregationList(Arrays.<AggregationType>asList(possibleAggs.toArray(new AggregationType[possibleAggs.size()])));
         cat.addLogicalColumn(lCol);
 
       }

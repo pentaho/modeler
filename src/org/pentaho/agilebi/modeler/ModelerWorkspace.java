@@ -970,7 +970,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for (LogicalTable table : getDomain().getLogicalModels().get(0).getLogicalTables()) {
       if (table.getPhysicalTable().getId().equals(physicalTable.getId())) {
         if ((perspective == ModelerPerspective.ANALYSIS && table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX))
-            || perspective == ModelerPerspective.REPORTING) {
+            || perspective == ModelerPerspective.REPORTING && !table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
 
           for (LogicalColumn lCol : table.getLogicalColumns()) {
             if (lCol.getPhysicalColumn().getId().equals(column.getId())) {
