@@ -7,6 +7,7 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
@@ -29,7 +30,7 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
   protected String locale;
 
   protected List<AggregationType> selectedAggregations = new Vector<AggregationType>();
-  private List<AggregationType> possibleAggregations;
+  private List<AggregationType> possibleAggregations = new ArrayList<AggregationType>();
 
   public List<AggregationType> getNumericAggregationTypes() {
     return Arrays.asList(AggregationType.SUM
@@ -132,18 +133,26 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
     super.setLogicalColumn(col);
     DataType newDataType = logicalColumn.getDataType();
     if(previousDataType == null || previousDataType != newDataType){
+
       if (logicalColumn.getDataType() == DataType.NUMERIC) {
         setPossibleAggregations(getNumericAggregationTypes());
       } else {
         setPossibleAggregations(getTextAggregationTypes());
       }
+
+      // If a previously defined list exists, use it. Otherwise select all possible as a default
+      if(col.getAggregationList() != null && col.getAggregationList().isEmpty() == false){
+        setSelectedAggregations(col.getAggregationList());
+      } else {
+        setSelectedAggregations(possibleAggregations);
+      }
     }
   }
 
   private void setPossibleAggregations(List<AggregationType> aggregationTypes) {
-    this.possibleAggregations = aggregationTypes;
+    this.possibleAggregations.clear();
+    this.possibleAggregations.addAll(aggregationTypes);
     firePropertyChange("possibleAggregations", null, this.possibleAggregations);
-    setSelectedAggregations(aggregationTypes);
   }
 
   public List<AggregationType> getPossibleAggregations() {

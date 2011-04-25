@@ -16,8 +16,8 @@ import static org.junit.Assert.*;
 public class AvailableColumnsTest extends AbstractModelerTest{
 
   @Test
-  public void testAvailableColumnPossibleMeasure() throws ModelerException {
-    super.generateTestDomain();
+  public void testAvailableColumnPossibleMeasure() throws Exception {
+    super.generateMultiStarTestDomain();
     LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
     List<AvailableTable> tablesList = workspace.getAvailableTables().getAsAvailableTablesList();
     int fields = tablesList.get(0).getAvailableFields().size();
