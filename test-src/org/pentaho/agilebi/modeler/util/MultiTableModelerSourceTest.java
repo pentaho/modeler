@@ -61,7 +61,7 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 	@Test
 	public void testStarSchema() throws Exception {
 
-		MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(true), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
 		Domain domain = multiTable.generateDomain(true);
 		assertNotNull(domain);
 
@@ -81,7 +81,7 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 	@Test
 	public void testReportingSchema() throws Exception {
 
-		MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+		MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(false), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
 		Domain domain = multiTable.generateDomain(false);
 		// Ensure domain was created.
 		assertNotNull(domain);
@@ -95,6 +95,10 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 	}
 
 	public static SchemaModel getSchemaModel1() {
+		return getSchemaModel1(true);
+	}
+	
+	public static SchemaModel getSchemaModel1(boolean doOlap) {
 		List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
 
 		JoinTableModel joinTable1 = new JoinTableModel();
@@ -116,8 +120,10 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 
 		joins.add(join1);
 		SchemaModel model = new SchemaModel();
-		model.setFactTable(joinTable1);
 		model.setJoins(joins);
+		if(doOlap) {
+			model.setFactTable(joinTable1);
+		}
 		return model;
 	}
 
