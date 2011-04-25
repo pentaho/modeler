@@ -144,10 +144,13 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         AvailableTable table = (AvailableTable) data;
         String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
 
-        if(measure != null && agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0 ){
-          Object factProp = table.getPhysicalTable().getProperty("FACT_TABLE");
-          if(factProp == null || factProp.equals(Boolean.FALSE)){
-            throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEASURE_NOT_FROM_FACT"));
+        if(measure != null && agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0){
+          // if we're in a multi-table mode check for a fact table
+          if(getWorkspace().getAvailableTables().size() > 1){
+            Object factProp = table.getPhysicalTable().getProperty("FACT_TABLE");
+            if(factProp == null || factProp.equals(Boolean.FALSE)){
+              throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEASURE_NOT_FROM_FACT"));
+            }
           }
         }
         List<MeasureMetaData> measureList = new ArrayList<MeasureMetaData>();
@@ -171,9 +174,12 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
       String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
 
       if(measure != null && agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0 ){
-        Object factProp = measure.getLogicalColumn().getLogicalTable().getPhysicalTable().getProperty("FACT_TABLE");
-        if(factProp == null || factProp.equals(Boolean.FALSE)){
-          throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEASURE_NOT_FROM_FACT"));
+        // if we're in a multi-table mode check for a fact table
+        if(getWorkspace().getAvailableTables().size() > 1){
+          Object factProp = measure.getLogicalColumn().getLogicalTable().getPhysicalTable().getProperty("FACT_TABLE");
+          if(factProp == null || factProp.equals(Boolean.FALSE)){
+            throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEASURE_NOT_FROM_FACT"));
+          }
         }
       }
       return measure;
