@@ -8,7 +8,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.agilebi.modeler.*;
-import org.pentaho.agilebi.modeler.propforms.*;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceUtil;
@@ -18,7 +17,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -47,7 +45,7 @@ public class SwtModelerUI {
   private XulRunner runner;
   ModelerController controller;
 
-  public SwtModelerUI (Shell shell,  ModelerWorkspace model) throws ModelerException {
+  public SwtModelerUI (Shell shell,  ModelerWorkspace workspace) throws ModelerException {
     SwtXulLoader loader = null;
     try {
       loader = new SwtXulLoader();
@@ -56,76 +54,16 @@ public class SwtModelerUI {
       container = loader.loadXul("org/pentaho/agilebi/modeler/res/panel.xul", new ModelerMessages(ModelerWorkspace.class)); //$NON-NLS-1$
       container.loadOverlay("org/pentaho/agilebi/modeler/debug/panel_overlay.xul"); //$NON-NLS-1$
 
-      controller = new ModelerController(model);
+      controller = new ModelerController(workspace);
+
       BindingFactory bf = new DefaultBindingFactory();
       bf.setDocument(container.getDocumentRoot());
       container.addEventHandler(controller);
       controller.setBindingFactory(bf);
-      controller.setWorkspaceHelper(new ModelerWorkspaceHelper("en-US"));
-
-      AbstractModelerNodeForm propController = new MeasuresPropertiesForm(LocalizedString.DEFAULT_LOCALE);
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-      propController = new DimensionPropertiesForm();
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-      propController = new LevelsPropertiesForm(LocalizedString.DEFAULT_LOCALE );
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-
-      propController = new HierarchyPropertiesForm();
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-      propController = new MainModelerNodePropertiesForm();
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-
-      propController = new GenericPropertiesForm();
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-      propController = new CategoryPropertiesForm();
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-      propController = new FieldsPropertiesForm(LocalizedString.DEFAULT_LOCALE);
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
-      propController = new RelationalModelNodePropertiesForm();
-      container.addEventHandler(propController);
-      controller.addPropertyForm(propController);
-      propController.setBindingFactory(bf);
-      propController.init();
-
+      ModelerUiHelper.configureControllers(container, workspace, bf, controller, new ColResolverController());
 
       bf.setBindingType(Binding.Type.ONE_WAY);
-      bf.createBinding(model, "valid", "modelValidationStatus", "value", BindingConvertor.boolean2String());
-
-      ColResolverController colController = new ColResolverController();
-      container.addEventHandler(colController);
-      controller.setColResolver(colController);
+      bf.createBinding(workspace, "valid", "modelValidationStatus", "value", BindingConvertor.boolean2String());
 
       runner = new SwtXulRunner();
       runner.addContainer(container);

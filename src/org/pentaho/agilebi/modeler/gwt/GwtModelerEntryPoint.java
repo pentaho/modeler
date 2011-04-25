@@ -5,7 +5,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.pentaho.agilebi.modeler.*;
-import org.pentaho.agilebi.modeler.propforms.*;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.impl.GwtModelerServiceImpl;
 import org.pentaho.gwt.widgets.client.utils.i18n.ResourceBundle;
@@ -60,65 +59,8 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
     controller.setBindingFactory(bf);
     container.addEventHandler(controller);
 
-    AbstractModelerNodeForm propController = new MeasuresPropertiesForm(helper.getLocale());
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
+    ModelerUiHelper.configureControllers(container, model, bf, controller, new ColResolverController());
 
-    propController = new DimensionPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new LevelsPropertiesForm(helper.getLocale());
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-
-    propController = new HierarchyPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new MainModelerNodePropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-
-    propController = new GenericPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new CategoryPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new FieldsPropertiesForm(helper.getLocale());
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new RelationalModelNodePropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    ColResolverController colController = new ColResolverController();
-    container.addEventHandler(colController);
-    controller.setColResolver(colController);
     RootPanel.get().add((Widget) container.getDocumentRoot().getRootElement().getManagedObject());
     try {
       gwtXulRunner.initialize();

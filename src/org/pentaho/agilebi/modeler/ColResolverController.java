@@ -16,9 +16,13 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.agilebi.modeler.nodes.AvailableField;
+import org.pentaho.agilebi.modeler.nodes.AvailableItemCollection;
+import org.pentaho.agilebi.modeler.nodes.IAvailableItem;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -34,35 +38,44 @@ public class ColResolverController extends AbstractXulEventHandler {
   private ModelerWorkspace workspace;
   private XulDialog dialog;
   private ColumnBackedNode node;
-  private XulListbox availableCols;
+
+  private Binding fieldListBinding;
+  private Binding selectedFieldsBinding;
+  private IAvailableItem[] selectedFields = new IAvailableItem[]{};
+  private AvailableItemCollection items;
+  BindingFactory bf;
 
   public ColResolverController() {
-
+    items = new AvailableItemCollection();
   }
 
   public void show( ModelerWorkspace workspace, ColumnBackedNode node ) {
     this.workspace = workspace;
+    items.clear();
+    items.addAll(workspace.getAvailableTables());
     this.node = node;
-    availableCols.setElements(workspace.getAvailableTables().getAsAvailableTablesList().get(0).getAvailableFields());
     dialog.show();
   }
 
   public void init() {
+    bf.setDocument(document);
+
     this.dialog = (XulDialog) document.getElementById("resolveColumnsDialog");
-    availableCols = (XulListbox) document.getElementById("resolveColumnsList");
+    bf.setBindingType(Binding.Type.ONE_WAY);
+    fieldListBinding = bf.createBinding(items, "children", "resolveColumnsTree", "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+    selectedFieldsBinding = bf.createBinding("resolveColumnsTree", "selectedItem", this, "selectedFieldsChanged"); //$NON-NLS-1$//$NON-NLS-2$
 
   }
 
   @Bindable
   public void done() {
-    int idx = this.availableCols.getSelectedIndex();
-    if (idx > -1) {
-      ColumnBackedNode cnode = workspace.createColumnBackedNode(workspace.getAvailableTables().getAsAvailableTablesList().get(0).getAvailableFields().get(idx), workspace.getCurrentModelerPerspective());
+    if (selectedFields.length == 1) {
+      ColumnBackedNode cnode = workspace.createColumnBackedNode((AvailableField)selectedFields[0], workspace.getCurrentModelerPerspective());
       LogicalColumn lCol = cnode.getLogicalColumn();
       node.setLogicalColumn(lCol);
       workspace.setDirty(true);
+      dialog.hide();
     }
-    dialog.hide();
   }
 
   @Bindable
@@ -72,5 +85,20 @@ public class ColResolverController extends AbstractXulEventHandler {
 
   public String getName() {
     return "colResolver";
+  }
+
+  @Bindable
+  public void setSelectedFieldsChanged(Object selected) {
+    if (selected != null && selected instanceof AvailableField) {
+      selectedFields = new IAvailableItem[]{(IAvailableItem)selected};
+    }
+  }
+
+  public BindingFactory getBindingFactory() {
+    return bf;
+  }
+
+  public void setBindingFactory(BindingFactory bf) {
+    this.bf = bf;
   }
 }
