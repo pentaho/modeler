@@ -27,6 +27,7 @@ import java.util.HashSet;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 /**
  * Created: 4/19/11
@@ -48,36 +49,13 @@ public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {
     // expect one dim per table, one hierarchy per column, one level per hierarchy
 
     MultiTableAutoModelStrategy strategy = new MultiTableAutoModelStrategy(LOCALE);
-
-    strategy.autoModelOlap(workspace, new MainModelNode());
-
-    HashMap<String, Integer> tables = new HashMap<String, Integer>();
-    HashSet<String> numericColumns = new HashSet<String>();
-
-    for(AvailableTable table : workspace.getAvailableTables().getAsAvailableTablesList()) {
-      tables.put(table.getName(), table.getAvailableFields().size());
-      for (AvailableField field : table.getAvailableFields()) {
-        if (field.getPhysicalColumn().getDataType() == DataType.NUMERIC && !numericColumns.contains(field.getName())) {
-          numericColumns.add(field.getName());
-        }
-      }
+    try{
+      strategy.autoModelOlap(workspace, new MainModelNode());
+    } catch(UnsupportedOperationException e){
+      return;
     }
+    fail("Should have thrown an UnsupportedOperationException");
 
-    assertEquals(workspace.getAvailableTables().size(), workspace.getModel().getDimensions().size());
-    for(DimensionMetaData dim : workspace.getModel().getDimensions()) {
-      assertTrue(tables.containsKey(dim.getName()));
-      // there should be one hierarchy per column
-      assertEquals(tables.get(dim.getName()).intValue(), dim.size());
-      for (HierarchyMetaData hier : dim) {
-        // should only have one level
-        assertEquals(1, hier.size());
-        // level should be the same name as the hierarchy
-        assertEquals(hier.getName(), hier.get(0).getName());
-      }
-    }
-
-    // make sure the measures are accounted for too
-    assertEquals(numericColumns.size(), workspace.getModel().getMeasures().size());
   }
 
   @Test
