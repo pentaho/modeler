@@ -126,7 +126,7 @@ public class ModelerController extends AbstractXulEventHandler {
         msg.setTitle(ModelerMessagesHolder.getMessages().getString("error")); //$NON-NLS-1$
         msg.setMessage(ModelerMessagesHolder.getMessages().getString("error_dropping")+": "+e.getCause().getMessage());
         msg.open();
-      } catch (XulException e1) {
+      } catch (Exception e1) {
         e1.printStackTrace();
       }
     }
@@ -134,10 +134,22 @@ public class ModelerController extends AbstractXulEventHandler {
 
   @Bindable
   public void addField() {
-    if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
-      dimTreeHelper.addField(getSelectedFields());
-    } else {
-      catTreeHelper.addField(getSelectedFields());
+    try{
+      if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
+        dimTreeHelper.addField(getSelectedFields());
+      } else {
+        catTreeHelper.addField(getSelectedFields());
+      }
+    } catch (Exception e) {
+      try {
+        XulMessageBox msg = null; //$NON-NLS-1$
+        msg = (XulMessageBox) document.createElement("messagebox");
+        msg.setTitle(ModelerMessagesHolder.getMessages().getString("error")); //$NON-NLS-1$
+        msg.setMessage(ModelerMessagesHolder.getMessages().getString("error_adding")+": "+e.getCause().getMessage());
+        msg.open();
+      } catch (Exception e1) {
+        e1.printStackTrace();
+      }
     }
   }
 

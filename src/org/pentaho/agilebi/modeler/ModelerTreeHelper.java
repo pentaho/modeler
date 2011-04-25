@@ -126,8 +126,19 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   @Bindable
   public abstract void clearTreeModel();
 
-  @Bindable
-  public abstract void addField(Object[] selectedFields);
+  public void addField(Object[] selectedFields) throws ModelerException{
+    try{
+      IDropTarget dropNode = (IDropTarget) getSelectedTreeItem();
+
+      for(Object selectedField : selectedFields){
+          AbstractModelNode newNode = (AbstractModelNode) dropNode.onDrop(selectedField);
+          ((AbstractModelNode) dropNode).add(newNode);
+      }
+
+    } catch(IllegalStateException e){
+      throw new ModelerException(e);
+    }
+  }
 
   public Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> getPropertiesForms() {
     return propertiesForms;

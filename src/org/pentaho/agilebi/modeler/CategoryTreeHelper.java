@@ -49,31 +49,10 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   }
 
   @Override
-  public void addField(Object[] selectedFields) {
+  public void addField(Object[] selectedFields) throws ModelerException {
     boolean prevChangeState = workspace.isModelChanging();
     workspace.setRelationalModelIsChanging(true);
-
-    Object targetParent = getSelectedTreeItem();
-    for (Object obj : selectedFields) {
-      if (obj instanceof AvailableTable) {
-        AvailableTable table = (AvailableTable)obj;
-        if (targetParent instanceof CategoryMetaDataCollection) {
-          // create a new category for this table
-          CategoryMetaDataCollection catCollection = ((CategoryMetaDataCollection)targetParent);
-          CategoryMetaData cat = new CategoryMetaData(table.getName());
-          cat.setParent(catCollection);
-          catCollection.add(cat);
-          
-          targetParent = cat;
-        }
-        for (AvailableField field : table.getAvailableFields()) {
-          addAvailableField(field, targetParent);
-        }
-      } else if (obj instanceof AvailableField) {
-        AvailableField availableField = (AvailableField)obj;
-        addAvailableField(availableField, targetParent);
-      }
-    }
+    super.addField(selectedFields);
     workspace.setRelationalModelIsChanging(prevChangeState);
   }
 

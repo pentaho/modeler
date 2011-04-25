@@ -43,53 +43,6 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   }
 
   @Override
-  public void addField(Object[] selectedFields) {
-    boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true);
-    AbstractMetaDataModelNode theNode = null;
-    Object selectedTreeItem = getSelectedTreeItem();
-
-    for (Object obj : selectedFields) {
-      if (obj instanceof AvailableField) {
-        AvailableField availableField = (AvailableField)obj;
-
-        // create the logicalColumn and new node fronting it
-        ColumnBackedNode node = workspace.createColumnBackedNode(availableField, ModelerPerspective.ANALYSIS);
-
-        // depending on the parent
-        if (selectedTreeItem == null) {
-          // null - cannot add fields at this level
-        } else if (selectedTreeItem instanceof MeasuresCollection) {
-          // measure collection - add as a measure
-          MeasuresCollection theMesaures = (MeasuresCollection) selectedTreeItem;
-          theNode = workspace.createMeasureForNode(availableField);
-          theMesaures.add((MeasureMetaData) theNode);
-        } else if (selectedTreeItem instanceof DimensionMetaDataCollection) {
-          // dimension collection - add as a dimension
-
-          theNode = workspace.createDimensionFromNode(node);
-          DimensionMetaDataCollection theDimensions = (DimensionMetaDataCollection) selectedTreeItem;
-          theDimensions.add((DimensionMetaData) theNode);
-        } else if (selectedTreeItem instanceof DimensionMetaData) {
-          // dimension - add as a hierarchy
-          theNode = workspace.createHierarchyForParentWithNode((DimensionMetaData) selectedTreeItem, node);
-          DimensionMetaData theDimension = (DimensionMetaData) selectedTreeItem;
-          theDimension.add((HierarchyMetaData) theNode);
-        } else if (selectedTreeItem instanceof HierarchyMetaData) {
-          // hierarchy - add as a level
-          theNode = workspace.createLevelForParentWithNode((HierarchyMetaData) selectedTreeItem, node);
-          HierarchyMetaData theHierarchy = (HierarchyMetaData) selectedTreeItem;
-          theHierarchy.add((LevelMetaData) theNode);
-        }
-        if (theNode != null) {
-          theNode.setParent((AbstractMetaDataModelNode) selectedTreeItem);
-        }
-      }
-    }
-    workspace.setModelIsChanging(prevChangeState);
-  }
-
-  @Override
   protected boolean isModelChanging() {
     return workspace.isModelChanging();
   }
@@ -106,5 +59,13 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
     workspace.getModel().getDimensions().clear();
     workspace.getModel().getMeasures().clear();
     workspace.setModelIsChanging(false, true);
+  }
+
+  @Override
+  public void addField(Object[] selectedFields) throws ModelerException{
+    boolean prevChangeState = workspace.isModelChanging();
+    workspace.setModelIsChanging(true);
+    super.addField(selectedFields);
+    workspace.setModelIsChanging(prevChangeState);
   }
 }
