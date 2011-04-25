@@ -42,8 +42,12 @@ public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
   public void autoModelOlap(ModelerWorkspace workspace, MainModelNode mainModel) throws ModelerException {
     mainModel.setName(workspace.getModelName());
     workspace.setModel(mainModel);
-    workspace.getModel().getDimensions().clear();
-    workspace.getModel().getMeasures().clear();
+    DimensionMetaDataCollection dims = workspace.getModel().getDimensions();
+    dims.clear();
+    dims.setExpanded(true);
+    MeasuresCollection measures = workspace.getModel().getMeasures();
+    measures.setExpanded(false);
+    measures.clear();
 
     final boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true, !mainModel.getSuppressEvents());
