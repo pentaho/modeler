@@ -35,7 +35,6 @@ import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -829,7 +828,9 @@ public class ModelerController extends AbstractXulEventHandler {
     if (mode == ModelerMode.REPORTING_ONLY) {
       // reparent the reporting panel outside of the tabset
       if (reportingTabPanel.getChildNodes().size() > 0 && modelPanel.getChildNodes().size() == 0) {
+        int height = modelPanel.getHeight();
         modelPanel.addComponent(reportingPanel);
+        modelPanel.setHeight(height);
       }
       modelDeck.setSelectedIndex(1);
       workspace.setCurrentModelerPerspective(ModelerPerspective.REPORTING);
