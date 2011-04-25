@@ -98,6 +98,7 @@
            domain.setId(datasourceName);
            
            ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
+           helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
 
            ModelerWorkspace workspace = new ModelerWorkspace(helper);
            workspace.setDomain(domain);
@@ -111,22 +112,18 @@
            workspace.setModelName(datasourceName);
            helper.autoModelRelationalFlat(workspace);
 
-           LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
            if(doOlap) {
+             LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
              if(factTable == null) {
                throw new IllegalStateException("Fact table not found");
              } else {
                factTable.getPhysicalTable().setProperty("FACT_TABLE", true);
                workspace.getAvailableTables().setFactTable(factTable.getPhysicalTable());
              }
-           }
-
-           if(doOlap) {
              helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale));
         	   helper.autoModelFlat(workspace);
              workspace.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
            } else {
-             helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
              workspace.setModellingMode(ModelerMode.REPORTING_ONLY);
            }
 
@@ -155,8 +152,9 @@
     private LogicalTable findFactTable(JoinTableModel table, LogicalModel logicalModel) {
        LogicalTable factTable = null;
    	   for (LogicalTable lTable : logicalModel.getLogicalTables()) {
-   		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) { 
-	   		   if(lTable.getPhysicalTable().getProperty("target_table").equals(table.getName())) {
+   		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+           Object prop = lTable.getPhysicalTable().getProperty("target_table");
+	   		   if(prop != null && prop.equals(table.getName())) {
 	   		      factTable = lTable;
 	   		      break;
 	   		   }
