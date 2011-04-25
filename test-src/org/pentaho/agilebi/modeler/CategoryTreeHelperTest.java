@@ -50,7 +50,7 @@ public class CategoryTreeHelperTest {
   private static final String LOCALE = "en-US";
   RelationalModelNode relationalModelNode;
   static ModelerWorkspace workspace;
-  MainModelNode rootNode;
+  RelationalModelNode rootNode;
 
   @BeforeClass
   public static void init() throws Exception {
@@ -84,7 +84,7 @@ public class CategoryTreeHelperTest {
   public void setup() {
     helper = new CategoryTreeHelper();
     helper.setWorkspace(workspace);
-    rootNode = new MainModelNode(workspace);
+    rootNode = new RelationalModelNode(workspace);
   }
 
 
@@ -92,7 +92,10 @@ public class CategoryTreeHelperTest {
   public void testAddField() throws ModelerException {
 
     CategoryMetaData cat = new CategoryMetaData("Category");
-    rootNode.add(cat);
+    CategoryMetaDataCollection catCollection = new CategoryMetaDataCollection();
+    rootNode.add(catCollection);
+    catCollection.add(cat);
+
     helper.setSelectedTreeItem(cat);
     helper.clearTreeModel();
     assertEquals(0, cat.size());
@@ -111,7 +114,10 @@ public class CategoryTreeHelperTest {
   @Test
   public void testAddSameFieldMultipleTimes() throws ModelerException {
     CategoryMetaData cat = new CategoryMetaData("Category");
-    rootNode.add(cat);
+    CategoryMetaDataCollection catCollection = new CategoryMetaDataCollection();
+    rootNode.add(catCollection);
+    catCollection.add(cat);
+
     helper.setSelectedTreeItem(cat);
     helper.clearTreeModel();
     assertEquals(0, cat.size());
