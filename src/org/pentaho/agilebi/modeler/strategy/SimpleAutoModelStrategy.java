@@ -62,8 +62,13 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
   public void autoModelOlap(ModelerWorkspace workspace, MainModelNode mainModel) throws ModelerException {
     mainModel.setName(workspace.getModelName());
     workspace.setModel(mainModel);
-    workspace.getModel().getDimensions().clear();
-    workspace.getModel().getMeasures().clear();
+    DimensionMetaDataCollection dims = workspace.getModel().getDimensions();
+    dims.clear();
+    dims.setExpanded(true);
+    MeasuresCollection measures = workspace.getModel().getMeasures();
+    measures.setExpanded(false);
+    measures.clear();
+
 
     final boolean prevChangeState = workspace.isModelChanging();
     workspace.setModelIsChanging(true, !mainModel.getSuppressEvents());
@@ -93,6 +98,9 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
         workspace.addDimensionFromNode(workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
 
       }
+    }
+    for(DimensionMetaData dim : dims){
+      dim.setExpanded(false);
     }
     if (!mainModel.getSuppressEvents()) {
       workspace.setModelIsChanging(prevChangeState);
