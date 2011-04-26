@@ -38,16 +38,11 @@ public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {
 
   private static final String LOCALE = "en-US";
 
-  @Override
-  public void setUp() throws Exception {
-    super.setUp();
-    generateMultiTableTestDomain();
-  }
-
   @Test
   public void testAutoModelOlap() throws Exception {
     // expect one dim per table, one hierarchy per column, one level per hierarchy
 
+    generateMultiStarTestDomain();
     MultiTableAutoModelStrategy strategy = new MultiTableAutoModelStrategy(LOCALE);
     try{
       strategy.autoModelOlap(workspace, new MainModelNode());
@@ -60,6 +55,7 @@ public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {
 
   @Test
   public void testAutoModelRelational() throws Exception {
+    generateMultiTableTestDomain();
     MultiTableAutoModelStrategy strategy = new MultiTableAutoModelStrategy(LOCALE);
 
     strategy.autoModelRelational(workspace, new RelationalModelNode());
