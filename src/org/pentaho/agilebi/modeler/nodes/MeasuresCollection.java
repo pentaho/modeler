@@ -131,7 +131,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return (obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof AvailableTable || obj instanceof MeasureMetaData);
+    return (obj instanceof AvailableField || obj instanceof AvailableTable || obj instanceof MeasureMetaData);
   }
 
   @Override

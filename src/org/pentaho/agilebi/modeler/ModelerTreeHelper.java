@@ -208,17 +208,22 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   public void onModelDrop(DropEvent event) throws ModelerException{
     boolean prevChangeState = isModelChanging();
     setModelIsChanging(true);
-    IDropTarget dropNode = (IDropTarget) event.getDropParent();
-    Object newData = null;
-    for(Object data : event.getDataTransfer().getData()){
-      newData = dropNode.onDrop(data);
+    try{
+      IDropTarget dropNode = (IDropTarget) event.getDropParent();
+      Object newData = null;
+      for(Object data : event.getDataTransfer().getData()){
+        newData = dropNode.onDrop(data);
+      }
+      if (newData == null) {
+        event.setAccepted(false);
+      } else {
+        event.getDataTransfer().setData(Collections.singletonList(newData));
+      }
+    } catch(ModelerException e){
+      throw e;
+    } finally {
+      setModelIsChanging(false);
     }
-    if (newData == null) {
-      event.setAccepted(false);
-    } else {
-      event.getDataTransfer().setData(Collections.singletonList(newData));
-    }
-    setModelIsChanging(false);
   }
 
   protected abstract boolean isModelChanging();

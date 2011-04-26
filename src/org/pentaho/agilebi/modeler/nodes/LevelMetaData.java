@@ -17,6 +17,7 @@
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -119,6 +120,6 @@ public class LevelMetaData extends BaseColumnBackedMetaData implements Serializa
 
   @Override
   public Object onDrop(Object data) throws ModelerException {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    throw new ModelerException(new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop")));
   }
 }
