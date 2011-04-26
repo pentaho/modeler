@@ -56,17 +56,20 @@ public class AbstractModelerTest {
 
   protected void generateMultiStarTestDomain() throws Exception {
 
-    XmiParser parser = new XmiParser();
-    Domain d = parser.parseXmi(new FileInputStream(new File("test-res/testMulti.xmi")));
+    SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1(true);
+
+    MultiTableModelerSource modelerSource = new MultiTableModelerSource(getDatabaseMeta(), schemaModel, "TEST", Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
+
+    Domain d = modelerSource.generateDomain(true);
     workspace.setDomain(d);
   }
 
   protected void generateMultiTableTestDomain() throws ModelerException {
-    SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1();
+    SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1(false);
 
     MultiTableModelerSource modelerSource = new MultiTableModelerSource(getDatabaseMeta(), schemaModel, "TEST", Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
     
-    Domain d = modelerSource.generateDomain(true);
+    Domain d = modelerSource.generateDomain(false);
     workspace.setDomain(d);
   }
 
