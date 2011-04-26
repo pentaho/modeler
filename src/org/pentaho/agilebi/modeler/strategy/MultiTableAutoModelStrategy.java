@@ -40,61 +40,7 @@ public class MultiTableAutoModelStrategy extends SimpleAutoModelStrategy {
 
   @Override
   public void autoModelOlap(ModelerWorkspace workspace, MainModelNode mainModel) throws ModelerException {
-    mainModel.setName(workspace.getModelName());
-    workspace.setModel(mainModel);
-    workspace.getModel().getDimensions().clear();
-    workspace.getModel().getMeasures().clear();
-
-    final boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true, !mainModel.getSuppressEvents());
-
-    // remove all logical columns from existing logical tables
-    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        table.getLogicalColumns().clear();
-      }
-    }
-
-    HashSet<String> existingMeasures = new HashSet<String>();
-    List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
-    for (AvailableTable table : tableList) {
-
-      // create a new dimension per table
-      DimensionMetaData dim = new DimensionMetaData(table.getName());
-      dim.setExpanded(false);
-
-      for( AvailableField field : table.getAvailableFields() ) {
-
-        // create a hierarchy per field
-        HierarchyMetaData hierarchy = new HierarchyMetaData(field.getName());
-        hierarchy.setParent(dim);
-        hierarchy.setExpanded(false);
-        dim.add(hierarchy);
-
-        // create a level & measure per field
-        DataType dataType = field.getPhysicalColumn().getDataType();
-        if( dataType == DataType.NUMERIC) {
-          if (!existingMeasures.contains(field.getName())) {
-            // create a measure
-            MeasureMetaData measure = workspace.createMeasureForNode(field);
-            workspace.getModel().getMeasures().add(measure);
-            existingMeasures.add(field.getName());
-          }
-        }
-        // create a level
-        LevelMetaData level = workspace.createLevelForParentWithNode(hierarchy, workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
-        if (level != null) {
-          hierarchy.add(level);
-        }
-
-      }
-      workspace.addDimension(dim);
-      
-    }
-    if (!mainModel.getSuppressEvents()) {
-      workspace.setModelIsChanging(prevChangeState);
-      workspace.setSelectedNode(workspace.getModel());
-    }
+    throw new UnsupportedOperationException("This strategy does not support OLAP models");
   }
 
 }

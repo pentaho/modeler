@@ -9,7 +9,10 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.util.XmiParser;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Arrays;
 
 /**
@@ -47,6 +50,14 @@ public class AbstractModelerTest {
 
   protected void generateTestDomain() throws ModelerException {
     Domain d = ModelerSourceUtil.generateDomain(getDatabaseMeta(), "", "CUSTOMERS");
+    workspace.setDomain(d);
+  }
+
+
+  protected void generateMultiStarTestDomain() throws Exception {
+
+    XmiParser parser = new XmiParser();
+    Domain d = parser.parseXmi(new FileInputStream(new File("test-res/testMulti.xmi")));
     workspace.setDomain(d);
   }
 

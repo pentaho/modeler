@@ -863,11 +863,16 @@ public class ModelerController extends AbstractXulEventHandler {
   }
   
   public void setModelerPerspective(ModelerPerspective perspective) {
+    ModelerPerspective prevVal = workspace.getCurrentModelerPerspective();
     workspace.setCurrentModelerPerspective(perspective);
+    if(prevVal != perspective){
+      this.modelTabbox.setSelectedIndex(perspective == ModelerPerspective.ANALYSIS ? 0 : 1);
+    }
   }
+  
   @Bindable
   public void setModelerPerspective(String perspective) {
-    workspace.setCurrentModelerPerspective(ModelerPerspective.valueOf(perspective));
+    setModelerPerspective(ModelerPerspective.valueOf(perspective));
   }
 
   public DimensionTreeHelper getDimTreeHelper() {
