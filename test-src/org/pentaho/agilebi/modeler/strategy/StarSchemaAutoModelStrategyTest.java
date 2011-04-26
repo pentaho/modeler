@@ -39,7 +39,7 @@ public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    generateMultiTableTestDomain();
+    generateMultiStarTestDomain();
   }
 
   @Test
