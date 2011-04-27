@@ -178,7 +178,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         if(getWorkspace().getAvailableTables().size() > 1){
           Object factProp = measure.getLogicalColumn().getLogicalTable().getPhysicalTable().getProperty("FACT_TABLE");
           if(factProp == null || factProp.equals(Boolean.FALSE)){
-            throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEASURE_NOT_FROM_FACT"));
+            throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.NON_FACT_TABLE"));
           }
         }
       }

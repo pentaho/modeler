@@ -122,8 +122,8 @@ public class ModelerController extends AbstractXulEventHandler {
       try {
         XulMessageBox msg = null; //$NON-NLS-1$
         msg = (XulMessageBox) document.createElement("messagebox");
-        msg.setTitle(ModelerMessagesHolder.getMessages().getString("error")); //$NON-NLS-1$
-        msg.setMessage(ModelerMessagesHolder.getMessages().getString("error_dropping")+": "+e.getCause().getMessage());
+        msg.setTitle(ModelerMessagesHolder.getMessages().getString("invalid_model")); //$NON-NLS-1$
+        msg.setMessage(e.getCause().getMessage());
         msg.open();
       } catch (Exception e1) {
         e1.printStackTrace();
@@ -143,8 +143,8 @@ public class ModelerController extends AbstractXulEventHandler {
       try {
         XulMessageBox msg = null; //$NON-NLS-1$
         msg = (XulMessageBox) document.createElement("messagebox");
-        msg.setTitle(ModelerMessagesHolder.getMessages().getString("error")); //$NON-NLS-1$
-        msg.setMessage(ModelerMessagesHolder.getMessages().getString("error_adding")+": "+e.getCause().getMessage());
+        msg.setTitle(ModelerMessagesHolder.getMessages().getString("invalid_model")); //$NON-NLS-1$
+        msg.setMessage(e.getCause().getMessage());
         msg.open();
       } catch (Exception e1) {
         e1.printStackTrace();
