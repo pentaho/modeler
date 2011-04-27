@@ -70,4 +70,12 @@ public class JoinTableModel extends XulEventSourceAdapter implements Serializabl
   public void reset(){
     fields.clear();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if(o instanceof JoinTableModel == false){
+      return false;
+    }
+    return ((JoinTableModel) o).getName().equals(this.getName());
+  }
 }
