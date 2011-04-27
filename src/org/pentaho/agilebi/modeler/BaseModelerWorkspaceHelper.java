@@ -114,15 +114,19 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             level.setName(lvl.getName());
             LogicalColumn lCol = lvl.getLogicalColumn();
             if (lCol != null) {
-              LogicalTable lTable = lCol.getLogicalTable();
-              hierarchy.setLogicalTable(lTable);
-              if (!lTable.getLogicalColumns().contains(lCol)) {
-                lTable.addLogicalColumn(lCol);
+
+              // Due to a bug in LogicalTable's clone() logical columns will be a child of an OLAP while reporting a
+              // different parent.
+              LogicalTable supposedLTable = lCol.getLogicalTable();
+              LogicalTable olapCloneLTable = findOlapCloneForTableInDomain(supposedLTable, domain);
+              hierarchy.setLogicalTable(olapCloneLTable);
+              if (!olapCloneLTable.getLogicalColumns().contains(lCol)) {
+                olapCloneLTable.addLogicalColumn(lCol);
               }
               level.setReferenceColumn(lCol);
-              hierarchy.setLogicalTable(lTable);
+              hierarchy.setLogicalTable(olapCloneLTable);
               if(logicalModel.getLogicalTables().size() > 2){ //only do this for multi-table situations
-                hierarchy.setPrimaryKey(findPrimaryKeyFor(logicalModel, factTable, lTable));
+                hierarchy.setPrimaryKey(findPrimaryKeyFor(logicalModel, factTable, olapCloneLTable));
               }
             }
             level.setHavingUniqueMembers(lvl.isUniqueMembers());
@@ -198,10 +202,22 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
   }
 
+  private LogicalTable findOlapCloneForTableInDomain(LogicalTable supposedLTable, Domain domain) {
+    if(supposedLTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){
+      return supposedLTable;
+    }
+    for(LogicalTable table : domain.getLogicalModels().get(0).getLogicalTables()){
+      if(table.getId().equals(supposedLTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX)){
+        return table;
+      }
+    }
+    throw new IllegalStateException("Unable to find a OLAP copy for table: "+supposedLTable.getId());
+  }
+
   private LogicalColumn findPrimaryKeyFor(LogicalModel model, LogicalTable factTable, LogicalTable dimTable) {
     LogicalRelationship ship = model.findRelationshipUsing(dimTable, factTable);
     if(ship == null){
-      throw new IllegalStateException("Unable to find a primary key for table: "+dimTable.getName());
+      throw new IllegalStateException("Unable to find a primary key for table: "+dimTable.getId());
     }
     
     if (ship.getFromTable().equals(dimTable)){
