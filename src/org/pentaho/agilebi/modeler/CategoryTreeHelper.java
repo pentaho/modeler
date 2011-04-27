@@ -51,9 +51,14 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
   @Override
   public void addField(Object[] selectedFields) throws ModelerException {
     boolean prevChangeState = workspace.isModelChanging();
-    workspace.setRelationalModelIsChanging(true);
-    super.addField(selectedFields);
-    workspace.setRelationalModelIsChanging(prevChangeState);
+    try{
+      workspace.setRelationalModelIsChanging(true);
+      super.addField(selectedFields);
+    } catch(ModelerException e){
+      throw e;
+    } finally {
+      workspace.setRelationalModelIsChanging(prevChangeState);
+    }
   }
 
   private AbstractMetaDataModelNode addAvailableField(AvailableField availableField, Object targetParent) {

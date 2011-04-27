@@ -64,8 +64,13 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   @Override
   public void addField(Object[] selectedFields) throws ModelerException{
     boolean prevChangeState = workspace.isModelChanging();
-    workspace.setModelIsChanging(true);
-    super.addField(selectedFields);
-    workspace.setModelIsChanging(prevChangeState);
+    try{
+      workspace.setModelIsChanging(true);
+      super.addField(selectedFields);
+    } catch(ModelerException e){
+      throw e;
+    } finally {
+      workspace.setModelIsChanging(prevChangeState);
+    }
   }
 }

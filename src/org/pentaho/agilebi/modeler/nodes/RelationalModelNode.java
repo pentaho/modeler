@@ -169,7 +169,7 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
 
   @Override
   public Object onDrop(Object data) throws ModelerException {
-    return null;
+    throw new ModelerException(new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop")));
   }
 
   @Override
