@@ -180,7 +180,7 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return obj instanceof AvailableField || obj instanceof FieldMetaData || obj instanceof AvailableTable;
+    return obj instanceof AvailableField || obj instanceof FieldMetaData || obj instanceof AvailableTable || obj instanceof CategoryMetaData;
   }
 
   @Override
@@ -198,6 +198,8 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
         CategoryMetaData cat = new CategoryMetaData(field.getName());
         cat.add(getWorkspace().createFieldForParentWithNode(cat, field));
         return cat;
+      } else if(data instanceof CategoryMetaData){
+        return data;
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }

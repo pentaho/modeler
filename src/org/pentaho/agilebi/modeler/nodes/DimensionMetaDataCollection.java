@@ -192,6 +192,8 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
         return getWorkspace().createDimensionFromNode((MeasureMetaData) data);
       } else if(data instanceof LevelMetaData){
         return getWorkspace().createDimensionFromNode((LevelMetaData) data);
+      } else if(data instanceof DimensionMetaData){
+        return data;
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }
