@@ -896,5 +896,21 @@ public class ModelerController extends AbstractXulEventHandler {
     return catTreeHelper;
   }
 
-  
+  @Bindable
+  public void collapseAll() {
+    dimensionTree.collapseAll();
+  }
+  @Bindable
+  public void expandAll() {
+    dimensionTree.expandAll();
+  }
+  @Bindable
+  public void collapseRelationalAll() {
+    categoriesTree.collapseAll();
+  }
+  @Bindable
+  public void expandRelationalAll() {
+    categoriesTree.expandAll();
+  }
+
 }

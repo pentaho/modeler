@@ -7,6 +7,8 @@
   id="analyzerModelPanel" flex="1" spacing="0" padding="0">
 
   <toolbar id="schema-toolbar" mode="icons">
+    <toolbarbutton id="expandAllBtn" image="images/ExpandAll.png" onclick="modeler.expandAll()" disabled="false" tooltiptext="${expand_all}"/>
+    <toolbarbutton id="collapseAllBtn" image="images/CollapseAll.png" onclick="modeler.collapseAll()" disabled="false" tooltiptext="${collapse_all}"/>
     <toolbarspacer flex="1"/>
     <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png" onclick="modeler.showNewMeasureDialog()" disabled="true" tooltiptext="${add_measure}"/>
     <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}"/>
