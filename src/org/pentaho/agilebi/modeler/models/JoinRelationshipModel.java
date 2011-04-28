@@ -75,25 +75,18 @@ public class JoinRelationshipModel extends XulEventSourceAdapter implements Seri
 	public boolean equals(JoinRelationshipModel join) {
 
 		String leftTable1 = join.getLeftKeyFieldModel().getParentTable().getName();
-		String leftKey1 = join.getLeftKeyFieldModel().getName();
-
 		String rightTable1 = join.getRightKeyFieldModel().getParentTable().getName();
-		String rightKey1 = join.getRightKeyFieldModel().getName();
-
 		String leftTable2 = this.leftKeyFieldModel.getParentTable().getName();
-		String leftKey2 = this.leftKeyFieldModel.getName();
-
 		String rightTable2 = this.rightKeyFieldModel.getParentTable().getName();
-		String rightKey2 = this.rightKeyFieldModel.getName();
 
 		// eval1
-		// join1:a.b = d.c
-		// join2:c.d = b.a
-		boolean eval1 = leftTable1.equals(rightTable2) && leftTable2.equals(rightTable1) && leftKey1.equals(rightKey2) && leftKey2.equals(rightKey1);
+		// join1:table1 = table2
+		// join2:table2 = table1
+		boolean eval1 = leftTable1.equals(rightTable2) && leftTable2.equals(rightTable1);
 		// eval2
-		// join1:a.b = d.c
-		// join2:a.b = d.c
-		boolean eval2 = leftTable1.equals(leftTable2) && rightTable1.equals(rightTable2) && leftKey1.equals(leftKey2) && rightKey1.equals(rightKey2);
+		// join1:table1 = table2
+		// join2:table1 = table2
+		boolean eval2 = leftTable1.equals(leftTable2) && rightTable1.equals(rightTable2);
 		return eval1 || eval2;
 	}
 }
