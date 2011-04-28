@@ -62,7 +62,7 @@
 
     @Override
     public Domain generateDomain(boolean doOlap) throws ModelerException {
-      System.out.println("doOLAP: "+doOlap);
+      
     	 Domain domain = null;
          try {
            // Generate domain based on the table names.
