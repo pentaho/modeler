@@ -7,6 +7,8 @@
   id="reportingModelPanel" flex="1" spacing="0" padding="0">
 
   <toolbar id="categories-toolbar" mode="icons">
+    <toolbarbutton id="expandAllBtn" image="images/ExpandAll.png" onclick="modeler.expandRelationalAll()" disabled="false" tooltiptext="${expand_all}"/>
+    <toolbarbutton id="collapseAllBtn" image="images/CollapseAll.png" onclick="modeler.collapseRelationalAll()" disabled="false" tooltiptext="${collapse_all}"/>
     <toolbarspacer flex="1"/>
     <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()" tooltiptext="${new_category}"/>
     <toolbarbutton id="fieldBtn" image="images/fields.png" onclick="modeler.showNewFieldDialog()" disabled="true" tooltiptext="${new_field}"/>

@@ -291,6 +291,7 @@ public class ModelerController extends AbstractXulEventHandler {
     if (workspace.getRelationalModel().size() > 0) {
       categoriesTree.setSelectedItems(Collections.singletonList(workspace.getRelationalModel()));
     }
+
   }
 
   @Bindable
@@ -868,6 +869,12 @@ public class ModelerController extends AbstractXulEventHandler {
     if(prevVal != perspective){
       this.modelTabbox.setSelectedIndex(perspective == ModelerPerspective.ANALYSIS ? 0 : 1);
     }
+    // force refresh the property form panel
+    if (perspective == ModelerPerspective.ANALYSIS) {
+      dimTreeHelper.setTreeSelectionChanged(dimTreeHelper.getSelectedTreeItem());
+    } else {
+      catTreeHelper.setTreeSelectionChanged(catTreeHelper.getSelectedTreeItem());
+    }
   }
   
   @Bindable
@@ -889,5 +896,21 @@ public class ModelerController extends AbstractXulEventHandler {
     return catTreeHelper;
   }
 
-  
+  @Bindable
+  public void collapseAll() {
+    dimensionTree.collapseAll();
+  }
+  @Bindable
+  public void expandAll() {
+    dimensionTree.expandAll();
+  }
+  @Bindable
+  public void collapseRelationalAll() {
+    categoriesTree.collapseAll();
+  }
+  @Bindable
+  public void expandRelationalAll() {
+    categoriesTree.expandAll();
+  }
+
 }
