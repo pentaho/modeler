@@ -27,6 +27,7 @@
   import org.pentaho.agilebi.modeler.models.JoinTableModel;
   import org.pentaho.agilebi.modeler.models.SchemaModel;
   import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
+  import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
   import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
   import org.pentaho.di.core.database.DatabaseMeta;
   import org.pentaho.metadata.automodel.SchemaTable;
@@ -61,7 +62,7 @@
 
     @Override
     public Domain generateDomain(boolean doOlap) throws ModelerException {
-    	
+      
     	 Domain domain = null;
          try {
            // Generate domain based on the table names.
@@ -98,7 +99,13 @@
            domain.setId(datasourceName);
            
            ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
-           helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
+           if(selectedTables.size() == 1){ // single table mode
+             helper.setAutoModelStrategy(new SimpleAutoModelStrategy(locale));
+           } else if (doOlap){
+             helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale));
+           } else {
+             helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
+           }
 
            ModelerWorkspace workspace = new ModelerWorkspace(helper);
            workspace.setDomain(domain);
@@ -120,8 +127,13 @@
                factTable.getPhysicalTable().setProperty("FACT_TABLE", true);
                workspace.getAvailableTables().setFactTable(factTable.getPhysicalTable());
              }
-             helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale));
-        	   helper.autoModelFlat(workspace);
+             // somehow the strategy is getting set to simple. setting it back again.
+             if(selectedTables.size() == 1){ // single table mode
+               helper.setAutoModelStrategy(new SimpleAutoModelStrategy(locale));
+             } else {
+               helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale));
+             }
+             helper.autoModelFlat(workspace);
              workspace.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
            } else {
              workspace.setModellingMode(ModelerMode.REPORTING_ONLY);
