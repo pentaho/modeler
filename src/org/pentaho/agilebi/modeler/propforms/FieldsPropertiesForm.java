@@ -66,10 +66,10 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
   @Override
   public void setPossibleAggregations( Vector aggTypes ) {
     this.aggTypes = aggTypes;
-    if (fieldMeta != null && fieldMeta.getSelectedAggregations() == null) {
-      fieldMeta.setSelectedAggregations(aggTypes);
-    }
     this.firePropertyChange("possibleAggregations", null, aggTypes);
+    if (fieldMeta != null) {
+      setSelectedAggregations(aggTypes);
+    }
   }
 
   @Bindable
@@ -93,6 +93,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     }
     return Collections.emptyList();
   }
+
   private static class FormatStringConverter extends BindingConvertor<String, String> {
 
     @Override

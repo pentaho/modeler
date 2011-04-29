@@ -42,10 +42,13 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   private PropertyChangeListener propListener = new PropertyChangeListener() {
 
     public void propertyChange( PropertyChangeEvent evt ) {
-      if (!evt.getPropertyName().equals("logicalColumn")) {
-        return;
+      if (evt.getPropertyName().equals("logicalColumn")) {
+        setColumnName(fieldMeta.getLogicalColumn());
+      } else if (evt.getPropertyName().equals("possibleAggregations")) {
+        setPossibleAggregations(new Vector(fieldMeta.getPossibleAggregations()));
+      } else if (evt.getPropertyName().equals("defaultAggregation")) {
+        setDefaultAggregation(fieldMeta.getDefaultAggregation());
       }
-      setColumnName(fieldMeta.getLogicalColumn());
     }
   };
 

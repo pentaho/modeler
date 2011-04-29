@@ -118,7 +118,9 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
 
   @Bindable
   public void setDefaultAggregation( AggregationType aggType ) {
+    AggregationType previousAggregation = this.defaultAggregation;
     this.defaultAggregation = aggType;
+    this.firePropertyChange("defaultAggregation", previousAggregation, defaultAggregation);
   }
 
   @Override
@@ -137,8 +139,10 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
 
       if (logicalColumn.getDataType() == DataType.NUMERIC) {
         setPossibleAggregations(getNumericAggregationTypes());
+        setDefaultAggregation(AggregationType.SUM);
       } else {
         setPossibleAggregations(getTextAggregationTypes());
+        setDefaultAggregation(AggregationType.NONE);
       }
 
       // If a previously defined list exists, use it. Otherwise select all possible as a default
