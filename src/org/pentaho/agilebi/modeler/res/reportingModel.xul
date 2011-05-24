@@ -18,8 +18,8 @@
     <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()" tooltiptext="${clearFields}"/>
   </toolbar>
   <tree id="categoriesTree" flex="1" editable="false" hiddenrootnode="false" preserveselection="true"
-      ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
-    ondrop="modeler.onModelTreeDrop()">
+    ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+    ondrop="modeler.onModelTreeDrop()" pen:dropiconsvisible="false">
 
     <treecols>
       <treecol flex="1" label="" primary="true"
