@@ -2,7 +2,7 @@
 <?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
 
 <vbox id="measuresprops"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  xmlns="http://www.pentaho.org/there.is.only.xul"
   xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" xmlns:pen="http://www.pentaho.org/2008/xul"
   flex="1" spacing="4">
   <vbox bgcolor="#FFFFCC" id="messages2">
