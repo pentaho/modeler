@@ -76,7 +76,9 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
 
   @Bindable
   public void setFormat( String format ) {
+    String previousFormat = this.format;
     this.format = format;
+    firePropertyChange("format", previousFormat, format);
   }
 
   @Bindable
@@ -136,13 +138,17 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
     super.setLogicalColumn(col);
     DataType newDataType = logicalColumn.getDataType();
     if(previousDataType == null || previousDataType != newDataType){
-
       if (logicalColumn.getDataType() == DataType.NUMERIC) {
         setPossibleAggregations(getNumericAggregationTypes());
         setDefaultAggregation(AggregationType.SUM);
       } else {
         setPossibleAggregations(getTextAggregationTypes());
         setDefaultAggregation(AggregationType.NONE);
+      }
+
+      // if we are given an aggtype, use that rather than the default
+      if (logicalColumn.getAggregationType() != null) {
+        setDefaultAggregation(logicalColumn.getAggregationType());
       }
 
       // If a previously defined list exists, use it. Otherwise select all possible as a default

@@ -165,6 +165,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       for (MeasureMetaData f : model.getModel().getMeasures()) {
         LogicalColumn lCol = f.getLogicalColumn();
         LogicalTable lTable = lCol.getLogicalTable();
+        OlapMeasure measure = new OlapMeasure();
 
         String colKey = lTable.getId() + "." + lCol.getId();
         // see if any measures already are using this LogicalColumn. if so, clone it.
@@ -181,11 +182,14 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
           lTable.addLogicalColumn(lCol);
         }
 
-        OlapMeasure measure = new OlapMeasure();
         if (f.getDefaultAggregation() != null) {
           lCol.setAggregationType(f.getDefaultAggregation());
         }
+
+        setLogicalColumnFormat(f.getFormat(), lCol);
+        
         measure.setName(f.getName());
+
         measure.setLogicalColumn(lCol);
         measures.add(measure);
       }
@@ -280,20 +284,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         AggregationType type = fieldMeta.getDefaultAggregation();
         lCol.setAggregationType(type);
 
-        String formatMask = fieldMeta.getFormat();
-        if( BaseAggregationMetaDataNode.FORMAT_NONE.equals(formatMask) || (formatMask == null || formatMask.equals(""))) {
-          formatMask = null;
-        }
-        if (formatMask != null) {
-          lCol.setProperty("mask", formatMask); //$NON-NLS-1$
-        } else if(lCol.getDataType() == DataType.NUMERIC){
-          lCol.setProperty("mask", "#");
-        } else {
-          // remove old mask that might have been set
-          if (lCol.getChildProperty("mask") != null) { //$NON-NLS-1$
-            lCol.removeChildProperty("mask"); //$NON-NLS-1$
-          }
-        }
+        setLogicalColumnFormat(fieldMeta.getFormat(), lCol);
+
         Set<AggregationType> possibleAggs = new HashSet<AggregationType>();
         possibleAggs.add(fieldMeta.getDefaultAggregation());
         possibleAggs.addAll(fieldMeta.getSelectedAggregations());
@@ -305,6 +297,24 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     }
   }
 
+
+  private void setLogicalColumnFormat(String format, LogicalColumn lCol) {
+    String formatMask = format;
+    if( BaseAggregationMetaDataNode.FORMAT_NONE.equals(formatMask) || (formatMask == null || formatMask.equals(""))) {
+      formatMask = null;
+    }
+    if (formatMask != null) {
+      lCol.setProperty("mask", formatMask); //$NON-NLS-1$
+    } else if(lCol.getDataType() == DataType.NUMERIC){
+      lCol.setProperty("mask", "#");
+    } else {
+      // remove old mask that might have been set
+      if (lCol.getChildProperty("mask") != null) { //$NON-NLS-1$
+        lCol.removeChildProperty("mask"); //$NON-NLS-1$
+      }
+    }
+
+  }
 
   public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
     String locale = "en-US";
