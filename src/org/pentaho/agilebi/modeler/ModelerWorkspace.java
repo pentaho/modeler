@@ -689,6 +689,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             LevelMetaData theLevelMD = new LevelMetaData(theHierarchyMD, theLevel.getName());
 
             theLevelMD.setParent(theHierarchyMD);
+            if (!theLevel.getReferenceColumn().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+              needsUpConverted = true;
+            }
             theLevelMD.setLogicalColumn(theLevel.getReferenceColumn());
             theHierarchyMD.add(theLevelMD);
           }
@@ -721,6 +724,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           theMeasureMD.setFormat((String) theMeasure.getLogicalColumn().getProperty("mask")); //$NON-NLS-1$
           theMeasureMD.setDefaultAggregation(theMeasure.getLogicalColumn().getAggregationType());
 
+          if (!theMeasure.getLogicalColumn().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+            needsUpConverted = true;
+          }
           theMeasureMD.setLogicalColumn(theMeasure.getLogicalColumn());
           this.model.getMeasures().add(theMeasureMD);
         }

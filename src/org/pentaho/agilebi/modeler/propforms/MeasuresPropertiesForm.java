@@ -33,6 +33,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   private String colName;
   private String locale;
   protected AggregationType defaultAggregation;
+  protected String format;
 
   public MeasuresPropertiesForm(String panelId, String locale) {
     super(panelId);
@@ -48,6 +49,8 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
         setPossibleAggregations(new Vector(fieldMeta.getPossibleAggregations()));
       } else if (evt.getPropertyName().equals("defaultAggregation")) {
         setDefaultAggregation(fieldMeta.getDefaultAggregation());
+      } else if (evt.getPropertyName().equals("format")) {
+        setFormat(fieldMeta.getFormat());
       }
     }
   };
@@ -195,19 +198,17 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
   @Bindable
   public String getFormat() {
-    if (fieldMeta == null) {
-      return null;
-    }
-    return fieldMeta.getFormat();
+    return this.format;
   }
 
   @Bindable
   public void setFormat( String format ) {
-
+    String previousFormat = this.format;
+    this.format = format;
     if (fieldMeta != null) {
       fieldMeta.setFormat(format);
     }
-    this.firePropertyChange("format", null, format);
+    this.firePropertyChange("format", previousFormat, format);
   }
 
 

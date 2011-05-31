@@ -22,7 +22,8 @@
   </toolbar>
   <tree id="dimensionTree" flex="1" editable="false"
     ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
-    ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true">
+    ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true"
+    pen:dropiconsvisible="false">
     <treecols>
       <treecol flex="1" label="" primary="true"
         pen:binding="displayName" pen:childrenbinding="children"
