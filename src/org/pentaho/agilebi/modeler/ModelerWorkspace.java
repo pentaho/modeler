@@ -448,6 +448,15 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setModelIsChanging(true);
     setRelationalModelIsChanging(true);
 
+    // Set the type of modeling session. This will propigate to the UI
+    if(newDomain.getLogicalModels().get(0).getProperty("MondrianCatalogRef") != null){
+      this.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
+    } else {
+      this.setModellingMode(ModelerMode.REPORTING_ONLY);
+      // clear out OLAP side of the existing model
+      model.getDimensions().clear();
+    }
+
     Comparator<AvailableField> fieldComparator = new Comparator<AvailableField>() {
           public int compare( AvailableField arg0, AvailableField arg1 ) {
             return arg0.getPhysicalColumn().getId().compareTo(arg1.getPhysicalColumn().getId());
@@ -462,7 +471,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       AvailableTable aTable = availableTables.findAvailableTable(table.getName(LocalizedString.DEFAULT_LOCALE));
       if (aTable == null) {
         // new table, make sure we add it
-        availableTables.add(new AvailableTable(table));
+        boolean isFact = table.getProperty("FACT_TABLE") != null ? (Boolean) table.getProperty("FACT_TABLE") : false;
+        availableTables.add(new AvailableTable(table, isFact));
       } else {
         // table already exists here, make sure all the fields are accounted for
         for(IPhysicalColumn column : table.getPhysicalColumns()) {
