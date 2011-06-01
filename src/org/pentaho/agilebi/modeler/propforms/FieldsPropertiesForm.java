@@ -3,6 +3,7 @@ package org.pentaho.agilebi.modeler.propforms;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -18,6 +19,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
 
   private static final String ID = "fieldprops";
   private Collection<AggregationType> selectedAggregations;
+  private XulButton messageBtn;
 
   public FieldsPropertiesForm(String locale) {
     super(ID, locale);
@@ -34,7 +36,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     panel = (XulVbox) document.getElementById(ID);
 
     bf.createBinding(this, "notValid", "fieldmessages", "visible");
-    bf.createBinding(this, "validMessages", "fieldmessageslabel", "value");
+    bf.createBinding(this, "validMessages", "fieldmessageslabel", "value", validMsgTruncatedBinding);
     bf.createBinding(this, "displayName", "fielddisplayname", "value");
     bf.createBinding(this, "possibleAggregations", "field_optionalAggregationTypes", "elements");
     bf.createBinding(this, "selectedAggregations", "field_optionalAggregationTypes", "selectedItems", BindingConvertor.collection2ObjectArray());
@@ -44,6 +46,8 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     bf.createBinding(this, "format", "fieldformatstring", "selectedItem", new FormatStringConverter());
     bf.createBinding(this, "backingColumnAvailable", "fixFieldColumnsBtn", "!visible");
     bf.createBinding(this, "columnName", "field_column_name", "value");
+    messageBtn = (XulButton) document.getElementById("field_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
 
   }
 
@@ -67,7 +71,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
   public void setPossibleAggregations( Vector aggTypes ) {
     this.aggTypes = aggTypes;
     this.firePropertyChange("possibleAggregations", null, aggTypes);
-    if (fieldMeta != null) {
+    if (getNode() != null) {
       setSelectedAggregations(aggTypes);
     }
   }
@@ -76,8 +80,8 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
   public void setSelectedAggregations(Collection<AggregationType> selectedAggs){
     Collection<AggregationType> prevVal = selectedAggregations;
     selectedAggregations = selectedAggs;
-    if(fieldMeta != null){
-      fieldMeta.setSelectedAggregations(new ArrayList<AggregationType>(selectedAggs));
+    if(getNode() != null){
+      getNode().setSelectedAggregations(new ArrayList<AggregationType>(selectedAggs));
     }
     if(prevVal == null || prevVal.equals(selectedAggregations) == false){
       this.firePropertyChange("selectedAggregations", null, selectedAggregations);
@@ -88,8 +92,8 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
 
   @Bindable
   public List<AggregationType> getSelectedAggregations(){
-    if(fieldMeta != null){
-      return fieldMeta.getSelectedAggregations();
+    if(getNode() != null){
+      return getNode().getSelectedAggregations();
     }
     return Collections.emptyList();
   }

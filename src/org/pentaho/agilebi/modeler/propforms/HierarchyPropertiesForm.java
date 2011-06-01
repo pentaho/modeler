@@ -17,6 +17,7 @@
 package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -25,17 +26,17 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class HierarchyPropertiesForm extends AbstractModelerNodeForm<HierarchyMetaData> {
 
   private XulTextbox name;
-  private HierarchyMetaData dim;
   private XulVbox messageBox;
   private XulLabel messageLabel;
+  private XulButton messageBtn;
 
   public HierarchyPropertiesForm() {
     super("hierarchyprops");
   }
 
   public void setObject( HierarchyMetaData dim ) {
-    this.dim = dim;
-    if (dim == null) {
+    setNode(dim);
+    if (getNode() == null) {
       return;
     }
     name.setValue(dim.getName());
@@ -43,11 +44,12 @@ public class HierarchyPropertiesForm extends AbstractModelerNodeForm<HierarchyMe
   }
 
   private void showValidations() {
-    if (dim == null) {
+    if (getNode() == null) {
       return;
     }
-    messageLabel.setValue(dim.getValidationMessagesString());
-    messageBox.setVisible(dim.getValidationMessages().size() > 0);
+    messageBox.setVisible(getNode().getValidationMessages().size() > 0);
+    setValidMessages(getNode().getValidationMessagesString());
+
   }
 
   public void init() {
@@ -56,24 +58,35 @@ public class HierarchyPropertiesForm extends AbstractModelerNodeForm<HierarchyMe
     messageBox = (XulVbox) document.getElementById("hierarchy_message");
     messageLabel = (XulLabel) document.getElementById("hierarchy_message_label");
     bf.createBinding(this, "name", name, "value");
+    bf.createBinding(this, "validMessages", messageLabel, "value", validMsgTruncatedBinding);
+    messageBtn = (XulButton) document.getElementById("hierarchy_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
 
   }
 
   @Bindable
   public void setName( String name ) {
-    if (dim != null) {
-      dim.setName(name);
+    if (getNode() != null) {
+      getNode().setName(name);
     }
     this.name.setValue(name);
   }
 
   @Bindable
   public String getName() {
-    if (dim == null) {
+    if (getNode() == null) {
       return null;
     }
-    return dim.getName();
+    return getNode().getName();
   }
 
+  @Override
+  public String getValidMessages()  {
+    if (getNode() != null) {
+      return getNode().getValidationMessagesString();
+    } else {
+      return null;
+    }
+  }
 
 }

@@ -18,6 +18,7 @@ package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -34,6 +35,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   private XulVbox messageBox;
   private String colName;
   private String locale;
+  private XulButton messageBtn;
 
   public LevelsPropertiesForm(String panelId, String locale) {
     super(panelId);
@@ -50,22 +52,20 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     }
   };
 
-  private BaseColumnBackedMetaData dim;
-
   public LevelsPropertiesForm(String locale) {
     this("levelprops", locale);
   }
 
   public void setObject( BaseColumnBackedMetaData dim ) {
-    if (this.dim != null) {
-      this.dim.removePropertyChangeListener(validListener);
+    if (getNode() != null) {
+      getNode().removePropertyChangeListener(validListener);
     }
 
-    this.dim = dim;
+    setNode(dim);
     if (dim == null) {
       return;
     }
-    this.dim.addPropertyChangeListener(validListener);
+    getNode().addPropertyChangeListener(validListener);
 
     name.setValue(dim.getName());
     setColumnName(dim.getLogicalColumn());
@@ -73,14 +73,15 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   }
 
   private void showValidations() {
-    if (dim == null) {
+    if (getNode() == null) {
       return;
     }
-    messageBox.setVisible(dim.getValidationMessages().size() > 0);
-    level_message_label.setValue(dim.getValidationMessagesString());
-    setNotValid(!dim.isValid());
-    setBackingColumnAvailable(dim.getLogicalColumn()!=null);
-    setColumnName(dim.getLogicalColumn());
+
+    setNotValid(!getNode().isValid());
+    setBackingColumnAvailable(getNode().getLogicalColumn()!=null);
+    setColumnName(getNode().getLogicalColumn());
+    messageBox.setVisible(getNode().getValidationMessages().size() > 0);
+    setValidMessages(getNode().getValidationMessagesString());
   }
 
   public void init() {
@@ -93,9 +94,10 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     bf.createBinding(this, "backingColumnAvailable", "fixLevelColumnsBtn", "!visible");
 
     bf.createBinding(this, "columnName", sourceLabel, "value");
-
-
     bf.createBinding(this, "name", name, "value");
+    bf.createBinding(this, "validMessages", level_message_label, "value", validMsgTruncatedBinding);
+    messageBtn = (XulButton) document.getElementById("level_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
 
   }
 
@@ -115,24 +117,24 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
   @Bindable
   public void setName( String name ) {
-    if (dim != null) {
-      dim.setName(name);
+    if (getNode() != null) {
+      getNode().setName(name);
     }
     this.name.setValue(name);
   }
 
   @Bindable
   public String getName() {
-    if (dim == null) {
+    if (getNode() == null) {
       return null;
     }
-    return dim.getName();
+    return getNode().getName();
   }
 
   @Bindable
   public boolean isNotValid() {
-    if (dim != null) {
-      return !dim.isValid();
+    if (getNode() != null) {
+      return !getNode().isValid();
     } else {
       return false;
     }
@@ -145,8 +147,8 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
   @Bindable
   public boolean isBackingColumnAvailable() {
-    if (dim != null) {
-      return dim.getLogicalColumn() != null;
+    if (getNode() != null) {
+      return getNode().getLogicalColumn() != null;
     } else {
       return false;
     }
@@ -157,4 +159,12 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     this.firePropertyChange("backingColumnAvailable", null, available);
   }
 
+  @Override
+  public String getValidMessages()  {
+    if (getNode() != null) {
+      return getNode().getValidationMessagesString();
+    } else {
+      return null;
+    }
+  }
 }

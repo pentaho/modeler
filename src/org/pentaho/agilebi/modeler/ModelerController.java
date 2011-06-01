@@ -659,15 +659,33 @@ public class ModelerController extends AbstractXulEventHandler {
     fireBindings();
   }
 
+  @Bindable
+  public void showValidationMessagesDialog() {
+    AbstractMetaDataModelNode node;
+    if (workspace.getCurrentModelerPerspective() == ModelerPerspective.ANALYSIS) {
+      node = workspace.getSelectedNode();
+      if (node == null) {
+        node = workspace.getModel();
+      }
+    } else {
+      node = workspace.getSelectedRelationalNode();
+      if (node == null) {
+        node = workspace.getRelationalModel();
+      }
+    }
+    showValidationMessages(new ArrayList<String>(node.getValidationMessages()));
+  }
 
   protected void showValidationMessages() {
+    showValidationMessages(workspace.getValidationMessages());
+  }
+  protected void showValidationMessages(List<String> messages) {
 
     StringBuffer validationErrors = new StringBuffer(
         ModelerMessagesHolder.getMessages().getString("model_contains_errors")); //$NON-NLS-1$
-    for (String msg : workspace.getValidationMessages()) {
+    for (String msg : messages) {
       validationErrors.append(msg);
       validationErrors.append("\n"); //$NON-NLS-1$
-      //logger.info(msg);
     }
     try {
       XulMessageBox msg = (XulMessageBox) document.createElement("messagebox"); //$NON-NLS-1$
@@ -684,6 +702,9 @@ public class ModelerController extends AbstractXulEventHandler {
   public void resolveMissingColumn() {
     if (dimTreeHelper.getSelectedTreeItem() instanceof ColumnBackedNode
         && ((AbstractMetaDataModelNode) dimTreeHelper.getSelectedTreeItem()).isValid() == false) {
+      changeColumn();
+    } else if (catTreeHelper.getSelectedTreeItem() instanceof ColumnBackedNode
+        && ((AbstractMetaDataModelNode) catTreeHelper.getSelectedTreeItem()).isValid() == false) {
       changeColumn();
     }
   }

@@ -20,6 +20,7 @@ import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.beans.PropertyChangeEvent;
@@ -28,12 +29,13 @@ import java.util.*;
 
 public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregationMetaDataNode> {
 
-  protected BaseAggregationMetaDataNode fieldMeta;
+//  protected BaseAggregationMetaDataNode fieldMeta;
   protected Vector aggTypes;
   private String colName;
   private String locale;
   protected AggregationType defaultAggregation;
   protected String format;
+  private XulButton messageBtn;
 
   public MeasuresPropertiesForm(String panelId, String locale) {
     super(panelId);
@@ -44,13 +46,13 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
     public void propertyChange( PropertyChangeEvent evt ) {
       if (evt.getPropertyName().equals("logicalColumn")) {
-        setColumnName(fieldMeta.getLogicalColumn());
+        setColumnName(getNode().getLogicalColumn());
       } else if (evt.getPropertyName().equals("possibleAggregations")) {
-        setPossibleAggregations(new Vector(fieldMeta.getPossibleAggregations()));
+        setPossibleAggregations(new Vector(getNode().getPossibleAggregations()));
       } else if (evt.getPropertyName().equals("defaultAggregation")) {
-        setDefaultAggregation(fieldMeta.getDefaultAggregation());
+        setDefaultAggregation(getNode().getDefaultAggregation());
       } else if (evt.getPropertyName().equals("format")) {
-        setFormat(fieldMeta.getFormat());
+        setFormat(getNode().getFormat());
       }
     }
   };
@@ -75,7 +77,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     super.init();
 
     bf.createBinding(this, "notValid", "messages2", "visible");
-    bf.createBinding(this, "validMessages", "messages2label", "value");
+    bf.createBinding(this, "validMessages", "messages2label", "value", validMsgTruncatedBinding);
     bf.createBinding(this, "displayName", "displayname", "value");
     bf.createBinding(this, "possibleAggregations", "defaultAggregation", "elements");
     bf.createBinding(this, "defaultAggregation", "defaultAggregation", "selectedItem");
@@ -83,20 +85,22 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     bf.createBinding(this, "format", "formatstring", "selectedItem", new FormatStringConverter());
     bf.createBinding(this, "backingColumnAvailable", "fixMeasuresColumnsBtn", "!visible");
     bf.createBinding(this, "columnName", "measure_column_name", "value");
+    messageBtn = (XulButton) document.getElementById("measure_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
 
   }
 
   private void showValidations() {
-    setNotValid(!fieldMeta.isValid());
-    setBackingColumnAvailable(fieldMeta.getLogicalColumn()!=null);
-    setValidMessages(fieldMeta.getValidationMessagesString());
+    setNotValid(!getNode().isValid());
+    setBackingColumnAvailable(getNode().getLogicalColumn()!=null);
+    setValidMessages(getNode().getValidationMessagesString());
   }
 
   public void setObject( BaseAggregationMetaDataNode t ) {
-    if (fieldMeta != null) {
-      fieldMeta.removePropertyChangeListener(validListener);
-      fieldMeta.removePropertyChangeListener(propListener);
-      fieldMeta = null;
+    if (getNode() != null) {
+      getNode().removePropertyChangeListener(validListener);
+      getNode().removePropertyChangeListener(propListener);
+      setNode(null);
     }
     if (t == null) {
       return;
@@ -114,7 +118,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     setValidMessages(t.getValidationMessagesString());
     setColumnName(t.getLogicalColumn());
     this.setDefaultAggregation(t.getDefaultAggregation());
-    this.fieldMeta = t;
+    setNode(t);
     showValidations();
   }
 
@@ -134,8 +138,8 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
   @Bindable
   public boolean isNotValid() {
-    if (fieldMeta != null) {
-      return !fieldMeta.isValid();
+    if (getNode() != null) {
+      return !getNode().isValid();
     } else {
       return false;
     }
@@ -148,8 +152,8 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
   @Bindable
   public boolean isBackingColumnAvailable() {
-    if (fieldMeta != null) {
-      return fieldMeta.getLogicalColumn() != null;
+    if (getNode() != null) {
+      return getNode().getLogicalColumn() != null;
     } else {
       return false;
     }
@@ -160,20 +164,6 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     this.firePropertyChange("backingColumnAvailable", null, available);
   }
 
-  @Bindable
-  public void setValidMessages( String validMessages ) {
-    this.firePropertyChange("validMessages", null, validMessages);
-  }
-
-  @Bindable
-  public String getValidMessages() {
-    if (fieldMeta != null) {
-      return fieldMeta.getValidationMessagesString();
-    } else {
-      return null;
-    }
-  }
-
   @Override
   public String getName() {
     return "propertiesForm";
@@ -181,16 +171,16 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
   @Bindable
   public String getDisplayName() {
-    if (fieldMeta == null) {
+    if (getNode() == null) {
       return null;
     }
-    return fieldMeta.getName();
+    return getNode().getName();
   }
 
   @Bindable
   public void setDisplayName( String displayName ) {
-    if (fieldMeta != null) {
-      fieldMeta.setName(displayName);
+    if (getNode() != null) {
+      getNode().setName(displayName);
     }
     this.firePropertyChange("displayName", null, displayName);
 
@@ -205,8 +195,8 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   public void setFormat( String format ) {
     String previousFormat = this.format;
     this.format = format;
-    if (fieldMeta != null) {
-      fieldMeta.setFormat(format);
+    if (getNode() != null) {
+      getNode().setFormat(format);
     }
     this.firePropertyChange("format", previousFormat, format);
   }
@@ -233,8 +223,8 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   public void setDefaultAggregation(AggregationType defaultAggregation) {
     AggregationType previousAggregation = this.defaultAggregation;
     this.defaultAggregation = defaultAggregation;
-    if (fieldMeta != null) {
-      fieldMeta.setDefaultAggregation(defaultAggregation);
+    if (getNode() != null) {
+      getNode().setDefaultAggregation(defaultAggregation);
     }
     this.firePropertyChange("defaultAggregation", previousAggregation, defaultAggregation);
   }
@@ -262,5 +252,13 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
       }
     }
 
+  }
+  @Override
+  public String getValidMessages()  {
+    if (getNode() != null) {
+      return getNode().getValidationMessagesString();
+    } else {
+      return null;
+    }
   }
 }

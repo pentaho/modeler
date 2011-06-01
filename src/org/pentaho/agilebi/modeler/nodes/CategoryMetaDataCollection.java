@@ -134,7 +134,7 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
       }
     }
     if (this.suppressEvents == false) {
-      this.firePropertyChange("valid", prevValid, valid);
+      this.firePropertyChange("valid", null, valid);
     }
   }
 

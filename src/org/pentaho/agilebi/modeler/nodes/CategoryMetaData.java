@@ -91,7 +91,7 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
       }
     }
     if (this.suppressEvents == false) {
-      this.firePropertyChange("valid", prevValid, valid);
+      this.firePropertyChange("valid", null, valid);
     }
   }
 

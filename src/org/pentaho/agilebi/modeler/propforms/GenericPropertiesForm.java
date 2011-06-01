@@ -17,6 +17,7 @@
 package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -29,7 +30,8 @@ public class GenericPropertiesForm extends AbstractModelerNodeForm<AbstractMetaD
   private XulTextbox name;
   private XulVbox messageBox;
   private XulLabel messageLabel;
-  private AbstractMetaDataModelNode node;
+  private XulButton messageBtn;
+
   private PropertyChangeListener validListener = new PropertyChangeListener(){
     public void propertyChange(PropertyChangeEvent evt) {
       if(!evt.getPropertyName().equals("valid")){
@@ -49,14 +51,14 @@ public class GenericPropertiesForm extends AbstractModelerNodeForm<AbstractMetaD
   }
   
   public void setObject(AbstractMetaDataModelNode node) {
-    if(this.node != null){
-      this.node.removePropertyChangeListener(validListener);
+    if(getNode() != null){
+      getNode().removePropertyChangeListener(validListener);
     }
-    this.node = node;
+    setNode(node);
     if(node == null){
       return;
     }
-    this.node.addPropertyChangeListener(validListener);
+    getNode().addPropertyChangeListener(validListener);
     showValidations();
   }
   
@@ -64,16 +66,26 @@ public class GenericPropertiesForm extends AbstractModelerNodeForm<AbstractMetaD
     if(node == null){
       return;
     }
-    messageLabel.setValue(node.getValidationMessagesString());
     messageBox.setVisible(node.getValidationMessages().size() > 0);
+    setValidMessages(getNode().getValidationMessagesString());
   }
 
   public void init() {
     super.init();
     messageBox = (XulVbox) document.getElementById("generic_message");
     messageLabel = (XulLabel) document.getElementById("generic_message_label");
-    
+    bf.createBinding(this, "validMessages", messageLabel, "value", validMsgTruncatedBinding);
+    messageBtn = (XulButton) document.getElementById("generic_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
   }
   
+  @Override
+  public String getValidMessages()  {
+    if (getNode() != null) {
+      return getNode().getValidationMessagesString();
+    } else {
+      return null;
+    }
+  }
 }
 

@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -18,9 +19,9 @@ import java.beans.PropertyChangeListener;
 public class RelationalModelNodePropertiesForm extends AbstractModelerNodeForm<RelationalModelNode> {
 
   private XulTextbox name;
-  private RelationalModelNode relationalModel;
   private XulVbox messageBox;
   private XulLabel messageLabel;
+  private XulButton messageBtn;
 
   public RelationalModelNodePropertiesForm() {
     super("relationalmodelprops");
@@ -37,29 +38,29 @@ public class RelationalModelNodePropertiesForm extends AbstractModelerNodeForm<R
   };
 
   public void setObject(RelationalModelNode relationalModelNode) {
-    if (this.relationalModel == relationalModelNode) {
+    if (getNode() == relationalModelNode) {
       return;
     }
-    if (this.relationalModel != null) {
-      this.relationalModel.removePropertyChangeListener(propListener);
+    if (getNode() != null) {
+      getNode().removePropertyChangeListener(propListener);
     }
-    this.relationalModel = relationalModelNode;
-    if (relationalModel == null) {
+    setNode(relationalModelNode);
+    if (getNode() == null) {
       return;
     }
     ;
-    name.setValue(relationalModel.getName());
+    name.setValue(getNode().getName());
     bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(relationalModel, "name", name, "value");
+    bf.createBinding(getNode(), "name", name, "value");
 
     showValidations();
-    relationalModel.addPropertyChangeListener(propListener);
+    getNode().addPropertyChangeListener(propListener);
   }
 
   private void showValidations() {
-    if (relationalModel != null) {
-      messageLabel.setValue(relationalModel.getValidationMessagesString());
-      messageBox.setVisible(relationalModel.getValidationMessages().size() > 0);
+    if (getNode() != null) {
+      messageBox.setVisible(getNode().getValidationMessages().size() > 0);
+      setValidMessages(getNode().getValidationMessagesString());
     }
   }
 
@@ -71,22 +72,34 @@ public class RelationalModelNodePropertiesForm extends AbstractModelerNodeForm<R
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(this, "name", name, "value");
+    bf.createBinding(this, "validMessages", messageLabel, "value", validMsgTruncatedBinding);
+    messageBtn = (XulButton) document.getElementById("relational_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
+
   }
 
   @Bindable
   public void setName( String name ) {
-    if (relationalModel != null) {
-      relationalModel.setName(name);
+    if (getNode() != null) {
+      getNode().setName(name);
     }
     this.name.setValue(name);
   }
 
   @Bindable
   public String getName() {
-    if (relationalModel == null) {
+    if (getNode() == null) {
       return null;
     }
-    return relationalModel.getName();
+    return getNode().getName();
   }
 
+  @Override
+  public String getValidMessages()  {
+    if (getNode() != null) {
+      return getNode().getValidationMessagesString();
+    } else {
+      return null;
+    }
+  }
 }

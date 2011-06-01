@@ -128,7 +128,7 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
       }
     }
     if (this.suppressEvents == false) {
-      this.firePropertyChange("valid", prevValid, valid);
+      this.firePropertyChange("valid", null, valid);
     }
   }
 

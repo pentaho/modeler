@@ -25,8 +25,8 @@ import org.pentaho.ui.xul.util.AbstractModelNode;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T> implements
                                                                                                                   Serializable, IDropTarget {
@@ -34,7 +34,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   private static final long serialVersionUID = 1547202580713108254L;
 
   protected boolean valid = true;
-  protected transient List<String> validationMessages = new ArrayList<String>();
+  protected transient Set<String> validationMessages = new HashSet<String>();
   protected String image;
   protected boolean suppressEvents;
   protected boolean expanded;
@@ -78,18 +78,22 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     validateNode();
   }
 
+  @Bindable
   public String getValidationMessagesString() {
-    String str = ""; //$NON-NLS-1$
-    for (int i = 0; i < validationMessages.size(); i++) {
+    StringBuilder str = new StringBuilder(); //$NON-NLS-1$
+    int i = 0;
+    for (String msg : validationMessages) {
       if (i > 0) {
-        str += ", "; //$NON-NLS-1$
+        str.append(", "); //$NON-NLS-1$
       }
-      str += validationMessages.get(i);
+      str.append(msg);
+      i++;
     }
-    return str;
+    return str.toString();
   }
 
-  public List<String> getValidationMessages() {
+  @Bindable
+  public Set<String> getValidationMessages() {
     return validationMessages;
   }
 

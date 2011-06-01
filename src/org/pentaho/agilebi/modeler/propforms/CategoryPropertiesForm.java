@@ -1,6 +1,7 @@
 package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -18,7 +19,6 @@ public class CategoryPropertiesForm extends AbstractModelerNodeForm<CategoryMeta
 
   private static final String ID = "categoryprops";
 
-  private CategoryMetaData cat;
   private XulVbox messageBox;
   private XulLabel messageLabel;
   private XulTextbox name;
@@ -32,6 +32,7 @@ public class CategoryPropertiesForm extends AbstractModelerNodeForm<CategoryMeta
       showValidations();
     }
   };
+  private XulButton messageBtn;
 
 
   public CategoryPropertiesForm() {
@@ -39,15 +40,15 @@ public class CategoryPropertiesForm extends AbstractModelerNodeForm<CategoryMeta
   }
 
   public void setObject(CategoryMetaData categoryMetaData) {
-    if (this.cat != null) {
-      this.cat.removePropertyChangeListener(propListener);
+    if (getNode() != null) {
+      getNode().removePropertyChangeListener(propListener);
     }
-    this.cat = categoryMetaData;
-    if (cat == null) {
+    setNode(categoryMetaData);
+    if (getNode() == null) {
       return;
     }
-    cat.addPropertyChangeListener(propListener);
-    name.setValue(cat.getName());
+    getNode().addPropertyChangeListener(propListener);
+    name.setValue(getNode().getName());
     showValidations();
   }
 
@@ -58,32 +59,44 @@ public class CategoryPropertiesForm extends AbstractModelerNodeForm<CategoryMeta
     messageBox = (XulVbox) document.getElementById("category_message");
     messageLabel = (XulLabel) document.getElementById("category_message_label");
     bf.createBinding(this, "name", name, "value");
+    bf.createBinding(this, "validMessages", messageLabel, "value", validMsgTruncatedBinding);
+    messageBtn = (XulButton) document.getElementById("category_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
+
   }
 
   @Bindable
   private void showValidations() {
-    if (cat == null) {
+    if (getNode() == null) {
       return;
     }
-    messageLabel.setValue(cat.getValidationMessagesString());
-    messageBox.setVisible(cat.getValidationMessages().size() > 0);
+    messageBox.setVisible(getNode().getValidationMessages().size() > 0);
+    setValidMessages(getNode().getValidationMessagesString());
+
   }
 
   @Bindable
   public void setName( String name ) {
-    if (cat != null) {
-      cat.setName(name);
+    if (getNode() != null) {
+      getNode().setName(name);
     }
     this.name.setValue(name);
   }
 
   @Bindable
   public String getName() {
-    if (cat == null) {
+    if (getNode() == null) {
       return null;
     }
-    return cat.getName();
+    return getNode().getName();
   }
 
-
+  @Override
+  public String getValidMessages()  {
+    if (getNode() != null) {
+      return getNode().getValidationMessagesString();
+    } else {
+      return null;
+    }
+  }
 }

@@ -10,6 +10,7 @@
       <columns>
         <column/>
         <column flex="1"/>
+
       </columns>
       <rows>
         <row flex="1">
@@ -21,10 +22,12 @@
      </rows>
     </grid>
       <hbox flex="1">
-      <spacer flex="1"/>
+        <spacer flex="1"/>
         <button id="fixMeasuresColumnsBtn" label="${missing_column}"
           onclick="modeler.resolveMissingColumn()" visible="true" />
-      <spacer flex="1"/>
+        <spacer flex="1"/>
+        <button id="measure_message_btn" label="${more}"
+          onclick="modeler.showValidationMessagesDialog()" visible="false" />
       </hbox>
     </vbox>
     <groupbox>
