@@ -111,15 +111,16 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
     setDisplayName(t.getName());
     setFormat(t.getFormat());
+
+    AggregationType aggType = t.getDefaultAggregation();
     if (t.getPossibleAggregations() != null) {
       setPossibleAggregations(new Vector(t.getPossibleAggregations()));
     }
-    setDefaultAggregation(t.getDefaultAggregation());
     setValidMessages(t.getValidationMessagesString());
     setColumnName(t.getLogicalColumn());
-    this.setDefaultAggregation(t.getDefaultAggregation());
     setNode(t);
     showValidations();
+    setDefaultAggregation(aggType);
   }
 
   @Bindable
@@ -210,8 +211,9 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
   @Bindable
   public void setPossibleAggregations( Vector aggTypes ) {
+    Vector previous = this.aggTypes;
     this.aggTypes = aggTypes;
-    this.firePropertyChange("possibleAggregations", null, aggTypes);
+    this.firePropertyChange("possibleAggregations", previous, aggTypes);
   }
 
   @Bindable
@@ -223,10 +225,10 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   public void setDefaultAggregation(AggregationType defaultAggregation) {
     AggregationType previousAggregation = this.defaultAggregation;
     this.defaultAggregation = defaultAggregation;
+    this.firePropertyChange("defaultAggregation", null, defaultAggregation);
     if (getNode() != null) {
       getNode().setDefaultAggregation(defaultAggregation);
     }
-    this.firePropertyChange("defaultAggregation", previousAggregation, defaultAggregation);
   }
 
   /**
