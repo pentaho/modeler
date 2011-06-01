@@ -231,10 +231,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   @Bindable
   public List<String> getValidationMessages() {
-    List<String> modelMsg = model.getValidationMessages();
-    List<String> relModelMsg = relationalModel.getValidationMessages();
+    Set<String> modelMsg = model.getValidationMessages();
+    Set<String> relModelMsg = relationalModel.getValidationMessages();
     modelMsg.addAll(relModelMsg);
-    return modelMsg;
+    return new ArrayList<String>(modelMsg);
   }
 
   @Bindable

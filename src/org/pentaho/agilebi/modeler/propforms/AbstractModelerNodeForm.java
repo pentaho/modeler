@@ -16,10 +16,12 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler implements ModelerNodePropertiesForm<T>{
 
@@ -27,7 +29,11 @@ public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler
   protected XulDeck deck;
   protected XulVbox panel;
   private String id;
-  
+  protected T node;
+
+  protected static BindingConvertor<String, String> validMsgTruncatedBinding = BindingConvertor.truncatedString(45);
+  protected static BindingConvertor<String, Boolean> showMsgBinding = new ShowMessagesBindingConvertor(45);
+
   public AbstractModelerNodeForm(String panelId){
     this.id = panelId;
   }
@@ -45,5 +51,37 @@ public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler
     deck = (XulDeck) document.getElementById("propertiesdeck");
     panel = (XulVbox) document.getElementById(id);
   }
-  
+
+  @Bindable
+  public T getNode() {
+    return node;
+  }
+
+  @Bindable
+  public void setNode(T node) {
+    this.node = node;
+  }
+
+  @Bindable
+  public void setValidMessages( String validMessages ) {
+    this.firePropertyChange("validMessages", null, validMessages);
+  }
+
+  @Bindable
+  public abstract String getValidMessages();
+
+  private static class ShowMessagesBindingConvertor extends BindingConvertor<String, Boolean> {
+    int length = 100;
+    public ShowMessagesBindingConvertor(int length) {
+      this.length = length;
+    }
+    public Boolean sourceToTarget(String value) {
+      return value.length() > length;
+    }
+
+    public String targetToSource(Boolean value) {
+      return "";
+    }
+  }
+
 }

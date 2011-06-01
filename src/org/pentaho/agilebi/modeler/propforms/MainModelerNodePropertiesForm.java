@@ -18,6 +18,7 @@ package org.pentaho.agilebi.modeler.propforms;
 
 import org.pentaho.agilebi.modeler.nodes.MainModelNode;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
@@ -33,7 +34,6 @@ import java.io.Serializable;
 public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainModelNode> implements Serializable {
 
   private XulTextbox name;
-  private MainModelNode dim;
   private XulVbox messageBox;
   private XulLabel messageLabel;
 
@@ -46,6 +46,7 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
       showValidations();
     }
   };
+  private XulButton messageBtn;
 
 
   public MainModelerNodePropertiesForm() {
@@ -53,13 +54,13 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
   }
 
   public void setObject( MainModelNode dim ) {
-    if (this.dim == dim) {
+    if (this.getNode() == dim) {
       return;
     }
-    if (this.dim != null) {
-      this.dim.removePropertyChangeListener(propListener);
+    if (getNode() != null) {
+      getNode().removePropertyChangeListener(propListener);
     }
-    this.dim = dim;
+    setNode(dim);
     if (dim == null) {
       return;
     }
@@ -74,9 +75,9 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
   }
 
   private void showValidations() {
-    if (dim != null) {
-      messageLabel.setValue(dim.getValidationMessagesString());
-      messageBox.setVisible(dim.getValidationMessages().size() > 0);
+    if (getNode() != null) {
+      messageBox.setVisible(getNode().getValidationMessages().size() > 0);
+      setValidMessages(getNode().getValidationMessagesString());
     }
   }
 
@@ -87,24 +88,34 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
     messageLabel = (XulLabel) document.getElementById("mainnode_message_label");
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bf.createBinding(this, "name", name, "value");
-
+    bf.createBinding(this, "validMessages", messageLabel, "value", validMsgTruncatedBinding);
+    messageBtn = (XulButton) document.getElementById("mainnode_message_btn");
+    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
   }
 
   @Bindable
   public void setName( String name ) {
-    if (dim != null) {
-      dim.setName(name);
+    if (getNode() != null) {
+      getNode().setName(name);
     }
     this.name.setValue(name);
   }
 
   @Bindable
   public String getName() {
-    if (dim == null) {
+    if (getNode() == null) {
       return null;
     }
-    return dim.getName();
+    return getNode().getName();
   }
 
+  @Override
+  public String getValidMessages()  {
+    if (getNode() != null) {
+      return getNode().getValidationMessagesString();
+    } else {
+      return null;
+    }
+  }
 
 }
