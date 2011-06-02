@@ -147,7 +147,7 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
       }
 
       // if we are given an aggtype, use that rather than the default
-      if (logicalColumn.getAggregationType() != null) {
+      if (logicalColumn.getAggregationType() != null && logicalColumn.getAggregationType() != AggregationType.NONE) {
         setDefaultAggregation(logicalColumn.getAggregationType());
       }
 
