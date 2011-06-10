@@ -830,6 +830,8 @@ public class ModelerController extends AbstractXulEventHandler {
 
   public void resetPropertyForm(){
     this.propDeck.setSelectedIndex(0);
+    dimTreeHelper.setSelectedTreeItem(null);
+    catTreeHelper.setSelectedTreeItem(null);
   }
 
   @Bindable
