@@ -19,6 +19,7 @@ package org.pentaho.agilebi.modeler.nodes;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
@@ -68,4 +69,15 @@ public class MeasureMetaData extends BaseAggregationMetaDataNode {
       valid = false;
     }
   }
+
+  @Override
+  @Bindable
+  public void setDefaultAggregation( AggregationType aggType ) {
+    // Agg type of NONE is invalid for olap nodes, if that is the value we get, ignore it
+    if (aggType != AggregationType.NONE) {
+      super.setDefaultAggregation(aggType);
+    }
+  }
+
+
 }
