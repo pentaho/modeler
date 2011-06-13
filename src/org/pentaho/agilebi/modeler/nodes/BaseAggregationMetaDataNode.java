@@ -147,10 +147,7 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
       }
 
       // if we are given an aggtype, use that rather than the default
-      // Agg type of NONE is invalid for olap nodes, if that is the value we get, ignore it
-      if (logicalColumn.getAggregationType() != null &&
-          (!logicalColumn.getId().endsWith("_OLAP") ||
-          (logicalColumn.getId().endsWith("_OLAP") && logicalColumn.getAggregationType() != AggregationType.NONE))) {
+      if (logicalColumn.getAggregationType() != null) {
         setDefaultAggregation(logicalColumn.getAggregationType());
       }
 
