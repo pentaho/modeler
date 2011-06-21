@@ -737,7 +737,15 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           if (!theMeasure.getLogicalColumn().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
             needsUpConverted = true;
           }
-          theMeasureMD.setLogicalColumn(theMeasure.getLogicalColumn());
+
+          // BISERVER-6077 - Mondrian exporter uses logical column names as measure names, make sure they get set properly
+          LogicalColumn lCol = theMeasure.getLogicalColumn();
+          Set<String> locales = lCol.getName().getLocales();
+          String[] stringLocals = locales.toArray(new String[]{});
+          if (stringLocals != null && stringLocals.length > 0)
+          lCol.setName(new LocalizedString(stringLocals[0], theMeasure.getName()));
+
+          theMeasureMD.setLogicalColumn(lCol);
           this.model.getMeasures().add(theMeasureMD);
         }
       }
@@ -952,6 +960,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (perspective == ModelerPerspective.ANALYSIS) {
       // try to find the existing OLAP logical column, since we keep them around
       lCol = findLogicalColumn(field.getPhysicalColumn(), perspective);
+      if (lCol != null) {
+        lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
+      }
     }
 
     if (lCol == null) {
