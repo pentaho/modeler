@@ -409,7 +409,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
   public LogicalTable findLogicalTable(IPhysicalTable table, ModelerPerspective perspective) {
     for (LogicalTable logicalTable : domain.getLogicalModels().get(0).getLogicalTables()) {
-      if (logicalTable.getPhysicalTable().equals(table) || logicalTable.getId().equals(table.getId())) {
+      if (logicalTable.getPhysicalTable().equals(table)
+          || logicalTable.getPhysicalTable().getId().equals(table.getId())
+          || logicalTable.getId().equals(table.getId())) {
         boolean isOlapTable = logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX);
         if (perspective == ModelerPerspective.ANALYSIS && isOlapTable) {
           return logicalTable;
