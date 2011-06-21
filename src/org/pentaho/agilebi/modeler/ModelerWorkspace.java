@@ -745,7 +745,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           Set<String> locales = lCol.getName().getLocales();
           String[] stringLocals = locales.toArray(new String[]{});
           if (stringLocals != null && stringLocals.length > 0)
-          lCol.setName(new LocalizedString(stringLocals[0], theMeasure.getName()));
+            lCol.setName(new LocalizedString(stringLocals[0], theMeasure.getName()));
 
           theMeasureMD.setLogicalColumn(lCol);
           this.model.getMeasures().add(theMeasureMD);
@@ -958,14 +958,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     ColumnBackedNode node = new BaseColumnBackedMetaData(field.getName());
     LogicalTable lTab = findLogicalTable(field.getPhysicalColumn().getPhysicalTable(), perspective);
     LogicalColumn lCol = null;
-
-    if (perspective == ModelerPerspective.ANALYSIS) {
-      // try to find the existing OLAP logical column, since we keep them around
-      lCol = findLogicalColumn(field.getPhysicalColumn(), perspective);
-      if (lCol != null) {
-        lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
-      }
-    }
 
     if (lCol == null) {
       lCol = new LogicalColumn();
