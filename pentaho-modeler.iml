@@ -35,7 +35,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="pentaho-xul-swt" />
-    <orderEntry type="module" module-name="pentaho-xul-gwt" />
+    <orderEntry type="module" module-name="pentaho-xul-gwt TRUNK" />
     <orderEntry type="module" module-name="pentaho-xul-core" />
     <orderEntry type="module" module-name="Kettle trunk" />
     <orderEntry type="module-library">

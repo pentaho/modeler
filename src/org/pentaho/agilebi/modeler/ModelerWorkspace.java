@@ -471,12 +471,13 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for (IPhysicalTable table : newDomain.getPhysicalModels().get(0).getPhysicalTables()) {
       // see if the table is in the availableTables list
       AvailableTable aTable = availableTables.findAvailableTable(table.getName(LocalizedString.DEFAULT_LOCALE));
+      boolean isFact = table.getProperty("FACT_TABLE") != null ? (Boolean) table.getProperty("FACT_TABLE") : false;
       if (aTable == null) {
         // new table, make sure we add it
-        boolean isFact = table.getProperty("FACT_TABLE") != null ? (Boolean) table.getProperty("FACT_TABLE") : false;
         availableTables.add(new AvailableTable(table, isFact));
       } else {
         // table already exists here, make sure all the fields are accounted for
+        aTable.setFactTable(isFact);
         for(IPhysicalColumn column : table.getPhysicalColumns()) {
           boolean exists = false;
           inner:
