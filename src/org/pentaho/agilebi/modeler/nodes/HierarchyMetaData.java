@@ -202,6 +202,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
         level.setName(measure.getName());
       } else if(data instanceof LevelMetaData){
         level = (LevelMetaData) data;
+        level.setParent(this);
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }

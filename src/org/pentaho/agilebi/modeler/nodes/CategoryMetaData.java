@@ -138,6 +138,7 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
         AvailableField field = (AvailableField) data;
         return getWorkspace().createFieldForParentWithNode(this, field);
       } else if(data instanceof FieldMetaData){
+        ((FieldMetaData) data).setParent(this);
         return data;
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));

@@ -168,6 +168,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         return firstField;
       } else if(data instanceof MeasureMetaData){
         measure = (MeasureMetaData) data;
+        measure.setParent(this);
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }
