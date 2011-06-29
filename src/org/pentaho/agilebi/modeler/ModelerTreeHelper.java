@@ -207,7 +207,6 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
 
   public void onModelDrop(DropEvent event) throws ModelerException{
     boolean prevChangeState = isModelChanging();
-    setModelIsChanging(true);
     try{
       IDropTarget dropNode = (IDropTarget) event.getDropParent();
       Object newData = null;
@@ -221,8 +220,6 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
       }
     } catch(ModelerException e){
       throw e;
-    } finally {
-      setModelIsChanging(false);
     }
   }
 
