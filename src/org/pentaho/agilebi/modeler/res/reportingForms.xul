@@ -35,6 +35,12 @@
       <caption label="${details}"/>
       <label value="${model_name}:" />
       <textbox id="relational_name" />
+      <label value="${source}:" />
+      <label id="relational_source_name" value="some source" />
+      <hbox>
+        <button id="relational_datasource_button" label="Select" onclick="modeler.editDataSource()" tooltiptext="${select_edit_ds}"/>
+        <spacer flex="1"/>
+      </hbox>
     </groupbox>
 
   </vbox>

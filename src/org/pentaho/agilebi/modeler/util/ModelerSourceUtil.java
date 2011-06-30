@@ -83,6 +83,7 @@ public class ModelerSourceUtil {
 
 	    LogicalModel businessModel = domain.getLogicalModels().get(0); // schemaMeta.getActiveModel();
 	    businessModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
+      businessModel.setProperty("DUAL_MODELING_SCHEMA", ""+dualModelingMode);
 
 	    // TODO do this with messages
 	    businessModel.setName(new LocalizedString(locale, tableName));

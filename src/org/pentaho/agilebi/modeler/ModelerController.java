@@ -47,6 +47,7 @@ public class ModelerController extends AbstractXulEventHandler {
   protected static final String FIELD_LIST_ID = "fieldList"; //$NON-NLS-1$
 
   protected static final String SOURCE_NAME_LABEL_ID = "source_name"; //$NON-NLS-1$
+  protected static final String RELATIONAL_NAME_LABEL_ID = "relational_source_name";
 
 //  private static Logger logger = LoggerFactory.getLogger(ModelerController.class);
 

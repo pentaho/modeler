@@ -183,6 +183,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   @Bindable
   public void setSourceName( String sourceName ) {
     this.sourceName = sourceName;
+    this.firePropertyChange("sourceName", null, sourceName); //$NON-NLS-1$
   }
 
   @Bindable
@@ -675,7 +676,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setRelationalModelName(lModel.getName(workspaceHelper.getLocale()));
 
     // Set the type of modeling session. This will propigate to the UI
-    if(domain.getLogicalModels().get(0).getProperty("MondrianCatalogRef") != null){
+    if("true".equals(lModel.getProperty("DUAL_MODELING_SCHEMA")) || lModel.getProperty("MondrianCatalogRef") != null){
       this.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
     } else {
       this.setModellingMode(ModelerMode.REPORTING_ONLY);
