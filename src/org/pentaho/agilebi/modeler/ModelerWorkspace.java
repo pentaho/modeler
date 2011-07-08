@@ -446,13 +446,22 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     Domain newDomain = source.generateDomain(mode == ModelerMode.ANALYSIS_AND_REPORTING);
     refresh(newDomain);
   }
+
+  public boolean supportsOlap(Domain d){
+    if(d.getLogicalModels().size() == 0){
+      return false;
+    }
+    LogicalModel lModel = d.getLogicalModels().get(0);
+    return "true".equals(lModel.getProperty("DUAL_MODELING_SCHEMA")) || lModel.getProperty("MondrianCatalogRef") != null;
+  }
+
   public void refresh(Domain newDomain) throws ModelerException {
 
     setModelIsChanging(true);
     setRelationalModelIsChanging(true);
 
     // Set the type of modeling session. This will propigate to the UI
-    if(newDomain.getLogicalModels().get(0).getProperty("MondrianCatalogRef") != null){
+    if(supportsOlap(newDomain)){
       this.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
     } else {
       this.setModellingMode(ModelerMode.REPORTING_ONLY);
@@ -676,7 +685,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setRelationalModelName(lModel.getName(workspaceHelper.getLocale()));
 
     // Set the type of modeling session. This will propigate to the UI
-    if("true".equals(lModel.getProperty("DUAL_MODELING_SCHEMA")) || lModel.getProperty("MondrianCatalogRef") != null){
+    if(supportsOlap(domain)){
       this.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
     } else {
       this.setModellingMode(ModelerMode.REPORTING_ONLY);

@@ -23,9 +23,6 @@
       <toolbarbutton image="images/publish.png" id="publishButton" onclick="modeler.publish()" tooltiptext="${publish}"/>
       
     </toolbar>
-
-    <hbox id="debugContainer" padding="0" spacing="0" />
-
     <hbox flex="1">
 
       <editpanel width="250">
