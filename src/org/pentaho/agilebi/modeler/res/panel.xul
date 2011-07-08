@@ -36,7 +36,7 @@
             <label value="${available}:" />
           </toolbaritem>
           <toolbarspacer flex="1"/>
-          <toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/refresh.png" />
+          <toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/refresh.png" tooltiptext="${refresh_table_metadata}"/>
           <toolbarbutton id="autoPopulateButton" image="images/autogen_model.png" onclick="modeler.showAutopopulatePrompt()" tooltiptext="${autopopulate_model}"/>
           <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()" tooltiptext="${add}"/>
         </toolbar>
