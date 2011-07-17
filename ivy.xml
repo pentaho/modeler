@@ -28,12 +28,9 @@
                 changing="true"/>
 
 
-    <!-- about to move these projects -->
-
-    <dependency org="pentaho.kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho.kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
-
-		<dependency org="pentaho.kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default" changing="true" />
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default" changing="true" />
 
 
 
