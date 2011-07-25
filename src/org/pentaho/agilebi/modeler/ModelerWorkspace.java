@@ -973,7 +973,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (lCol == null) {
       lCol = new LogicalColumn();
       lCol.setLogicalTable(lTab);
-      lCol.setParentConcept(lTab);
+//      lCol.setParentConcept(lTab);
       lCol.setPhysicalColumn(field.getPhysicalColumn());
       lCol.setDataType(field.getPhysicalColumn().getDataType());
       lCol.setAggregationList(field.getPhysicalColumn().getAggregationList());
