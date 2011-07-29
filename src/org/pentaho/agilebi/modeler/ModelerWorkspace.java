@@ -976,8 +976,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 //      lCol.setParentConcept(lTab);
       lCol.setPhysicalColumn(field.getPhysicalColumn());
       lCol.setDataType(field.getPhysicalColumn().getDataType());
-      lCol.setAggregationList(field.getPhysicalColumn().getAggregationList());
-      lCol.setAggregationType(field.getPhysicalColumn().getAggregationType());
+      if(field.getPhysicalColumn().getAggregationList() != null){
+        lCol.setAggregationList(field.getPhysicalColumn().getAggregationList());
+      }
+      if(field.getPhysicalColumn().getAggregationType() != null){
+        lCol.setAggregationType(field.getPhysicalColumn().getAggregationType());
+      }
       lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
 
       String colId = "LC_" + lTab.getName(locale) + "_" + field.getName();
