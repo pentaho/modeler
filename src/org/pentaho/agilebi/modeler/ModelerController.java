@@ -164,13 +164,13 @@ public class ModelerController extends AbstractXulEventHandler {
   public void init() throws ModelerException {
 
     bf.setDocument(document);
+    propDeck = (XulDeck) document.getElementById("propertiesdeck"); //$NON-NLS-1$
 
     dimTreeHelper = new DimensionTreeHelper(propertiesForms, propDeck, workspace, document);
     catTreeHelper = new CategoryTreeHelper(propertiesForms, propDeck, workspace, document);
 
     dimensionTree = (XulTree) document.getElementById("dimensionTree"); //$NON-NLS-1$
     categoriesTree = (XulTree) document.getElementById("categoriesTree"); //$NON-NLS-1$
-    propDeck = (XulDeck) document.getElementById("propertiesdeck"); //$NON-NLS-1$
     modelDeck = (XulDeck) document.getElementById("modelDeck"); //$NON-NLS-1$
     reportingPanel = (XulVbox) document.getElementById("reportingModelPanel");
     reportingTabPanel = (XulTabpanel) document.getElementById("reportingTabPanel");
