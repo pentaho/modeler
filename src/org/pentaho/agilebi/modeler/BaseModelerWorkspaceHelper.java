@@ -225,9 +225,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     }
     
     if (ship.getFromTable().equals(dimTable)){
-      return ship.getToColumn();
-    } else {
       return ship.getFromColumn();
+    } else {
+      return ship.getToColumn();
     }
   }
 
