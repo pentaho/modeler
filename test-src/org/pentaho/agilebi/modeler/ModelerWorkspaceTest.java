@@ -135,7 +135,11 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     mondrianSchema = mondrianSchema.replaceAll("\r", "");
     mondrianXmlBeforeUpConvert = mondrianXmlBeforeUpConvert.replaceAll("\r", "");
 
-    assertTrue(StringUtils.deleteWhitespace(mondrianXmlBeforeUpConvert).equals(StringUtils.deleteWhitespace(mondrianSchema)));
+    String expected = StringUtils.deleteWhitespace(mondrianSchema);
+    String actual = StringUtils.deleteWhitespace(mondrianXmlBeforeUpConvert);
+
+//    assertTrue(StringUtils.deleteWhitespace(mondrianXmlBeforeUpConvert).equals(StringUtils.deleteWhitespace(mondrianSchema)));
+    assertEquals(actual, expected);
 
   }
 
