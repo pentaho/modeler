@@ -91,7 +91,7 @@ public class ModelerWorkspaceUtil {
     	aModel.setDomain(domain);
     	aModel.setFileName(fileName);
     	aModel.resolveConnectionFromDomain();
-    	aModel.refresh(ModelerMode.ANALYSIS_AND_REPORTING);
+//    	aModel.refresh(ModelerMode.ANALYSIS_AND_REPORTING);
         aModel.getWorkspaceHelper().populateDomain(aModel);
     	aModel.setDirty(false);
     } catch (Exception e){
