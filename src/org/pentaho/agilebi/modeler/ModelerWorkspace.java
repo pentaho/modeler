@@ -712,7 +712,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             LevelMetaData theLevelMD = new LevelMetaData(theHierarchyMD, theLevel.getName());
 
             theLevelMD.setParent(theHierarchyMD);
-            if (!theLevel.getReferenceColumn().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+
+            // Make sure we're dealing with the OLAP copy. Note that duplicated columns will have an OLAP_[0-9]+ at the end
+            String refID = theLevel.getReferenceColumn().getId();
+            if (!refID.endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !refID.contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_")) {
               needsUpConverted = true;
             }
             theLevelMD.setLogicalColumn(theLevel.getReferenceColumn());
@@ -984,7 +987,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       }
       lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
 
-      String colId = "LC_" + lTab.getName(locale) + "_" + field.getName();
+      String colId = "LC_" + lTab.getPhysicalTable().getProperty("target_table") + "_" + field.getPhysicalColumn().getId();
 
       if (perspective == ModelerPerspective.ANALYSIS) {
         colId += BaseModelerWorkspaceHelper.OLAP_SUFFIX;
