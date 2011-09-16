@@ -17,6 +17,7 @@
 
 package org.pentaho.agilebi.modeler;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
@@ -134,7 +135,7 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     mondrianSchema = mondrianSchema.replaceAll("\r", "");
     mondrianXmlBeforeUpConvert = mondrianXmlBeforeUpConvert.replaceAll("\r", "");
 
-    assertEquals(mondrianXmlBeforeUpConvert, mondrianSchema);
+    assertTrue(StringUtils.deleteWhitespace(mondrianXmlBeforeUpConvert).equals(StringUtils.deleteWhitespace(mondrianSchema)));
 
   }
 
