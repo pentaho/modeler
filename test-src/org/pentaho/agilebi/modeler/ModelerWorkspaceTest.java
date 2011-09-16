@@ -44,11 +44,10 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     XmiParser parser = new XmiParser();
     Domain d = parser.parseXmi(new FileInputStream("test-res/products.xmi"));
     LogicalModel model = d.getLogicalModels().get(0);
-    workspace.setDomain(d, false);
 
     assertEquals(1, model.getLogicalTables().size());
-
-    workspace.upConvertLegacyModel();
+    //Up-Convert happens in the setDomain now
+    workspace.setDomain(d, false);
 
     assertEquals(2, model.getLogicalTables().size());
 
