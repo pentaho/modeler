@@ -799,7 +799,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       this.getRelationalModel().getCategories().add(catMeta);
     }
 
-    if (needsUpConverted) upConvertMeasuresAndDimensions();
+    if (needsUpConverted) {
+      upConvertLegacyModel();
+      upConvertMeasuresAndDimensions();
+    }
 
     this.setModelIsChanging(false, true);
     this.setRelationalModelIsChanging(false, true);
@@ -986,7 +989,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         lCol.setAggregationType(field.getPhysicalColumn().getAggregationType());
       }
       lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
-
       String colId = "LC_" + lTab.getPhysicalTable().getProperty("target_table") + "_" + field.getPhysicalColumn().getId();
 
       if (perspective == ModelerPerspective.ANALYSIS) {
