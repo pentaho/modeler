@@ -19,6 +19,7 @@
 
   package org.pentaho.agilebi.modeler.util;
 
+  import org.apache.commons.lang.StringUtils;
   import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
   import org.pentaho.agilebi.modeler.ModelerException;
   import org.pentaho.agilebi.modeler.ModelerMode;
@@ -38,10 +39,7 @@
   import org.slf4j.Logger;
   import org.slf4j.LoggerFactory;
 
-  import java.util.ArrayList;
-  import java.util.HashSet;
-  import java.util.List;
-  import java.util.Set;
+  import java.util.*;
 
   public class MultiTableModelerSource implements ISpoonModelerSource {
 
@@ -91,11 +89,27 @@
         	   String toTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
         		 
                if(!usedTables.contains(fromTable)){
-                 schemas.add(new SchemaTable("", fromTable));
+                 String schemaName = "";
+                 String tableName = fromTable;
+                 if(fromTable.indexOf(".") > 0){
+                    String[] pair = getSchemaTablePair(fromTable);
+                    schemaName = pair[0];
+                    tableName = pair[1];
+                 }
+                 schemas.add(new SchemaTable(schemaName, tableName));
                  usedTables.add(fromTable);
                }
                if(!usedTables.contains(toTable)){
-                 schemas.add(new SchemaTable("", toTable));
+
+                 String schemaName = "";
+                 String tableName = toTable;
+                 if(fromTable.indexOf(".") > 0){
+                    String[] pair = getSchemaTablePair(toTable);
+                    schemaName = pair[0];
+                    tableName = pair[1];
+                 }
+
+                 schemas.add(new SchemaTable(schemaName, tableName));
                  usedTables.add(toTable);
                }
              }
@@ -128,7 +142,8 @@
            helper.autoModelRelationalFlat(workspace);
 
            if(doOlap) {
-             LogicalTable factTable = findFactTable(schemaModel.getFactTable(), logicalModel);
+             String factTableName = getSchemaTablePair(schemaModel.getFactTable().getName())[1];
+             LogicalTable factTable = findFactTable(factTableName, logicalModel);
              if(factTable == null) {
                throw new IllegalStateException("Fact table not found");
              } else {
@@ -168,13 +183,24 @@
          }
          return domain;
     }
-    
-    private LogicalTable findFactTable(JoinTableModel table, LogicalModel logicalModel) {
+
+    private String[] getSchemaTablePair(String table) {
+      if(table.indexOf(".") < 0){
+        return new String[]{"",table};
+      }
+      String[] pair = new String[2];
+      String[] parts = table.split("\\.");
+      pair[0] = parts[0];
+      pair[1] = StringUtils.join(Arrays.copyOfRange(parts, 1, parts.length), ".");
+      return pair;
+    }
+
+    private LogicalTable findFactTable(String table, LogicalModel logicalModel) {
        LogicalTable factTable = null;
    	   for (LogicalTable lTable : logicalModel.getLogicalTables()) {
    		   if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
            Object prop = lTable.getPhysicalTable().getProperty("target_table");
-	   		   if(prop != null && prop.equals(table.getName())) {
+	   		   if(prop != null && prop.equals(table)) {
 	   		      factTable = lTable;
 	   		      break;
 	   		   }
@@ -185,8 +211,10 @@
     
     private void generateLogicalRelationships(LogicalModel logicalModel, boolean doOlap) throws IllegalStateException {
     	for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
-    	  	String lTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
+    	  	String lTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();
         	String rTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
+          lTable = getSchemaTablePair(lTable)[1];
+          rTable = getSchemaTablePair(rTable)[1];
     		
             LogicalTable fromTable = null;
             LogicalColumn fromColumn = null;
@@ -196,7 +224,7 @@
             for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
             	
               if(doOlap && !logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-            	  continue;
+            	  continue; 
               } else if(!doOlap && logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
             	  continue;
               }
