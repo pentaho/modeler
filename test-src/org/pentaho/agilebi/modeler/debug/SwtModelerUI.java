@@ -8,6 +8,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.agilebi.modeler.*;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceUtil;
@@ -31,8 +33,8 @@ import org.pentaho.ui.xul.swt.tags.SwtWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
+import java.util.Properties;
 
 /**
  * Created: 3/15/11
@@ -82,7 +84,21 @@ public class SwtModelerUI {
   public static void main(String[] args) {
     System.setProperty("org.osjava.sj.root", "test-res/solution1/system/simple-jndi"); //$NON-NLS-1$ //$NON-NLS-2$
     ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
-    ModelerWorkspace workspace = new ModelerWorkspace(new ModelerWorkspaceHelper("en-US"));
+
+    Reader propsReader = null;
+    GeoContext geoContext = null;
+    try {
+      propsReader = new FileReader(new File("test-res/geoRoles.properties"));
+      Properties props = new Properties();
+      props.load(propsReader);
+      geoContext = GeoContextFactory.create(props);
+    } catch (Exception e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+
+    ModelerWorkspace workspace = new ModelerWorkspace(new ModelerWorkspaceHelper("en-US"), geoContext);
+
+
     try {
       KettleEnvironment.init();
       Props.init(Props.TYPE_PROPERTIES_EMPTY);

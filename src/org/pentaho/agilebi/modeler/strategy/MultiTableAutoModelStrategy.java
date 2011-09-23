@@ -21,6 +21,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.DataType;

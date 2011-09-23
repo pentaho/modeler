@@ -19,6 +19,7 @@
     <exclude name="**/util/*"/>
     <exclude name="**/*Test*"/>
     <exclude name="**/debug/*"/>
+    <exclude name="**/GeoContextFactory*"/>
   </source>
 
   <public path="modeler/res"/>

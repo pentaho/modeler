@@ -21,6 +21,8 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalTable;
@@ -38,9 +40,21 @@ import java.util.Set;
 public class SimpleAutoModelStrategy implements AutoModelStrategy{
 
   private String locale;
+  protected GeoContext geoContext;
 
   public SimpleAutoModelStrategy(String locale) {
     this.locale = locale;
+  }
+
+  /**
+   * Create a new SimpleAutoModelStrategy with geo-aware context. This context will
+   * attempt to identify geographic fields in the model and build appropriate
+   * geography dimensions.
+   * @param locale
+   * @param geoContext
+   */
+  public SimpleAutoModelStrategy(String locale, GeoContext geoContext) {
+    this.geoContext = geoContext;
   }
 
   public String getLocale() {
@@ -49,6 +63,14 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
 
   public void setLocale(String locale) {
     this.locale = locale;
+  }
+
+  public GeoContext getGeoContext() {
+    return geoContext;
+  }
+
+  public void setGeoContext(GeoContext geoContext) {
+    this.geoContext = geoContext;
   }
 
   /**
@@ -82,23 +104,29 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
 
     HashSet<String> existingMeasures = new HashSet<String>();
     List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
+
     for (AvailableTable table : tableList) {
       for( AvailableField field : table.getAvailableFields() ) {
 
-        DataType dataType = field.getPhysicalColumn().getDataType();
-        if( dataType == DataType.NUMERIC) {
-          if (!existingMeasures.contains(field.getName())) {
-            // create a measure
-            MeasureMetaData measure = workspace.createMeasureForNode(field);
-            workspace.getModel().getMeasures().add(measure);
-            existingMeasures.add(field.getName());
+        // only add the field if it is not a geo field, they will be handled separately
+        if(!isGeoField(field)) {
+          DataType dataType = field.getPhysicalColumn().getDataType();
+          if( dataType == DataType.NUMERIC) {
+            if (!existingMeasures.contains(field.getName())) {
+              // create a measure
+              MeasureMetaData measure = workspace.createMeasureForNode(field);
+              workspace.getModel().getMeasures().add(measure);
+              existingMeasures.add(field.getName());
+            }
           }
+          // create a dimension
+          workspace.addDimensionFromNode(workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
         }
-        // create a dimension
-        workspace.addDimensionFromNode(workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
-
       }
     }
+
+    addGeoDimensions(dims, workspace);
+    
     for(DimensionMetaData dim : dims){
       dim.setExpanded(false);
     }
@@ -165,4 +193,21 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
       workspace.setSelectedRelationalNode(workspace.getRelationalModel());
     }
   }
+
+  protected boolean isGeoField(AvailableField field) {
+    if (geoContext != null) {
+      return geoContext.matchFieldToGeoRole(field) != null;
+    } else {
+      return false;
+    }
+  }
+
+  protected void addGeoDimensions(List<DimensionMetaData> dims, ModelerWorkspace workspace) {
+    if (geoContext != null) {
+      // get any geographic dimensions detected, add them
+      List<DimensionMetaData> geoDims = geoContext.buildDimensions(workspace);
+      dims.addAll(geoDims);
+    }
+  }
+
 }

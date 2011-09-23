@@ -104,6 +104,15 @@ public class AvailableTable extends AbstractAvailableItem<AvailableField> implem
     return false;
   }
 
+  public AvailableField findFieldByPhysicalColumn(IPhysicalColumn column) {
+    for (AvailableField field : availableFields) {
+      if (field.isSameUnderlyingPhysicalColumn(column)) {
+        return field;
+      }
+    }
+    return null;
+  }
+
   public boolean isFactTable() {
     return factTable;
   }
