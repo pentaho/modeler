@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler.geo;
 
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * Time: 10:50 AM
  * To change this template use File | Settings | File Templates.
  */
-public class LocationRole extends GeoRole {
+public class LocationRole extends GeoRole implements Serializable {
 
   private static final String LOCATION = "location";
   private GeoRole latitudeRole;

@@ -5,19 +5,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
+import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.DataType;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
@@ -278,7 +277,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect(mockTable1.getPhysicalColumns()).andReturn(cols1).anyTimes();
     expect(mockTable1.getId()).andReturn("PT_CUSTOMERS").anyTimes();
     expect(mockTable1.getProperty("target_table")).andReturn("PT_CUSTOMERS").anyTimes();
-
+    expect(mockTable1.getProperty("name")).andReturn("CUSTOMERS").anyTimes();
+        
     // state col
     expect(mockStateCol.getName(LOCALE)).andReturn("State").anyTimes();
     expect(mockStateCol.getName("en-US")).andReturn("State").anyTimes();
@@ -298,13 +298,27 @@ public class GeoContextTest extends AbstractModelerTest {
     expect(mockLatitudeCol.getName(LOCALE)).andReturn("Latitude").anyTimes();
     expect(mockLatitudeCol.getName("en-US")).andReturn("Latitude").anyTimes();
     expect(mockLatitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockLatitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLatitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLatitudeCol.getAggregationType()).andReturn(null).anyTimes();
     expect(mockLatitudeCol.getId()).andReturn("LATITUDE").anyTimes();
+
+    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    latProperties.put("name", "Latitude");
+    expect(mockLatitudeCol.getProperties()).andReturn(latProperties).anyTimes();
 
     // lng col
     expect(mockLongitudeCol.getName(LOCALE)).andReturn("Longitude").anyTimes();
     expect(mockLongitudeCol.getName("en-US")).andReturn("Longitude").anyTimes();
     expect(mockLongitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockLongitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLongitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLongitudeCol.getAggregationType()).andReturn(null).anyTimes();
     expect(mockLongitudeCol.getId()).andReturn("LONGITUDE").anyTimes();
+
+    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    lngProperties.put("name", "Longitude");
+    expect(mockLongitudeCol.getProperties()).andReturn(lngProperties).anyTimes();
 
     replay(mockTable1);
     replay(mockStateCol);
@@ -344,6 +358,16 @@ public class GeoContextTest extends AbstractModelerTest {
                 LocationRole lr = (LocationRole)existingLevel.getDataRole();
                 assertNotNull(lr.getLatitudeField());
                 assertNotNull(lr.getLongitudeField());
+
+                // make sure the lat & long fields are available as logical columns in the model
+                LogicalColumn lc = workspace.findLogicalColumn(lr.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                assertNotNull(lc);
+                assertEquals("latitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
+
+                lc = workspace.findLogicalColumn(lr.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                assertNotNull(lc);
+                assertEquals("longitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
+
               } else {
                 // make sure none of the other levels have a data role added on
                 assertNull(existingLevel.getDataRole());
@@ -385,6 +409,7 @@ public class GeoContextTest extends AbstractModelerTest {
     expect(mockTable1.getPhysicalColumns()).andReturn(cols1).anyTimes();
     expect(mockTable1.getId()).andReturn("PT_CUSTOMERS").anyTimes();
     expect(mockTable1.getProperty("target_table")).andReturn("PT_CUSTOMERS").anyTimes();
+    expect(mockTable1.getProperty("name")).andReturn("CUSTOMERS").anyTimes();
 
     // state col
     expect(mockStateCol.getName(LOCALE)).andReturn("State").anyTimes();
@@ -399,13 +424,27 @@ public class GeoContextTest extends AbstractModelerTest {
     expect(mockLatitudeCol.getName(LOCALE)).andReturn("Latitude").anyTimes();
     expect(mockLatitudeCol.getName("en-US")).andReturn("Latitude").anyTimes();
     expect(mockLatitudeCol.getId()).andReturn("LATITUDE").anyTimes();
+    expect(mockLatitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLatitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLatitudeCol.getAggregationType()).andReturn(null).anyTimes();
     expect(mockLatitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+
+    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    latProperties.put("name", "Latitude");
+    expect(mockLatitudeCol.getProperties()).andReturn(latProperties).anyTimes();
 
     // lng col
     expect(mockLongitudeCol.getName(LOCALE)).andReturn("Longitude").anyTimes();
     expect(mockLongitudeCol.getName("en-US")).andReturn("Longitude").anyTimes();
     expect(mockLongitudeCol.getId()).andReturn("LONGITUDE").anyTimes();
+    expect(mockLongitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLongitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLongitudeCol.getAggregationType()).andReturn(null).anyTimes();
     expect(mockLongitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+
+    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    lngProperties.put("name", "Longitude");
+    expect(mockLongitudeCol.getProperties()).andReturn(lngProperties).anyTimes();
 
     replay(mockTable1);
     replay(mockStateCol);
@@ -439,6 +478,16 @@ public class GeoContextTest extends AbstractModelerTest {
         LocationRole lr = (LocationRole)existingLevel.getDataRole();
         assertNotNull(lr.getLatitudeField());
         assertNotNull(lr.getLongitudeField());
+
+        // make sure the lat & long fields are available as logical columns in the model
+        LogicalColumn lc = workspace.findLogicalColumn(lr.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+        assertNotNull(lc);
+        assertEquals("latitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
+
+        lc = workspace.findLogicalColumn(lr.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+        assertNotNull(lc);
+        assertEquals("longitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
+
       }
     }
 
@@ -472,18 +521,33 @@ public class GeoContextTest extends AbstractModelerTest {
     expect(mockTable1.getPhysicalColumns()).andReturn(cols1).anyTimes();
     expect(mockTable1.getId()).andReturn("PT_CUSTOMERS").anyTimes();
     expect(mockTable1.getProperty("target_table")).andReturn("PT_CUSTOMERS").anyTimes();
+    expect(mockTable1.getProperty("name")).andReturn("CUSTOMERS").anyTimes();
 
     // lat col
     expect(mockLatitudeCol.getName(LOCALE)).andReturn("Latitude").anyTimes();
     expect(mockLatitudeCol.getName("en-US")).andReturn("Latitude").anyTimes();
     expect(mockLatitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockLatitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLatitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLatitudeCol.getAggregationType()).andReturn(null).anyTimes();
     expect(mockLatitudeCol.getId()).andReturn("LATITUDE").anyTimes();
+
+    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    latProperties.put("name", "Latitude");
+    expect(mockLatitudeCol.getProperties()).andReturn(latProperties).anyTimes();
 
     // lng col
     expect(mockLongitudeCol.getName(LOCALE)).andReturn("Longitude").anyTimes();
     expect(mockLongitudeCol.getName("en-US")).andReturn("Longitude").anyTimes();
     expect(mockLongitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockLongitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLongitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLongitudeCol.getAggregationType()).andReturn(null).anyTimes();
     expect(mockLongitudeCol.getId()).andReturn("LONGITUDE").anyTimes();
+
+    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    lngProperties.put("name", "Longitude");
+    expect(mockLongitudeCol.getProperties()).andReturn(lngProperties).anyTimes();
 
     // customer col
     expect(mockCustomerCol.getName(LOCALE)).andReturn("CustomerName").anyTimes();
@@ -538,6 +602,16 @@ public class GeoContextTest extends AbstractModelerTest {
                 LocationRole lr = (LocationRole)existingLevel.getDataRole();
                 assertNotNull(lr.getLatitudeField());
                 assertNotNull(lr.getLongitudeField());
+
+                // make sure the lat & long fields are available as logical columns in the model
+                LogicalColumn lc = workspace.findLogicalColumn(lr.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                assertNotNull(lc);
+                assertEquals("latitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
+
+                lc = workspace.findLogicalColumn(lr.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                assertNotNull(lc);
+                assertEquals("longitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
+
               } else {
                 // make sure none of the other levels have a data role added on
                 assertNull(existingLevel.getDataRole());

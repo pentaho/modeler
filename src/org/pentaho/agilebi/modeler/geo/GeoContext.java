@@ -5,6 +5,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.IPhysicalColumn;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,8 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
   protected static final String GEO_ROLE_KEY = "geo.roles";
   protected static final String GEO_MATCH_SEPARATOR = "geo.matchSeparator";
   protected static final String ALIAS_SUFFIX = ".aliases";
+  private static final String LATITUDE = "latitude";
+  private static final String LONGITUDE = "longitude";
 
   protected String dimensionName = "Geography";
   protected List<GeoRole> geoRoles;
@@ -183,7 +186,17 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
               if (locationFieldDetected && locationField != null &&
                   locationRole != null && locationRole.getLatitudeField() != null && locationRole.getLongitudeField() != null &&
                   locationField.isSameUnderlyingPhysicalColumn(level.getLogicalColumn().getPhysicalColumn())) {
+
                 level.setDataRole(locationRole);
+
+                // if it is a LocationField we need to make sure the lat & long columns get
+                // added as logical columns to the model.
+                ColumnBackedNode tmp = workspace.createColumnBackedNode(locationRole.getLatitudeField(), ModelerPerspective.ANALYSIS);
+                tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LATITUDE));
+
+                tmp = workspace.createColumnBackedNode(locationRole.getLongitudeField(), ModelerPerspective.ANALYSIS);
+                tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LONGITUDE));
+
               }
 
               hier.add(level);
@@ -205,6 +218,14 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
             for(LevelMetaData existingLevel : existingHier) {
               if(locationField.isSameUnderlyingPhysicalColumn(existingLevel.getLogicalColumn().getPhysicalColumn())) {
                 existingLevel.setDataRole(locationRole);
+                // if it is a LocationField we need to make sure the lat & long columns get
+                // added as logical columns to the model.
+                ColumnBackedNode tmp = workspace.createColumnBackedNode(locationRole.getLatitudeField(), ModelerPerspective.ANALYSIS);
+                tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LATITUDE));
+
+                tmp = workspace.createColumnBackedNode(locationRole.getLongitudeField(), ModelerPerspective.ANALYSIS);
+                tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LONGITUDE));
+
                 continue;
               }
             }

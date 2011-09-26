@@ -1019,7 +1019,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return node;
   }
 
-  protected LogicalColumn findLogicalColumn(IPhysicalColumn column, ModelerPerspective perspective) {
+  public LogicalColumn findLogicalColumn(IPhysicalColumn column, ModelerPerspective perspective) {
     LogicalColumn col = null;
     IPhysicalTable physicalTable = column.getPhysicalTable();
     for (LogicalTable table : getDomain().getLogicalModels().get(0).getLogicalTables()) {

@@ -1,5 +1,7 @@
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.geo.LocationRole;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.strategy.AutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
@@ -123,6 +125,25 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
               if (!olapCloneLTable.getLogicalColumns().contains(lCol)) {
                 olapCloneLTable.addLogicalColumn(lCol);
               }
+
+              // add any geo-location related info
+              DataRole role = lvl.getDataRole();
+              if(role instanceof LocationRole) {
+                // lat long is set as member properties (add as logical columns to achieve this)
+                LocationRole lRole = (LocationRole)role;
+                LogicalColumn latcol = model.findLogicalColumn(lRole.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                LogicalColumn loncol = model.findLogicalColumn(lRole.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                if(latcol != null && loncol != null) {
+                  level.getLogicalColumns().add(latcol);
+                  level.getLogicalColumns().add(loncol);
+                }
+                level.getAnnotations().add(new OlapAnnotation("GeoRole", lRole.getName()));
+              } else if(role instanceof GeoRole) {
+                // geo-role is set on the level as an annotation
+                GeoRole gRole = (GeoRole)role;
+                level.getAnnotations().add(new OlapAnnotation("GeoRole", gRole.getName()));
+              }
+
               level.setReferenceColumn(lCol);
               hierarchy.setLogicalTable(olapCloneLTable);
               if(logicalModel.getLogicalTables().size() > 2){ //only do this for multi-table situations
