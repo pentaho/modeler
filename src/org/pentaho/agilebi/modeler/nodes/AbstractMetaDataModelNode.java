@@ -26,6 +26,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T> implements
@@ -38,6 +39,8 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   protected String image;
   protected boolean suppressEvents;
   protected boolean expanded;
+  protected DataRole dataRole;
+  
 
   protected transient PropertyChangeListener validListener = new PropertyChangeListener() {
     public void propertyChange( PropertyChangeEvent arg0 ) {
@@ -235,5 +238,22 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
       parent = parent.getParent();
     }
     return parent;
+  }
+
+  @Bindable
+  public DataRole getDataRole() {
+    return dataRole;
+  }
+
+  @Bindable
+  public void setDataRole(DataRole dataRole) {
+    this.dataRole = dataRole;
+  }
+
+  public boolean isDataRole(String roleName) {
+    if(this.dataRole != null) {
+      return dataRole.getName().equalsIgnoreCase(roleName);
+    }
+    return false;
   }
 }

@@ -1,5 +1,8 @@
 package org.pentaho.agilebi.modeler.gwt;
 
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.geo.LocationRole;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
@@ -46,6 +49,7 @@ public class BogoPojo implements Serializable {
   OlapHierarchy olapHier;
   OlapHierarchyLevel level;
   OlapDimensionUsage dimUsage;
+  OlapAnnotation olapAnnotation;
   LogicalTable lTable;
   LogicalModel lModel;
   LogicalColumn lColumn;
@@ -54,6 +58,9 @@ public class BogoPojo implements Serializable {
   JoinRelationshipModel joinDTO;
   JoinFieldModel joinFieldDTO;
   JoinTableModel joinTableDTO;
+  GeoRole geoRole;
+  LocationRole locationRole;
+  GeoContext geoContext;
   
   private AggregationType[] aggTypes;
 
@@ -276,5 +283,37 @@ public class BogoPojo implements Serializable {
 
   public void setJoinTableDTO(JoinTableModel joinTableDTO) {
     this.joinTableDTO = joinTableDTO;
+  }
+
+  public OlapAnnotation getOlapAnnotation() {
+    return olapAnnotation;
+  }
+
+  public void setOlapAnnotation(OlapAnnotation olapAnnotation) {
+    this.olapAnnotation = olapAnnotation;
+  }
+
+  public GeoRole getGeoRole() {
+    return geoRole;
+  }
+
+  public void setGeoRole(GeoRole geoRole) {
+    this.geoRole = geoRole;
+  }
+
+  public LocationRole getLocationRole() {
+    return locationRole;
+  }
+
+  public void setLocationRole(LocationRole locationRole) {
+    this.locationRole = locationRole;
+  }
+
+  public GeoContext getGeoContext() {
+    return geoContext;
+  }
+
+  public void setGeoContext(GeoContext geoContext) {
+    this.geoContext = geoContext;
   }
 }
