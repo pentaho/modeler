@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.agilebi.modeler.*;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
+import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceUtil;
@@ -91,7 +92,8 @@ public class SwtModelerUI {
       propsReader = new FileReader(new File("test-res/geoRoles.properties"));
       Properties props = new Properties();
       props.load(propsReader);
-      geoContext = GeoContextFactory.create(props);
+      GeoContextPropertiesProvider config = new GeoContextPropertiesProvider(props);
+      geoContext = GeoContextFactory.create(config);
     } catch (Exception e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }

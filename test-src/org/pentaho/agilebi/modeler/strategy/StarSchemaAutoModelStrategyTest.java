@@ -20,9 +20,7 @@ package org.pentaho.agilebi.modeler.strategy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
-import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
-import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.geo.*;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.concept.types.DataType;
 
@@ -45,12 +43,14 @@ import static junit.framework.Assert.assertTrue;
 public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
   private static final String LOCALE = "en-US";
   private static Properties props = null;
+  private static GeoContextConfigProvider config;
 
   @BeforeClass
   public static void bootstrap() throws IOException {
     Reader propsReader = new FileReader(new File("test-res/geoRoles.properties"));
     props = new Properties();
     props.load(propsReader);
+    config = new GeoContextPropertiesProvider(props);
   }
 
   @Override
@@ -105,7 +105,7 @@ public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
   public void testAutoModelGeo() throws Exception {
     // expect one dim per non-fact table, one hierarchy per column, one level per hierarchy
     // expect only numeric fields from the fact table to be created as measures
-    GeoContext geoContext = GeoContextFactory.create(props);
+    GeoContext geoContext = GeoContextFactory.create(config);
     StarSchemaAutoModelStrategy strategy = new StarSchemaAutoModelStrategy(LOCALE, geoContext);
 
     strategy.autoModelOlap(workspace, new MainModelNode());

@@ -16,14 +16,14 @@ import java.util.List;
 public class LocationRole extends GeoRole implements Serializable {
 
   private static final String LOCATION = "location";
-  private GeoRole latitudeRole;
-  private GeoRole longitudeRole;
+  private LatLngRole latitudeRole;
+  private LatLngRole longitudeRole;
 
   private AvailableField latitudeField = null;
   private AvailableField longitudeField = null;
 
   public LocationRole() {}
-  public LocationRole(GeoRole latitudeRole, GeoRole longitudeRole) {
+  public LocationRole(LatLngRole latitudeRole, LatLngRole longitudeRole) {
     this.latitudeRole = latitudeRole;
     this.longitudeRole = longitudeRole;
   }
@@ -33,25 +33,26 @@ public class LocationRole extends GeoRole implements Serializable {
     return LOCATION;
   }
 
-  public GeoRole getLatitudeRole() {
+  public LatLngRole getLatitudeRole() {
     return latitudeRole;
   }
 
-  public void setLatitudeRole(GeoRole latitudeRole) {
+  public void setLatitudeRole(LatLngRole latitudeRole) {
     this.latitudeRole = latitudeRole;
   }
 
-  public GeoRole getLongitudeRole() {
+  public LatLngRole getLongitudeRole() {
     return longitudeRole;
   }
 
-  public void setLongitudeRole(GeoRole longitudeRole) {
+  public void setLongitudeRole(LatLngRole longitudeRole) {
     this.longitudeRole = longitudeRole;
   }
 
   @Override
   public boolean evaluate(String fieldName) {
     boolean result = false;
+
     if (latitudeRole != null) {
       result = latitudeRole.evaluate(fieldName);
       if (result) return result;
@@ -59,6 +60,7 @@ public class LocationRole extends GeoRole implements Serializable {
     if (longitudeRole != null) {
       return result || longitudeRole.evaluate(fieldName);
     }
+
     return result;
   }
 
@@ -130,5 +132,15 @@ public class LocationRole extends GeoRole implements Serializable {
 
   public void setLongitudeField(AvailableField longitudeField) {
     this.longitudeField = longitudeField;
+  }
+
+  public String getPrefix() {
+    if (latitudeRole != null && longitudeRole != null) {
+      String prefix = latitudeRole.getPrefix();
+      if (prefix.equalsIgnoreCase(longitudeRole.getPrefix())) {
+        return prefix;
+      }
+    }
+    return "";
   }
 }

@@ -25,18 +25,20 @@ public class GeoContextFactoryTest {
   private static final String GEO_ROLE_KEY = "geo.roles";
   private static Properties props = null;
   private static final String LOCALE = "en_US";
+  private static GeoContextConfigProvider config;
+
 
   @BeforeClass
   public static void bootstrap() throws IOException {
     Reader propsReader = new FileReader(new File("test-res/geoRoles.properties"));
     props = new Properties();
     props.load(propsReader);
+    config = new GeoContextPropertiesProvider(props);
   }
-
 
   @Test
   public void testCreateWithProps() throws Exception {
-    GeoContext geo = GeoContextFactory.create(props);
+    GeoContext geo = GeoContextFactory.create(config);
 
     assertEquals(6, geo.size());
 
@@ -48,19 +50,37 @@ public class GeoContextFactoryTest {
     for(int i = 0; i < tokens.length; i++) {
       assertEquals(tokens[i].trim(), geo.getGeoRole(i).getName());
     }
+
+    GeoRole state = geo.getGeoRoleByName("state");
+    assertNotNull(state);
+    assertEquals(1, state.getRequiredParentRoles().size());
+    assertEquals("country", state.getRequiredParentRoles().get(0).getName());
+    
+    GeoRole city = geo.getGeoRoleByName("city");
+    assertNotNull(city);
+    assertEquals(2, city.getRequiredParentRoles().size());
+    assertEquals("country", city.getRequiredParentRoles().get(0).getName());
+    assertEquals("state", city.getRequiredParentRoles().get(1).getName());
+
+    GeoRole zip = geo.getGeoRoleByName("postal_code");
+    assertNotNull(zip);
+    assertEquals(1, zip.getRequiredParentRoles().size());
+    assertEquals("country", zip.getRequiredParentRoles().get(0).getName());
   }
 
   @Test(expected = ModelerException.class)
   public void testCreateWithProps_NoRoles() throws Exception {
     Properties myprops = (Properties) props.clone();
     myprops.setProperty(GEO_ROLE_KEY, "");
-    GeoContext geo = GeoContextFactory.create(myprops);
+    config = new GeoContextPropertiesProvider(myprops);
+    GeoContext geo = GeoContextFactory.create(config);
   }
   @Test(expected = ModelerException.class)
   public void testCreateWithProps_NoAliasesForRole() throws Exception {
     Properties myprops = (Properties) props.clone();
     myprops.setProperty("geo.country.aliases", "");
-    GeoContext geo = GeoContextFactory.create(myprops);
+    config = new GeoContextPropertiesProvider(myprops);
+    GeoContext geo = GeoContextFactory.create(config);
   }
   @Test(expected = IllegalArgumentException.class)
   public void testCreateWithProps_NullProps() throws Exception {

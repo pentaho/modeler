@@ -23,6 +23,8 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
   protected static final String GEO_ROLE_KEY = "geo.roles";
   protected static final String GEO_MATCH_SEPARATOR = "geo.matchSeparator";
   protected static final String ALIAS_SUFFIX = ".aliases";
+  protected static final String REQUIRED_PARENTS_SUFFIX = ".required-parents";
+
   private static final String LATITUDE = "latitude";
   private static final String LONGITUDE = "longitude";
 
@@ -74,15 +76,15 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
 
   public GeoRole matchFieldToGeoRole(AvailableField field) {
     for(GeoRole role : this.geoRoles) {
-      if (role.evaluate(field.getName())) {
+      if (role.evaluate(field.getPhysicalColumn().getId())) {
         return role;
       }
     }
     return null;
   }
-  public GeoRole matchColumnToGeoRole(IPhysicalColumn column, String locale) {
+  public GeoRole matchColumnToGeoRole(IPhysicalColumn column) {
     for(GeoRole role : this.geoRoles) {
-      if (role.evaluate(column.getName(locale))) {
+      if (role.evaluate(column.getId())) {
         return role;
       }
     }
@@ -135,7 +137,7 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
         AvailableField field = table.findFieldByPhysicalColumn(col);
 
         GeoRole role = matchFieldToGeoRole(field);
-        String fieldName = field.getName();
+        String fieldName = col.getId();
 
         if (role != null) {
           if (role instanceof LocationRole) {
@@ -161,18 +163,7 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
       }
 
       if (locationFieldDetected) {
-        int min = Math.min(latColIndex, lonColIndex);
-        int max = Math.max(latColIndex, lonColIndex);
-
-        // get the previous column
-        if (min > 0) {
-          IPhysicalColumn col = table.getPhysicalTable().getPhysicalColumns().get(min-1);
-          locationField = table.findFieldByPhysicalColumn(col);
-        } else if (max < count) {
-          // get the column immediately following
-          IPhysicalColumn col = table.getPhysicalTable().getPhysicalColumns().get(max+1);
-          locationField = table.findFieldByPhysicalColumn(col);
-        }
+        locationField = determineLocationField(table, locationRole, latColIndex, lonColIndex, workspace.getWorkspaceHelper().getLocale());
       }
 
       if (levels.size() > 0) {
@@ -248,6 +239,51 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
     for(int i = geoRoles.size() - 1; i >= 0; i--) {
       if (geoRoles.get(i) instanceof LocationRole) {
         return (LocationRole)geoRoles.get(i);
+      }
+    }
+    return null;
+  }
+
+  protected AvailableField determineLocationField(AvailableTable table, LocationRole locationRole, int latColIndex, int lonColIndex, String locale) {
+    AvailableField locationField = null;
+    int count = table.getAvailableFields().size();
+ 
+    // if the lat&longs where detected with a prefix, use that to try to find a column with a name matching that prefix
+    String prefix = locationRole.getPrefix();
+    if(prefix != null && prefix.length() > 0) {
+      // iterate over the columns, match prefix to column name
+      for(AvailableField field : table.getAvailableFields()) {
+        IPhysicalColumn col = field.getPhysicalColumn();
+        if(prefix.equalsIgnoreCase(col.getName(locale))) {
+          locationField = field;
+          continue;
+        }
+      }
+    }
+
+    if(locationField == null) {
+      int min = Math.min(latColIndex, lonColIndex);
+      int max = Math.max(latColIndex, lonColIndex);
+
+      // get the previous column
+      if (min > 0) {
+        IPhysicalColumn col = table.getPhysicalTable().getPhysicalColumns().get(min-1);
+        locationField = table.findFieldByPhysicalColumn(col);
+      } else if (max < count) {
+        // get the column immediately following
+        IPhysicalColumn col = table.getPhysicalTable().getPhysicalColumns().get(max+1);
+        locationField = table.findFieldByPhysicalColumn(col);
+      }
+    }
+    return locationField;
+  }
+
+  public GeoRole getGeoRoleByName(String name) {
+    if (this.geoRoles != null) {
+      for(GeoRole role : this.geoRoles) {
+        if(role.getName().equalsIgnoreCase(name)) {
+          return role;
+        }
       }
     }
     return null;

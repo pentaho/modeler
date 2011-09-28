@@ -20,27 +20,25 @@ public class GeoContextFactory {
   private static final String LONGITUDE = "longitude";
 
   /**
-   * This factory method creates a GeoContext from a Properties file. This was originally a constructor
-   * of GeoContext, but since Properties aren't available in GWT... this was moved. Now this class can be
-   * excluded from the gwt compile.
-   * @param props
+   * This factory method creates a GeoContext from a GeoContextConfigProvider.
+   * @param configProvider
    * @return
    * @throws ModelerException
    */
-  public static GeoContext create(Properties props) throws ModelerException {
+  public static GeoContext create(GeoContextConfigProvider configProvider) throws ModelerException {
     GeoContext geo = new GeoContext();
 
     geo.geoRoles = new ArrayList<GeoRole>();
-    if (props == null) {
-      throw new IllegalArgumentException("Properties cannot be null");
+    if (configProvider == null) {
+      throw new IllegalArgumentException("GeoContextConfigProvider cannot be null");
     }
 
-    String dimName = props.getProperty(GeoContext.GEO_DIM_NAME);
+    String dimName = configProvider.getDimensionName();
     if (dimName != null && dimName.trim().length() > 0) {
       geo.dimensionName = dimName;
     }
 
-    String rolesCsv = props.getProperty(GeoContext.GEO_ROLE_KEY);
+    String rolesCsv = configProvider.getRoles();
 
     if(rolesCsv != null && rolesCsv.length() > 0) {
       String[] tokens = rolesCsv.split(",");
@@ -51,36 +49,40 @@ public class GeoContextFactory {
 
       // grab the corresponding aliases for each role
       for(String rolename : roleNames) {
-        String aliases = getRoleAliasesFromProps(props, rolename);
+        String aliases = configProvider.getRoleAliases(rolename);
+        String parents = configProvider.getRoleRequirements(rolename);
+
         GeoRole role = new GeoRole(rolename, aliases);
+
         if (role != null) {
+          if(parents != null) {
+            List<String> requiredParents = GeoRole.parse(parents);
+
+            for(String parentRole : requiredParents) {
+              GeoRole pgr = geo.getGeoRoleByName(parentRole);
+              if(pgr != null) {
+                role.getRequiredParentRoles().add(pgr);
+              }
+            }
+          }
           geo.geoRoles.add(role);
         }
       }
 
     } else {
-      throw new ModelerException("Error while building GeoContext from properties: No GeoRoles found, make sure there is a " + GeoContext.GEO_ROLE_KEY + " property defined.");
+      throw new ModelerException("Error while building GeoContext: No GeoRoles found, make sure there is a " + GeoContext.GEO_ROLE_KEY + " property defined.");
     }
 
-    String latAliases = getRoleAliasesFromProps(props, LATITUDE);
-    GeoRole latRole = new GeoRole(LATITUDE, latAliases);
-    String longAliases = getRoleAliasesFromProps(props, LONGITUDE);
-    GeoRole longRole = new GeoRole(LONGITUDE, longAliases);
+    String latAliases = configProvider.getRoleAliases(LATITUDE);
+    LatLngRole latRole = new LatLngRole(LATITUDE, latAliases);
+    String longAliases = configProvider.getRoleAliases(LONGITUDE);
+    LatLngRole longRole = new LatLngRole(LONGITUDE, longAliases);
 
     LocationRole locationRole = new LocationRole(latRole, longRole);
     geo.addGeoRole(locationRole);
-    
+
     return geo;
-  }
 
-  private static String getRoleAliasesFromProps(Properties props, String roleName) throws ModelerException {
-    String aliasKey = GeoContext.GEO_PREFIX + roleName + GeoContext.ALIAS_SUFFIX;
-    String aliases = props.getProperty(aliasKey);
-    if (aliases == null || aliases.trim().length() == 0) {
-      throw new ModelerException("Error while building GeoContext from properties: No Aliases found for role  " + roleName + ". Make sure there is a " + aliasKey + " property defined");
-    }
-    return aliases;
   }
-
 
 }

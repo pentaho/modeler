@@ -21,9 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
-import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.geo.*;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.concept.types.DataType;
 
@@ -51,12 +49,14 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
   private static final String LOCALE = "en-US";
 
   private static Properties props = null;
+  private static GeoContextConfigProvider config;
 
   @BeforeClass
   public static void bootstrap() throws IOException {
     Reader propsReader = new FileReader(new File("test-res/geoRoles.properties"));
     props = new Properties();
     props.load(propsReader);
+    config = new GeoContextPropertiesProvider(props);
   }
 
   @Override
@@ -93,7 +93,7 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
 
   @Test
   public void testAutoGeoModel() throws Exception {
-    GeoContext geo = GeoContextFactory.create(props);
+    GeoContext geo = GeoContextFactory.create(config);
     SimpleAutoModelStrategy strategy = new SimpleAutoModelStrategy(LOCALE, geo);
     assertNotNull(strategy.getGeoContext());
     strategy.autoModelOlap(workspace, new MainModelNode());

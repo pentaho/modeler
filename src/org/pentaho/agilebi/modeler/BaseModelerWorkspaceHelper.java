@@ -138,10 +138,20 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
                   level.getLogicalColumns().add(loncol);
                 }
                 level.getAnnotations().add(new OlapAnnotation("GeoRole", lRole.getName()));
+
+                if(lRole.getRequiredParentRoles().size() > 0) {
+                  String parents = combineRequiredParents(lRole);
+                  level.getAnnotations().add(new OlapAnnotation("RequiredParents", parents));
+                }
+
               } else if(role instanceof GeoRole) {
                 // geo-role is set on the level as an annotation
                 GeoRole gRole = (GeoRole)role;
                 level.getAnnotations().add(new OlapAnnotation("GeoRole", gRole.getName()));
+                if(gRole.getRequiredParentRoles().size() > 0) {
+                  String parents = combineRequiredParents(gRole);
+                  level.getAnnotations().add(new OlapAnnotation("RequiredParents", parents));
+                }
               }
 
               level.setReferenceColumn(lCol);
@@ -225,6 +235,20 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       logicalModel.setProperty("olap_cubes", cubes); //$NON-NLS-1$
     }
 
+  }
+
+  private String combineRequiredParents(GeoRole role) {
+    if(role.getRequiredParentRoles().size() > 0) {
+      StringBuffer sb = new StringBuffer();
+      for(GeoRole r : role.getRequiredParentRoles()) {
+        if(sb.length() > 0) {
+          sb.append(",");
+        }
+        sb.append(r.getName());
+      }
+      return sb.toString();
+    }
+    return null;
   }
 
   private LogicalTable findOlapCloneForTableInDomain(LogicalTable supposedLTable, Domain domain) {

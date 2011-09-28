@@ -18,6 +18,7 @@ public class GeoRole implements DataRole, Serializable {
   private String name;
   private List<String> commonAliases;
   private String matchSeparator = "_";
+  private List<GeoRole> requiredParentRoles;
 
   public GeoRole() {}
 
@@ -34,12 +35,8 @@ public class GeoRole implements DataRole, Serializable {
   public GeoRole(String name, String commonAliases) {
     this.name = name;
 
-    if(commonAliases != null && commonAliases.length() > 0) {
-      String[] tokens = commonAliases.split(",");
-      List<String> aliases = new ArrayList<String>(tokens.length);
-      for(String s: tokens) {
-        aliases.add(s.trim());
-      }
+    List<String> aliases = parse(commonAliases);
+    if(aliases != null) {
       this.commonAliases = aliases;
     }
   }
@@ -89,7 +86,7 @@ public class GeoRole implements DataRole, Serializable {
     return false;
   }
 
-  private boolean eval(String fieldName, String alias) {
+  protected boolean eval(String fieldName, String alias) {
     return fieldName.equals(alias);
   }
 
@@ -121,5 +118,29 @@ public class GeoRole implements DataRole, Serializable {
     List<String> clonedAliases = (ArrayList<String>)((ArrayList<String>)this.commonAliases).clone();
     GeoRole clone = new GeoRole(this.name, clonedAliases);
     return clone;
+  }
+
+  protected static List<String> parse(String csv) {
+    if(csv != null && csv.length() > 0) {
+      String[] tokens = csv.split(",");
+      List<String> aliases = new ArrayList<String>(tokens.length);
+      for(String s: tokens) {
+        aliases.add(s.trim());
+      }
+      return aliases;
+    } else {
+      return null;
+    }
+  }
+
+  public void setRequiredParentRoles(List<GeoRole> parentRoles) {
+    this.requiredParentRoles = parentRoles;
+  }
+
+  public List<GeoRole> getRequiredParentRoles() {
+    if(requiredParentRoles == null) {
+      requiredParentRoles = new ArrayList<GeoRole>();
+    }
+    return requiredParentRoles;
   }
 }
