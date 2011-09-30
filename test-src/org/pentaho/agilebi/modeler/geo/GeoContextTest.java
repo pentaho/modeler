@@ -1,11 +1,9 @@
 package org.pentaho.agilebi.modeler.geo;
 
-import org.apache.tools.ant.Location;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.IPhysicalColumn;
