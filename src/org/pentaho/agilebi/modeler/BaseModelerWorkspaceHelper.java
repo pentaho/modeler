@@ -137,20 +137,20 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
                   level.getLogicalColumns().add(latcol);
                   level.getLogicalColumns().add(loncol);
                 }
-                level.getAnnotations().add(new OlapAnnotation("GeoRole", lRole.getName()));
+                level.getAnnotations().add(new OlapAnnotation("Geo.Role", lRole.getName()));
 
                 if(lRole.getRequiredParentRoles().size() > 0) {
                   String parents = combineRequiredParents(lRole);
-                  level.getAnnotations().add(new OlapAnnotation("RequiredParents", parents));
+                  level.getAnnotations().add(new OlapAnnotation("Geo.RequiredParents", parents));
                 }
 
               } else if(role instanceof GeoRole) {
                 // geo-role is set on the level as an annotation
                 GeoRole gRole = (GeoRole)role;
-                level.getAnnotations().add(new OlapAnnotation("GeoRole", gRole.getName()));
+                level.getAnnotations().add(new OlapAnnotation("Geo.Role", gRole.getName()));
                 if(gRole.getRequiredParentRoles().size() > 0) {
                   String parents = combineRequiredParents(gRole);
-                  level.getAnnotations().add(new OlapAnnotation("RequiredParents", parents));
+                  level.getAnnotations().add(new OlapAnnotation("Geo.RequiredParents", parents));
                 }
               }
 

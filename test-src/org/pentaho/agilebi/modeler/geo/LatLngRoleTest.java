@@ -23,8 +23,6 @@ public class LatLngRoleTest {
     assertTrue(role.eval("customer_lat", "lat"));
     assertEquals("customer", role.getPrefix());
 
-    assertFalse(role.eval("customerLat", "lat"));
-    assertEquals("", role.getPrefix());
   }
 
 }
