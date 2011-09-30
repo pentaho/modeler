@@ -47,7 +47,6 @@ public class GwtModelerDebugServlet extends RemoteServiceServlet implements IGwt
       database.setDBPort("3306");
 
       TableModelerSource source = new TableModelerSource(database, tableName, null);
-      ModelerWorkspace model = new ModelerWorkspace(new ModelerWorkspaceHelper(LocalizedString.DEFAULT_LOCALE));
       Domain d = null;
       try {
         d = source.generateDomain();

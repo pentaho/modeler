@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.agilebi.modeler.nodes.*;
@@ -80,7 +81,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private transient MultiTableAutoModelStrategy multiTableAutoModelStrategy;
   private transient StarSchemaAutoModelStrategy starSchemaAutoModelStrategy;
 
+  private GeoContext geoContext;
+
   public ModelerWorkspace(IModelerWorkspaceHelper helper) {
+    this(helper, null);
+  }
+  public ModelerWorkspace(IModelerWorkspaceHelper helper, GeoContext geoContext) {
 
     this.isTemporary = true;
     this.workspaceHelper = helper;
@@ -88,9 +94,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setModel(new MainModelNode(this));
     setRelationalModel(new RelationalModelNode(this));
 
-    simpleAutoModelStrategy = new SimpleAutoModelStrategy(workspaceHelper.getLocale());
+    this.geoContext = geoContext;
+    simpleAutoModelStrategy = new SimpleAutoModelStrategy(workspaceHelper.getLocale(), geoContext);
     multiTableAutoModelStrategy = new MultiTableAutoModelStrategy(workspaceHelper.getLocale());
-    starSchemaAutoModelStrategy = new StarSchemaAutoModelStrategy(workspaceHelper.getLocale());
+    starSchemaAutoModelStrategy = new StarSchemaAutoModelStrategy(workspaceHelper.getLocale(), geoContext);
   }
 
   @Bindable
@@ -962,6 +969,13 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     isValid();
   }
 
+  public void setGeoContext(GeoContext geoContext) {
+    this.geoContext = geoContext;
+    // reset the automodelstrategies
+    this.simpleAutoModelStrategy.setGeoContext(geoContext);
+    this.starSchemaAutoModelStrategy.setGeoContext(geoContext);
+  }
+
   public ModelerPerspective getCurrentModelerPerspective() {
     return currentModelerPerspective;
   }
@@ -1005,7 +1019,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return node;
   }
 
-  protected LogicalColumn findLogicalColumn(IPhysicalColumn column, ModelerPerspective perspective) {
+  public LogicalColumn findLogicalColumn(IPhysicalColumn column, ModelerPerspective perspective) {
     LogicalColumn col = null;
     IPhysicalTable physicalTable = column.getPhysicalTable();
     for (LogicalTable table : getDomain().getLogicalModels().get(0).getLogicalTables()) {

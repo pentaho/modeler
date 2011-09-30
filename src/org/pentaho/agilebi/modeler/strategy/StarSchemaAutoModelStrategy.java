@@ -21,6 +21,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.DataType;
@@ -36,6 +37,9 @@ import java.util.List;
 public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
   public StarSchemaAutoModelStrategy(String locale) {
     super(locale);
+  }
+  public StarSchemaAutoModelStrategy(String locale, GeoContext geoContext) {
+    super(locale, geoContext);
   }
 
   @Override
@@ -77,24 +81,30 @@ public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
         dim.setExpanded(false);
 
         for( AvailableField field : table.getAvailableFields() ) {
+          if(!isGeoField(field)) {
+            // create a hierarchy per field
+            HierarchyMetaData hierarchy = new HierarchyMetaData(field.getName());
+            hierarchy.setParent(dim);
+            hierarchy.setExpanded(false);
+            dim.add(hierarchy);
 
-          // create a hierarchy per field
-          HierarchyMetaData hierarchy = new HierarchyMetaData(field.getName());
-          hierarchy.setParent(dim);
-          hierarchy.setExpanded(false);
-          dim.add(hierarchy);
-
-          // create a level
-          LevelMetaData level = workspace.createLevelForParentWithNode(hierarchy, workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
-          if (level != null) {
-            hierarchy.add(level);
+            // create a level
+            LevelMetaData level = workspace.createLevelForParentWithNode(hierarchy, workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
+            if (level != null) {
+              hierarchy.add(level);
+            }
           }
-
         }
-        workspace.addDimension(dim);
+        // only add the dimension if it has hierarchies
+        if(dim.size() > 0) {
+          workspace.addDimension(dim);
+        }
       }
 
     }
+
+    addGeoDimensions(workspace.getModel().getDimensions(), workspace);
+    
     if (!mainModel.getSuppressEvents()) {
       workspace.setModelIsChanging(prevChangeState);
       workspace.setSelectedNode(workspace.getModel());

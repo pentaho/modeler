@@ -124,8 +124,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
 
   @Bindable
   public boolean isTime() {
-    // TODO: make time dimension real
-    return false;
+    return this.dataRole instanceof TimeRole;
   }
 
   @Bindable

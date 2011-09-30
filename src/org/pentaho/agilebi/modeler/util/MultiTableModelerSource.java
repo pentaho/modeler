@@ -23,6 +23,7 @@
   import org.pentaho.agilebi.modeler.ModelerException;
   import org.pentaho.agilebi.modeler.ModelerMode;
   import org.pentaho.agilebi.modeler.ModelerWorkspace;
+  import org.pentaho.agilebi.modeler.geo.GeoContext;
   import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
   import org.pentaho.agilebi.modeler.models.JoinTableModel;
   import org.pentaho.agilebi.modeler.models.SchemaModel;
@@ -49,15 +50,22 @@
     private SchemaModel schemaModel;
     private List<String> selectedTables;
     private String datasourceName;
+
+    private GeoContext geoContext;
+
     public static final String SOURCE_TYPE = MultiTableModelerSource.class.getSimpleName();
     private static Logger logger = LoggerFactory.getLogger(MultiTableModelerSource.class);
 
     public MultiTableModelerSource(DatabaseMeta databaseMeta, SchemaModel schemaModel, String datasourceName, List<String> selectedTables) {
+      this(databaseMeta, schemaModel, datasourceName, selectedTables, null);
+    }
+    public MultiTableModelerSource(DatabaseMeta databaseMeta, SchemaModel schemaModel, String datasourceName, List<String> selectedTables, GeoContext geoContext) {
       this.datasourceName = datasourceName;
       this.databaseMeta = databaseMeta;
       this.schemaModel = schemaModel;
       this.selectedTables = selectedTables;
       this.generator = new ModelGenerator();
+      this.geoContext = geoContext;
     }
 
     @Override
@@ -100,14 +108,14 @@
            
            ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(locale);
            if(selectedTables.size() == 1){ // single table mode
-             helper.setAutoModelStrategy(new SimpleAutoModelStrategy(locale));
+             helper.setAutoModelStrategy(new SimpleAutoModelStrategy(locale, geoContext));
            } else if (doOlap){
-             helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale));
+             helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale, geoContext));
            } else {
              helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
            }
 
-           ModelerWorkspace workspace = new ModelerWorkspace(helper);
+           ModelerWorkspace workspace = new ModelerWorkspace(helper, geoContext);
            workspace.setDomain(domain);
            
            LogicalModel logicalModel = domain.getLogicalModels().get(0);
@@ -129,9 +137,9 @@
              }
              // somehow the strategy is getting set to simple. setting it back again.
              if(selectedTables.size() == 1){ // single table mode
-               helper.setAutoModelStrategy(new SimpleAutoModelStrategy(locale));
+               helper.setAutoModelStrategy(new SimpleAutoModelStrategy(locale, geoContext));
              } else {
-               helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale));
+               helper.setAutoModelStrategy(new StarSchemaAutoModelStrategy(locale, geoContext));
              }
              helper.autoModelFlat(workspace);
              workspace.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);

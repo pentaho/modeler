@@ -17,13 +17,20 @@
 
 package org.pentaho.agilebi.modeler.strategy;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
+import org.pentaho.agilebi.modeler.geo.*;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.metadata.model.concept.types.DataType;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -35,6 +42,16 @@ import static junit.framework.Assert.assertTrue;
  */
 public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
   private static final String LOCALE = "en-US";
+  private static Properties props = null;
+  private static GeoContextConfigProvider config;
+
+  @BeforeClass
+  public static void bootstrap() throws IOException {
+    Reader propsReader = new FileReader(new File("test-res/geoRoles.properties"));
+    props = new Properties();
+    props.load(propsReader);
+    config = new GeoContextPropertiesProvider(props);
+  }
 
   @Override
   public void setUp() throws Exception {
@@ -83,6 +100,71 @@ public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
     // make sure the measures are accounted for too
     assertEquals(numericFactColumns.size(), workspace.getModel().getMeasures().size());
   }
+
+  @Test
+  public void testAutoModelGeo() throws Exception {
+    // expect one dim per non-fact table, one hierarchy per column, one level per hierarchy
+    // expect only numeric fields from the fact table to be created as measures
+    GeoContext geoContext = GeoContextFactory.create(config);
+    StarSchemaAutoModelStrategy strategy = new StarSchemaAutoModelStrategy(LOCALE, geoContext);
+
+    strategy.autoModelOlap(workspace, new MainModelNode());
+
+    HashMap<String, Integer> dimTables = new HashMap<String, Integer>();
+    HashSet<String> numericFactColumns = new HashSet<String>();
+
+    int geoFields = 0;
+
+    for(AvailableTable table : workspace.getAvailableTables().getAsAvailableTablesList()) {
+      if (table.getPhysicalTable().getProperty("FACT_TABLE") == null) {
+        int fields = 0;
+        for(AvailableField field : table.getAvailableFields()) {
+          if (geoContext.matchFieldToGeoRole(field) != null) {
+            // this is a geo field
+            geoFields++;
+            fields++;
+          } else {
+          }
+        }
+        dimTables.put(table.getName(), table.getAvailableFields().size() - fields);
+      } else {
+        // this is the fact table
+        for (AvailableField field : table.getAvailableFields()) {
+          if (field.getPhysicalColumn().getDataType() == DataType.NUMERIC && !numericFactColumns.contains(field.getName())) {
+            numericFactColumns.add(field.getName());
+          }
+        }
+      }
+    }
+    assertEquals(workspace.getAvailableTables().size() - 1, dimTables.size());
+    int actualGeoDims = 0;
+    int actualGeoLevels = 0;
+    for(DimensionMetaData dim : workspace.getModel().getDimensions()) {
+      if (dim.getDataRole() instanceof GeoRole) {
+        actualGeoDims++;
+        assertEquals(1, dim.size()); // only one hierarchy per geo dim
+        for(LevelMetaData level : dim.get(0)) {
+          actualGeoLevels++;
+        }
+      } else {
+        assertTrue(dimTables.containsKey(dim.getName()));
+        // there should be one hierarchy per column
+        assertEquals(dimTables.get(dim.getName()).intValue(), dim.size());
+        for (HierarchyMetaData hier : dim) {
+          // should only have one level
+          assertEquals(1, hier.size());
+          // level should be the same name as the hierarchy
+          assertEquals(hier.getName(), hier.get(0).getName());
+        }
+      }
+    }
+
+    // make sure the measures are accounted for too
+    assertEquals(numericFactColumns.size(), workspace.getModel().getMeasures().size());
+    assertTrue(actualGeoDims > 0);
+    assertEquals(geoFields, actualGeoLevels);
+  }
+
 
   @Test
   public void testAutoModelRelational() throws Exception {
