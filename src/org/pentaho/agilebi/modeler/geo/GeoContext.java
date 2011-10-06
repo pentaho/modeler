@@ -78,6 +78,11 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
     for(GeoRole role : this.geoRoles) {
       if (role.evaluate(field.getPhysicalColumn().getId())) {
         return role;
+      } else if (field.getPhysicalColumn().getId().startsWith("pc__")) {
+        // sql data sources prefix the column ids with pc__, if that is detected just match with out it
+        if (role.evaluate(field.getPhysicalColumn().getId().substring(4))) {
+          return role;
+        }
       }
     }
     return null;
@@ -189,8 +194,9 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LONGITUDE));
 
               }
-
-              hier.add(level);
+              if (!hier.contains(level)) {
+                hier.add(level);
+              }
             }
           }
         }
