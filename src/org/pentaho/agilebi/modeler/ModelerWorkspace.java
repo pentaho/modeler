@@ -464,8 +464,18 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   public void refresh(Domain newDomain) throws ModelerException {
 
+
+    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    for (IPhysicalTable table : newDomain.getPhysicalModels().get(0).getPhysicalTables()) {
+      boolean isFact = table.getProperty("FACT_TABLE") != null ? (Boolean) table.getProperty("FACT_TABLE") : false;
+      items.add(new AvailableTable(table, isFact));
+    }
+
+    availableTables.setChildren(items);
+
     setModelIsChanging(true);
     setRelationalModelIsChanging(true);
+
 
     // Set the type of modeling session. This will propigate to the UI
     if(supportsOlap(newDomain)){
@@ -475,98 +485,35 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       // clear out OLAP side of the existing model
       model.getDimensions().clear();
     }
-
-    Comparator<AvailableField> fieldComparator = new Comparator<AvailableField>() {
-          public int compare( AvailableField arg0, AvailableField arg1 ) {
-            return arg0.getPhysicalColumn().getId().compareTo(arg1.getPhysicalColumn().getId());
-          }
-    };
-
-    LogicalModel logicalModel = newDomain.getLogicalModels().get(0);
-
-    // Add in new physical tables/columns
-    for (IPhysicalTable table : newDomain.getPhysicalModels().get(0).getPhysicalTables()) {
-      // see if the table is in the availableTables list
-      AvailableTable aTable = availableTables.findAvailableTable(table.getName(LocalizedString.DEFAULT_LOCALE));
-      boolean isFact = table.getProperty("FACT_TABLE") != null ? (Boolean) table.getProperty("FACT_TABLE") : false;
-      if (aTable == null) {
-        // new table, make sure we add it
-        availableTables.add(new AvailableTable(table, isFact));
-      } else {
-        // table already exists here, make sure all the fields are accounted for
-        aTable.setFactTable(isFact);
-        for(IPhysicalColumn column : table.getPhysicalColumns()) {
-          boolean exists = false;
-          inner:
-          for(AvailableField field : aTable.getAvailableFields()) {
-            if (field.isSameUnderlyingPhysicalColumn(column)) {
-              exists = true;
-              break inner;
-            }
-          }
-          if (!exists) {
-            AvailableField field = new AvailableField(column);
-            aTable.getAvailableFields().add(field);
-            Collections.sort(aTable.getAvailableFields(), fieldComparator);
-          }
-        }
-      }
-    }
-
-    // Remove available tables/fields that no longer exist correspond to an available physical column
-    List<AvailableTable> tablesToRemove = new ArrayList<AvailableTable>();
     List<AvailableTable> tablesList = availableTables.getAsAvailableTablesList();
-
-    for (AvailableTable aTable : tablesList) {
-        List<AvailableField> toRemove = new ArrayList<AvailableField>();
-        boolean tableExists = false;
-        for (AvailableField field : aTable.getAvailableFields()) {
-          boolean exists = false;
-          inner:
-          for (IPhysicalTable table : newDomain.getPhysicalModels().get(0).getPhysicalTables()) {
-            if (aTable.isSameUnderlyingPhysicalTable(table)) {
-              tableExists = true;
-              for(IPhysicalColumn column : table.getPhysicalColumns()) {
-                if (field.isSameUnderlyingPhysicalColumn(column)) {
-                    exists = true;
-                    break inner;
-                }
-              }
-            }
-          }
-          if (!exists) {
-            toRemove.add(field);
-          }
-        }
-        aTable.getAvailableFields().removeAll(toRemove);
-        workspaceHelper.sortFields(aTable.getAvailableFields());
-
-        if (!tableExists) {
-          tablesToRemove.add(aTable);
-        }
-              }
-    availableTables.removeAll(tablesToRemove);
-    // TODO, sort the tables???
-
 
     fireTablesChanged();
 
+    // replace the domain with the new domain, which
+    // makes sure the physical and logical columns are accurate
+    domain = newDomain;
+    
     for (MeasureMetaData measure : model.getMeasures()) {
       boolean found = false;
       if (measure.getLogicalColumn() != null) {
         inner:
         for (AvailableTable table : tablesList) {
-            if (table.containsUnderlyingPhysicalColumn(measure.getLogicalColumn().getPhysicalColumn())) {
-              // the physical column backing this measure is still available, it is ok
+
+          for(AvailableField f: table.getAvailableFields()){
+            if (f.getPhysicalColumn().getId().equals(measure.getLogicalColumn().getPhysicalColumn().getId())
+                && f.getPhysicalColumn().getPhysicalTable().getId().equals(measure.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId())) {
+              // the physical column backing this measure is still available, set it to the new one
+              measure.setLogicalColumn(createColumnBackedNode(f, currentModelerPerspective).getLogicalColumn());
               found = true;
               break inner;
             }
             }
           }
-      if (!found) {
-        // the physical column that backed this measure no longer exists in the model.
-        // therefore, we must invalidate it's logical column
-        measure.setLogicalColumn(null);
+        if (!found) {
+          // the physical column that backed this measure no longer exists in the model.
+          // therefore, we must invalidate it's logical column
+          measure.setLogicalColumn(null);
+        }
       }
     }
 
@@ -578,11 +525,18 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             if (lm.getLogicalColumn() != null) {
               inner:
               for (AvailableTable table : tablesList) {
-                  if (table.containsUnderlyingPhysicalColumn(lm.getLogicalColumn().getPhysicalColumn())) {
+
+                 for(AvailableField f: table.getAvailableFields()){
+                  if (f.getPhysicalColumn().getId().equals(lm.getLogicalColumn().getPhysicalColumn().getId()) &&
+                      f.getPhysicalColumn().getPhysicalTable().getId().equals(lm.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId())
+                      ) {
                     // the physical column backing this level is still available, it is ok
+
+                    lm.setLogicalColumn(createColumnBackedNode(f, currentModelerPerspective).getLogicalColumn());
                     found = true;
                     break inner;
-                  }
+                    }
+                    }
                   }
                 }
             if (!found) {
@@ -603,7 +557,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         if (field.getLogicalColumn() != null) {
           inner:
           for (AvailableTable table : tablesList) {
-              if (table.containsUnderlyingPhysicalColumn(field.getLogicalColumn().getPhysicalColumn())) {
+            for(AvailableField f: table.getAvailableFields()){
+                  if (f.getPhysicalColumn().getId().equals(field.getLogicalColumn().getPhysicalColumn().getId())
+                      && f.getPhysicalColumn().getPhysicalTable().getId().equals(field.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId())
+                      ) {
+
                 // the physical column backing this field is still available, it is ok
                 found = true;
                 break inner;
@@ -616,6 +574,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           field.setLogicalColumn(null);
         }
       }
+    }
     }
 
     // If the new model was previously "auto-modeled" we need to clean that now
@@ -630,10 +589,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         theCubes.clear();
       }
     }
-    
-    // replace the domain with the new domain, which
-    // makes sure the physical and logical columns are accurate
-    domain = newDomain;
 
     setModelIsChanging(false);
     setRelationalModelIsChanging(false);
