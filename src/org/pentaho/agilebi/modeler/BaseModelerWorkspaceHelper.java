@@ -115,6 +115,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             OlapHierarchyLevel level = new OlapHierarchyLevel(hierarchy);
             level.setName(lvl.getName());
             LogicalColumn lCol = lvl.getLogicalColumn();
+
             if (lCol != null) {
 
               // Due to a bug in LogicalTable's clone() logical columns will be a child of an OLAP while reporting a
@@ -131,12 +132,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
               if(role instanceof LocationRole) {
                 // lat long is set as member properties (add as logical columns to achieve this)
                 LocationRole lRole = (LocationRole)role;
-                LogicalColumn latcol = model.findLogicalColumn(lRole.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
-                LogicalColumn loncol = model.findLogicalColumn(lRole.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
-                if(latcol != null && loncol != null) {
-                  level.getLogicalColumns().add(latcol);
-                  level.getLogicalColumns().add(loncol);
-                }
                 level.getAnnotations().add(new OlapAnnotation("Geo.Role", lRole.getName()));
 
                 if(lRole.getRequiredParentRoles().size() > 0) {
@@ -160,6 +155,14 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
                 hierarchy.setPrimaryKey(findPrimaryKeyFor(logicalModel, factTable, olapCloneLTable));
               }
             }
+
+            for (MemberPropertyMetaData memberProp : lvl) {
+              LogicalColumn lc = memberProp.getLogicalColumn();
+              if ( lc != null && !level.getLogicalColumns().contains(lc) ) {
+                level.getLogicalColumns().add(lc);
+              }
+            }
+
             level.setHavingUniqueMembers(lvl.isUniqueMembers());
             levels.add(level);
           }

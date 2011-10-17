@@ -279,6 +279,9 @@ public class ModelerController extends AbstractXulEventHandler {
     bf.createBinding(dimensionTree, "selectedItem", "levelBtn", "disabled",
         new ButtonConvertor(HierarchyMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
+    bf.createBinding(dimensionTree, "selectedItem", "memberPropBtn", "disabled",
+        new ButtonConvertor(LevelMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
     bf.createBinding(categoriesTree, "selectedItem", "fieldBtn", "disabled",
         new ButtonConvertor(CategoryMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
@@ -500,6 +503,49 @@ public class ModelerController extends AbstractXulEventHandler {
       e.printStackTrace();//logger.error(e);
     }
 
+  }
+
+  @Bindable
+  public void showNewMemberPropDialog() {
+    try {
+      XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
+      prompt.setTitle(ModelerMessagesHolder.getMessages().getString("ModelerController.NewMemberPropertyTitle")); //$NON-NLS-1$
+      prompt.setMessage(ModelerMessagesHolder.getMessages().getString("ModelerController.NewMemberPropertyText")); //$NON-NLS-1$
+      prompt.addDialogCallback(new XulDialogCallback() {
+
+        public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
+          if (returnCode == Status.ACCEPT) {
+            LevelMetaData theLevel = (LevelMetaData) dimTreeHelper.getSelectedTreeItem();
+            MemberPropertyMetaData theMemberProp = new MemberPropertyMetaData(theLevel, "" + retVal);
+
+            if (selectedFields.length > 0) {
+              IAvailableItem item = selectedFields[0];
+              if (item instanceof AvailableField) {
+                AvailableField f = (AvailableField)selectedFields[0];
+                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
+                theMemberProp.setLogicalColumn(node.getLogicalColumn());
+                workspace.setDirty(true);
+              }
+            }
+
+            theMemberProp.validate();
+            boolean prevChangeState = workspace.isModelChanging();
+            workspace.setModelIsChanging(true);
+            theLevel.add(theMemberProp);
+            workspace.setModelIsChanging(prevChangeState);
+
+          }
+        }
+
+        public void onError( XulComponent sender, Throwable t ) {
+          t.printStackTrace();//logger.error(t);
+        }
+      });
+      prompt.open();
+
+    } catch (Exception e) {
+      e.printStackTrace();//logger.error(e);
+    }
   }
 
   @Bindable

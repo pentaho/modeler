@@ -16,16 +16,20 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 @SuppressWarnings("unchecked")
-public class LevelMetaData extends BaseColumnBackedMetaData implements Serializable {
+public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaData> implements Serializable {
 
   private static final long serialVersionUID = -8026104295937064671L;
   private static final String IMAGE = "images/sm_level_icon.png";
@@ -115,11 +119,76 @@ public class LevelMetaData extends BaseColumnBackedMetaData implements Serializa
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return false;
+    return true;
   }
 
   @Override
   public Object onDrop(Object data) throws ModelerException {
-    throw new ModelerException(new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop")));
+    try{
+      MemberPropertyMetaData memberProp = null;
+      if(data instanceof AvailableField){
+        ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
+        memberProp = getWorkspace().createMemberPropertyForParentWithNode(this, node);
+      } else if(data instanceof MeasureMetaData){
+        MeasureMetaData measure = (MeasureMetaData) data;
+        memberProp = getWorkspace().createMemberPropertyForParentWithNode(this, measure);
+        memberProp.setName(measure.getName());
+      } else if(data instanceof LevelMetaData){
+        LevelMetaData level = (LevelMetaData) data;
+        memberProp = getWorkspace().createMemberPropertyForParentWithNode(this, level);
+        memberProp.setName(level.getName());
+      } else if(data instanceof MemberPropertyMetaData){
+        memberProp = (MemberPropertyMetaData) data;
+        memberProp.setParent(this);
+      } else {
+        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+      }
+      LogicalTable existingTable = getLogicalColumn().getLogicalTable();
+      if(memberProp.getLogicalColumn().getLogicalTable() != existingTable){
+        throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEMBER_PROP_FROM_DIFFERENT_TABLE"));
+      }
+      return memberProp;
+    } catch(Exception e){
+      throw new ModelerException(e);
+    }
   }
+
+  @Override
+  public void validate() {
+    super.validate();
+
+    HashMap<String, MemberPropertyMetaData> usedNames = new HashMap<String, MemberPropertyMetaData>();
+    if (children.size() > 0) {
+      for (MemberPropertyMetaData memberProp : children) {
+        valid &= memberProp.isValid();
+        validationMessages.addAll(memberProp.getValidationMessages());
+        if (usedNames.containsKey(memberProp.getName())) {
+          valid = false;
+          String dupeString = ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("DUPLICATE_MEMBER_PROPERTY_NAMES"), memberProp.getName());
+          validationMessages.add(dupeString);
+
+          memberProp.invalidate();
+          if (!memberProp.getValidationMessages().contains(dupeString)) {
+            memberProp.getValidationMessages().add(dupeString);
+          }
+
+          MemberPropertyMetaData m = usedNames.get(memberProp.getName());
+          if (m.isValid()) {
+            m.invalidate();
+            if (!m.getValidationMessages().contains(dupeString)) {
+              m.getValidationMessages().add(dupeString);
+            }
+          }
+        } else {
+          usedNames.put(memberProp.getName(), memberProp);
+        }
+      }
+    }
+  }
+
+  @Override
+  public String getValidationMessageKey(String key) {
+    return "validation.level." + key;
+  }
+
 }

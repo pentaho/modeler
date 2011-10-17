@@ -15,13 +15,14 @@ import java.io.Serializable;
  *
  * @author rfellows
  */
-public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implements Serializable, ColumnBackedNode {
+public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> extends AbstractMetaDataModelNode<T> implements Serializable, ColumnBackedNode {
   private static final long serialVersionUID = -7342401951588541248L;
   protected String name;
   protected String columnName;
   protected transient LogicalColumn logicalColumn;
   protected Boolean uniqueMembers = false;
   private static final String IMAGE = "images/sm_level_icon.png";
+  private String description = "";
 
   public BaseColumnBackedMetaData(){
 
@@ -54,6 +55,23 @@ public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implemen
       this.name = name;
       this.firePropertyChange("name", oldName, name); //$NON-NLS-1$
       this.firePropertyChange("displayName", oldName, name); //$NON-NLS-1$
+      validateNode();
+    }
+  }
+
+  @Bindable
+  public String getDescription() {
+    if( !description.equals(getLogicalColumn().getId()) ) {
+      return description;
+    } else return "";
+  }
+
+  @Bindable
+  public void setDescription(String description) {
+    if ( !description.equals(this.description) ) {
+      String oldDesc = this.description;
+      this.description = description;
+      this.firePropertyChange("description", oldDesc, description); //$NON-NLS-1$
       validateNode();
     }
   }
@@ -95,11 +113,11 @@ public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implemen
     validationMessages.clear();
     // check name
     if (name == null || "".equals(name)) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.measure.MISSING_NAME"));
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("MISSING_NAME")));
       valid = false;
     }
     if (logicalColumn == null) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.measure.MISSING_BACKING_COLUMN", getName()));
+      validationMessages.add(ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("MISSING_BACKING_COLUMN"), getName()));
       valid = false;
     }
   }
@@ -127,5 +145,9 @@ public class BaseColumnBackedMetaData extends AbstractMetaDataModelNode implemen
   @Override
   public Object onDrop(Object data) throws ModelerException {
     throw new ModelerException(new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop")));
+  }
+
+  public String getValidationMessageKey(String key) {
+    return "validation.measure." + key;
   }
 }
