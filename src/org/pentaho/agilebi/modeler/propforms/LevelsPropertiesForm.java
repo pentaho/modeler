@@ -29,20 +29,20 @@ import java.beans.PropertyChangeListener;
 
 public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBackedMetaData> {
 
-  private XulTextbox name;
-  private XulLabel sourceLabel;
-  private XulLabel level_message_label;
-  private XulVbox messageBox;
-  private String colName;
-  private String locale;
-  private XulButton messageBtn;
+  protected XulTextbox name;
+  protected XulLabel sourceLabel;
+  protected XulLabel level_message_label;
+  protected XulVbox messageBox;
+  protected String colName;
+  protected String locale;
+  protected XulButton messageBtn;
 
   public LevelsPropertiesForm(String panelId, String locale) {
     super(panelId);
     this.locale = locale;
   }
 
-  private PropertyChangeListener validListener = new PropertyChangeListener() {
+  protected PropertyChangeListener validListener = new PropertyChangeListener() {
 
     public void propertyChange( PropertyChangeEvent evt ) {
       if (!evt.getPropertyName().equals("valid") && !evt.getPropertyName().equals("logicalColumn")) {
@@ -72,7 +72,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     showValidations();
   }
 
-  private void showValidations() {
+  protected void showValidations() {
     if (getNode() == null) {
       return;
     }

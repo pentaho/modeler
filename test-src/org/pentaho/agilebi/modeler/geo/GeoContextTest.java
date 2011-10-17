@@ -390,6 +390,8 @@ public class GeoContextTest extends AbstractModelerTest {
               if(existingLevel.getName().equalsIgnoreCase("customername")) {
                 assertNotNull(existingLevel.getDataRole());
                 assertTrue(existingLevel.getDataRole() instanceof LocationRole);
+                assertEquals(2, existingLevel.size());
+
                 LocationRole lr = (LocationRole)existingLevel.getDataRole();
                 assertNotNull(lr.getLatitudeField());
                 assertNotNull(lr.getLongitudeField());

@@ -174,4 +174,56 @@
     </groupbox>
   </vbox>
   
+  <vbox id="memberprops">
+    <vbox bgcolor="#FFFFCC" id="memberprops_message">
+      <grid spacing="3">
+        <columns>
+          <column/>
+          <column flex="1"/>
+
+        </columns>
+        <rows>
+          <row flex="1">
+            <image src="images/warning.png" />
+            <label id="memberprops_message_label" flex="1" multiline="true"
+              value="This is a test to see how a warning message will appear." />
+          </row>
+
+       </rows>
+      </grid>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button id="fixMemberPropsColumnsBtn" label="${missing_columns}"
+          onclick="modeler.resolveMissingColumn()" visible="true" />
+        <spacer flex="1"/>
+        <button id="memberprops_message_btn" label="${more}"
+          onclick="modeler.showValidationMessagesDialog()" visible="false" />
+      </hbox>
+    </vbox>
+
+
+    <groupbox>
+      <caption label="${source_column}"/>
+      <hbox flex="1">
+        <label id="memberprops_source_col" value="" flex="1"/>
+        <button image="images/edit.png"
+            onclick="modeler.changeColumn()"  />
+
+      </hbox>
+    </groupbox>
+
+    <spacer height="5"/>
+
+    <groupbox>
+      <caption label="${details}"/>
+      <label value="${memberprops_name}:" />
+      <textbox id="memberprops_name" />
+
+      <label value="${node_description}:" />
+      <textbox id="memberprops_desc" multiline="true" height="70"/>
+
+    </groupbox>
+  </vbox>
+
+
 </vbox>

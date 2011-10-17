@@ -340,6 +340,20 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return level;
   }
 
+  public MemberPropertyMetaData createMemberPropertyForParentWithNode( LevelMetaData parent, ColumnBackedNode obj ) {
+    MemberPropertyMetaData memberProp = new MemberPropertyMetaData(parent, obj.getName());
+    memberProp.setParent(parent);
+    memberProp.setLogicalColumn(obj.getLogicalColumn());
+    return memberProp;
+  }
+
+  public MemberPropertyMetaData createMemberPropertyForParentWithNode( LevelMetaData parent, String name ) {
+    MemberPropertyMetaData memberProp = new MemberPropertyMetaData(parent, name);
+    memberProp.setParent(parent);
+    memberProp.setLogicalColumn(findLogicalColumn(name));
+    return memberProp;
+  }
+
   public FieldMetaData createFieldForParentWithNode( CategoryMetaData parent, AvailableField selectedField ) {
     FieldMetaData field = new FieldMetaData(parent, selectedField.getName(), "",
         selectedField.getDisplayName(), workspaceHelper.getLocale()); //$NON-NLS-1$
@@ -681,6 +695,17 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
               needsUpConverted = true;
             }
             theLevelMD.setLogicalColumn(theLevel.getReferenceColumn());
+
+            // get any logicalColumns and turn them into member properties
+            if( theLevel.getLogicalColumns() != null && theLevel.getLogicalColumns().size() > 0 ) {
+              for( LogicalColumn lc : theLevel.getLogicalColumns() ) {
+                MemberPropertyMetaData memberProp = new MemberPropertyMetaData(theLevelMD, lc.getName(workspaceHelper.getLocale()));
+                memberProp.setLogicalColumn(lc);
+                memberProp.setDescription(lc.getDescription(workspaceHelper.getLocale()));
+                theLevelMD.add(memberProp);
+              }
+            }
+            
             theHierarchyMD.add(theLevelMD);
           }
 

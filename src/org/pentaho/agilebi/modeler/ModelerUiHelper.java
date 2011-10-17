@@ -53,6 +53,11 @@ public class ModelerUiHelper {
     propController.setBindingFactory(bf);
     propController.init();
 
+    propController = new MemberPropertyPropertiesForm(LocalizedString.DEFAULT_LOCALE );
+    container.addEventHandler(propController);
+    controller.addPropertyForm(propController);
+    propController.setBindingFactory(bf);
+    propController.init();
 
     propController = new HierarchyPropertiesForm();
     container.addEventHandler(propController);

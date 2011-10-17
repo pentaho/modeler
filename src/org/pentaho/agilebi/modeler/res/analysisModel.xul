@@ -14,6 +14,7 @@
     <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png" onclick="modeler.showNewDimensionDialog()" disabled="true" tooltiptext="${add_dimension}"/>
     <toolbarbutton id="hierarchyBtn" image="images/sm_hierarchy_icon.png" onclick="modeler.showNewHierarchyDialog()" disabled="true" tooltiptext="${add_hiearchy}"/>
     <toolbarbutton id="levelBtn" image="images/sm_level_icon.png" onclick="modeler.showNewLevelDialog()" disabled="true" tooltiptext="${add_level}"/>
+    <toolbarbutton id="memberPropBtn" image="images/sm_member_prop_icon.png" onclick="modeler.showNewMemberPropDialog()" disabled="true" tooltiptext="${add_member_prop}"/>
     <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}"/>
     <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}"/>
     <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>

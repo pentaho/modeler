@@ -189,9 +189,15 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
                 // added as logical columns to the model.
                 ColumnBackedNode tmp = workspace.createColumnBackedNode(locationRole.getLatitudeField(), ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LATITUDE));
+                MemberPropertyMetaData memberProp = workspace.createMemberPropertyForParentWithNode(level, tmp);
+                memberProp.setName(LATITUDE);
+                level.add(memberProp);
 
                 tmp = workspace.createColumnBackedNode(locationRole.getLongitudeField(), ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LONGITUDE));
+                memberProp = workspace.createMemberPropertyForParentWithNode(level, tmp);
+                memberProp.setName(LONGITUDE);
+                level.add(memberProp);
 
               }
               if (!hier.contains(level)) {
@@ -219,9 +225,15 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
                 // added as logical columns to the model.
                 ColumnBackedNode tmp = workspace.createColumnBackedNode(locationRole.getLatitudeField(), ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LATITUDE));
+                MemberPropertyMetaData memberProp = workspace.createMemberPropertyForParentWithNode(existingLevel, tmp);
+                memberProp.setName(LATITUDE);
+                existingLevel.add(memberProp);
 
                 tmp = workspace.createColumnBackedNode(locationRole.getLongitudeField(), ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LONGITUDE));
+                memberProp = workspace.createMemberPropertyForParentWithNode(existingLevel, tmp);
+                memberProp.setName(LONGITUDE);
+                existingLevel.add(memberProp);
 
                 continue;
               }
