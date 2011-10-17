@@ -43,6 +43,11 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
     return name;
   }
 
+  @Override
+  public boolean isRestrictedByTable() {
+    return false;
+  }
+
   @Bindable
   public String getDisplayName() {
     return getName();

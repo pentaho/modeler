@@ -208,7 +208,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
       }
       if(size() > 0){
         LogicalTable existingTable = get(0).getLogicalColumn().getLogicalTable();
-        if(level.getLogicalColumn().getLogicalTable() != existingTable){
+        if(level.getLogicalColumn().getLogicalTable().getId() != existingTable.getId()){
           throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.TWO_TABLES_IN_HIERARCHY"));
         }
       }

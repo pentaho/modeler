@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import org.apache.tools.ant.taskdefs.Available;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.AbstractModelerNodeForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
@@ -33,6 +34,7 @@ import org.pentaho.ui.xul.containers.*;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.AbstractModelNode;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 import java.util.*;
@@ -767,7 +769,33 @@ public class ModelerController extends AbstractXulEventHandler {
         helper = dimTreeHelper;
         break;
     }
-    colController.show(this.workspace, (ColumnBackedNode) helper.getSelectedTreeItem());
+    ColumnBackedNode selected = (ColumnBackedNode) helper.getSelectedTreeItem();
+    AbstractMetaDataModelNode parent = (AbstractMetaDataModelNode)((AbstractMetaDataModelNode) helper.getSelectedTreeItem()).getParent();
+
+    // only restrict to a table if this node needs to & the node has siblings that might conflict when changing the parent
+    if( selected.isRestrictedByTable()) {
+      AvailableTable restrictToTable = null;
+      // try to find what table to limit the dialog to
+      if( selected.getLogicalColumn() != null && selected.getLogicalColumn().getLogicalTable() != null ) {
+        // restrict by the table of the current node
+        String lookup = selected.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getName(workspace.getWorkspaceHelper().getLocale());
+        restrictToTable = workspace.getAvailableTables().findAvailableTable(lookup);
+      } else {
+        // any siblings to try to restrict to?
+        for(Object sibling : parent) {
+          if (sibling instanceof ColumnBackedNode) {
+            ColumnBackedNode cbn = (ColumnBackedNode)sibling;
+            if( cbn.getLogicalColumn() != null && cbn.getLogicalColumn().getLogicalTable() != null ) {
+              String lookup = cbn.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getName(workspace.getWorkspaceHelper().getLocale());
+              restrictToTable = workspace.getAvailableTables().findAvailableTable(lookup);
+            }
+          }
+        }
+      }
+      colController.show(this.workspace, selected, restrictToTable);
+    } else {
+      colController.show(this.workspace, selected);
+    }
   }
 
   public void addPropertyForm( AbstractModelerNodeForm form ) {

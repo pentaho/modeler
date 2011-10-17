@@ -66,4 +66,9 @@ public class MemberPropertyMetaData extends BaseColumnBackedMetaData implements 
     return "validation.memberprop." + key;
   }
 
+  @Override
+  public boolean isRestrictedByTable() {
+    return true;
+  }
+
 }

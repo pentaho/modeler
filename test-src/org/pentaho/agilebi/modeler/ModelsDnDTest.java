@@ -52,6 +52,9 @@ public class ModelsDnDTest extends AbstractModelerTest {
 
     // measures can be reordered in the measures collection
     assertTrue(measures.acceptsDrop(firstMeasure));
+
+    assertTrue(firstLevel.acceptsDrop(new MemberPropertyMetaData(firstLevel, "test")));
+    assertTrue(firstLevel.acceptsDrop(firstField));
   }
 
 
@@ -155,6 +158,8 @@ public class ModelsDnDTest extends AbstractModelerTest {
 
     // measures can be reordered in the measures collection
     assertNotNull(measures.onDrop(firstMeasure));
+
+    assertNotNull(firstLevel.onDrop(firstField));
   }
 
 

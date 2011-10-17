@@ -18,6 +18,7 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableItemCollection;
+import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.agilebi.modeler.nodes.IAvailableItem;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.ui.xul.binding.Binding;
@@ -47,6 +48,18 @@ public class ColResolverController extends AbstractXulEventHandler {
 
   public ColResolverController() {
     items = new AvailableItemCollection();
+  }
+
+  public void show( ModelerWorkspace workspace, ColumnBackedNode node, AvailableTable restrictedToTable ) {
+    this.workspace = workspace;
+    items.clear();
+    if (restrictedToTable != null) {
+      items.add(restrictedToTable);
+    } else {
+      items.addAll(workspace.getAvailableTables());
+    }
+    this.node = node;
+    dialog.show();
   }
 
   public void show( ModelerWorkspace workspace, ColumnBackedNode node ) {

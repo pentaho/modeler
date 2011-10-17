@@ -119,7 +119,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return true;
+    return obj instanceof AvailableField || obj instanceof MemberPropertyMetaData;
   }
 
   @Override
@@ -129,14 +129,6 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
       if(data instanceof AvailableField){
         ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
         memberProp = getWorkspace().createMemberPropertyForParentWithNode(this, node);
-      } else if(data instanceof MeasureMetaData){
-        MeasureMetaData measure = (MeasureMetaData) data;
-        memberProp = getWorkspace().createMemberPropertyForParentWithNode(this, measure);
-        memberProp.setName(measure.getName());
-      } else if(data instanceof LevelMetaData){
-        LevelMetaData level = (LevelMetaData) data;
-        memberProp = getWorkspace().createMemberPropertyForParentWithNode(this, level);
-        memberProp.setName(level.getName());
       } else if(data instanceof MemberPropertyMetaData){
         memberProp = (MemberPropertyMetaData) data;
         memberProp.setParent(this);
@@ -144,7 +136,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }
       LogicalTable existingTable = getLogicalColumn().getLogicalTable();
-      if(memberProp.getLogicalColumn().getLogicalTable() != existingTable){
+      if(memberProp.getLogicalColumn().getLogicalTable().getId() != existingTable.getId()){
         throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.MEMBER_PROP_FROM_DIFFERENT_TABLE"));
       }
       return memberProp;
@@ -152,7 +144,6 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
       throw new ModelerException(e);
     }
   }
-
   @Override
   public void validate() {
     super.validate();
@@ -191,4 +182,8 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
     return "validation.level." + key;
   }
 
+  @Override
+  public boolean isRestrictedByTable() {
+    return true;
+  }
 }
