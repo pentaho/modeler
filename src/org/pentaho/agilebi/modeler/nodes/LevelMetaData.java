@@ -129,7 +129,9 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
       return myTableId.equals(field.getPhysicalColumn().getPhysicalTable().getId());
     } else if ( obj instanceof MemberPropertyMetaData ) {
       MemberPropertyMetaData field = (MemberPropertyMetaData) obj;
-      return myTableId.equals(field.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId());
+      if(field.getLogicalColumn() != null) {
+        return myTableId.equals(field.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId());
+      }
     }
     return false;
   }
