@@ -22,6 +22,7 @@ import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -119,7 +120,18 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return obj instanceof AvailableField || obj instanceof MemberPropertyMetaData;
+    if (this.getLogicalColumn() == null) {
+      return false;
+    }
+    String myTableId = this.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId();
+    if( obj instanceof AvailableField ) {
+      AvailableField field = (AvailableField) obj;
+      return myTableId.equals(field.getPhysicalColumn().getPhysicalTable().getId());
+    } else if ( obj instanceof MemberPropertyMetaData ) {
+      MemberPropertyMetaData field = (MemberPropertyMetaData) obj;
+      return myTableId.equals(field.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId());
+    }
+    return false;
   }
 
   @Override
@@ -183,7 +195,20 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
   }
 
   @Override
-  public boolean isRestrictedByTable() {
-    return true;
+  public IPhysicalTable getTableRestriction() {
+    // if the level has children (member props), restrict to the current table
+    if(this.size() > 0 && this.getLogicalColumn() != null) {
+      return this.getLogicalColumn().getPhysicalColumn().getPhysicalTable();
+    }
+    // restricted by siblings table
+    if (parent != null && parent.size() > 0) {
+      for (LevelMetaData sibling : parent) {
+        if (sibling != this && sibling.getLogicalColumn() != null) {
+          return sibling.getLogicalColumn().getPhysicalColumn().getPhysicalTable();
+        }
+      }
+    }
+    return null;
   }
+
 }

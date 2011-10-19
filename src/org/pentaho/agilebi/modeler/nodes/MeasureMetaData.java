@@ -19,6 +19,7 @@ package org.pentaho.agilebi.modeler.nodes;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.MeasuresPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -79,5 +80,13 @@ public class MeasureMetaData extends BaseAggregationMetaDataNode {
     }
   }
 
-
+  @Override
+  public IPhysicalTable getTableRestriction() {
+    // restrict to the fact table if one exists
+    AvailableTable factTable = getWorkspace().getAvailableTables().findFactTable();
+    if(factTable != null) {
+      return factTable.getPhysicalTable();
+    }
+    return null;
+  }
 }

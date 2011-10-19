@@ -4,6 +4,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.MemberPropertyPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
@@ -67,8 +68,11 @@ public class MemberPropertyMetaData extends BaseColumnBackedMetaData implements 
   }
 
   @Override
-  public boolean isRestrictedByTable() {
-    return true;
+  public IPhysicalTable getTableRestriction() {
+    // restrict to the table of the parent Level
+    if (parent.getLogicalColumn() != null) {
+      return parent.getLogicalColumn().getPhysicalColumn().getPhysicalTable();
+    }
+    return parent.getTableRestriction();
   }
-
 }

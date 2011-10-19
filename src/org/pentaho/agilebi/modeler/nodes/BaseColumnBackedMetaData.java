@@ -5,6 +5,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -44,8 +45,8 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   }
 
   @Override
-  public boolean isRestrictedByTable() {
-    return false;
+  public IPhysicalTable getTableRestriction() {
+    return null;
   }
 
   @Bindable
@@ -66,7 +67,7 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
 
   @Bindable
   public String getDescription() {
-    if( !description.equals(getLogicalColumn().getId()) ) {
+    if( getLogicalColumn() != null && !description.equals(getLogicalColumn().getId()) ) {
       return description;
     } else return "";
   }

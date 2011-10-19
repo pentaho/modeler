@@ -20,6 +20,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
@@ -131,7 +132,42 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return (obj instanceof AvailableField || obj instanceof AvailableTable || obj instanceof MeasureMetaData);
+    boolean isSupportedType = false;
+    isSupportedType = (obj instanceof AvailableField || obj instanceof AvailableTable || obj instanceof MeasureMetaData);
+    if (!isSupportedType) {
+      return false;
+    }
+
+    if ( obj instanceof MeasureMetaData ) {
+      return true;
+    } else if( obj instanceof AvailableField ) {
+      AvailableField field = (AvailableField) obj;
+      if( isFactTable(field.getPhysicalColumn().getPhysicalTable()) || getWorkspace().getAvailableTables().size() == 1 ) {
+        return true;
+      }
+    } else if ( obj instanceof AvailableTable ) {
+      AvailableTable field = (AvailableTable) obj;
+      if( isFactTable(field.getPhysicalTable()) || getWorkspace().getAvailableTables().size() == 1 ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isFactTable(IPhysicalTable table) {
+    String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
+    if(agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0){
+      // if we're in a multi-table mode check for a fact table
+      if(getWorkspace().getAvailableTables().size() > 1){
+        Object factProp = table.getProperty("FACT_TABLE");
+        if(factProp == null || factProp.equals(Boolean.FALSE)){
+          return false;
+        } else {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   @Override

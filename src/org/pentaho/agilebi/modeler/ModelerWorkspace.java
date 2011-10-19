@@ -71,6 +71,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private boolean isTemporary;
 
   private AbstractMetaDataModelNode selectedNode;
+  private IAvailableItem selectedAvailableItem;
   private IModelerWorkspaceHelper workspaceHelper;
   private AbstractMetaDataModelNode selectedRelationalNode;
 
@@ -82,6 +83,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private transient StarSchemaAutoModelStrategy starSchemaAutoModelStrategy;
 
   private GeoContext geoContext;
+
+  private transient ModelerTreeHelper currentModelerTreeHelper;
 
   public ModelerWorkspace(IModelerWorkspaceHelper helper) {
     this(helper, null);
@@ -917,6 +920,18 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
 
   @Bindable
+  public IAvailableItem getSelectedAvailableItem() {
+    return selectedAvailableItem;
+  }
+
+  @Bindable
+  public void setSelectedAvailableItem(IAvailableItem selectedAvailableItem) {
+    IAvailableItem prev = this.selectedAvailableItem;
+    this.selectedAvailableItem = selectedAvailableItem;
+    firePropertyChange("selectedAvailableItem", prev, selectedAvailableItem);
+  }
+
+  @Bindable
   public AbstractMetaDataModelNode getSelectedRelationalNode() {
     return selectedRelationalNode;
   }
@@ -956,12 +971,15 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.starSchemaAutoModelStrategy.setGeoContext(geoContext);
   }
 
+  @Bindable
   public ModelerPerspective getCurrentModelerPerspective() {
     return currentModelerPerspective;
   }
 
+  @Bindable
   public void setCurrentModelerPerspective(ModelerPerspective currentModelerPerspective) {
     this.currentModelerPerspective = currentModelerPerspective;
+    firePropertyChange("currentModelerPerspective", null, currentModelerPerspective);
   }
 
   public ColumnBackedNode createColumnBackedNode(AvailableField field, ModelerPerspective perspective) {
@@ -1020,4 +1038,13 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return col;
   }
 
+  @Bindable
+  public ModelerTreeHelper getCurrentModelerTreeHelper() {
+    return currentModelerTreeHelper;
+  }
+
+  @Bindable
+  public void setCurrentModelerTreeHelper(ModelerTreeHelper currentModelerTreeHelper) {
+    this.currentModelerTreeHelper = currentModelerTreeHelper;
+  }
 }

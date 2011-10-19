@@ -16,10 +16,10 @@
  */
 package org.pentaho.agilebi.modeler;
 
-import org.apache.tools.ant.taskdefs.Available;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.AbstractModelerNodeForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -34,7 +34,6 @@ import org.pentaho.ui.xul.containers.*;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.util.AbstractModelNode;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 import java.util.*;
@@ -179,11 +178,40 @@ public class ModelerController extends AbstractXulEventHandler {
     modelPanel = (XulHbox) document.getElementById("modelPanel");
     modelTabbox = (XulTabbox) document.getElementById("modelTabbox");
 
+    XulTree fieldListTree = (XulTree) document.getElementById(FIELD_LIST_ID);
+
     bf.setBindingType(Type.ONE_WAY);
     fieldListBinding = bf.createBinding(workspace.getAvailableTables(), "children", FIELD_LIST_ID,
         "elements"); //$NON-NLS-1$ //$NON-NLS-2$
     selectedFieldsBinding = bf.createBinding(FIELD_LIST_ID, "selectedItem", this,
         "selectedFieldsChanged"); //$NON-NLS-1$//$NON-NLS-2$
+
+    bf.createBinding(FIELD_LIST_ID, "selectedItem", workspace, "selectedAvailableItem");
+
+    bf.createBinding(workspace, "currentModelerPerspective", workspace, "currentModelerTreeHelper",
+        new BindingConvertor<ModelerPerspective, ModelerTreeHelper>() {
+
+          @Override
+          public ModelerTreeHelper sourceToTarget(ModelerPerspective modelerPerspective) {
+            switch (modelerPerspective) {
+              case ANALYSIS:
+                return dimTreeHelper;
+              case REPORTING:
+                return catTreeHelper;
+              default:
+                return dimTreeHelper;
+            }
+          }
+
+          @Override
+          public ModelerPerspective targetToSource(ModelerTreeHelper modelerTreeHelper) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+          }
+        });
+
+
+    // for the firing of the modelerperspective
+    workspace.setCurrentModelerPerspective(workspace.getCurrentModelerPerspective());
 
     modelTreeBinding = bf.createBinding(workspace, "model", dimensionTree, "elements"); //$NON-NLS-1$//$NON-NLS-2$
     relModelTreeBinding = bf.createBinding(workspace, "relationalModel", categoriesTree, "elements"); //$NON-NLS-1$//$NON-NLS-2$
@@ -210,6 +238,7 @@ public class ModelerController extends AbstractXulEventHandler {
           }
 
         });
+
     bf.createBinding(workspace, "selectedRelationalNode", categoriesTree, "selectedItems",
         new BindingConvertor<AbstractMetaDataModelNode, Collection>() { //$NON-NLS-1$//$NON-NLS-2$
 
@@ -227,68 +256,62 @@ public class ModelerController extends AbstractXulEventHandler {
 
     bf.setBindingType(Type.ONE_WAY);
 
-    bf.createBinding("fieldList", "selectedItem", "addField", "disabled",
-        new BindingConvertor<Object, Boolean>() { //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$//$NON-NLS-4$
 
-          public Boolean sourceToTarget( Object value ) {
-            if (getModelerPerspective() == ModelerPerspective.ANALYSIS) {
-              return getSelectedFields().length == 0 || dimTreeHelper.getSelectedTreeItem() == null || dimTreeHelper.getSelectedTreeItem() instanceof LevelMetaData || dimTreeHelper.getSelectedTreeItem() instanceof MainModelNode;
-            } else {
-              if (value instanceof AvailableTable) {
-                return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || catTreeHelper.getSelectedTreeItem() instanceof FieldMetaData || catTreeHelper.getSelectedTreeItem() instanceof RelationalModelNode;
-              } else {
-                return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || catTreeHelper.getSelectedTreeItem() instanceof FieldMetaData || catTreeHelper.getSelectedTreeItem() instanceof RelationalModelNode || catTreeHelper.getSelectedTreeItem() instanceof CategoryMetaDataCollection;
-              }
-          }
-          }
-
-          public Object targetToSource( Boolean value ) {
-            return null;
-          }
-        });
-
-    bf.createBinding(dimensionTree, "selectedItem", "addField", "disabled",
-        new BindingConvertor<Object, Boolean>() { //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-
-          public Boolean sourceToTarget( Object value ) {
-            return getSelectedFields().length == 0 || dimTreeHelper.getSelectedTreeItem() == null || dimTreeHelper.getSelectedTreeItem() instanceof LevelMetaData || dimTreeHelper.getSelectedTreeItem() instanceof MainModelNode;
-          }
-
-          public Object targetToSource( Boolean value ) {
-            return null;
-          }
-        });
-
-    bf.createBinding(categoriesTree, "selectedItem", "addField", "disabled",
-        new BindingConvertor<Object, Boolean>() { //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
-
-          public Boolean sourceToTarget( Object value ) {
-            return getSelectedFields().length == 0 || catTreeHelper.getSelectedTreeItem() == null || !(catTreeHelper.getSelectedTreeItem() instanceof CategoryMetaData);
-          }
-
-          public Object targetToSource( Boolean value ) {
-            return null;
-          }
-        });
-
-
-    bf.createBinding(dimensionTree, "selectedItem", "measureBtn", "disabled",
-        new ButtonConvertor(MeasuresCollection.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
     bf.createBinding(dimensionTree, "selectedItem", "dimensionBtn", "disabled",
         new ButtonConvertor(DimensionMetaDataCollection.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
     bf.createBinding(dimensionTree, "selectedItem", "hierarchyBtn", "disabled",
         new ButtonConvertor(DimensionMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+    // control the add measure button state based on selection in the model tree
+    bf.createBinding(dimensionTree, "selectedItem", "measureBtn", "disabled",
+        new ButtonConvertor(MeasuresCollection.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+    // control the add level button state based on selection in the model tree
     bf.createBinding(dimensionTree, "selectedItem", "levelBtn", "disabled",
         new ButtonConvertor(HierarchyMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
+    // control the add member prop button state based on selection in the model tree
     bf.createBinding(dimensionTree, "selectedItem", "memberPropBtn", "disabled",
         new ButtonConvertor(LevelMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+    // control the add field button state based on the selection in the model tree
+    bf.createBinding(dimensionTree, "selectedItem", "addField", "disabled",
+        new AcceptsDropConvertor(workspace, MeasuresCollection.class, HierarchyMetaData.class, LevelMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+    // control the add field button state based on the selection in field list
+    bf.createBinding("fieldList", "selectedItem", "addField", "disabled",
+        new AcceptsAvailableItemDropConvertor(workspace)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+//    // control the add member prop button state based on the selection in field list
+//    bf.createBinding("fieldList", "selectedItem", "measureBtn", "disabled",
+//        new AcceptsAvailableFieldDropConvertor(dimTreeHelper, MeasuresCollection.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+//
+//    // control the add member prop button state based on the selection in field list
+//    bf.createBinding("fieldList", "selectedItem", "levelBtn", "disabled",
+//        new AcceptsAvailableFieldDropConvertor(dimTreeHelper, HierarchyMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+//
+//    // control the add member prop button state based on the selection in field list
+//    bf.createBinding("fieldList", "selectedItem", "memberPropBtn", "disabled",
+//        new AcceptsAvailableFieldDropConvertor(dimTreeHelper, LevelMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+
+    // control the add field button state based on the selection in field list
+//    bf.createBinding("fieldList", "selectedItem", "addField", "disabled",
+//        new AcceptsAvailableItemDropConvertor(catTreeHelper)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+    bf.createBinding(categoriesTree, "selectedItem", "addField", "disabled",
+        new AcceptsDropConvertor(workspace, CategoryMetaData.class, CategoryMetaDataCollection.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
     bf.createBinding(categoriesTree, "selectedItem", "fieldBtn", "disabled",
         new ButtonConvertor(CategoryMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
     bf.createBinding(categoriesTree, "selectedItem", "categoryBtn", "disabled",
         new ButtonConvertor(CategoryMetaDataCollection.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+
+    // control the add field prop button state based on the selection in field list
+    bf.createBinding("fieldList", "selectedItem", "fieldBtn", "disabled",
+        new AcceptsAvailableFieldDropConvertor(catTreeHelper, CategoryMetaData.class)); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
     bf.setBindingType(Type.BI_DIRECTIONAL);
     fireBindings();
@@ -395,18 +418,6 @@ public class ModelerController extends AbstractXulEventHandler {
             MeasureMetaData theMeasure = new MeasureMetaData("" + retVal, "",
                 "" + retVal, workspace.getWorkspaceHelper().getLocale()); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
 
-            if (selectedFields.length > 0) {
-              IAvailableItem item = selectedFields[0];
-              if (item instanceof AvailableField) {
-                AvailableField f = (AvailableField)selectedFields[0];
-                if(f != null){
-                  ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
-                  theMeasure.setLogicalColumn(node.getLogicalColumn());
-                  workspace.setDirty(true);
-                }
-              }
-            }
-
             theMeasure.setParent(theMesaures);
             theMeasure.validate();
 
@@ -476,16 +487,6 @@ public class ModelerController extends AbstractXulEventHandler {
             HierarchyMetaData theHierarchy = (HierarchyMetaData) dimTreeHelper.getSelectedTreeItem();
             LevelMetaData theLevel = new LevelMetaData(theHierarchy, "" + retVal);
 
-            if (selectedFields.length > 0) {
-              IAvailableItem item = selectedFields[0];
-              if (item instanceof AvailableField) {
-                AvailableField f = (AvailableField)selectedFields[0];
-                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
-                theLevel.setLogicalColumn(node.getLogicalColumn());
-                workspace.setDirty(true);
-              }
-            }
-
             theLevel.validate();
             boolean prevChangeState = workspace.isModelChanging();
             workspace.setModelIsChanging(true);
@@ -519,16 +520,6 @@ public class ModelerController extends AbstractXulEventHandler {
           if (returnCode == Status.ACCEPT) {
             LevelMetaData theLevel = (LevelMetaData) dimTreeHelper.getSelectedTreeItem();
             MemberPropertyMetaData theMemberProp = new MemberPropertyMetaData(theLevel, "" + retVal);
-
-            if (selectedFields.length > 0) {
-              IAvailableItem item = selectedFields[0];
-              if (item instanceof AvailableField) {
-                AvailableField f = (AvailableField)selectedFields[0];
-                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.ANALYSIS);
-                theMemberProp.setLogicalColumn(node.getLogicalColumn());
-                workspace.setDirty(true);
-              }
-            }
 
             theMemberProp.validate();
             boolean prevChangeState = workspace.isModelChanging();
@@ -630,16 +621,6 @@ public class ModelerController extends AbstractXulEventHandler {
           if (returnCode == Status.ACCEPT) {
             CategoryMetaData theCategory = (CategoryMetaData) catTreeHelper.getSelectedTreeItem();
             FieldMetaData theField = new FieldMetaData(theCategory, "" + retVal, "", "" + retVal, workspace.getWorkspaceHelper().getLocale());
-
-            if (selectedFields.length > 0) {
-              IAvailableItem item = selectedFields[0];
-              if (item instanceof AvailableField) {
-                AvailableField f = (AvailableField)selectedFields[0];
-                ColumnBackedNode node = workspace.createColumnBackedNode(f, ModelerPerspective.REPORTING);
-                theField.setLogicalColumn(node.getLogicalColumn());
-                workspace.setDirty(true);
-              }
-            }
 
             theField.validate();
             boolean prevChangeState = workspace.isModelChanging();
@@ -773,25 +754,10 @@ public class ModelerController extends AbstractXulEventHandler {
     AbstractMetaDataModelNode parent = (AbstractMetaDataModelNode)((AbstractMetaDataModelNode) helper.getSelectedTreeItem()).getParent();
 
     // only restrict to a table if this node needs to & the node has siblings that might conflict when changing the parent
-    if( selected.isRestrictedByTable()) {
+    IPhysicalTable restrictedPhysicalTable = selected.getTableRestriction();
+    if( restrictedPhysicalTable != null ) {
       AvailableTable restrictToTable = null;
-      // try to find what table to limit the dialog to
-      if( selected.getLogicalColumn() != null && selected.getLogicalColumn().getLogicalTable() != null ) {
-        // restrict by the table of the current node
-        String lookup = selected.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getName(workspace.getWorkspaceHelper().getLocale());
-        restrictToTable = workspace.getAvailableTables().findAvailableTable(lookup);
-      } else {
-        // any siblings to try to restrict to?
-        for(Object sibling : parent) {
-          if (sibling instanceof ColumnBackedNode) {
-            ColumnBackedNode cbn = (ColumnBackedNode)sibling;
-            if( cbn.getLogicalColumn() != null && cbn.getLogicalColumn().getLogicalTable() != null ) {
-              String lookup = cbn.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getName(workspace.getWorkspaceHelper().getLocale());
-              restrictToTable = workspace.getAvailableTables().findAvailableTable(lookup);
-            }
-          }
-        }
-      }
+      restrictToTable = workspace.getAvailableTables().findAvailableTable(restrictedPhysicalTable.getName(getWorkspaceHelper().getLocale()));
       colController.show(this.workspace, selected, restrictToTable);
     } else {
       colController.show(this.workspace, selected);
@@ -851,6 +817,109 @@ public class ModelerController extends AbstractXulEventHandler {
 
     public Boolean sourceToTarget( Object value ) {
       return value == null || !(value.getClass() == type);
+    }
+
+    public Object targetToSource( Boolean value ) {
+      return null;
+    }
+  }
+  private static class AcceptsAvailableFieldDropConvertor extends BindingConvertor<Object, Boolean> {
+    private ModelerTreeHelper helper;
+    protected Set<Class> types = new HashSet<Class>();
+    private Class restrictType;
+
+    public AcceptsAvailableFieldDropConvertor(ModelerTreeHelper helper) {
+      this.helper = helper;
+      this.types.add(AvailableField.class);
+    }
+    public AcceptsAvailableFieldDropConvertor(ModelerTreeHelper helper, Class aClass) {
+      this.helper = helper;
+      this.restrictType = aClass;
+      this.types.add(AvailableField.class);
+    }
+
+    public ModelerTreeHelper getHelper() {
+      return helper;
+    }
+
+    public void setHelper(ModelerTreeHelper helper) {
+      this.helper = helper;
+    }
+
+    public Boolean sourceToTarget( Object value ) {
+      if(getHelper() == null) {
+        return true;
+      }
+      Object obj = getHelper().getSelectedTreeItem();
+
+      if (value == null || !types.contains(value.getClass()) ) {
+        return true; // disable the button by setting the disabled state to true
+      }
+      if (this.restrictType != null) {
+        if (obj instanceof AbstractMetaDataModelNode) {
+          if(obj.getClass() == restrictType ) {
+            AbstractMetaDataModelNode n = (AbstractMetaDataModelNode) obj;
+            return !n.acceptsDrop(value);
+          }
+        }
+      } else {
+        if (obj instanceof AbstractMetaDataModelNode) {
+          AbstractMetaDataModelNode n = (AbstractMetaDataModelNode) obj;
+          return !n.acceptsDrop(value);
+        }
+      }
+      return true;
+    }
+
+    public Object targetToSource( Boolean value ) {
+      return null;
+    }
+  }
+
+  private static class AcceptsAvailableItemDropConvertor extends AcceptsAvailableFieldDropConvertor {
+    private ModelerWorkspace workspace;
+
+    public AcceptsAvailableItemDropConvertor(ModelerWorkspace workspace) {
+      super(workspace.getCurrentModelerTreeHelper());
+      types.add(AvailableTable.class);
+      this.workspace = workspace;
+    }
+
+    public AcceptsAvailableItemDropConvertor(ModelerWorkspace workspace, Class aClass) {
+      super(workspace.getCurrentModelerTreeHelper(), aClass);
+      types.add(AvailableTable.class);
+      this.workspace = workspace;
+    }
+
+    @Override
+    public ModelerTreeHelper getHelper() {
+      return workspace.getCurrentModelerTreeHelper();
+    }
+
+  }
+  
+  private static class AcceptsDropConvertor extends BindingConvertor<Object, Boolean> {
+    private Set<Class> types;
+    private ModelerWorkspace workspace;
+
+    public AcceptsDropConvertor(ModelerWorkspace workspace, Class... aClasses) {
+      this.types = new HashSet(Arrays.asList(aClasses));
+      this.workspace = workspace;
+    }
+
+    public Boolean sourceToTarget( Object value ) {
+      if (value == null || !types.contains(value.getClass()) ) {
+        return true; // disable the button by setting the disabled state to true
+      }
+      if (workspace != null) {
+        IAvailableItem selected = workspace.getSelectedAvailableItem();
+        if (selected instanceof AvailableField) {
+          AbstractMetaDataModelNode node = (AbstractMetaDataModelNode)value;
+          AvailableField n = (AvailableField) selected;
+          return !node.acceptsDrop(n);
+        }
+      }
+      return true;
     }
 
     public Object targetToSource( Boolean value ) {

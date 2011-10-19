@@ -186,7 +186,31 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
 
   @Override
   public boolean acceptsDrop(Object obj) {
-    return obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData;
+    boolean isSupportedType = false;
+    isSupportedType = (obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData);
+
+    // get the columns of children, make sure the potential drop object is backed by the same table
+    if(isSupportedType) {
+      if (size() == 0) {
+        // no children to compare tables with, accept the drop
+        return true;
+      }
+      LevelMetaData level = this.get(0);
+      if (level.getLogicalColumn() == null) {
+        return false; // make them fix the broken column first
+      }
+      String myTableId = level.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId();
+      if( obj instanceof AvailableField ) {
+        AvailableField field = (AvailableField) obj;
+        return myTableId.equals(field.getPhysicalColumn().getPhysicalTable().getId());
+      } else if ( obj instanceof ColumnBackedNode ) {
+        // this will take care of both Levels & Measures
+        ColumnBackedNode field = (ColumnBackedNode) obj;
+        return myTableId.equals(field.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId());
+      }
+    }
+    return false;
+
   }
 
   @Override

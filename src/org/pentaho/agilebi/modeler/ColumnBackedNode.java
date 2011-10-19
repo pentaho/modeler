@@ -16,11 +16,12 @@
  */
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 
 public interface ColumnBackedNode {
   void setLogicalColumn(LogicalColumn col);
   LogicalColumn getLogicalColumn();
   String getName();
-  boolean isRestrictedByTable();
+  IPhysicalTable getTableRestriction();
 }
