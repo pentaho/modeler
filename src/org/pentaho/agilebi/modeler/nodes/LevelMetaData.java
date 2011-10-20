@@ -232,4 +232,22 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
     }
     return null;
   }
+
+  public MemberPropertyMetaData getLatitudeField(){
+    for(MemberPropertyMetaData member : this){
+      if(member.getName().equals("latitude")){
+        return member;
+      }
+    }
+    return null;
+  }
+
+  public MemberPropertyMetaData getLongitudeField(){
+    for(MemberPropertyMetaData member : this){
+      if(member.getName().equals("longitude")){
+        return member;
+      }
+    }
+    return null;
+  }
 }
