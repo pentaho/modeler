@@ -16,13 +16,14 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 
 import java.io.Serializable;
 
 public interface ModelerNodePropertiesForm<T> extends XulEventHandler, Serializable {
-  void init();
+  void init(ModelerWorkspace workspace);
   void setBindingFactory( BindingFactory bf);
   void activate(T selection);
   void setObject(T t);

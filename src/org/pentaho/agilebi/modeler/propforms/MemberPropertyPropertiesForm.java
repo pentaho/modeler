@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.components.XulButton;
@@ -27,7 +28,8 @@ public class MemberPropertyPropertiesForm extends LevelsPropertiesForm {
     super(ID, locale);
   }
 
-  public void init() {
+  public void init(ModelerWorkspace workspace) {
+    this.workspace = workspace;
     deck = (XulDeck) document.getElementById("propertiesdeck");
     panel = (XulVbox) document.getElementById(ID);
 

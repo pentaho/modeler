@@ -2,6 +2,10 @@ package org.pentaho.agilebi.modeler;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
+import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
+import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.models.SchemaModel;
 import org.pentaho.agilebi.modeler.util.*;
 import org.pentaho.di.core.KettleEnvironment;
@@ -13,7 +17,10 @@ import org.pentaho.metadata.util.XmiParser;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * User: nbaker
@@ -44,7 +51,14 @@ public class AbstractModelerTest {
     if(ModelerMessagesHolder.getMessages() == null){
       ModelerMessagesHolder.setMessages(new SpoonModelerMessages());
     }
-    workspace = new ModelerWorkspace(new ModelerWorkspaceHelper(LOCALE));
+
+    Reader propsReader = new FileReader(new File("test-res/geoRoles.properties"));
+    Properties props = new Properties();
+    props.load(propsReader);
+    GeoContextConfigProvider config = new GeoContextPropertiesProvider(props);
+    GeoContext geo = GeoContextFactory.create(config);
+
+    workspace = new ModelerWorkspace(new ModelerWorkspaceHelper(LOCALE), geo);
     databaseMeta = getDatabaseMeta();
   }
 

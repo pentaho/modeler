@@ -1,10 +1,17 @@
 package org.pentaho.agilebi.modeler.geo;
 
+import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.nodes.DataRole;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
+import org.pentaho.agilebi.modeler.nodes.annotations.IDataRoleAnnotation;
+import org.pentaho.agilebi.modeler.nodes.annotations.IGeoRoleAnnotation;
+import org.pentaho.metadata.model.olap.OlapAnnotation;
+import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -14,7 +21,7 @@ import java.util.List;
  * Time: 4:35 PM
  * To change this template use File | Settings | File Templates.
  */
-public class GeoRole implements DataRole, Serializable {
+public class GeoRole implements DataRole, Serializable, IMemberAnnotation, IDataRoleAnnotation, IGeoRoleAnnotation {
   private String name;
   private List<String> commonAliases;
   private String matchSeparator = "_";
@@ -41,10 +48,12 @@ public class GeoRole implements DataRole, Serializable {
     }
   }
 
+  @Bindable
   public String getName() {
     return name;
   }
 
+  @Bindable
   public void setName(String name) {
     this.name = name;
   }
@@ -142,5 +151,57 @@ public class GeoRole implements DataRole, Serializable {
       requiredParentRoles = new ArrayList<GeoRole>();
     }
     return requiredParentRoles;
+  }
+
+  @Override
+  public void saveAnnotations(Object obj) {
+
+    OlapHierarchyLevel level = (OlapHierarchyLevel) obj;
+
+    level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_DATA_ROLE, "Geography"));
+
+    // lat long is set as member properties (add as logical columns to achieve this)
+    // geo-role is set on the level as an annotation
+
+    level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_GEO_ROLE, getName()));
+    if(getRequiredParentRoles().size() > 0) {
+      String parents = combineRequiredParents(this);
+      level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_GEO_ROLE, parents));
+    }
+  }
+
+  protected String combineRequiredParents(GeoRole role) {
+    if(role.getRequiredParentRoles().size() > 0) {
+      StringBuffer sb = new StringBuffer();
+      for(GeoRole r : role.getRequiredParentRoles()) {
+        if(sb.length() > 0) {
+          sb.append(",");
+        }
+        sb.append(r.getName());
+      }
+      return sb.toString();
+    }
+    return null;
+  }
+
+  @Override
+  public String getDataType() {
+    return "Geo.Role";
+  }
+
+  @Override
+  public String getGeoName() {
+    return name;
+  }
+
+  @Override
+  public boolean isValid(AbstractMetaDataModelNode node) {
+    // No validation required, this is just a marker
+    return true;
+  }
+
+  @Override
+  public List<String> getValidationMessages(AbstractMetaDataModelNode node) {
+    return Collections.emptyList();
   }
 }
