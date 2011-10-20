@@ -1,8 +1,8 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.geo.GeoRole;
-import org.pentaho.agilebi.modeler.geo.LocationRole;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.agilebi.modeler.strategy.AutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
 import org.pentaho.metadata.model.*;
@@ -127,27 +127,12 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
                 olapCloneLTable.addLogicalColumn(lCol);
               }
 
-              // add any geo-location related info
-              DataRole role = lvl.getDataRole();
-              if(role instanceof LocationRole) {
-                // lat long is set as member properties (add as logical columns to achieve this)
-                LocationRole lRole = (LocationRole)role;
-                level.getAnnotations().add(new OlapAnnotation("Geo.Role", lRole.getName()));
-
-                if(lRole.getRequiredParentRoles().size() > 0) {
-                  String parents = combineRequiredParents(lRole);
-                  level.getAnnotations().add(new OlapAnnotation("Geo.RequiredParents", parents));
-                }
-
-              } else if(role instanceof GeoRole) {
-                // geo-role is set on the level as an annotation
-                GeoRole gRole = (GeoRole)role;
-                level.getAnnotations().add(new OlapAnnotation("Geo.Role", gRole.getName()));
-                if(gRole.getRequiredParentRoles().size() > 0) {
-                  String parents = combineRequiredParents(gRole);
-                  level.getAnnotations().add(new OlapAnnotation("Geo.RequiredParents", parents));
+              for(IMemberAnnotation anno : lvl.getMemberAnnotations().values()){
+                if(anno != null){
+                  anno.saveAnnotations(level);
                 }
               }
+
 
               level.setReferenceColumn(lCol);
               hierarchy.setLogicalTable(olapCloneLTable);

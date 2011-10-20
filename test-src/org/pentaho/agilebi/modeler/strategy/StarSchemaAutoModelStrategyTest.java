@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.geo.*;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.nodes.annotations.IDataRoleAnnotation;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.metadata.model.concept.types.DataType;
 
 import java.io.File;
@@ -140,7 +142,8 @@ public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
     int actualGeoDims = 0;
     int actualGeoLevels = 0;
     for(DimensionMetaData dim : workspace.getModel().getDimensions()) {
-      if (dim.getDataRole() instanceof GeoRole) {
+      IDataRoleAnnotation dataRole =  (IDataRoleAnnotation) dim.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+      if (dataRole instanceof GeoRole) {
         actualGeoDims++;
         assertEquals(1, dim.size()); // only one hierarchy per geo dim
         for(LevelMetaData level : dim.get(0)) {
