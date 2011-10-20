@@ -18,6 +18,7 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.IDropTarget;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
@@ -25,9 +26,7 @@ import org.pentaho.ui.xul.util.AbstractModelNode;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T> implements
                                                                                                                   Serializable, IDropTarget {
@@ -40,6 +39,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   protected boolean suppressEvents;
   protected boolean expanded;
   protected DataRole dataRole;
+  protected Map<String, IMemberAnnotation> annotations = new HashMap<String, IMemberAnnotation>();
   
 
   protected transient PropertyChangeListener validListener = new PropertyChangeListener() {
@@ -137,6 +137,14 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     String prevMessages = getValidationMessagesString();
 
     validate();
+
+    for(IMemberAnnotation anno : annotations.values()){
+      if(anno == null){
+        continue;
+      }
+      valid &= anno.isValid(this);
+      validationMessages.addAll(anno.getValidationMessages(this));
+    }
 
     if (suppressEvents == false) {
       this.firePropertyChange("validationMessagesString", prevMessages, getValidationMessagesString());
@@ -240,20 +248,8 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     return parent;
   }
 
-  @Bindable
-  public DataRole getDataRole() {
-    return dataRole;
+  public Map<String, IMemberAnnotation> getMemberAnnotations() {
+    return annotations;
   }
-
-  @Bindable
-  public void setDataRole(DataRole dataRole) {
-    this.dataRole = dataRole;
-  }
-
-  public boolean isDataRole(String roleName) {
-    if(this.dataRole != null) {
-      return dataRole.getName().equalsIgnoreCase(roleName);
-    }
-    return false;
-  }
+  
 }

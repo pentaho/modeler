@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.nodes.annotations.IDataRoleAnnotation;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -125,8 +127,12 @@ public class GeoContextTest extends AbstractModelerTest {
     DimensionMetaData dim = geoDims.get(0);
     assertNotNull(dim);
 
-    assertTrue(dim.getDataRole() instanceof GeoRole);
-    assertTrue(dim.get(0).getDataRole() instanceof GeoRole);
+
+    IDataRoleAnnotation dataRole =  (IDataRoleAnnotation) dim.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+    assertTrue(dataRole instanceof GeoRole);
+
+    dataRole =  (IDataRoleAnnotation) dim.get(0).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+    assertTrue(dataRole instanceof GeoRole);
 
     // CUSTOMERS table has CITY, COUNTRY, STATE, and POSTALCODE fields that should be auto-detected
     assertEquals(4, dim.get(0).size());
@@ -136,10 +142,15 @@ public class GeoContextTest extends AbstractModelerTest {
     // make sure they are in the correct order
     for (int i = 0; i < dim.get(0).size(); i++) {
       LevelMetaData level = dim.get(0).get(i);
-      assertTrue(level.getDataRole() instanceof GeoRole);
+
+      dataRole =  (IDataRoleAnnotation) level.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+      assertTrue(dataRole instanceof GeoRole);
+
       for(int j = lastFoundIndex; j < geo.size(); j++) {
-        DataRole role = geo.getGeoRole(j);
-        if(level.getDataRole().equals(role)) {
+        GeoRole role = geo.getGeoRole(j);
+        GeoRole geoRole =  (GeoRole) level.getMemberAnnotations().get(GeoContext.ANNOTATION_GEO_ROLE);
+
+        if(geoRole.equals(role)) {
           assertTrue(i <= lastFoundIndex);
           lastFoundIndex = j;
           found++;
@@ -163,8 +174,12 @@ public class GeoContextTest extends AbstractModelerTest {
     DimensionMetaData dim = geoDims.get(0);
     assertNotNull(dim);
 
-    assertTrue(dim.getDataRole() instanceof GeoRole);
-    assertTrue(dim.get(0).getDataRole() instanceof GeoRole);
+
+    IDataRoleAnnotation dataRole =  (IDataRoleAnnotation) dim.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+
+    assertTrue(dataRole instanceof GeoRole);
+    dataRole =  (IDataRoleAnnotation) dim.get(0).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+    assertTrue(dataRole instanceof GeoRole);
 
     // CUSTOMERS table has CITY, COUNTRY, STATE, and POSTALCODE fields that should be auto-detected
     assertEquals(4, dim.get(0).size());
@@ -174,10 +189,11 @@ public class GeoContextTest extends AbstractModelerTest {
     // make sure they are in the correct order
     for (int i = 0; i < dim.get(0).size(); i++) {
       LevelMetaData level = dim.get(0).get(i);
-      assertTrue(level.getDataRole() instanceof GeoRole);
+      dataRole =  (IDataRoleAnnotation) dim.get(0).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+      assertTrue(dataRole instanceof GeoRole);
       for(int j = lastFoundIndex; j < geo.size(); j++) {
         DataRole role = geo.getGeoRole(j);
-        if(level.getDataRole().equals(role)) {
+        if(level.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).equals(role)) {
           assertTrue(i <= lastFoundIndex);
           lastFoundIndex = j;
           found++;
@@ -388,26 +404,31 @@ public class GeoContextTest extends AbstractModelerTest {
           if(existingHier.getName().equalsIgnoreCase("customername")) {
             for(LevelMetaData existingLevel : existingHier) {
               if(existingLevel.getName().equalsIgnoreCase("customername")) {
-                assertNotNull(existingLevel.getDataRole());
-                assertTrue(existingLevel.getDataRole() instanceof LocationRole);
+                assertNotNull(existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE));
+
+                IDataRoleAnnotation dataRole =  (IDataRoleAnnotation) existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+                assertTrue(dataRole instanceof LocationRole);
+
                 assertEquals(2, existingLevel.size());
 
-                LocationRole lr = (LocationRole)existingLevel.getDataRole();
-                assertNotNull(lr.getLatitudeField());
-                assertNotNull(lr.getLongitudeField());
+                LocationRole lr = (LocationRole) existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_GEO_ROLE);
+
+                assertNotNull(existingLevel.getLatitudeField());
+                assertNotNull(existingLevel.getLongitudeField());
 
                 // make sure the lat & long fields are available as logical columns in the model
-                LogicalColumn lc = workspace.findLogicalColumn(lr.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                LogicalColumn lc = workspace.findLogicalColumn(existingLevel.getLatitudeField().getLogicalColumn().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
                 assertNotNull(lc);
                 assertEquals("latitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
 
-                lc = workspace.findLogicalColumn(lr.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                lc = workspace.findLogicalColumn(existingLevel.getLongitudeField().getLogicalColumn().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
                 assertNotNull(lc);
                 assertEquals("longitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
 
               } else {
                 // make sure none of the other levels have a data role added on
-                assertNull(existingLevel.getDataRole());
+
+                assertNull(existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE));
               }
             }
           }
@@ -510,18 +531,17 @@ public class GeoContextTest extends AbstractModelerTest {
 
     for(LevelMetaData existingLevel : custGeoDim.get(0)) {
       if(existingLevel.getName().equalsIgnoreCase("state")) {
-        assertNotNull(existingLevel.getDataRole());
-        assertTrue(existingLevel.getDataRole() instanceof LocationRole);
-        LocationRole lr = (LocationRole)existingLevel.getDataRole();
-        assertNotNull(lr.getLatitudeField());
-        assertNotNull(lr.getLongitudeField());
+        assertNotNull(existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE));
+        assertTrue(existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE) instanceof GeoRole);
+        assertNotNull(existingLevel.getLatitudeField());
+        assertNotNull(existingLevel.getLongitudeField());
 
         // make sure the lat & long fields are available as logical columns in the model
-        LogicalColumn lc = workspace.findLogicalColumn(lr.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+        LogicalColumn lc = workspace.findLogicalColumn(existingLevel.getLatitudeField().getLogicalColumn().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
         assertNotNull(lc);
         assertEquals("latitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
 
-        lc = workspace.findLogicalColumn(lr.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+        lc = workspace.findLogicalColumn(existingLevel.getLongitudeField().getLogicalColumn().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
         assertNotNull(lc);
         assertEquals("longitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
 
@@ -634,24 +654,24 @@ public class GeoContextTest extends AbstractModelerTest {
           if(existingHier.getName().equalsIgnoreCase("customername")) {
             for(LevelMetaData existingLevel : existingHier) {
               if(existingLevel.getName().equalsIgnoreCase("customername")) {
-                assertNotNull(existingLevel.getDataRole());
-                assertTrue(existingLevel.getDataRole() instanceof LocationRole);
-                LocationRole lr = (LocationRole)existingLevel.getDataRole();
-                assertNotNull(lr.getLatitudeField());
-                assertNotNull(lr.getLongitudeField());
+                assertNotNull(existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE));
+                assertTrue(existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE) instanceof LocationRole);
+                LocationRole lr = (LocationRole) existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE);
+                assertNotNull(existingLevel.getLatitudeField());
+                assertNotNull(existingLevel.getLongitudeField());
 
                 // make sure the lat & long fields are available as logical columns in the model
-                LogicalColumn lc = workspace.findLogicalColumn(lr.getLatitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                LogicalColumn lc = workspace.findLogicalColumn(existingLevel.getLatitudeField().getLogicalColumn().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
                 assertNotNull(lc);
                 assertEquals("latitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
 
-                lc = workspace.findLogicalColumn(lr.getLongitudeField().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
+                lc = workspace.findLogicalColumn(existingLevel.getLongitudeField().getLogicalColumn().getPhysicalColumn(), ModelerPerspective.ANALYSIS);
                 assertNotNull(lc);
                 assertEquals("longitude", lc.getName(workspace.getWorkspaceHelper().getLocale()));
 
               } else {
                 // make sure none of the other levels have a data role added on
-                assertNull(existingLevel.getDataRole());
+                assertNull(existingLevel.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE));
               }
             }
           }
@@ -1077,9 +1097,10 @@ public class GeoContextTest extends AbstractModelerTest {
 
     // make sure we only have 3 levels and that they are in the correct order (country, state, city)
     assertEquals(3, custGeoDim.get(0).size());
-    assertEquals("location", custGeoDim.get(0).get(0).getDataRole().getName()); // due to order of fields, this should be the location role
-    assertEquals("state", custGeoDim.get(0).get(1).getDataRole().getName());
-    assertEquals("city", custGeoDim.get(0).get(2).getDataRole().getName());
+
+    assertEquals("location", custGeoDim.get(0).get(0).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).getName()); // due to order of fields, this should be the location role
+    assertEquals("state", custGeoDim.get(0).get(1).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).getName());
+    assertEquals("city", custGeoDim.get(0).get(2).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).getName());
 
     verify(mockTable1);
     verify(mockCityCol);

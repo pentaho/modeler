@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MainModelNode;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulButton;
@@ -81,8 +82,8 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
     }
   }
 
-  public void init() {
-    super.init();
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
     name = (XulTextbox) document.getElementById("main_name");
     messageBox = (XulVbox) document.getElementById("main_message");
     messageLabel = (XulLabel) document.getElementById("mainnode_message_label");

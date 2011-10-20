@@ -4,12 +4,12 @@ import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,7 +17,7 @@ import java.util.List;
  * to auto-detect geography fields in data sources
  * that contribute to the construction of geography dimensions
  */
-public class GeoContext implements Iterable<GeoRole>, Serializable {
+public class GeoContext extends AbstractModelList<GeoRole> {
   protected static final String GEO_PREFIX = "geo.";
   protected static final String GEO_DIM_NAME = "geo.dimension.name";
   protected static final String GEO_ROLE_KEY = "geo.roles";
@@ -25,19 +25,19 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
   protected static final String ALIAS_SUFFIX = ".aliases";
   protected static final String REQUIRED_PARENTS_SUFFIX = ".required-parents";
 
-  private static final String LATITUDE = "latitude";
-  private static final String LONGITUDE = "longitude";
+  public static final String LATITUDE = "latitude";
+  public static final String LONGITUDE = "longitude";
+  public static final String ANNOTATION_DATA_ROLE = "Data.Role";
+  public static final String ANNOTATION_GEO_ROLE = "Geo.Role";
 
   protected String dimensionName = "Geography";
-  protected List<GeoRole> geoRoles;
 
   public GeoContext() {
-    this.geoRoles = new ArrayList<GeoRole>();
   }
 
   public GeoRole getGeoRole(int index) {
-    if(index >= 0 && geoRoles != null && geoRoles.size() >= index) {
-      return geoRoles.get(index);
+    if(index >= 0 && children.size() >= index) {
+      return children.get(index);
     } else {
       return null;
     }
@@ -45,24 +45,7 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
 
   public void addGeoRole(GeoRole geoRole) {
     if (geoRole != null) {
-      geoRoles.add(geoRole);
-    }
-  }
-
-  @Override
-  public Iterator<GeoRole> iterator() {
-    if (geoRoles != null) {
-      return geoRoles.listIterator();
-    } else {
-      return null;
-    }
-  }
-
-  public int size() {
-    if(geoRoles != null) {
-      return geoRoles.size();
-    } else {
-      return 0;
+      children.add(geoRole);
     }
   }
 
@@ -75,7 +58,7 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
   }
 
   public GeoRole matchFieldToGeoRole(AvailableField field) {
-    for(GeoRole role : this.geoRoles) {
+    for(GeoRole role : this) {
       if (role.evaluate(field.getPhysicalColumn().getId())) {
         return role;
       } else if (field.getPhysicalColumn().getId().startsWith("pc__")) {
@@ -88,7 +71,7 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
     return null;
   }
   public GeoRole matchColumnToGeoRole(IPhysicalColumn column) {
-    for(GeoRole role : this.geoRoles) {
+    for(GeoRole role : this) {
       if (role.evaluate(column.getId())) {
         return role;
       }
@@ -113,24 +96,18 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
         dimName = getDimensionName();
       } else {
         // have to name the dimensions in context with the tables they are built from
-        dimName = table.getName() + geoRoles.get(0).getMatchSeparator() + getDimensionName();
+        dimName = table.getName() + get(0).getMatchSeparator() + getDimensionName();
       }
       DimensionMetaData dim = new DimensionMetaData(dimName);
-      dim.setDataRole(new GeoRole());
+      dim.getMemberAnnotations().put(ANNOTATION_DATA_ROLE, new GeoRole());
       HierarchyMetaData hier = new HierarchyMetaData(dimName);
-      hier.setDataRole(new GeoRole());
+      hier.getMemberAnnotations().put(ANNOTATION_DATA_ROLE, new GeoRole());
       ArrayList<LevelMetaData> levels = new ArrayList<LevelMetaData>();
 
       AvailableField locationField = null;
 
-      LocationRole locRole = getLocationRole();
-      LocationRole locationRole = null;
-      if(locRole != null) {
-        locationRole = (LocationRole)locRole.clone();
-      } else {
-        locationRole = new LocationRole();
-      }
-
+      LocationRole locationRole = getLocationRole();
+      
 
       boolean locationFieldDetected = false;
       int latColIndex = 0;
@@ -150,17 +127,16 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
             // if this was matched to a location role. we need to set it as the data role on another level
             // in an existing dimension, but only if we detect both lat & long
             if (locationRole.evaluateLatitude(fieldName)) {
-              locationRole.setLatitudeField(field);
               latColIndex = count;
             } else if (locationRole.evaluateLongitude(fieldName)) {
-              locationRole.setLongitudeField(field);
               lonColIndex = count;
             }
           } else {
             // regular geo field, add it as a level to the dimension
             ColumnBackedNode node = workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS);
             LevelMetaData level = workspace.createLevelForParentWithNode(hier, node);
-            level.setDataRole(role);
+            level.getMemberAnnotations().put(ANNOTATION_DATA_ROLE, role);
+            level.getMemberAnnotations().put(ANNOTATION_GEO_ROLE, role);
             levels.add(level);
           }
         }
@@ -173,27 +149,31 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
 
       if (levels.size() > 0) {
         // now that we have the levels of the geo dim, put them in the hierarchy in the correct order
-        for(int i = 0; i < geoRoles.size(); i++) {
-          GeoRole knownRole = geoRoles.get(i);
+        for(int i = 0; i < size(); i++) {
+          GeoRole knownRole = get(i);
           for(LevelMetaData level : levels) {
-            if (level.getDataRole().getName().equals(knownRole.getName())) {
+            if (knownRole.equals(level.getMemberAnnotations().get(ANNOTATION_GEO_ROLE))) {
               
               // if one of these levels was identified as the location field, set it's data role properly
               if (locationFieldDetected && locationField != null &&
-                  locationRole != null && locationRole.getLatitudeField() != null && locationRole.getLongitudeField() != null &&
+                  locationRole != null && latColIndex > -1 && lonColIndex > -1 &&
                   locationField.isSameUnderlyingPhysicalColumn(level.getLogicalColumn().getPhysicalColumn())) {
 
-                level.setDataRole(locationRole);
+                level.getMemberAnnotations().put(ANNOTATION_DATA_ROLE, locationRole);
+                level.getMemberAnnotations().put(ANNOTATION_GEO_ROLE, locationRole);
 
                 // if it is a LocationField we need to make sure the lat & long columns get
                 // added as logical columns to the model.
-                ColumnBackedNode tmp = workspace.createColumnBackedNode(locationRole.getLatitudeField(), ModelerPerspective.ANALYSIS);
+                AvailableField latField = table.findFieldByPhysicalColumn(table.getPhysicalTable().getPhysicalColumns().get(latColIndex));
+                AvailableField lonField = table.findFieldByPhysicalColumn(table.getPhysicalTable().getPhysicalColumns().get(lonColIndex));
+
+                ColumnBackedNode tmp = workspace.createColumnBackedNode(latField, ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LATITUDE));
                 MemberPropertyMetaData memberProp = workspace.createMemberPropertyForParentWithNode(level, tmp);
                 memberProp.setName(LATITUDE);
                 level.add(memberProp);
 
-                tmp = workspace.createColumnBackedNode(locationRole.getLongitudeField(), ModelerPerspective.ANALYSIS);
+                tmp = workspace.createColumnBackedNode(lonField, ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LONGITUDE));
                 memberProp = workspace.createMemberPropertyForParentWithNode(level, tmp);
                 memberProp.setName(LONGITUDE);
@@ -214,22 +194,26 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
 
       // if location was detected, must set an existing level in an existing dimension
       // to be the LocationRole and it must be aware of the fields that provide lat & long
-      if(locationFieldDetected && locationField != null && locationRole != null &&
-          locationRole.getLatitudeField() != null && locationRole.getLongitudeField() != null) {
+      if(locationFieldDetected && locationField != null && locationRole != null) {
         for(DimensionMetaData existingDim : workspace.getModel().getDimensions()) {
           for(HierarchyMetaData existingHier : existingDim) {
             for(LevelMetaData existingLevel : existingHier) {
               if(locationField.isSameUnderlyingPhysicalColumn(existingLevel.getLogicalColumn().getPhysicalColumn())) {
-                existingLevel.setDataRole(locationRole);
+                existingLevel.getMemberAnnotations().put(ANNOTATION_DATA_ROLE, locationRole);
+                existingLevel.getMemberAnnotations().put(ANNOTATION_GEO_ROLE, locationRole);
                 // if it is a LocationField we need to make sure the lat & long columns get
                 // added as logical columns to the model.
-                ColumnBackedNode tmp = workspace.createColumnBackedNode(locationRole.getLatitudeField(), ModelerPerspective.ANALYSIS);
+
+                AvailableField latField = table.findFieldByPhysicalColumn(table.getPhysicalTable().getPhysicalColumns().get(latColIndex));
+                AvailableField lonField = table.findFieldByPhysicalColumn(table.getPhysicalTable().getPhysicalColumns().get(lonColIndex));
+
+                ColumnBackedNode tmp = workspace.createColumnBackedNode(latField, ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LATITUDE));
                 MemberPropertyMetaData memberProp = workspace.createMemberPropertyForParentWithNode(existingLevel, tmp);
                 memberProp.setName(LATITUDE);
                 existingLevel.add(memberProp);
 
-                tmp = workspace.createColumnBackedNode(locationRole.getLongitudeField(), ModelerPerspective.ANALYSIS);
+                tmp = workspace.createColumnBackedNode(lonField, ModelerPerspective.ANALYSIS);
                 tmp.getLogicalColumn().setName(new LocalizedString(workspace.getWorkspaceHelper().getLocale(), LONGITUDE));
                 memberProp = workspace.createMemberPropertyForParentWithNode(existingLevel, tmp);
                 memberProp.setName(LONGITUDE);
@@ -254,9 +238,9 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
   }
 
   public LocationRole getLocationRole() {
-    for(int i = geoRoles.size() - 1; i >= 0; i--) {
-      if (geoRoles.get(i) instanceof LocationRole) {
-        return (LocationRole)geoRoles.get(i);
+    for(int i = size() - 1; i >= 0; i--) {
+      if (get(i) instanceof LocationRole) {
+        return (LocationRole) get(i);
       }
     }
     return null;
@@ -297,11 +281,10 @@ public class GeoContext implements Iterable<GeoRole>, Serializable {
   }
 
   public GeoRole getGeoRoleByName(String name) {
-    if (this.geoRoles != null) {
-      for(GeoRole role : this.geoRoles) {
-        if(role.getName().equalsIgnoreCase(name)) {
-          return role;
-        }
+
+    for(GeoRole role : this) {
+      if(role.getName().equalsIgnoreCase(name)) {
+        return role;
       }
     }
     return null;

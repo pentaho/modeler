@@ -171,6 +171,13 @@
       <caption label="${details}"/>
       <label value="${level_name}:" />
       <textbox id="level_name" />
+
+
+      <label value="${geo_role}:" />
+      <menulist id="level_geo_role" pen:binding="name">
+          <menupopup/>
+      </menulist>
+
     </groupbox>
   </vbox>
   

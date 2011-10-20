@@ -1,6 +1,12 @@
 package org.pentaho.agilebi.modeler.geo;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
+import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;
+import org.pentaho.metadata.model.olap.OlapAnnotation;
+import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,10 +25,9 @@ public class LocationRole extends GeoRole implements Serializable {
   private LatLngRole latitudeRole;
   private LatLngRole longitudeRole;
 
-  private AvailableField latitudeField = null;
-  private AvailableField longitudeField = null;
-
-  public LocationRole() {}
+  public LocationRole() {
+  }
+  
   public LocationRole(LatLngRole latitudeRole, LatLngRole longitudeRole) {
     this.latitudeRole = latitudeRole;
     this.longitudeRole = longitudeRole;
@@ -85,10 +90,8 @@ public class LocationRole extends GeoRole implements Serializable {
 
     LocationRole that = (LocationRole) o;
 
-    if (latitudeField != null ? !latitudeField.equals(that.latitudeField) : that.latitudeField != null) return false;
     if (latitudeRole != null ? !latitudeRole.equals(that.latitudeRole) : that.latitudeRole != null) return false;
-    if (longitudeField != null ? !longitudeField.equals(that.longitudeField) : that.longitudeField != null)
-      return false;
+
     if (longitudeRole != null ? !longitudeRole.equals(that.longitudeRole) : that.longitudeRole != null) return false;
 
     return true;
@@ -99,8 +102,6 @@ public class LocationRole extends GeoRole implements Serializable {
     int result = super.hashCode();
     result = 31 * result + (latitudeRole != null ? latitudeRole.hashCode() : 0);
     result = 31 * result + (longitudeRole != null ? longitudeRole.hashCode() : 0);
-    result = 31 * result + (latitudeField != null ? latitudeField.hashCode() : 0);
-    result = 31 * result + (longitudeField != null ? longitudeField.hashCode() : 0);
     return result;
   }
 
@@ -117,23 +118,7 @@ public class LocationRole extends GeoRole implements Serializable {
 
     return clone;
   }
-
-  public AvailableField getLatitudeField() {
-    return latitudeField;
-  }
-
-  public void setLatitudeField(AvailableField latitudeField) {
-    this.latitudeField = latitudeField;
-  }
-
-  public AvailableField getLongitudeField() {
-    return longitudeField;
-  }
-
-  public void setLongitudeField(AvailableField longitudeField) {
-    this.longitudeField = longitudeField;
-  }
-
+  
   public String getPrefix() {
     if (latitudeRole != null && longitudeRole != null) {
       String prefix = latitudeRole.getPrefix();
@@ -142,5 +127,54 @@ public class LocationRole extends GeoRole implements Serializable {
       }
     }
     return "";
+  }
+
+  @Override
+  public String getDataType() {
+    return "LOCATION_ROLE";
+  }
+
+  @Override
+  public boolean isValid(AbstractMetaDataModelNode node) {
+    if(node instanceof LevelMetaData){
+      LevelMetaData level = (LevelMetaData) node;
+      boolean latFound = false;
+      boolean lonFound = false;
+      for(MemberPropertyMetaData member : level){
+        if(member.getName().equals(GeoContext.LATITUDE)){
+          latFound = true;
+        } else if(member.getName().equals(GeoContext.LONGITUDE)){
+          lonFound = true;
+        }
+      }
+      return latFound & lonFound;
+    } else {
+      return super.isValid(node);
+    }
+  }
+
+  @Override
+  public List<String> getValidationMessages(AbstractMetaDataModelNode node) {
+    List<String> messages = new ArrayList<String>();
+
+    if(node instanceof LevelMetaData){
+      LevelMetaData level = (LevelMetaData) node;
+      boolean latFound = false;
+      boolean lonFound = false;
+      for(MemberPropertyMetaData member : level){
+        if(member.getName().equals(GeoContext.LATITUDE)){
+          latFound = true;
+        } else if(member.getName().equals(GeoContext.LONGITUDE)){
+          lonFound = true;
+        }
+      }
+      if(!latFound){
+        messages.add(ModelerMessagesHolder.getMessages().getString("validation.level.MISSING_LAT"));
+      }
+      if(!lonFound){
+        messages.add(ModelerMessagesHolder.getMessages().getString("validation.level.MISSING_LON"));
+      }
+    }
+    return messages;
   }
 }

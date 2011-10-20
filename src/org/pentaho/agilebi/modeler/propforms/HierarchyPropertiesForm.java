@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
@@ -52,8 +53,8 @@ public class HierarchyPropertiesForm extends AbstractModelerNodeForm<HierarchyMe
 
   }
 
-  public void init() {
-    super.init();
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
     name = (XulTextbox) document.getElementById("hierarchy_name");
     messageBox = (XulVbox) document.getElementById("hierarchy_message");
     messageLabel = (XulLabel) document.getElementById("hierarchy_message_label");

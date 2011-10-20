@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
@@ -70,8 +71,8 @@ public class DimensionPropertiesForm extends AbstractModelerNodeForm<DimensionMe
 
   }
 
-  public void init() {
-    super.init();
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
     name = (XulTextbox) document.getElementById("dimension_name");
     messageBox = (XulVbox) document.getElementById("dimension_message");
     messageLabel = (XulLabel) document.getElementById("dimension_message_label");

@@ -17,10 +17,15 @@
 
 package org.pentaho.agilebi.modeler;
 
+import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.propforms.*;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.BindingFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created: 4/25/11
@@ -35,66 +40,25 @@ public class ModelerUiHelper {
     controller.setBindingFactory(bf);
     controller.setWorkspaceHelper(workspace.getWorkspaceHelper());
 
-    AbstractModelerNodeForm propController = new MeasuresPropertiesForm(LocalizedString.DEFAULT_LOCALE);
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
+    //Arrays.asList isn't working properly in GWT, manually adding them one at at time
+    List<AbstractModelerNodeForm<? extends AbstractMetaDataModelNode>> forms = new ArrayList<AbstractModelerNodeForm<? extends AbstractMetaDataModelNode>>();
+    forms.add(new MeasuresPropertiesForm(LocalizedString.DEFAULT_LOCALE));
+    forms.add(new DimensionPropertiesForm());
+    forms.add(new LevelsPropertiesForm(LocalizedString.DEFAULT_LOCALE));
+    forms.add(new MemberPropertyPropertiesForm(LocalizedString.DEFAULT_LOCALE));
+    forms.add(new HierarchyPropertiesForm());
+    forms.add(new MainModelerNodePropertiesForm());
+    forms.add(new GenericPropertiesForm());
+    forms.add(new CategoryPropertiesForm());
+    forms.add(new FieldsPropertiesForm(LocalizedString.DEFAULT_LOCALE));
+    forms.add(new RelationalModelNodePropertiesForm());
 
-    propController = new DimensionPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new LevelsPropertiesForm(LocalizedString.DEFAULT_LOCALE );
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new MemberPropertyPropertiesForm(LocalizedString.DEFAULT_LOCALE );
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new HierarchyPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new MainModelerNodePropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-
-    propController = new GenericPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new CategoryPropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new FieldsPropertiesForm(LocalizedString.DEFAULT_LOCALE);
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
-
-    propController = new RelationalModelNodePropertiesForm();
-    container.addEventHandler(propController);
-    controller.addPropertyForm(propController);
-    propController.setBindingFactory(bf);
-    propController.init();
+    for(AbstractModelerNodeForm<? extends AbstractMetaDataModelNode> propController : forms){
+      container.addEventHandler(propController);
+      controller.addPropertyForm(propController);
+      propController.setBindingFactory(bf);
+      propController.init(workspace);
+    }
 
     colController.setBindingFactory(bf);
     container.addEventHandler(colController);

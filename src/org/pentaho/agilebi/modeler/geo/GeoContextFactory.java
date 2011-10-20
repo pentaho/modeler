@@ -1,6 +1,10 @@
 package org.pentaho.agilebi.modeler.geo;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.nodes.annotations.GeoAnnotationFactory;
+import org.pentaho.agilebi.modeler.nodes.annotations.IAnnotationFactory;
+import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
+import org.pentaho.metadata.model.olap.OlapAnnotation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +32,6 @@ public class GeoContextFactory {
   public static GeoContext create(GeoContextConfigProvider configProvider) throws ModelerException {
     GeoContext geo = new GeoContext();
 
-    geo.geoRoles = new ArrayList<GeoRole>();
     if (configProvider == null) {
       throw new IllegalArgumentException("GeoContextConfigProvider cannot be null");
     }
@@ -65,7 +68,7 @@ public class GeoContextFactory {
               }
             }
           }
-          geo.geoRoles.add(role);
+          geo.add(role);
         }
       }
 
@@ -81,6 +84,11 @@ public class GeoContextFactory {
     LocationRole locationRole = new LocationRole(latRole, longRole);
     geo.addGeoRole(locationRole);
 
+    // Add geo annotation support to the AnnotationFactory
+    IAnnotationFactory fact = new GeoAnnotationFactory(geo);
+    MemberAnnotationFactory.registerFactory("Geo.Role", fact);
+    MemberAnnotationFactory.registerFactory("Data.Role", fact);
+    
     return geo;
 
   }

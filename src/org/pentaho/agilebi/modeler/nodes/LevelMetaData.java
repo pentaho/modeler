@@ -20,6 +20,7 @@ import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
@@ -213,4 +214,22 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
     return null;
   }
 
+
+  public MemberPropertyMetaData getLatitudeField(){
+    for(MemberPropertyMetaData member : this){
+      if(member.getName().equals("latitude")){
+        return member;
+    }
+        }
+    return null;
+  }
+
+  public MemberPropertyMetaData getLongitudeField(){
+    for(MemberPropertyMetaData member : this){
+      if(member.getName().equals("longitude")){
+        return member;
+      }
+    }
+    return null;
+  }
 }
