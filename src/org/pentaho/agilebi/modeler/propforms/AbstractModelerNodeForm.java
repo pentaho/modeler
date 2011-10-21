@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.containers.XulDeck;
@@ -33,6 +34,7 @@ public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler
 
   protected static BindingConvertor<String, String> validMsgTruncatedBinding = BindingConvertor.truncatedString(45);
   protected static BindingConvertor<String, Boolean> showMsgBinding = new ShowMessagesBindingConvertor(45);
+  protected ModelerWorkspace workspace;
 
   public AbstractModelerNodeForm(String panelId){
     this.id = panelId;
@@ -47,7 +49,8 @@ public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler
     this.bf = bf;
   }
 
-  public void init() {
+  public void init(ModelerWorkspace workspace) {
+    this.workspace = workspace;
     deck = (XulDeck) document.getElementById("propertiesdeck");
     panel = (XulVbox) document.getElementById(id);
   }

@@ -3,7 +3,7 @@
 <window id="label-test" title="Flow Test"
   xmlns="http://www.pentaho.org/there.is.only.xul"
   xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600"
-  width="800" onload="propertiesForm.init(),modeler.init()" xmlns:pen="http://www.pentaho.org/2008/xul">
+  width="800" onload="modeler.init()" xmlns:pen="http://www.pentaho.org/2008/xul">
 
   <pen:include src="columnResolver.xul" />
 

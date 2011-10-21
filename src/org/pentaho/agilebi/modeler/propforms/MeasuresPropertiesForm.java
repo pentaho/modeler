@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
@@ -73,8 +74,8 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
 
   @Bindable
-  public void init() {
-    super.init();
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
 
     bf.createBinding(this, "notValid", "messages2", "visible");
     bf.createBinding(this, "validMessages", "messages2label", "value", validMsgTruncatedBinding);

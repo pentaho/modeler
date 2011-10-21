@@ -16,16 +16,24 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
+import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBackedMetaData> {
 
@@ -36,6 +44,10 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   protected String colName;
   protected String locale;
   protected XulButton messageBtn;
+  protected XulMenuList geoList;
+  protected List<GeoRole> geoRoles = new ArrayList<GeoRole>();
+  protected GeoRole selectedGeoRole;
+  protected GeoRole dummyGeoRole = new GeoRole("", Collections.<String>emptyList());
 
   public LevelsPropertiesForm(String panelId, String locale) {
     super(panelId);
@@ -69,6 +81,12 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
     name.setValue(dim.getName());
     setColumnName(dim.getLogicalColumn());
+
+
+    setSelectedGeoRole((GeoRole) dim.getMemberAnnotations().get(GeoContext.ANNOTATION_GEO_ROLE));
+    if(selectedGeoRole == null){
+      setSelectedGeoRole(dummyGeoRole);
+    }
     showValidations();
   }
 
@@ -84,8 +102,8 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     setValidMessages(getNode().getValidationMessagesString());
   }
 
-  public void init() {
-    super.init();
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
     bf.createBinding(this, "notValid", "level_message", "visible");
     name = (XulTextbox) document.getElementById("level_name");
     sourceLabel = (XulLabel) document.getElementById("level_source_col");
@@ -98,6 +116,15 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     bf.createBinding(this, "validMessages", level_message_label, "value", validMsgTruncatedBinding);
     messageBtn = (XulButton) document.getElementById("level_message_btn");
     bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
+
+    geoList = (XulMenuList) document.getElementById("level_geo_role");
+
+    geoRoles.clear();
+    geoRoles.add(dummyGeoRole);
+    geoRoles.addAll(workspace.getGeoContext());
+    geoList.setElements(geoRoles);
+
+    bf.createBinding(geoList, "selectedItem", this, "selectedGeoRole");
 
   }
 
@@ -166,5 +193,25 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     } else {
       return null;
     }
+  }
+
+  @Bindable
+  public GeoRole getSelectedGeoRole() {
+    return selectedGeoRole;
+  }
+
+  @Bindable
+  public void setSelectedGeoRole(GeoRole selectedGeoRole) {
+    this.selectedGeoRole = selectedGeoRole;
+    if(selectedGeoRole != null && selectedGeoRole != dummyGeoRole){
+      getNode().getMemberAnnotations().put(GeoContext.ANNOTATION_GEO_ROLE, selectedGeoRole);
+      getNode().getMemberAnnotations().put(GeoContext.ANNOTATION_DATA_ROLE, selectedGeoRole);
+    } else {
+      getNode().getMemberAnnotations().remove(GeoContext.ANNOTATION_DATA_ROLE);
+      getNode().getMemberAnnotations().remove(GeoContext.ANNOTATION_GEO_ROLE);
+    }
+    getNode().validateNode();
+    showValidations();
+    this.firePropertyChange("selectedGeoRole", null, selectedGeoRole);
   }
 }
