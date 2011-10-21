@@ -20,19 +20,17 @@ package org.pentaho.agilebi.modeler.strategy;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
-import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.geo.*;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.metadata.model.concept.types.DataType;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
@@ -102,7 +100,7 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
     int geoDims = 0;
     int levelCount = 0;
     for(DimensionMetaData dim : dims) {
-      if (dim.getDataRole() instanceof GeoRole) {
+      if (dim.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE) instanceof GeoRole) {
         // there should only be one hierarchy in a geo dimension
         assertEquals(1, dim.size());
         geoDims++;

@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -31,7 +32,8 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
 
   @Override
   @Bindable
-  public void init() {
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
     deck = (XulDeck) document.getElementById("propertiesdeck");
     panel = (XulVbox) document.getElementById(ID);
 

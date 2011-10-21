@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulButton;
@@ -64,8 +65,8 @@ public class RelationalModelNodePropertiesForm extends AbstractModelerNodeForm<R
     }
   }
 
-  public void init() {
-    super.init();
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
     name = (XulTextbox) document.getElementById("relational_name");
     messageBox = (XulVbox) document.getElementById("relational_message");
     messageLabel = (XulLabel) document.getElementById("relational_message_label");

@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
@@ -53,8 +54,8 @@ public class CategoryPropertiesForm extends AbstractModelerNodeForm<CategoryMeta
   }
 
 
-  public void init() {
-    super.init();
+  public void init(ModelerWorkspace workspace) {
+    super.init(workspace);
     name = (XulTextbox) document.getElementById("category_name");
     messageBox = (XulVbox) document.getElementById("category_message");
     messageLabel = (XulLabel) document.getElementById("category_message_label");

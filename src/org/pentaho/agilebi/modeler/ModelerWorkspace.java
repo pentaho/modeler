@@ -17,6 +17,8 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
+import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
 import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.agilebi.modeler.nodes.*;
@@ -101,6 +103,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     simpleAutoModelStrategy = new SimpleAutoModelStrategy(workspaceHelper.getLocale(), geoContext);
     multiTableAutoModelStrategy = new MultiTableAutoModelStrategy(workspaceHelper.getLocale());
     starSchemaAutoModelStrategy = new StarSchemaAutoModelStrategy(workspaceHelper.getLocale(), geoContext);
+  }
+
+  public GeoContext getGeoContext() {
+    return geoContext;
   }
 
   @Bindable
@@ -708,7 +714,13 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
                 theLevelMD.add(memberProp);
               }
             }
-            
+
+            if(theLevel.getAnnotations() != null){
+              for(OlapAnnotation anno : theLevel.getAnnotations()){
+                IMemberAnnotation annoMeta = MemberAnnotationFactory.create(anno);
+                theLevelMD.getMemberAnnotations().put(anno.getName(), annoMeta);
+              }
+            }
             theHierarchyMD.add(theLevelMD);
           }
 
