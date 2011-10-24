@@ -144,6 +144,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             for (MemberPropertyMetaData memberProp : lvl) {
               LogicalColumn lc = memberProp.getLogicalColumn();
               if ( lc != null && !level.getLogicalColumns().contains(lc) ) {
+                if(memberProp.getDescription() != null) {
+                  lc.setDescription(new LocalizedString(getLocale(), memberProp.getDescription()));
+                }
                 level.getLogicalColumns().add(lc);
               }
             }
