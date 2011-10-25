@@ -167,7 +167,7 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
     level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_GEO_ROLE, getName()));
     if(getRequiredParentRoles().size() > 0) {
       String parents = combineRequiredParents(this);
-      level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_GEO_ROLE, parents));
+      level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_GEO_PARENTS, parents));
     }
   }
 

@@ -17,6 +17,8 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.nodes.annotations.GeoAnnotationFactory;
+import org.pentaho.agilebi.modeler.nodes.annotations.IAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
 import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
@@ -981,6 +983,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     // reset the automodelstrategies
     this.simpleAutoModelStrategy.setGeoContext(geoContext);
     this.starSchemaAutoModelStrategy.setGeoContext(geoContext);
+
+
+    IAnnotationFactory fact = new GeoAnnotationFactory(geoContext);
+    MemberAnnotationFactory.registerFactory("Geo.Role", fact);
+    MemberAnnotationFactory.registerFactory("Data.Role", fact);
   }
 
   @Bindable

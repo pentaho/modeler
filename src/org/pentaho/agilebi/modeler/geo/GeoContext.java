@@ -29,6 +29,7 @@ public class GeoContext extends AbstractModelList<GeoRole> {
   public static final String LONGITUDE = "longitude";
   public static final String ANNOTATION_DATA_ROLE = "Data.Role";
   public static final String ANNOTATION_GEO_ROLE = "Geo.Role";
+  public static final String ANNOTATION_GEO_PARENTS= "Geo.RequiredParents";
 
   protected String dimensionName = "Geography";
 
