@@ -1,9 +1,11 @@
 package org.pentaho.agilebi.modeler.geo;
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.nodes.annotations.GeoAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.IAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
+import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
 
 import java.util.ArrayList;
@@ -54,8 +56,12 @@ public class GeoContextFactory {
       for(String rolename : roleNames) {
         String aliases = configProvider.getRoleAliases(rolename);
         String parents = configProvider.getRoleRequirements(rolename);
-
-        GeoRole role = new GeoRole(rolename, aliases);
+        String displayName = ModelerMessagesHolder.getMessages().getString("geo."+rolename);
+        //stringutil.defaultIfEmpty not available in GET
+        if(StringUtils.isEmpty(displayName)){
+          displayName = rolename;
+        }
+        GeoRole role = new GeoRole(rolename, displayName, aliases);
 
         if (role != null) {
           if(parents != null) {
@@ -81,7 +87,13 @@ public class GeoContextFactory {
     String longAliases = configProvider.getRoleAliases(LONGITUDE);
     LatLngRole longRole = new LatLngRole(LONGITUDE, longAliases);
 
-    LocationRole locationRole = new LocationRole(latRole, longRole);
+
+    String displayName = ModelerMessagesHolder.getMessages().getString("geo.location");
+    //stringutil.defaultIfEmpty not available in GET
+    if(StringUtils.isEmpty(displayName)){
+      displayName = "location";
+    }
+    LocationRole locationRole = new LocationRole(latRole, displayName, longRole);
     geo.addGeoRole(locationRole);
 
     // Add geo annotation support to the AnnotationFactory

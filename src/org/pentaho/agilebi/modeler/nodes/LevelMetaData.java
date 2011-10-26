@@ -28,6 +28,7 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 
 @SuppressWarnings("unchecked")
@@ -39,10 +40,12 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   public LevelMetaData(){
     super();
+    super.setUniqueList(true);
   }
 
   public LevelMetaData( HierarchyMetaData parent, String name ) {
     super(name);
+    super.setUniqueList(true);
     this.parent = parent;
   }
 
@@ -231,5 +234,10 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
       }
     }
     return null;
+  }
+
+  @Override
+  protected boolean compareChildren(MemberPropertyMetaData child, MemberPropertyMetaData newChild) {
+    return child.getName().equals(newChild.getName());
   }
 }

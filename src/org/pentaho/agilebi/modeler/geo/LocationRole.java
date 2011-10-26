@@ -32,6 +32,13 @@ public class LocationRole extends GeoRole implements Serializable {
     this.latitudeRole = latitudeRole;
     this.longitudeRole = longitudeRole;
   }
+  public LocationRole(LatLngRole latitudeRole, String displayName, LatLngRole longitudeRole) {
+    this.latitudeRole = latitudeRole;
+    this.displayName = displayName;
+    this.longitudeRole = longitudeRole;
+
+  }
+
 
   @Override
   public String getName() {

@@ -27,11 +27,13 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
   private List<String> commonAliases;
   private String matchSeparator = "_";
   private List<GeoRole> requiredParentRoles;
+  protected String displayName = "";
 
   public GeoRole() {}
 
   public GeoRole(String name, List<String> commonAliases) {
     this.name = name;
+    this.displayName = name;
     this.commonAliases = commonAliases;
   }
 
@@ -42,6 +44,23 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
    */
   public GeoRole(String name, String commonAliases) {
     this.name = name;
+    this.displayName = name;
+
+    List<String> aliases = parse(commonAliases);
+    if(aliases != null) {
+      this.commonAliases = aliases;
+    }
+  }
+
+  /**
+   * Generates a GeoRole
+   * @param name name of the geo role
+   * @param displayName 
+   * @param commonAliases comma separated list of aliases
+   */
+  public GeoRole(String name, String displayName, String commonAliases) {
+    this.name = name;
+    this.displayName = displayName;
 
     List<String> aliases = parse(commonAliases);
     if(aliases != null) {
@@ -57,6 +76,16 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
   @Bindable
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Bindable
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  @Bindable
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   public List<String> getCommonAliases() {

@@ -174,7 +174,7 @@
 
 
       <label value="${geo_role}:" />
-      <menulist id="level_geo_role" pen:binding="name">
+      <menulist id="level_geo_role" pen:binding="displayName">
           <menupopup/>
       </menulist>
 
