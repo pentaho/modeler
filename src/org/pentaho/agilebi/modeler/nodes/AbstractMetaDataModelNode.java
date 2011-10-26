@@ -39,7 +39,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   protected boolean suppressEvents;
   protected boolean expanded;
   protected DataRole dataRole;
-  protected Map<String, IMemberAnnotation> annotations = new HashMap<String, IMemberAnnotation>();
+  protected Map<String, IMemberAnnotation> annotations = new AnnotationMap();
   
 
   protected transient PropertyChangeListener validListener = new PropertyChangeListener() {
@@ -250,6 +250,43 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
 
   public Map<String, IMemberAnnotation> getMemberAnnotations() {
     return annotations;
+  }
+
+
+  private class AnnotationMap extends HashMap<String, IMemberAnnotation>{
+    @Override
+    public IMemberAnnotation put(String s, IMemberAnnotation iMemberAnnotation) {
+      IMemberAnnotation prevVal = get(s);
+      if(prevVal != null && prevVal != iMemberAnnotation){
+        prevVal.onDetach(AbstractMetaDataModelNode.this);
+      }
+      if(prevVal == null || prevVal != iMemberAnnotation){
+        iMemberAnnotation.onAttach(AbstractMetaDataModelNode.this);
+      }
+      return super.put(s, iMemberAnnotation);
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ? extends IMemberAnnotation> map) {
+      for (String s : map.keySet()) {
+        IMemberAnnotation prevVal = get(s);
+        if(prevVal != null  && prevVal != map.get(s)){
+          prevVal.onDetach(AbstractMetaDataModelNode.this);
+        }
+        if(prevVal == null || prevVal != map.get(s)){
+          map.get(s).onAttach(AbstractMetaDataModelNode.this);
+        }
+      }
+      super.putAll(map);
+    }
+
+    @Override
+    public IMemberAnnotation remove(Object o) {
+      if(o instanceof IMemberAnnotation){
+        ((IMemberAnnotation) o).onDetach(AbstractMetaDataModelNode.this);
+      }
+      return super.remove(o);
+    }
   }
   
 }

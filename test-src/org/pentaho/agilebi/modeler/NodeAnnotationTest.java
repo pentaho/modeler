@@ -30,4 +30,28 @@ public class NodeAnnotationTest extends AbstractModelerTest {
     assertEquals(level.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).getName(), "location");
 
   }
+
+  @Test
+  public void testProcessChange() throws Exception{
+    generateTestDomain();
+    ModelerWorkspaceHelper workspaceHelper = new ModelerWorkspaceHelper("en-US");
+    workspaceHelper.autoModelFlat(workspace);
+    workspaceHelper.autoModelRelationalFlat(workspace);
+
+    LevelMetaData level = workspace.getModel().getDimensions().get(0).get(0).get(0);
+    GeoRole geoRole = workspace.getGeoContext().getGeoRoleByName("location");
+    level.getMemberAnnotations().put(GeoContext.ANNOTATION_GEO_ROLE, geoRole);
+
+    assertEquals(2, level.size());
+    assertNotNull(level.getLatitudeField());
+    assertNotNull(level.getLongitudeField());
+
+    level.getMemberAnnotations().remove(geoRole);
+
+    assertEquals(0, level.size());
+    assertNull(level.getLatitudeField());
+    assertNull(level.getLongitudeField());
+
+    
+  }
 }

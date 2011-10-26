@@ -16,5 +16,7 @@ public interface IMemberAnnotation {
   void saveAnnotations(Object obj);
   boolean isValid(AbstractMetaDataModelNode node);
   List<String> getValidationMessages(AbstractMetaDataModelNode node);
+  void onAttach(AbstractMetaDataModelNode node);
+  void onDetach(AbstractMetaDataModelNode node);
 
 }

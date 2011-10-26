@@ -205,4 +205,12 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
   public List<String> getValidationMessages(AbstractMetaDataModelNode node) {
     return Collections.emptyList();
   }
+
+  public void onAttach(AbstractMetaDataModelNode node) {
+
+  }
+
+  public void onDetach(AbstractMetaDataModelNode node) {
+
+  }
 }

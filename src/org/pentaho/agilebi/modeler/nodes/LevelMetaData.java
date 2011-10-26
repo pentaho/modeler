@@ -217,7 +217,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   public MemberPropertyMetaData getLatitudeField(){
     for(MemberPropertyMetaData member : this){
-      if(member.getName().equals("latitude")){
+      if(member.getName().equals(GeoContext.LATITUDE)){
         return member;
     }
         }
@@ -226,7 +226,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   public MemberPropertyMetaData getLongitudeField(){
     for(MemberPropertyMetaData member : this){
-      if(member.getName().equals("longitude")){
+      if(member.getName().equals(GeoContext.LONGITUDE)){
         return member;
       }
     }

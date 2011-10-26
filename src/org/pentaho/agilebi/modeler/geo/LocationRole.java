@@ -177,4 +177,35 @@ public class LocationRole extends GeoRole implements Serializable {
     }
     return messages;
   }
+
+  @Override
+  public void onAttach(AbstractMetaDataModelNode node) {
+    super.onAttach(node);
+    if(!(node instanceof LevelMetaData)){
+      return;
+    }
+    LevelMetaData level = (LevelMetaData) node;
+    if(level.getLatitudeField() == null){
+      level.add(new MemberPropertyMetaData(level, GeoContext.LATITUDE));
+    }
+    if(level.getLongitudeField() == null){
+      level.add(new MemberPropertyMetaData(level, GeoContext.LONGITUDE));
+    }
+  }
+
+  public void onDetach(AbstractMetaDataModelNode node) {
+    super.onDetach(node);
+    if(!(node instanceof LevelMetaData)){
+      return;
+    }
+    LevelMetaData level = (LevelMetaData) node;
+    MemberPropertyMetaData lat = level.getLatitudeField();
+    if(lat != null && lat.getLogicalColumn() == null ){
+      level.remove(lat);
+    }
+    MemberPropertyMetaData lon = level.getLongitudeField();
+    if(lon != null && lon.getLogicalColumn() == null ){
+      level.remove(lon);
+    }
+  }
 }

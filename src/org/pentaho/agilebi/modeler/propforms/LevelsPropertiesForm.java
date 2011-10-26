@@ -16,6 +16,7 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
@@ -47,7 +48,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   protected XulMenuList geoList;
   protected List<GeoRole> geoRoles = new ArrayList<GeoRole>();
   protected GeoRole selectedGeoRole;
-  protected GeoRole dummyGeoRole = new GeoRole("", Collections.<String>emptyList());
+  protected GeoRole dummyGeoRole = new GeoRole(ModelerMessagesHolder.getMessages().getString("none"), Collections.<String>emptyList());
 
   public LevelsPropertiesForm(String panelId, String locale) {
     super(panelId);
@@ -202,6 +203,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
   @Bindable
   public void setSelectedGeoRole(GeoRole selectedGeoRole) {
+    GeoRole prevVal = this.selectedGeoRole;
     this.selectedGeoRole = selectedGeoRole;
     if(selectedGeoRole != null && selectedGeoRole != dummyGeoRole){
       getNode().getMemberAnnotations().put(GeoContext.ANNOTATION_GEO_ROLE, selectedGeoRole);
@@ -212,6 +214,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     }
     getNode().validateNode();
     showValidations();
-    this.firePropertyChange("selectedGeoRole", null, selectedGeoRole);
+    this.firePropertyChange("selectedGeoRole", prevVal, selectedGeoRole);
   }
 }
