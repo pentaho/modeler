@@ -9,9 +9,6 @@ public class ModelerMessagesHolder {
   }
 
   public static void setMessages(IModelerMessages messages) {
-    if (modelerMessages != null) {
-      throw new IllegalStateException("IModelerMessages is already set"); //$NON-NLS-1$
-    }
     modelerMessages = messages;
   }
 
