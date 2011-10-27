@@ -260,7 +260,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
       if(prevVal != null && prevVal != iMemberAnnotation){
         prevVal.onDetach(AbstractMetaDataModelNode.this);
       }
-      if(prevVal == null || prevVal != iMemberAnnotation){
+      if((prevVal == null || prevVal != iMemberAnnotation) && iMemberAnnotation != null){
         iMemberAnnotation.onAttach(AbstractMetaDataModelNode.this);
       }
       return super.put(s, iMemberAnnotation);
@@ -273,7 +273,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
         if(prevVal != null  && prevVal != map.get(s)){
           prevVal.onDetach(AbstractMetaDataModelNode.this);
         }
-        if(prevVal == null || prevVal != map.get(s)){
+        if(prevVal == null || prevVal != map.get(s) && map.get(s) != null){
           map.get(s).onAttach(AbstractMetaDataModelNode.this);
         }
       }
