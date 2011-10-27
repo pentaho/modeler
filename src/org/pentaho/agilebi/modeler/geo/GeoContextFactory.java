@@ -1,16 +1,14 @@
 package org.pentaho.agilebi.modeler.geo;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.nodes.annotations.GeoAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.IAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
-import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
-import org.pentaho.metadata.model.olap.OlapAnnotation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Created by IntelliJ IDEA.
@@ -57,7 +55,6 @@ public class GeoContextFactory {
         String aliases = configProvider.getRoleAliases(rolename);
         String parents = configProvider.getRoleRequirements(rolename);
         String displayName = ModelerMessagesHolder.getMessages().getString("geo."+rolename);
-        //stringutil.defaultIfEmpty not available in GET
         if(StringUtils.isEmpty(displayName)){
           displayName = rolename;
         }
@@ -89,7 +86,6 @@ public class GeoContextFactory {
 
 
     String displayName = ModelerMessagesHolder.getMessages().getString("geo.location");
-    //stringutil.defaultIfEmpty not available in GET
     if(StringUtils.isEmpty(displayName)){
       displayName = "location";
     }
