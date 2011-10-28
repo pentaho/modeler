@@ -12,6 +12,9 @@ import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.model.olap.OlapDimension;
+import org.pentaho.metadata.model.olap.OlapHierarchy;
+import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 
 import java.io.File;
 import java.io.FileReader;
@@ -684,6 +687,26 @@ public class GeoContextTest extends AbstractModelerTest {
     verify(mockLongitudeCol);
     verify(mockCustomerCol);
     verify(mockStateCol);
+
+    workspace.getWorkspaceHelper().populateDomain(workspace);
+    List olapDimensions = (List) workspace.getDomain().getLogicalModels().get(0).getProperty("olap_dimensions");
+    boolean foundLevel = false;
+    for(Object d : olapDimensions){
+      OlapDimension dim = (OlapDimension) d;
+      if(dim.getName().equalsIgnoreCase("customername")){
+        for(OlapHierarchy hier : dim.getHierarchies()){
+          if(hier.getName().equalsIgnoreCase("customername")){
+            for(OlapHierarchyLevel lvl : hier.getHierarchyLevels()){
+              if(lvl.getName().equalsIgnoreCase("customername")){
+                foundLevel = true;
+                assertEquals(2, lvl.getAnnotations().size());
+              }
+            }
+          }
+        }
+      }
+    }
+    assertTrue(foundLevel);
   }
 
 
