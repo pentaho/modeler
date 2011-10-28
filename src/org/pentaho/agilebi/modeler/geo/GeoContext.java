@@ -93,12 +93,22 @@ public class GeoContext extends AbstractModelList<GeoRole> {
         continue;
       }
       String dimName;
+
       if (tableList.size() == 1) {
         dimName = getDimensionName();
       } else {
         // have to name the dimensions in context with the tables they are built from
         dimName = table.getName() + get(0).getMatchSeparator() + getDimensionName();
       }
+
+      // see if the desired name is already the name of a column
+      for(IPhysicalColumn col : table.getPhysicalTable().getPhysicalColumns()) {
+        if (col.getId().equalsIgnoreCase(getDimensionName())) {
+          dimName += "2";
+          continue;
+        }
+      }
+
       DimensionMetaData dim = new DimensionMetaData(dimName);
       dim.getMemberAnnotations().put(ANNOTATION_DATA_ROLE, new GeoRole());
       HierarchyMetaData hier = new HierarchyMetaData(dimName);
@@ -231,8 +241,12 @@ public class GeoContext extends AbstractModelList<GeoRole> {
 
     // if there was only one dimension created, set it's name to the configured value
     if(geoDims.size() == 1) {
-      geoDims.get(0).setName(getDimensionName());
-      geoDims.get(0).get(0).setName(getDimensionName());
+      String resetDimName = getDimensionName();
+      if(geoDims.get(0).getName().endsWith(resetDimName + "2")) {
+        resetDimName += "2";
+      }
+      geoDims.get(0).setName(resetDimName);
+      geoDims.get(0).get(0).setName(resetDimName);
     }
 
     return geoDims;

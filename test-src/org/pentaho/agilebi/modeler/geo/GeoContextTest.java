@@ -1134,4 +1134,151 @@ public class GeoContextTest extends AbstractModelerTest {
     verify(mockLongitudeCol);
   }
 
+
+  @Test
+  public void testSourceDataAlreadyHasGeographyField() throws Exception {
+    // LatLong fields should be detected and the column immediately preceding them in the source table should
+    // get it's data role set to LocationRole
+
+    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+
+    // mock object init...
+    IPhysicalTable mockTable1 = createMock(IPhysicalTable.class);
+    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
+    IPhysicalColumn mockStateCol = createMock(IPhysicalColumn.class);
+    IPhysicalColumn mockCustomerCol = createMock(IPhysicalColumn.class);
+    IPhysicalColumn mockLatitudeCol = createMock(IPhysicalColumn.class);
+    IPhysicalColumn mockLongitudeCol = createMock(IPhysicalColumn.class);
+    IPhysicalColumn mockCountryCol = createMock(IPhysicalColumn.class);
+    IPhysicalColumn mockCityCol = createMock(IPhysicalColumn.class);
+    IPhysicalColumn mockGeoCol = createMock(IPhysicalColumn.class);
+
+    cols1.add(mockCustomerCol);
+    cols1.add(mockCityCol);
+    cols1.add(mockStateCol);
+    cols1.add(mockCountryCol);
+    cols1.add(mockLatitudeCol);
+    cols1.add(mockLongitudeCol);
+    cols1.add(mockGeoCol);
+
+    expect(mockTable1.getName(LOCALE)).andReturn("CUSTOMERS").anyTimes();
+    expect(mockTable1.getPhysicalColumns()).andReturn(cols1).anyTimes();
+    expect(mockTable1.getId()).andReturn("PT_CUSTOMERS").anyTimes();
+    expect(mockTable1.getProperty("target_table")).andReturn("PT_CUSTOMERS").anyTimes();
+    expect(mockTable1.getProperty("name")).andReturn("CUSTOMERS").anyTimes();
+
+    // country
+    expect(mockCountryCol.getName(LOCALE)).andReturn("Country").anyTimes();
+    expect(mockCountryCol.getName("en-US")).andReturn("Country").anyTimes();
+    expect(mockCountryCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockCountryCol.getDataType()).andReturn(DataType.STRING);
+    expect(mockCountryCol.getAggregationList()).andReturn(null);
+    expect(mockCountryCol.getAggregationType()).andReturn(null);
+    expect(mockCountryCol.getId()).andReturn("COUNTRY").anyTimes();
+
+    // state col
+    expect(mockStateCol.getName(LOCALE)).andReturn("State").anyTimes();
+    expect(mockStateCol.getName("en-US")).andReturn("State").anyTimes();
+    expect(mockStateCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockStateCol.getDataType()).andReturn(DataType.STRING);
+    expect(mockStateCol.getAggregationList()).andReturn(null);
+    expect(mockStateCol.getAggregationType()).andReturn(null);
+    expect(mockStateCol.getId()).andReturn("STATE").anyTimes();
+
+    // city
+    expect(mockCityCol.getName(LOCALE)).andReturn("City").anyTimes();
+    expect(mockCityCol.getName("en-US")).andReturn("City").anyTimes();
+    expect(mockCityCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockCityCol.getDataType()).andReturn(DataType.STRING);
+    expect(mockCityCol.getAggregationList()).andReturn(null);
+    expect(mockCityCol.getAggregationType()).andReturn(null);
+    expect(mockCityCol.getId()).andReturn("CITY").anyTimes();
+
+    // customer col
+    expect(mockCustomerCol.getName(LOCALE)).andReturn("CustomerName").anyTimes();
+    expect(mockCustomerCol.getName("en-US")).andReturn("CustomerName").anyTimes();
+    expect(mockCustomerCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockCustomerCol.getId()).andReturn("CUSTOMERNAME").anyTimes();
+
+    // lat col
+    expect(mockLatitudeCol.getName(LOCALE)).andReturn("Latitude").anyTimes();
+    expect(mockLatitudeCol.getName("en-US")).andReturn("Latitude").anyTimes();
+    expect(mockLatitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockLatitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLatitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLatitudeCol.getAggregationType()).andReturn(null).anyTimes();
+    expect(mockLatitudeCol.getId()).andReturn("LATITUDE").anyTimes();
+
+    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    latProperties.put("name", "Latitude");
+    expect(mockLatitudeCol.getProperties()).andReturn(latProperties).anyTimes();
+
+    // lng col
+    expect(mockLongitudeCol.getName(LOCALE)).andReturn("Longitude").anyTimes();
+    expect(mockLongitudeCol.getName("en-US")).andReturn("Longitude").anyTimes();
+    expect(mockLongitudeCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockLongitudeCol.getDataType()).andReturn(DataType.NUMERIC).anyTimes();
+    expect(mockLongitudeCol.getAggregationList()).andReturn(null).anyTimes();
+    expect(mockLongitudeCol.getAggregationType()).andReturn(null).anyTimes();
+    expect(mockLongitudeCol.getId()).andReturn("LONGITUDE").anyTimes();
+
+    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    lngProperties.put("name", "Longitude");
+    expect(mockLongitudeCol.getProperties()).andReturn(lngProperties).anyTimes();
+
+    // geography col
+    expect(mockGeoCol.getName(LOCALE)).andReturn("Geography").anyTimes();
+    expect(mockGeoCol.getName("en-US")).andReturn("Geography").anyTimes();
+    expect(mockGeoCol.getPhysicalTable()).andReturn(mockTable1).anyTimes();
+    expect(mockGeoCol.getId()).andReturn("GEOGRAPHY").anyTimes();
+
+
+    replay(mockTable1);
+    replay(mockCustomerCol);
+    replay(mockCityCol);
+    replay(mockStateCol);
+    replay(mockCountryCol);
+    replay(mockLatitudeCol);
+    replay(mockLongitudeCol);
+    replay(mockGeoCol);
+
+    AvailableTable table = new AvailableTable(mockTable1);
+    items.add(table);
+    // end mock object init...
+
+    // use the existing tool to generate a domain with multiple tables
+    generateTestDomain();
+
+    // automodel this first, so we have some dimension to test that our locationRole gets set properly
+    workspace.getWorkspaceHelper().autoModelFlat(workspace);
+
+    // overwrite the table definitions with our mocks, so we control the columns
+    workspace.getAvailableTables().setChildren(items);
+
+    GeoContext geo = GeoContextFactory.create(config);
+
+    List<DimensionMetaData> dims = geo.buildDimensions(workspace);
+    assertEquals(1, dims.size());
+
+    DimensionMetaData custGeoDim = dims.get(0);
+
+    assertEquals("Geography2", custGeoDim.getName());
+
+    // make sure we only have 3 levels and that they are in the correct order (country, state, city)
+    assertEquals(3, custGeoDim.get(0).size());
+
+    assertEquals("location", custGeoDim.get(0).get(0).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).getName()); // due to order of fields, this should be the location role
+    assertEquals("state", custGeoDim.get(0).get(1).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).getName());
+    assertEquals("city", custGeoDim.get(0).get(2).getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE).getName());
+
+    verify(mockTable1);
+    verify(mockCityCol);
+    verify(mockStateCol);
+    verify(mockCountryCol);
+    verify(mockCustomerCol);
+    verify(mockLatitudeCol);
+    verify(mockLongitudeCol);
+    verify(mockGeoCol);
+  }
+
 }
