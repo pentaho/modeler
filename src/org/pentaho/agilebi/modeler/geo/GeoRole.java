@@ -187,6 +187,7 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
   public void saveAnnotations(Object obj) {
 
     OlapHierarchyLevel level = (OlapHierarchyLevel) obj;
+    clearAnnotations(level);
 
     level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_DATA_ROLE, "Geography"));
 
@@ -199,6 +200,38 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
       level.getAnnotations().add(new OlapAnnotation(GeoContext.ANNOTATION_GEO_PARENTS, parents));
     }
   }
+
+  public boolean hasAnnotation(String name, OlapHierarchyLevel level){
+    List<OlapAnnotation> annos = level.getAnnotations();
+    if(annos == null){
+      return false;
+    }
+    for(OlapAnnotation anno : annos){
+      if(anno.getName().equals(name)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private void clearAnnotations(OlapHierarchyLevel level){
+    List<OlapAnnotation> annos = level.getAnnotations();
+    if(annos == null){
+      return;
+    }
+
+    List<OlapAnnotation> toRemove = new ArrayList<OlapAnnotation>();
+    for(OlapAnnotation anno : annos){
+      String annoName = anno.getName();
+      if(annoName.equals(GeoContext.ANNOTATION_GEO_PARENTS) || annoName.equals(GeoContext.ANNOTATION_GEO_ROLE)
+          || annoName.equals(GeoContext.ANNOTATION_DATA_ROLE)){
+        toRemove.add(anno);
+      }
+    }
+
+    annos.removeAll(toRemove);
+  }
+
 
   protected String combineRequiredParents(GeoRole role) {
     if(role.getRequiredParentRoles().size() > 0) {
