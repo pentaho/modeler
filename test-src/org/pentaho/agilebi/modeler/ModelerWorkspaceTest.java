@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.*;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 
@@ -170,6 +171,17 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     assertNotSame(logicalColumn, lCol);
   }
 
+  @Test
+  public void testColumnBackedNodeCreation() throws Exception {
+    generateTestDomain();
+    ModelerWorkspaceHelper workspaceHelper = new ModelerWorkspaceHelper("en-US");
+    AvailableTable item = (AvailableTable) workspace.getAvailableTables().get(0);
+    LogicalTable lTab = workspace.findLogicalTable(item.getPhysicalTable(), workspace.getCurrentModelerPerspective());
+    lTab.setName(new LocalizedString("en-US", "name with spaces"));
+
+    ColumnBackedNode node = workspace.createColumnBackedNode(item.getAvailableFields().get(0), workspace.getCurrentModelerPerspective());
+    assertEquals("LC_name_with_spaces_ADDRESSLINE1_OLAP", node.getLogicalColumn().getId());
+  }
 }
 
 
