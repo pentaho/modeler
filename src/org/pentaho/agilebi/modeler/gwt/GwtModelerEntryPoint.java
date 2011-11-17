@@ -1,6 +1,7 @@
 package org.pentaho.agilebi.modeler.gwt;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -26,7 +27,7 @@ public class GwtModelerEntryPoint implements EntryPoint, IXulLoaderCallback {
     service.generateDomain(null, "ORDERS", "GENERIC", null, "testing", new XulServiceCallback<Domain>(){
       public void success( Domain domain) {
         GwtModelerEntryPoint.this.domain = domain;
-        AsyncXulLoader.loadXulFromUrl("panel.xul", "modeler", GwtModelerEntryPoint.this); //$NON-NLS-1$//$NON-NLS-2$
+        AsyncXulLoader.loadXulFromUrl(GWT.getModuleBaseURL() + "panel.xul", GWT.getModuleBaseURL() + "modeler", GwtModelerEntryPoint.this); //$NON-NLS-1$//$NON-NLS-2$
       }
 
       public void error( String s, Throwable throwable ) {
