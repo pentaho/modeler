@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -188,6 +189,8 @@ public class SwtModelerUI {
     }
   }
   
+  static String lastPath = null;
+  
   class FileOpenItemListener implements SelectionListener {
     public void widgetSelected(SelectionEvent event) {
       widgetDefaultSelected(event);
@@ -196,8 +199,18 @@ public class SwtModelerUI {
     public void widgetDefaultSelected(SelectionEvent event) {
       System.out.println("Open...");
       try {
-        String xmi = IOUtils.toString(new FileInputStream("testing.xmi"));
-        ModelerWorkspaceUtil.loadWorkspace("testing.xmi", xmi, controller.getModel());
+        FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+        dialog.setFilterExtensions(new String[]{"*.xmi"});
+        
+        if (lastPath != null) {
+          dialog.setFilterPath(lastPath);
+        }
+        String fname = dialog.open();
+        if (fname != null) {
+          String xmi = IOUtils.toString(new FileInputStream(fname));
+          ModelerWorkspaceUtil.loadWorkspace(fname, xmi, controller.getModel());
+          lastPath =  dialog.getFilterPath();
+        }
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -210,11 +223,19 @@ public class SwtModelerUI {
     }
 
     public void widgetDefaultSelected(SelectionEvent event) {
-      System.out.println("Save...");
-      try {
-        ModelerWorkspaceUtil.saveWorkspace(controller.getModel(), "testing.xmi");
-      } catch (Exception e) {
-        e.printStackTrace();
+      
+      FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+      if (lastPath != null) {
+        dialog.setFilterPath(lastPath);
+      }
+      String fname = dialog.open();
+      if (fname != null) {
+        System.out.println("Save...");
+        try {
+          ModelerWorkspaceUtil.saveWorkspace(controller.getModel(), fname);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
       }
     }
   }

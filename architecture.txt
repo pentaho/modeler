@@ -1,0 +1,55 @@
+The Pentaho Modeler is Pentaho's long term initiative to replace Pentaho Schema Workbench and 
+Pentaho Metadata Editor.  It exists as a perspective today in Pentaho Data Integration, and as
+a component within the Pentaho User Console as part of the Datasource Wizard.  Our plan is to support
+a variety of logical modeling scenarios, including bottom up design of Analysis and Metadata models 
+within Pentaho, as well as top down design of logical models.
+
+This project is built using pentaho-xul, a UI framework based on the Mozilla XUL standard 
+which allows for multi-environment UI development, including Swing, SWT and HTML/Javascript (GWT).  
+The pentaho-xul project can be found here:
+svn://source.pentaho.org/svnroot/pentaho-commons/pentaho-xul/trunk
+
+A good starting point for debugging and experimenting with the modeler is by running the 
+SwtModelerUI java class in your favorite IDE.  First, run "ant resolve" to download all necessary dependencies 
+for this project.  Second, if in Eclipse, run "ant create-dot-classpath" to generate an up to date 
+.classpath file with the new jars.  Finally, add Kettle's lib-swt/PLATFORM/swt.jar to the top of 
+the classpath.  Now you can run SwtModelerUI.
+
+Key Files
+---------
+
+XUL files located in src/org/pentaho/agilebi/modeler/res
+ - These files represent the UI of the modeler, the panel.xul is the main xul file, and it includes
+ child panels and views as necessary.
+ 
+ModelerWorkspace.java - the parent model of the UI
+ModelerController.java - the parent controller of the UI
+
+org.pentaho.agilebi.modeler.nodes package
+ - this package contains the list and tree nodes that appear in the modeler
+ 
+org.pentaho.agilebi.modeler.propforms package
+ - this package contains the  form controllers that drive the right side of the modeler
+ 
+org.pentaho.agilebi.modeler.strategy package
+ - this package contains the architecture for automodeling various physical model types
+ 
+ 
+Integration
+----------- 
+ 
+The modeler project is included in the following assemblies
+
+Kettle Agile BI Plugin: 
+svn://source.pentaho.org/svnkettleroot/agile-bi/trunk
+
+Pentaho BI Platform Data Access Plugin:
+https://github.com/pentaho/data-access
+
+
+
+
+
+
+
+   
