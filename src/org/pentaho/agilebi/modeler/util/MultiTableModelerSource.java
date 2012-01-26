@@ -19,27 +19,34 @@
 
   package org.pentaho.agilebi.modeler.util;
 
-  import org.apache.commons.lang.StringUtils;
-  import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
-  import org.pentaho.agilebi.modeler.ModelerException;
-  import org.pentaho.agilebi.modeler.ModelerMode;
-  import org.pentaho.agilebi.modeler.ModelerWorkspace;
-  import org.pentaho.agilebi.modeler.geo.GeoContext;
-  import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
-  import org.pentaho.agilebi.modeler.models.JoinTableModel;
-  import org.pentaho.agilebi.modeler.models.SchemaModel;
-  import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
-  import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
-  import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
-  import org.pentaho.di.core.database.DatabaseMeta;
-  import org.pentaho.metadata.automodel.SchemaTable;
-  import org.pentaho.metadata.model.*;
-  import org.pentaho.metadata.model.concept.types.LocalizedString;
-  import org.pentaho.metadata.model.concept.types.RelationshipType;
-  import org.slf4j.Logger;
-  import org.slf4j.LoggerFactory;
+  import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-  import java.util.*;
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerMode;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+import org.pentaho.agilebi.modeler.models.SchemaModel;
+import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
+import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
+import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.metadata.automodel.SchemaTable;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.concept.types.RelationshipType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
   public class MultiTableModelerSource implements ISpoonModelerSource {
 
@@ -81,37 +88,27 @@
            Set<String> usedTables = new HashSet<String>();
            List<SchemaTable> schemas = new ArrayList<SchemaTable>();
            if(selectedTables.size() == 1){   // special single table story BISERVER-5806
-             schemas.add(new SchemaTable("", selectedTables.get(0)));
+
+        	 String singleTable = selectedTables.get(0);
+        	 if(!usedTables.contains(singleTable)){
+               schemas.add(createSchemaTable(singleTable));  
+        	 } 
+        	 
            } else {
         	 for(JoinRelationshipModel joinModel : schemaModel.getJoins()) {
                  
         	   String fromTable = joinModel.getLeftKeyFieldModel().getParentTable().getName();	  
-        	   String toTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
-        		 
                if(!usedTables.contains(fromTable)){
-                 String schemaName = "";
-                 String tableName = fromTable;
-                 if(fromTable.indexOf(".") > 0){
-                    String[] pair = getSchemaTablePair(fromTable);
-                    schemaName = pair[0];
-                    tableName = pair[1];
-                 }
-                 schemas.add(new SchemaTable(schemaName, tableName));
+                 schemas.add(createSchemaTable(fromTable));
                  usedTables.add(fromTable);
                }
+               
+        	   String toTable = joinModel.getRightKeyFieldModel().getParentTable().getName();
                if(!usedTables.contains(toTable)){
-
-                 String schemaName = "";
-                 String tableName = toTable;
-                 if(fromTable.indexOf(".") > 0){
-                    String[] pair = getSchemaTablePair(toTable);
-                    schemaName = pair[0];
-                    tableName = pair[1];
-                 }
-
-                 schemas.add(new SchemaTable(schemaName, tableName));
+                 schemas.add(createSchemaTable(toTable));
                  usedTables.add(toTable);
                }
+               
              }
            }
            SchemaTable tableNames[] = new SchemaTable[schemas.size()];
@@ -182,6 +179,17 @@
            throw new ModelerException(e.getLocalizedMessage());
          }
          return domain;
+    }
+    
+    private SchemaTable createSchemaTable(String table) {
+      String schemaName = "";
+      String tableName = table;
+      if(table.indexOf(".") > 0){
+         String[] pair = getSchemaTablePair(table);
+         schemaName = pair[0];
+         tableName = pair[1];
+      }
+      return new SchemaTable(schemaName, tableName);
     }
 
     private String[] getSchemaTablePair(String table) {
