@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.util.AbstractModelNode;
@@ -55,6 +56,11 @@ public class DimensionTreeHelper extends ModelerTreeHelper {
   @Override
   public void clearTreeModel(){
     workspace.setModelIsChanging(true);
+
+    // remove all logical columns from existing logical tables
+//    for (LogicalTable table : workspace.getLogicalModel(ModelerPerspective.ANALYSIS).getLogicalTables()) {
+//      table.getLogicalColumns().clear();
+//    }
 
     workspace.getModel().getDimensions().clear();
     workspace.getModel().getMeasures().clear();

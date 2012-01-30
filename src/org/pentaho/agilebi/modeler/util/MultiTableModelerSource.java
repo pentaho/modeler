@@ -19,34 +19,23 @@
 
   package org.pentaho.agilebi.modeler.util;
 
-  import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+  import org.apache.commons.lang.StringUtils;
+  import org.pentaho.agilebi.modeler.*;
+  import org.pentaho.agilebi.modeler.geo.GeoContext;
+  import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
+  import org.pentaho.agilebi.modeler.models.SchemaModel;
+  import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
+  import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
+  import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
+  import org.pentaho.di.core.database.DatabaseMeta;
+  import org.pentaho.metadata.automodel.SchemaTable;
+  import org.pentaho.metadata.model.*;
+  import org.pentaho.metadata.model.concept.types.LocalizedString;
+  import org.pentaho.metadata.model.concept.types.RelationshipType;
+  import org.slf4j.Logger;
+  import org.slf4j.LoggerFactory;
 
-import org.apache.commons.lang.StringUtils;
-import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerMode;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
-import org.pentaho.agilebi.modeler.models.SchemaModel;
-import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
-import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
-import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.metadata.automodel.SchemaTable;
-import org.pentaho.metadata.model.Domain;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalRelationship;
-import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.metadata.model.concept.types.RelationshipType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+  import java.util.*;
 
   public class MultiTableModelerSource implements ISpoonModelerSource {
 
@@ -126,10 +115,12 @@ import org.slf4j.LoggerFactory;
              helper.setAutoModelStrategy(new MultiTableAutoModelStrategy(locale));
            }
 
+           domain.getLogicalModels().get(0).setProperty("DUAL_MODELING_SCHEMA", ""+doOlap);
+
            ModelerWorkspace workspace = new ModelerWorkspace(helper, geoContext);
            workspace.setDomain(domain);
            
-           LogicalModel logicalModel = domain.getLogicalModels().get(0);
+           LogicalModel logicalModel = workspace.getLogicalModel(ModelerPerspective.REPORTING);
            logicalModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
            logicalModel.setName(new LocalizedString(locale, datasourceName));
            logicalModel.setDescription(new LocalizedString(locale, "This is the data model for "
@@ -137,10 +128,16 @@ import org.slf4j.LoggerFactory;
 
            workspace.setModelName(datasourceName);
            helper.autoModelRelationalFlat(workspace);
+           LogicalModel olapModel = null;
 
            if(doOlap) {
+
+             olapModel = workspace.getLogicalModel(ModelerPerspective.ANALYSIS);
+             if(olapModel.getLogicalRelationships().size() != logicalModel.getLogicalRelationships().size()) {
+               ModelerConversionUtil.duplicateRelationshipsForOlap(logicalModel, olapModel);
+             }
              String factTableName = getSchemaTablePair(schemaModel.getFactTable().getName())[1];
-             LogicalTable factTable = findFactTable(factTableName, logicalModel);
+             LogicalTable factTable = findFactTable(factTableName, olapModel);
              if(factTable == null) {
                throw new IllegalStateException("Fact table not found");
              } else {
@@ -163,7 +160,7 @@ import org.slf4j.LoggerFactory;
            // domain.
            generateLogicalRelationships(logicalModel, false);
            if(doOlap) {
-        	   generateLogicalRelationships(logicalModel, true);
+        	   generateLogicalRelationships(olapModel, true);
            }
 
            helper.populateDomain(workspace);
@@ -172,7 +169,12 @@ import org.slf4j.LoggerFactory;
              businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
            }
 
-           
+           if(olapModel != null) {
+             for(LogicalTable businessTable : olapModel.getLogicalTables()) {
+               businessTable.setName(new LocalizedString(locale, businessTable.getPhysicalTable().getName(locale)));
+             }
+           }
+
          } catch (Exception e) {
            e.printStackTrace();
            logger.info(e.getLocalizedMessage());

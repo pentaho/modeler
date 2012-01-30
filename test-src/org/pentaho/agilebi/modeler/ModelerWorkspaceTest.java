@@ -50,7 +50,7 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     //Up-Convert happens in the setDomain now
     workspace.setDomain(d, false);
 
-    assertEquals(2, model.getLogicalTables().size());
+    assertEquals(1, model.getLogicalTables().size());
 
   }
 
@@ -61,7 +61,10 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
     LogicalModel model = d.getLogicalModels().get(0);
     workspace.setDomain(d);
 
-    assertEquals(2, model.getLogicalTables().size());
+    assertEquals(1, model.getLogicalTables().size());
+    assertEquals(2, d.getLogicalModels().size());
+
+    model = workspace.getLogicalModel(ModelerPerspective.ANALYSIS);
 
     // verify the OLAP measures & dimensions get their logical columns set to the new OLAP table's columns
     for (DimensionMetaData dim : workspace.getModel().getDimensions()) {
@@ -80,6 +83,7 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
       assertFalse(isReferencedTableReportingVersion(measure.getLogicalColumn()));
     }
 
+    model = workspace.getLogicalModel(ModelerPerspective.REPORTING);
     // verify the reporting model is correct still
     for (CategoryMetaData cat : workspace.getRelationalModel().getCategories()) {
       for (FieldMetaData field : cat) {
@@ -90,21 +94,17 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
   }
 
   private boolean isReferencedTableOlapVersion(LogicalColumn logicalColumn) {
-    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-      if (table.getName("en-US").endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        if (table.getId().equals(logicalColumn.getLogicalTable().getId())) {
-          return true;
-        }
+    for(LogicalTable table : workspace.getLogicalModel(ModelerPerspective.ANALYSIS).getLogicalTables()) {
+      if (table.getId().equals(logicalColumn.getLogicalTable().getId())) {
+        return true;
       }
     }
     return false;
   }
   private boolean isReferencedTableReportingVersion(LogicalColumn logicalColumn) {
-    for(LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-      if (!table.getName("en-US").endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        if (table.getId().equals(logicalColumn.getLogicalTable().getId())) {
-          return true;
-        }
+    for(LogicalTable table : workspace.getLogicalModel(ModelerPerspective.REPORTING).getLogicalTables()) {
+      if (table.getId().equals(logicalColumn.getLogicalTable().getId())) {
+        return true;
       }
     }
     return false;
@@ -123,8 +123,8 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
   public void testMondrianExportAfterUpConvertOfModel() throws Exception{
     XmiParser parser = new XmiParser();
     Domain d = parser.parseXmi(new FileInputStream("test-res/products.xmi"));
-    LogicalModel model = d.getLogicalModels().get(0);
     workspace.setDomain(d);
+    LogicalModel model = d.getLogicalModels().get(1);
 
     MondrianModelExporter exporter = new MondrianModelExporter(model, Locale.getDefault().toString());
     String mondrianSchema = exporter.createMondrianModelXML();

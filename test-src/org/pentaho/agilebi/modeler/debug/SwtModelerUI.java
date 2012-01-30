@@ -99,18 +99,18 @@ public class SwtModelerUI {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 
-    ModelerWorkspace workspace = new ModelerWorkspace(new ModelerWorkspaceHelper("en-US"), geoContext);
+    ModelerWorkspace workspace = new ModelerWorkspace(new ModelerWorkspaceHelper("en_US"), geoContext);
 
 
     try {
       KettleEnvironment.init();
       Props.init(Props.TYPE_PROPERTIES_EMPTY);
       Domain d = ModelerSourceUtil.generateDomain(getDatabaseMeta(), "", "CUSTOMERS");
-
+      workspace.setDomain(d);
       XmiParser parser = new XmiParser();
       try {
-        Domain domain = parser.parseXmi(new FileInputStream(new File("test-res/testMulti.xmi")));
-        workspace.setDomain(domain);
+//        Domain domain = parser.parseXmi(new FileInputStream(new File("test-res/testMulti.xmi")));
+//        workspace.setDomain(domain);
       } catch (Exception e) {
         e.printStackTrace();
       }

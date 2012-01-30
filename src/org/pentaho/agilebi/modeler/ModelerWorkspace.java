@@ -17,25 +17,28 @@
 package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.nodes.annotations.GeoAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.IAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
-import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
-import org.pentaho.ui.xul.XulEventSourceAdapter;
-import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
+import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.*;
+import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -428,7 +431,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
   public LogicalColumn findLogicalColumn( String id ) {
     LogicalColumn col = null;
-    for (LogicalColumn c : domain.getLogicalModels().get(0).getLogicalTables().get(0).getLogicalColumns()) {
+    for (LogicalColumn c : getLogicalModel(currentModelerPerspective).getLogicalTables().get(0).getLogicalColumns()) {
       if (c.getName(workspaceHelper.getLocale()).equals(id)) {
         col = c;
         break;
@@ -441,16 +444,20 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return findLogicalTable(table, currentModelerPerspective);
   }
   public LogicalTable findLogicalTable(IPhysicalTable table, ModelerPerspective perspective) {
-    for (LogicalTable logicalTable : domain.getLogicalModels().get(0).getLogicalTables()) {
+    LogicalModel logicalModel = this.getLogicalModel(perspective);
+
+    for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
       if (logicalTable.getPhysicalTable().equals(table)
           || logicalTable.getPhysicalTable().getId().equals(table.getId())
           || logicalTable.getId().equals(table.getId())) {
-        boolean isOlapTable = logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX);
-        if (perspective == ModelerPerspective.ANALYSIS && isOlapTable) {
-          return logicalTable;
-        } else if (perspective == ModelerPerspective.REPORTING && !isOlapTable) {
-          return logicalTable;
-        }
+
+        return logicalTable;
+//        boolean isOlapTable = logicalTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX);
+//        if (perspective == ModelerPerspective.ANALYSIS && isOlapTable) {
+//          return logicalTable;
+//        } else if (perspective == ModelerPerspective.REPORTING && !isOlapTable) {
+//          return logicalTable;
+//        }
       }
     }
     return null;
@@ -483,7 +490,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if(d.getLogicalModels().size() == 0){
       return false;
     }
-    LogicalModel lModel = d.getLogicalModels().get(0);
+    LogicalModel lModel = this.getLogicalModel(ModelerPerspective.ANALYSIS);
     return "true".equals(lModel.getProperty("DUAL_MODELING_SCHEMA")) || lModel.getProperty("MondrianCatalogRef") != null;
   }
 
@@ -603,7 +610,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
 
     // If the new model was previously "auto-modeled" we need to clean that now
-    LogicalModel newLModel = newDomain.getLogicalModels().get(0);
+    LogicalModel newLModel = getLogicalModel(ModelerPerspective.ANALYSIS);
     if (newLModel != null) {
       List<OlapDimension> theDimensions = (List) newLModel.getProperty("olap_dimensions"); //$NON-NLS-1$
       if (theDimensions != null) {
@@ -678,6 +685,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       this.setModellingMode(ModelerMode.REPORTING_ONLY);
     }
 
+    lModel = getLogicalModel(ModelerPerspective.ANALYSIS);
     List<OlapDimension> theDimensions = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_DIMS); //$NON-NLS-1$
     if (theDimensions != null) {
       Iterator<OlapDimension> theDimensionItr = theDimensions.iterator();
@@ -771,8 +779,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       }
     }
 
+    lModel = this.getLogicalModel(ModelerPerspective.REPORTING);
     int i = 1;
-    for (Category cat : this.getDomain().getLogicalModels().get(0).getCategories()) {
+    for (Category cat : lModel.getCategories()) {
       String catName = BaseModelerWorkspaceHelper.getCleanCategoryName(cat.getName(workspaceHelper.getLocale()), this, i++);
       CategoryMetaData catMeta = new CategoryMetaData(catName);
       for (LogicalColumn col : cat.getLogicalColumns()) {
@@ -804,7 +813,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
 
     if (needsUpConverted) {
-      upConvertLegacyModel();
+//      upConvertLegacyModel();
       upConvertMeasuresAndDimensions();
     }
 
@@ -814,7 +823,15 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
 
   private void upConvertMeasuresAndDimensions() {
-    LogicalModel model = domain.getLogicalModels().get(0);
+    if(domain.getLogicalModels().size() == 1) {
+      return;
+    }
+    LogicalModel model = domain.getLogicalModels().get(1);
+
+    // clean out the tables, we'll recreate the logical columns
+    for(LogicalTable table : model.getLogicalTables()) {
+      table.getLogicalColumns().clear();
+    }
 
     // set the dimension logical column references to the new olap columns
     for (DimensionMetaData dim : getModel().getDimensions()) {
@@ -835,27 +852,17 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       measure.setLogicalColumn(node.getLogicalColumn());
     }
 
+    // make sure the relationships are set too
+    ModelerConversionUtil.duplicateRelationshipsForOlap(domain.getLogicalModels().get(0), model);
+
     return;
   }
 
   protected boolean upConvertLegacyModel() {
-    // first, determine if we need to up-convert models created before
-    // the separation of OLAP and Reporting models to the new style
-    int olapTableCount=0, reportingTableCount=0;
-    LogicalModel model = domain.getLogicalModels().get(0);
-    for (LogicalTable table : model.getLogicalTables()) {
-      if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        olapTableCount++;
-      } else {
-        reportingTableCount++;
-      }
-    }
-    if (olapTableCount == 0) {
-      // need to forward port this model
-      BaseModelerWorkspaceHelper.duplicateLogicalTablesForDualModelingMode(domain.getLogicalModels().get(0));
+    double version = ModelerConversionUtil.upConvertDomain(domain);
+    if (version < Double.parseDouble(BaseModelerWorkspaceHelper.AGILE_BI_VERSION)) {
       return true;
     }
-
     return false;
   }
 
@@ -1039,10 +1046,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public LogicalColumn findLogicalColumn(IPhysicalColumn column, ModelerPerspective perspective) {
     LogicalColumn col = null;
     IPhysicalTable physicalTable = column.getPhysicalTable();
-    for (LogicalTable table : getDomain().getLogicalModels().get(0).getLogicalTables()) {
+    LogicalModel logicalModel = this.getLogicalModel(perspective);
+    for (LogicalTable table : logicalModel.getLogicalTables()) {
       if (table.getPhysicalTable().getId().equals(physicalTable.getId())) {
         if ((perspective == ModelerPerspective.ANALYSIS && table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX))
-            || perspective == ModelerPerspective.REPORTING && !table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
+            || (perspective == ModelerPerspective.REPORTING && !table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX))) {
 
           for (LogicalColumn lCol : table.getLogicalColumns()) {
             if (lCol.getPhysicalColumn().getId().equals(column.getId())) {
@@ -1065,5 +1073,21 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   @Bindable
   public void setCurrentModelerTreeHelper(ModelerTreeHelper currentModelerTreeHelper) {
     this.currentModelerTreeHelper = currentModelerTreeHelper;
+  }
+
+  public LogicalModel getLogicalModel() {
+    return getLogicalModel(ModelerPerspective.REPORTING);
+  }
+  public LogicalModel getLogicalModel(ModelerPerspective type) {
+    if(this.getDomain().getLogicalModels().size() == 1){
+      return this.getDomain().getLogicalModels().get(0);
+    }
+
+    switch(type) {
+      case ANALYSIS:
+        return this.getDomain().getLogicalModels().get(1);
+      default:
+        return this.getDomain().getLogicalModels().get(0);
+    }
   }
 }

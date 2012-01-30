@@ -689,7 +689,7 @@ public class GeoContextTest extends AbstractModelerTest {
     verify(mockStateCol);
 
     workspace.getWorkspaceHelper().populateDomain(workspace);
-    List olapDimensions = (List) workspace.getDomain().getLogicalModels().get(0).getProperty("olap_dimensions");
+    List olapDimensions = (List) workspace.getDomain().getLogicalModels().get(1).getProperty("olap_dimensions");
     boolean foundLevel = false;
     for(Object d : olapDimensions){
       OlapDimension dim = (OlapDimension) d;
