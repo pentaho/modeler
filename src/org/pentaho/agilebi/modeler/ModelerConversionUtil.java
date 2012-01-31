@@ -115,7 +115,11 @@ public class ModelerConversionUtil {
     // update the model version number to the current version
     combinedModel.setProperty("AGILE_BI_VERSION", BaseModelerWorkspaceHelper.AGILE_BI_VERSION);
     olapModel.setProperty("AGILE_BI_VERSION", BaseModelerWorkspaceHelper.AGILE_BI_VERSION);    
-    
+
+    // remove the olap_cubes and olap_dimensions properties from the non-olap model
+    combinedModel.removeChildProperty("olap_cubes");
+    combinedModel.removeChildProperty("olap_dimensions");
+
     return olapModel;
   }
   
@@ -250,6 +254,10 @@ public class ModelerConversionUtil {
     duplicateRelationshipsForOlap(logicalModel, olapModel);
 
     olapModel.setProperty("AGILE_BI_VERSION", BaseModelerWorkspaceHelper.AGILE_BI_VERSION);
+
+    // remove the olap_cubes and olap_dimensions properties from the non-olap model
+    logicalModel.removeChildProperty("olap_cubes");
+    logicalModel.removeChildProperty("olap_dimensions");
 
     return olapModel;
   }

@@ -55,6 +55,23 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
   }
 
   @Test
+  public void testUpConvert_v2() throws Exception {
+    XmiParser parser = new XmiParser();
+    Domain d = parser.parseXmi(new FileInputStream("test-res/multi-table-model-2.0.xmi"));
+    LogicalModel model = d.getLogicalModels().get(0);
+
+    assertEquals(6, model.getLogicalTables().size());
+    //Up-Convert happens in the setDomain now
+    workspace.setDomain(d, true);
+
+    assertEquals(3, model.getLogicalTables().size());
+
+    LogicalModel olapModel = workspace.getLogicalModel(ModelerPerspective.ANALYSIS);
+    assertEquals(3, olapModel.getLogicalTables().size());
+  }
+
+
+  @Test
   public void testSetDomain_NeedsUpConverted() throws Exception {
     XmiParser parser = new XmiParser();
     Domain d = parser.parseXmi(new FileInputStream("test-res/products.xmi"));

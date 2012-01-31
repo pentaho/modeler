@@ -37,7 +37,14 @@ public class ModelerConversionUtilTest {
 
     // make sure the olap tables are gone
     assertEquals(originalTableCount / 2, originalModel.getLogicalTables().size());
-    
+
+    // make sure the olap_cubes & olap_dimensions are gone too
+    assertNull(originalModel.getProperty("olap_cubes"));
+    assertNull(originalModel.getProperty("olap_dimensions"));
+
+    assertNotNull(olapModel.getProperty("olap_cubes"));
+    assertNotNull(olapModel.getProperty("olap_dimensions"));
+
     // no _OLAP tables left
     for (LogicalTable table : originalModel.getLogicalTables()) {
       if(table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
@@ -128,6 +135,14 @@ public class ModelerConversionUtilTest {
     }
 
     Assert.assertEquals(physicalColumns, logicalColumns);
+
+    // make sure the olap_cubes & olap_dimensions are gone too
+    assertNull(logicalModel.getProperty("olap_cubes"));
+    assertNull(logicalModel.getProperty("olap_dimensions"));
+
+    assertNotNull(newModel.getProperty("olap_cubes"));
+    assertNotNull(newModel.getProperty("olap_dimensions"));
+
 
     // makes sure table names aren't the same either
     LogicalTable origTable = logicalModel.getLogicalTables().get(0);
