@@ -711,13 +711,18 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             // Make sure we're dealing with the OLAP copy. Note that duplicated columns will have an OLAP_[0-9]+ at the end
             String refID = theLevel.getReferenceColumn().getId();
             if (!refID.endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !refID.contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_")) {
-              needsUpConverted = true;
+              LogicalColumn olapCol = ModelerConversionUtil.findCorrespondingOlapColumn(theLevel.getReferenceColumn(), lModel);
+              theLevel.setReferenceColumn(olapCol);
             }
             theLevelMD.setLogicalColumn(theLevel.getReferenceColumn());
 
             // get any logicalColumns and turn them into member properties
             if( theLevel.getLogicalColumns() != null && theLevel.getLogicalColumns().size() > 0 ) {
               for( LogicalColumn lc : theLevel.getLogicalColumns() ) {
+                if(!lc.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !lc.getId().contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_")) {
+                  // not pointing to the olap col
+                  lc = ModelerConversionUtil.findCorrespondingOlapColumn(lc,lModel);
+                }
                 MemberPropertyMetaData memberProp = new MemberPropertyMetaData(theLevelMD, lc.getName(workspaceHelper.getLocale()));
                 memberProp.setLogicalColumn(lc);
                 memberProp.setDescription(lc.getDescription(workspaceHelper.getLocale()));
@@ -761,17 +766,24 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           }
           theMeasureMD.setFormat((String) theMeasure.getLogicalColumn().getProperty("mask")); //$NON-NLS-1$
           theMeasureMD.setDefaultAggregation(theMeasure.getLogicalColumn().getAggregationType());
-
-          if (!theMeasure.getLogicalColumn().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-            needsUpConverted = true;
+          String possibleMeasureName = theMeasure.getLogicalColumn().getId();
+          if (!theMeasure.getLogicalColumn().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) &&
+              !theMeasure.getLogicalColumn().getId().contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_") ) {
+            // change the backing column to the olap version
+            LogicalColumn olapCol = ModelerConversionUtil.findCorrespondingOlapColumn(theMeasure.getLogicalColumn(), lModel);
+            theMeasure.setLogicalColumn(olapCol);
           }
 
           // BISERVER-6077 - Mondrian exporter uses logical column names as measure names, make sure they get set properly
           LogicalColumn lCol = theMeasure.getLogicalColumn();
           Set<String> locales = lCol.getName().getLocales();
           String[] stringLocals = locales.toArray(new String[]{});
-          if (stringLocals != null && stringLocals.length > 0)
+          if (stringLocals != null && stringLocals.length > 0) {
+            if(theMeasure.getName() == null || theMeasure.getName().trim().length() == 0) {
+              theMeasure.setName(possibleMeasureName);
+            }
             lCol.setName(new LocalizedString(stringLocals[0], theMeasure.getName()));
+          }
 
           theMeasureMD.setLogicalColumn(lCol);
           this.model.getMeasures().add(theMeasureMD);
@@ -810,11 +822,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         catMeta.add(field);
       }
       this.getRelationalModel().getCategories().add(catMeta);
-    }
-
-    if (needsUpConverted) {
-//      upConvertLegacyModel();
-      upConvertMeasuresAndDimensions();
     }
 
     this.setModelIsChanging(false, true);

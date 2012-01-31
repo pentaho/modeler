@@ -3,6 +3,7 @@ package org.pentaho.agilebi.modeler;
 import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.Concept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 
 import java.util.ArrayList;
@@ -150,7 +151,7 @@ public class ModelerConversionUtil {
     return concept.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX);
   }
   
-  private static LogicalTable findCorrespondingOlapTable(LogicalTable relationalTable, LogicalModel olapModel) {
+  protected static LogicalTable findCorrespondingOlapTable(LogicalTable relationalTable, LogicalModel olapModel) {
     for(LogicalTable table : olapModel.getLogicalTables()) {
       if( table.getPhysicalTable().getId().equals( relationalTable.getPhysicalTable().getId() ) ) {
         return table;
@@ -159,7 +160,7 @@ public class ModelerConversionUtil {
     return null;
   }
 
-  private static LogicalColumn findCorrespondingOlapColumn(LogicalColumn relationalColumn, LogicalModel olapModel) {
+  protected static LogicalColumn findCorrespondingOlapColumn(LogicalColumn relationalColumn, LogicalModel olapModel) {
     LogicalTable olapTable = findCorrespondingOlapTable(relationalColumn.getLogicalTable(), olapModel);
     
     if(olapTable != null) {
@@ -214,6 +215,18 @@ public class ModelerConversionUtil {
         }
         if(col.getPhysicalColumn().getAggregationType() != null) {
           olapCol.setAggregationType(col.getPhysicalColumn().getAggregationType());
+        } else {
+          if(olapCol.getDataType().equals(DataType.NUMERIC)) {
+            olapCol.setAggregationType(AggregationType.SUM);
+          } else {
+            olapCol.setAggregationType(AggregationType.NONE);
+          }
+        }
+
+        if(col.getProperty("mask") != null) {
+          olapCol.setProperty("mask", col.getProperty("mask"));
+        } else if(olapCol.getDataType().equals(DataType.NUMERIC)) {
+            olapCol.setProperty("mask", "#");
         }
 
         LocalizedString newName = appendOlap(col.getName());
