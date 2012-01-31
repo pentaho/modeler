@@ -131,7 +131,7 @@ public class DimensionTreeHelperTest extends AbstractModelerTest {
 
   private TableCountInfo getTableCountInfo() {
     TableCountInfo info = new TableCountInfo();
-    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+    for (LogicalTable table : workspace.getLogicalModel(ModelerPerspective.ANALYSIS).getLogicalTables()) {
       if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
         info.tableCount++;
         info.columnCount += table.getLogicalColumns().size();

@@ -57,6 +57,9 @@ public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
     workspace.setModelIsChanging(true, !mainModel.getSuppressEvents());
 
     // remove all logical columns from existing logical tables
+    for(LogicalTable table : workspace.getLogicalModel(ModelerPerspective.ANALYSIS).getLogicalTables()) {
+      table.getLogicalColumns().clear();
+    }
 
     HashSet<String> existingMeasures = new HashSet<String>();
     List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();

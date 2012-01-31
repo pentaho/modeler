@@ -33,7 +33,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
   @Override
   @Bindable
   public void init(ModelerWorkspace workspace) {
-    super.init(workspace);
+    this.workspace = workspace;
     deck = (XulDeck) document.getElementById("propertiesdeck");
     panel = (XulVbox) document.getElementById(ID);
 

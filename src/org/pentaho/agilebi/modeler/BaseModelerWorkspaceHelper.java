@@ -25,6 +25,10 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   private static String locale;
   public static final String OLAP_SUFFIX = "_OLAP";
 
+
+//  public static final String AGILE_BI_VERSION = "2.0" // Relational & OLAP models are in one LogicalModel. OLAP uses tables with _OLAP suffix
+  public static final String AGILE_BI_VERSION = "3.0";  // Relational Model & OLAP models seperated into 2 Logical Models in the Domain
+  
   private AutoModelStrategy autoModelStrategy;
 
   static {
@@ -52,7 +56,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     Domain domain = model.getDomain();
     domain.setId(model.getModelName());
 
-    LogicalModel logicalModel = domain.getLogicalModels().get(0);
+    LogicalModel logicalModel = model.getLogicalModel(ModelerPerspective.REPORTING);
 
     if (model.getModelSource() != null) {
       model.getModelSource().serializeIntoDomain(domain);
@@ -60,33 +64,31 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     logicalModel.setId("MODEL_1");
     logicalModel.setName( new LocalizedString(locale, model.getModelName() ) );
-    logicalModel.setProperty("AGILE_BI_VERSION","2.0");
+    logicalModel.setProperty("AGILE_BI_VERSION", AGILE_BI_VERSION);
 
     populateCategories(model);
 
-    
     // =========================== OLAP ===================================== //
-
+    if(model.supportsOlap(domain)) {
+      logicalModel = model.getLogicalModel(ModelerPerspective.ANALYSIS);
+      logicalModel.setId("MODEL_1" + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
+      logicalModel.setName( new LocalizedString(locale, model.getModelName() + BaseModelerWorkspaceHelper.OLAP_SUFFIX) );
+      logicalModel.setProperty("AGILE_BI_VERSION", AGILE_BI_VERSION);
+    }
 
     if(model.getModel() != null && model.getModel().getDimensions().size() > 0) {
 	    LogicalTable factTable = null;
       //check to see if there's only one effective table
-      if(logicalModel.getLogicalTables().size() <= 2){
-        for(LogicalTable lTable : logicalModel.getLogicalTables()) {
-            if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-                factTable = lTable;
-            }
-          }
+      if(logicalModel.getLogicalTables().size() == 1){
+        factTable = logicalModel.getLogicalTables().get(0);
       } else { // otherwise we're in a multi-table situation, find the table flagged as the fact table
         for(LogicalTable lTable : logicalModel.getLogicalTables()) {
-            if(lTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-              boolean isFact = lTable.getPhysicalTable().getProperty("FACT_TABLE") != null ? (Boolean) lTable.getPhysicalTable().getProperty("FACT_TABLE") : false;
-              if(isFact) {
-                  factTable = lTable;
-                break;
-              }
-            }
+          boolean isFact = lTable.getPhysicalTable().getProperty("FACT_TABLE") != null ? (Boolean) lTable.getPhysicalTable().getProperty("FACT_TABLE") : false;
+          if(isFact) {
+              factTable = lTable;
+            break;
           }
+        }
       }
 
       if(factTable == null) {
@@ -122,6 +124,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
               // different parent.
               LogicalTable supposedLTable = lCol.getLogicalTable();
               LogicalTable olapCloneLTable = findOlapCloneForTableInDomain(supposedLTable, domain);
+
               hierarchy.setLogicalTable(olapCloneLTable);
               if (!olapCloneLTable.getLogicalColumns().contains(lCol)) {
                 olapCloneLTable.addLogicalColumn(lCol);
@@ -136,7 +139,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
               level.setReferenceColumn(lCol);
               hierarchy.setLogicalTable(olapCloneLTable);
-              if(logicalModel.getLogicalTables().size() > 2){ //only do this for multi-table situations
+              if(logicalModel.getLogicalTables().size() > 1){ //only do this for multi-table situations
                 hierarchy.setPrimaryKey(findPrimaryKeyFor(logicalModel, factTable, olapCloneLTable));
               }
             }
@@ -246,7 +249,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     if(supposedLTable.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)){
       return supposedLTable;
     }
-    for(LogicalTable table : domain.getLogicalModels().get(0).getLogicalTables()){
+    for(LogicalTable table : domain.getLogicalModels().get(1).getLogicalTables()){
       if(table.getId().equals(supposedLTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX)){
         return table;
       }
@@ -350,17 +353,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       }
     }
 
-  }
-
-  public static void duplicateLogicalTablesForDualModelingMode(LogicalModel model) {
-    String locale = "en-US";
-    int tableCount = model.getLogicalTables().size();
-    for (int i = 0; i < tableCount; i++) {
-      LogicalTable table = model.getLogicalTables().get(i);
-      LogicalTable copiedTable = (LogicalTable) table.clone();
-      copiedTable.setId(copiedTable.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
-      model.addLogicalTable(copiedTable);
-    }
   }
 
   /**

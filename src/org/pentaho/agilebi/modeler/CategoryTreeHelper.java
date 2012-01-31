@@ -85,10 +85,8 @@ public class CategoryTreeHelper extends ModelerTreeHelper {
     workspace.setRelationalModelIsChanging(true);
 
     // remove all logical columns from existing logical tables
-    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
-      if (!table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
-        table.getLogicalColumns().clear();
-      }
+    for (LogicalTable table : workspace.getLogicalModel(ModelerPerspective.REPORTING).getLogicalTables()) {
+      table.getLogicalColumns().clear();
     }
 
     workspace.getRelationalModel().getCategories().clear();

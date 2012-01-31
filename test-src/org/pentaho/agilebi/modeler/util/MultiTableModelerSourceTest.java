@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
@@ -29,6 +30,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.slf4j.Logger;
@@ -63,17 +65,18 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 
 		MultiTableModelerSource multiTable = new MultiTableModelerSource(this.getDatabase(), getSchemaModel1(true), this.getDatabase().getName(), Arrays.asList("CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE"));
 		Domain domain = multiTable.generateDomain(true);
-		assertNotNull(domain);
 
-		List<OlapCube> cubes = (List) domain.getLogicalModels().get(0).getProperty("olap_cubes");
+		assertNotNull(domain);
+    LogicalModel olapModel = domain.getLogicalModels().get(1);
+		List<OlapCube> cubes = (List) olapModel.getProperty("olap_cubes");
 		OlapCube cube = cubes.get(0);
 
 		// Ensure cube has a fact table.
 		assertNotNull(cube.getLogicalTable());
 		// Ensure we have logical relationships (joins).
-		assertEquals(true, domain.getLogicalModels().get(0).getLogicalRelationships().size() > 0);
+		assertEquals(true, olapModel.getLogicalRelationships().size() > 0);
 		// Ensure all joins use Olap tables.
-		LogicalRelationship logicalRelationship = domain.getLogicalModels().get(0).getLogicalRelationships().get(1);
+		LogicalRelationship logicalRelationship = olapModel.getLogicalRelationships().get(0);
 		assertEquals(true, logicalRelationship.getToTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
 		assertEquals(true, logicalRelationship.getFromTable().getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX));
 	}

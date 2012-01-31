@@ -2,10 +2,9 @@ package org.pentaho.agilebi.modeler;
 
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import org.pentaho.metadata.model.Category;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.*;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.olap.OlapCube;
@@ -15,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Created: 3/25/11
@@ -52,13 +52,13 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     helper.populateDomain(workspace);
 
     // Now verify with the generated models
-    LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
+    LogicalModel logicalModel = workspace.getLogicalModel(ModelerPerspective.REPORTING);
     LogicalColumn lCol = logicalModel.getCategories().get(0).getLogicalColumns().get(0);
     assertEquals(firstField.getDefaultAggregation(), lCol.getAggregationType());
     assertEquals(firstField.getSelectedAggregations(), lCol.getAggregationList());
 
 
-    List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty("olap_cubes");
+    List<OlapCube> cubes = (List<OlapCube>) workspace.getLogicalModel(ModelerPerspective.ANALYSIS).getProperty("olap_cubes");
     OlapMeasure measure = cubes.get(0).getOlapMeasures().get(0);
     assertEquals(AggregationType.SUM, measure.getLogicalColumn().getAggregationType());
 
@@ -107,7 +107,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
   @Test
   public void testPopulateCategories_MultipleCategoriesAggregationTypesAndFormatMasks() throws ModelerException {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper(LOCALE);
-    LogicalModel logicalModel = workspace.getDomain().getLogicalModels().get(0);
+    LogicalModel logicalModel = workspace.getLogicalModel(ModelerPerspective.REPORTING);
     helper.autoModelFlat(workspace);
     helper.autoModelRelationalFlat(workspace);
     spiceUpRelationalModel(workspace.getRelationalModel());

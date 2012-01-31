@@ -18,6 +18,7 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
@@ -155,7 +156,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
   }
 
   private boolean isFactTable(IPhysicalTable table) {
-    String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
+    String agileBiVersion = (String) getWorkspace().getLogicalModel(ModelerPerspective.ANALYSIS).getProperty("AGILE_BI_VERSION");
     if(agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0){
       // if we're in a multi-table mode check for a fact table
       if(getWorkspace().getAvailableTables().size() > 1){
@@ -178,7 +179,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         measure = getWorkspace().createMeasureForNode((AvailableField) data);
       } else if(data instanceof AvailableTable){
         AvailableTable table = (AvailableTable) data;
-        String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
+        String agileBiVersion = (String) getWorkspace().getLogicalModel(ModelerPerspective.ANALYSIS).getProperty("AGILE_BI_VERSION");
 
         if(measure != null && agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0){
           // if we're in a multi-table mode check for a fact table
@@ -208,7 +209,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }
-      String agileBiVersion = (String) getWorkspace().getDomain().getLogicalModels().get(0).getProperty("AGILE_BI_VERSION");
+      String agileBiVersion = (String) getWorkspace().getLogicalModel(ModelerPerspective.ANALYSIS).getProperty("AGILE_BI_VERSION");
 
       if(measure != null && agileBiVersion != null && Float.parseFloat(agileBiVersion) >= 2.0 ){
         // if we're in a multi-table mode check for a fact table
