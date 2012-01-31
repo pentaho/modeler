@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMI xmlns:CWMMDB="org.omg.xmi.namespace.CWMMDB" xmlns:CWM="org.omg.xmi.namespace.CWM"
+     xmlns:CWMRDB="org.omg.xmi.namespace.CWMRDB" xmlns:CWMTFM="org.omg.xmi.namespace.CWMTFM"
+     xmlns:CWMOLAP="org.omg.xmi.namespace.CWMOLAP" timestamp="Thu Jan 26 14:50:50 EST 2012" xmi.version="1.2">
+    <XMI.header>
+        <XMI.documentation>
+            <XMI.exporter>Pentaho XMI Generator</XMI.exporter>
+            <XMI.exporterVersion>1.0</XMI.exporterVersion>
+        </XMI.documentation>
+    </XMI.header>
+    <XMI.content>
+        <CWM:Description body="INLINE_SQL" name="target_table_type" type="TargetTableType" xmi.id="a85">
+            <CWM:Description.modelElement>
+                <CWMRDB:Table xmi.idref="a84"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="select * from orders" name="target_table" type="String" xmi.id="a86">
+            <CWM:Description.modelElement>
+                <CWMRDB:Table xmi.idref="a84"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="ORDERNUMBER" name="formula" type="String" xmi.id="a89">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a88"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="ORDERNUMBER" language="en_US" name="name" type="LocString" xmi.id="a90">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a88"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="Numeric" name="datatype" type="DataType" xmi.id="a91">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a88"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="N" name="exact" type="Boolean" xmi.id="a92">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a88"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="ORDERDATE" name="formula" type="String" xmi.id="a94">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a93"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="ORDERDATE" language="en_US" name="name" type="LocString" xmi.id="a95">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a93"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="Date" name="datatype" type="DataType" xmi.id="a96">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a93"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="N" name="exact" type="Boolean" xmi.id="a97">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a93"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="REQUIREDDATE" name="formula" type="String" xmi.id="a99">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a98"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="REQUIREDDATE" language="en_US" name="name" type="LocString" xmi.id="a100">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a98"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="Date" name="datatype" type="DataType" xmi.id="a101">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a98"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="N" name="exact" type="Boolean" xmi.id="a102">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a98"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="SHIPPEDDATE" name="formula" type="String" xmi.id="a104">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a103"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="SHIPPEDDATE" language="en_US" name="name" type="LocString" xmi.id="a105">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a103"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="Date" name="datatype" type="DataType" xmi.id="a106">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a103"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="N" name="exact" type="Boolean" xmi.id="a107">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a103"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="STATUS" name="formula" type="String" xmi.id="a109">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a108"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="STATUS" language="en_US" name="name" type="LocString" xmi.id="a110">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a108"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="String" name="datatype" type="DataType" xmi.id="a111">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a108"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="N" name="exact" type="Boolean" xmi.id="a112">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a108"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="COMMENTS" name="formula" type="String" xmi.id="a114">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a113"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="COMMENTS" language="en_US" name="name" type="LocString" xmi.id="a115">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a113"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="String" name="datatype" type="DataType" xmi.id="a116">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a113"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="N" name="exact" type="Boolean" xmi.id="a117">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a113"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="CUSTOMERNUMBER" name="formula" type="String" xmi.id="a119">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a118"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="CUSTOMERNUMBER" language="en_US" name="name" type="LocString" xmi.id="a120">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a118"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="Numeric" name="datatype" type="DataType" xmi.id="a121">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a118"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="N" name="exact" type="Boolean" xmi.id="a122">
+            <CWM:Description.modelElement>
+                <CWMRDB:Column xmi.idref="a118"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="This is the data model for sql-model-1.0" language="en_US" name="description"
+                         type="LocString" xmi.id="a124">
+            <CWM:Description.modelElement>
+                <CWMMDB:Schema xmi.idref="a123"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description
+                body="&lt;org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO&gt;&#xA;  &lt;datasourceName&gt;sql-model-1.0&lt;/datasourceName&gt;&#xA;  &lt;datasourceType&gt;SQL&lt;/datasourceType&gt;&#xA;  &lt;csvModelInfo&gt;&#xA;    &lt;changeSupport serialization=&#34;custom&#34;&gt;&#xA;      &lt;java.beans.PropertyChangeSupport&gt;&#xA;        &lt;default&gt;&#xA;          &lt;propertyChangeSupportSerializedDataVersion&gt;2&lt;/propertyChangeSupportSerializedDataVersion&gt;&#xA;          &lt;source class=&#34;org.pentaho.platform.dataaccess.datasource.wizard.models.ModelInfo&#34; reference=&#34;../../../..&#34;/&gt;&#xA;        &lt;/default&gt;&#xA;        &lt;null/&gt;&#xA;      &lt;/java.beans.PropertyChangeSupport&gt;&#xA;    &lt;/changeSupport&gt;&#xA;    &lt;fileInfo&gt;&#xA;      &lt;changeSupport serialization=&#34;custom&#34;&gt;&#xA;        &lt;java.beans.PropertyChangeSupport&gt;&#xA;          &lt;default&gt;&#xA;            &lt;propertyChangeSupportSerializedDataVersion&gt;2&lt;/propertyChangeSupportSerializedDataVersion&gt;&#xA;            &lt;source class=&#34;org.pentaho.platform.dataaccess.datasource.wizard.models.CsvFileInfo&#34; reference=&#34;../../../..&#34;/&gt;&#xA;          &lt;/default&gt;&#xA;          &lt;null/&gt;&#xA;        &lt;/java.beans.PropertyChangeSupport&gt;&#xA;      &lt;/changeSupport&gt;&#xA;      &lt;delimiter&gt;,&lt;/delimiter&gt;&#xA;      &lt;enclosure&gt;&amp;quot;&lt;/enclosure&gt;&#xA;      &lt;encoding&gt;&lt;/encoding&gt;&#xA;      &lt;headerRows&gt;1&lt;/headerRows&gt;&#xA;      &lt;currencySymbol&gt;&lt;/currencySymbol&gt;&#xA;      &lt;decimalSymbol&gt;.&lt;/decimalSymbol&gt;&#xA;      &lt;groupSymbol&gt;,&lt;/groupSymbol&gt;&#xA;      &lt;ifNull&gt;---&lt;/ifNull&gt;&#xA;      &lt;nullStr&gt;&lt;/nullStr&gt;&#xA;    &lt;/fileInfo&gt;&#xA;    &lt;stageTableName&gt;sql-model-1.0&lt;/stageTableName&gt;&#xA;    &lt;validated&gt;false&lt;/validated&gt;&#xA;    &lt;csvInputErrors/&gt;&#xA;    &lt;tableOutputErrors/&gt;&#xA;  &lt;/csvModelInfo&gt;&#xA;  &lt;query&gt;select * from orders&lt;/query&gt;&#xA;  &lt;connectionName&gt;SampleData&lt;/connectionName&gt;&#xA;  &lt;version&gt;2.0&lt;/version&gt;&#xA;&lt;/org.pentaho.platform.dataaccess.datasource.wizard.models.DatasourceDTO&gt;"
+                name="datasourceModel" type="String" xmi.id="a125">
+            <CWM:Description.modelElement>
+                <CWMMDB:Schema xmi.idref="a123"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="sql-model-1.0" language="en_US" name="name" type="LocString" xmi.id="a126">
+            <CWM:Description.modelElement>
+                <CWMMDB:Schema xmi.idref="a123"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="sql-model-1.0" name="MondrianCatalogRef" type="String" xmi.id="a127">
+            <CWM:Description.modelElement>
+                <CWMMDB:Schema xmi.idref="a123"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description
+                body="&lt;security&gt;&#xA;  &lt;owner-rights&gt;&#xA;  &lt;owner&gt;&lt;type&gt;user&lt;/type&gt;&lt;name&gt;Authenticated&lt;/name&gt;&lt;/owner&gt; &lt;rights&gt;31&lt;/rights&gt;&#xA;  &lt;/owner-rights&gt;&#xA;  &lt;owner-rights&gt;&#xA;  &lt;owner&gt;&lt;type&gt;role&lt;/type&gt;&lt;name&gt;suzy&lt;/name&gt;&lt;/owner&gt; &lt;rights&gt;31&lt;/rights&gt;&#xA;  &lt;/owner-rights&gt;&#xA;  &lt;owner-rights&gt;&#xA;  &lt;owner&gt;&lt;type&gt;user&lt;/type&gt;&lt;name&gt;Admin&lt;/name&gt;&lt;/owner&gt; &lt;rights&gt;31&lt;/rights&gt;&#xA;  &lt;/owner-rights&gt;&#xA;&lt;/security&gt;&#xA;"
+                name="security" type="Security" xmi.id="a128">
+            <CWM:Description.modelElement>
+                <CWMMDB:Schema xmi.idref="a123"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="sql-model-1.0" language="en_US" name="name" type="LocString" xmi.id="a130">
+            <CWM:Description.modelElement>
+                <CWM:Extent xmi.idref="a129"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="sum" name="aggregation" type="Aggregation" xmi.id="a149">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a148"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="ORDERNUMBER" language="en_US" name="name" type="LocString" xmi.id="a150">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a148"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="#" name="mask" type="String" xmi.id="a151">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a148"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description
+                body="&lt;aggregationlist&gt;&#xA;  &lt;aggregation&gt;none&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;sum&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;average&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;minimum&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;maximum&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;count&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;count_distinct&lt;/aggregation&gt;&#xA;&lt;/aggregationlist&gt;&#xA;"
+                name="aggregation_list" type="AggregationList" xmi.id="a152">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a148"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="none" name="aggregation" type="Aggregation" xmi.id="a156">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a155"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="ORDERDATE" language="en_US" name="name" type="LocString" xmi.id="a157">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a155"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="none" name="aggregation" type="Aggregation" xmi.id="a161">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a160"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="REQUIREDDATE" language="en_US" name="name" type="LocString" xmi.id="a162">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a160"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="none" name="aggregation" type="Aggregation" xmi.id="a166">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a165"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="SHIPPEDDATE" language="en_US" name="name" type="LocString" xmi.id="a167">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a165"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="none" name="aggregation" type="Aggregation" xmi.id="a171">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a170"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="STATUS" language="en_US" name="name" type="LocString" xmi.id="a172">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a170"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="none" name="aggregation" type="Aggregation" xmi.id="a176">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a175"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="COMMENTS" language="en_US" name="name" type="LocString" xmi.id="a177">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a175"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="sum" name="aggregation" type="Aggregation" xmi.id="a181">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a180"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="CUSTOMERNUMBER" language="en_US" name="name" type="LocString" xmi.id="a182">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a180"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description body="#" name="mask" type="String" xmi.id="a183">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a180"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Description
+                body="&lt;aggregationlist&gt;&#xA;  &lt;aggregation&gt;none&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;sum&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;average&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;minimum&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;maximum&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;count&lt;/aggregation&gt;&#xA;  &lt;aggregation&gt;count_distinct&lt;/aggregation&gt;&#xA;&lt;/aggregationlist&gt;&#xA;"
+                name="aggregation_list" type="AggregationList" xmi.id="a184">
+            <CWM:Description.modelElement>
+                <CWMMDB:DimensionedObject xmi.idref="a180"/>
+            </CWM:Description.modelElement>
+        </CWM:Description>
+        <CWM:Parameter name="en_US" xmi.id="a1">
+            <CWM:ModelElement.taggedValue>
+                <CWM:TaggedValue tag="LOCALE_IS_DEFAULT" value="Y" xmi.id="a2"/>
+                <CWM:TaggedValue tag="LOCALE_ORDER" value="1" xmi.id="a3"/>
+                <CWM:TaggedValue tag="LOCALE_DESCRIPTION" value="English (United States)" xmi.id="a4"/>
+            </CWM:ModelElement.taggedValue>
+        </CWM:Parameter>
+        <CWMOLAP:Schema name="MODEL_1" xmi.id="a5">
+            <CWMOLAP:Schema.cube>
+                <CWMOLAP:Cube isAbstract="false" isVirtual="false" name="sql-model-1.0" xmi.id="a6">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="CUBE_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a7"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWM:Namespace.ownedElement>
+                        <CWMOLAP:Measure name="" xmi.id="a8">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="MEASURE_BUSINESS_COLUMN" value="bc_CUSTOMERNUMBER" xmi.id="a9"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWMOLAP:Measure>
+                        <CWMOLAP:Measure name="" xmi.id="a10">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="MEASURE_BUSINESS_COLUMN" value="bc_ORDERNUMBER" xmi.id="a11"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWMOLAP:Measure>
+                    </CWM:Namespace.ownedElement>
+                    <CWMOLAP:Cube.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation isAbstract="false" name="COMMENTS" xmi.id="a12">
+                            <CWMOLAP:CubeDimensionAssociation.dimension>
+                                <CWMOLAP:Dimension xmi.idref="a13"/>
+                            </CWMOLAP:CubeDimensionAssociation.dimension>
+                        </CWMOLAP:CubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation isAbstract="false" name="CUSTOMERNUMBER" xmi.id="a14">
+                            <CWMOLAP:CubeDimensionAssociation.dimension>
+                                <CWMOLAP:Dimension xmi.idref="a15"/>
+                            </CWMOLAP:CubeDimensionAssociation.dimension>
+                        </CWMOLAP:CubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation isAbstract="false" name="ORDERDATE" xmi.id="a16">
+                            <CWMOLAP:CubeDimensionAssociation.dimension>
+                                <CWMOLAP:Dimension xmi.idref="a17"/>
+                            </CWMOLAP:CubeDimensionAssociation.dimension>
+                        </CWMOLAP:CubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation isAbstract="false" name="ORDERNUMBER" xmi.id="a18">
+                            <CWMOLAP:CubeDimensionAssociation.dimension>
+                                <CWMOLAP:Dimension xmi.idref="a19"/>
+                            </CWMOLAP:CubeDimensionAssociation.dimension>
+                        </CWMOLAP:CubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation isAbstract="false" name="REQUIREDDATE" xmi.id="a20">
+                            <CWMOLAP:CubeDimensionAssociation.dimension>
+                                <CWMOLAP:Dimension xmi.idref="a21"/>
+                            </CWMOLAP:CubeDimensionAssociation.dimension>
+                        </CWMOLAP:CubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation isAbstract="false" name="SHIPPEDDATE" xmi.id="a22">
+                            <CWMOLAP:CubeDimensionAssociation.dimension>
+                                <CWMOLAP:Dimension xmi.idref="a23"/>
+                            </CWMOLAP:CubeDimensionAssociation.dimension>
+                        </CWMOLAP:CubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation isAbstract="false" name="STATUS" xmi.id="a24">
+                            <CWMOLAP:CubeDimensionAssociation.dimension>
+                                <CWMOLAP:Dimension xmi.idref="a25"/>
+                            </CWMOLAP:CubeDimensionAssociation.dimension>
+                        </CWMOLAP:CubeDimensionAssociation>
+                    </CWMOLAP:Cube.cubeDimensionAssociation>
+                </CWMOLAP:Cube>
+            </CWMOLAP:Schema.cube>
+            <CWMOLAP:Schema.dimension>
+                <CWMOLAP:Dimension isAbstract="false" isMeasure="false" isTime="false" name="COMMENTS" xmi.id="a13">
+                    <CWMOLAP:Dimension.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation xmi.idref="a12"/>
+                    </CWMOLAP:Dimension.cubeDimensionAssociation>
+                    <CWMOLAP:Dimension.hierarchy>
+                        <CWMOLAP:LevelBasedHierarchy isAbstract="false" name="COMMENTS" xmi.id="a26">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a27"/>
+                                <CWM:TaggedValue tag="HIERARCHY_HAVING_ALL" value="Y" xmi.id="a28"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation isAbstract="false" name="COMMENTS" xmi.id="a29">
+                                    <CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                        <CWMOLAP:Level xmi.idref="a30"/>
+                                    </CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                </CWMOLAP:HierarchyLevelAssociation>
+                            </CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                        </CWMOLAP:LevelBasedHierarchy>
+                    </CWMOLAP:Dimension.hierarchy>
+                    <CWMOLAP:Dimension.memberSelection>
+                        <CWMOLAP:Level isAbstract="false" name="COMMENTS" xmi.id="a30">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_UNIQUE_MEMBERS" value="Y" xmi.id="a31"/>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_REFERENCE_COLUMN" value="bc_COMMENTS"
+                                                 xmi.id="a32"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:Level.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation xmi.idref="a29"/>
+                            </CWMOLAP:Level.hierarchyLevelAssociation>
+                        </CWMOLAP:Level>
+                    </CWMOLAP:Dimension.memberSelection>
+                </CWMOLAP:Dimension>
+                <CWMOLAP:Dimension isAbstract="false" isMeasure="false" isTime="false" name="CUSTOMERNUMBER"
+                                   xmi.id="a15">
+                    <CWMOLAP:Dimension.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation xmi.idref="a14"/>
+                    </CWMOLAP:Dimension.cubeDimensionAssociation>
+                    <CWMOLAP:Dimension.hierarchy>
+                        <CWMOLAP:LevelBasedHierarchy isAbstract="false" name="CUSTOMERNUMBER" xmi.id="a33">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a34"/>
+                                <CWM:TaggedValue tag="HIERARCHY_HAVING_ALL" value="Y" xmi.id="a35"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation isAbstract="false" name="CUSTOMERNUMBER"
+                                                                   xmi.id="a36">
+                                    <CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                        <CWMOLAP:Level xmi.idref="a37"/>
+                                    </CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                </CWMOLAP:HierarchyLevelAssociation>
+                            </CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                        </CWMOLAP:LevelBasedHierarchy>
+                    </CWMOLAP:Dimension.hierarchy>
+                    <CWMOLAP:Dimension.memberSelection>
+                        <CWMOLAP:Level isAbstract="false" name="CUSTOMERNUMBER" xmi.id="a37">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_UNIQUE_MEMBERS" value="Y" xmi.id="a38"/>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_REFERENCE_COLUMN" value="bc_CUSTOMERNUMBER"
+                                                 xmi.id="a39"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:Level.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation xmi.idref="a36"/>
+                            </CWMOLAP:Level.hierarchyLevelAssociation>
+                        </CWMOLAP:Level>
+                    </CWMOLAP:Dimension.memberSelection>
+                </CWMOLAP:Dimension>
+                <CWMOLAP:Dimension isAbstract="false" isMeasure="false" isTime="false" name="ORDERDATE" xmi.id="a17">
+                    <CWMOLAP:Dimension.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation xmi.idref="a16"/>
+                    </CWMOLAP:Dimension.cubeDimensionAssociation>
+                    <CWMOLAP:Dimension.hierarchy>
+                        <CWMOLAP:LevelBasedHierarchy isAbstract="false" name="ORDERDATE" xmi.id="a40">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a41"/>
+                                <CWM:TaggedValue tag="HIERARCHY_HAVING_ALL" value="Y" xmi.id="a42"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation isAbstract="false" name="ORDERDATE" xmi.id="a43">
+                                    <CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                        <CWMOLAP:Level xmi.idref="a44"/>
+                                    </CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                </CWMOLAP:HierarchyLevelAssociation>
+                            </CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                        </CWMOLAP:LevelBasedHierarchy>
+                    </CWMOLAP:Dimension.hierarchy>
+                    <CWMOLAP:Dimension.memberSelection>
+                        <CWMOLAP:Level isAbstract="false" name="ORDERDATE" xmi.id="a44">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_UNIQUE_MEMBERS" value="Y" xmi.id="a45"/>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_REFERENCE_COLUMN" value="bc_ORDERDATE"
+                                                 xmi.id="a46"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:Level.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation xmi.idref="a43"/>
+                            </CWMOLAP:Level.hierarchyLevelAssociation>
+                        </CWMOLAP:Level>
+                    </CWMOLAP:Dimension.memberSelection>
+                </CWMOLAP:Dimension>
+                <CWMOLAP:Dimension isAbstract="false" isMeasure="false" isTime="false" name="ORDERNUMBER" xmi.id="a19">
+                    <CWMOLAP:Dimension.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation xmi.idref="a18"/>
+                    </CWMOLAP:Dimension.cubeDimensionAssociation>
+                    <CWMOLAP:Dimension.hierarchy>
+                        <CWMOLAP:LevelBasedHierarchy isAbstract="false" name="ORDERNUMBER" xmi.id="a47">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a48"/>
+                                <CWM:TaggedValue tag="HIERARCHY_HAVING_ALL" value="Y" xmi.id="a49"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation isAbstract="false" name="ORDERNUMBER" xmi.id="a50">
+                                    <CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                        <CWMOLAP:Level xmi.idref="a51"/>
+                                    </CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                </CWMOLAP:HierarchyLevelAssociation>
+                            </CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                        </CWMOLAP:LevelBasedHierarchy>
+                    </CWMOLAP:Dimension.hierarchy>
+                    <CWMOLAP:Dimension.memberSelection>
+                        <CWMOLAP:Level isAbstract="false" name="ORDERNUMBER" xmi.id="a51">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_UNIQUE_MEMBERS" value="Y" xmi.id="a52"/>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_REFERENCE_COLUMN" value="bc_ORDERNUMBER"
+                                                 xmi.id="a53"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:Level.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation xmi.idref="a50"/>
+                            </CWMOLAP:Level.hierarchyLevelAssociation>
+                        </CWMOLAP:Level>
+                    </CWMOLAP:Dimension.memberSelection>
+                </CWMOLAP:Dimension>
+                <CWMOLAP:Dimension isAbstract="false" isMeasure="false" isTime="false" name="REQUIREDDATE" xmi.id="a21">
+                    <CWMOLAP:Dimension.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation xmi.idref="a20"/>
+                    </CWMOLAP:Dimension.cubeDimensionAssociation>
+                    <CWMOLAP:Dimension.hierarchy>
+                        <CWMOLAP:LevelBasedHierarchy isAbstract="false" name="REQUIREDDATE" xmi.id="a54">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a55"/>
+                                <CWM:TaggedValue tag="HIERARCHY_HAVING_ALL" value="Y" xmi.id="a56"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation isAbstract="false" name="REQUIREDDATE" xmi.id="a57">
+                                    <CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                        <CWMOLAP:Level xmi.idref="a58"/>
+                                    </CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                </CWMOLAP:HierarchyLevelAssociation>
+                            </CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                        </CWMOLAP:LevelBasedHierarchy>
+                    </CWMOLAP:Dimension.hierarchy>
+                    <CWMOLAP:Dimension.memberSelection>
+                        <CWMOLAP:Level isAbstract="false" name="REQUIREDDATE" xmi.id="a58">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_UNIQUE_MEMBERS" value="Y" xmi.id="a59"/>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_REFERENCE_COLUMN" value="bc_REQUIREDDATE"
+                                                 xmi.id="a60"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:Level.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation xmi.idref="a57"/>
+                            </CWMOLAP:Level.hierarchyLevelAssociation>
+                        </CWMOLAP:Level>
+                    </CWMOLAP:Dimension.memberSelection>
+                </CWMOLAP:Dimension>
+                <CWMOLAP:Dimension isAbstract="false" isMeasure="false" isTime="false" name="SHIPPEDDATE" xmi.id="a23">
+                    <CWMOLAP:Dimension.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation xmi.idref="a22"/>
+                    </CWMOLAP:Dimension.cubeDimensionAssociation>
+                    <CWMOLAP:Dimension.hierarchy>
+                        <CWMOLAP:LevelBasedHierarchy isAbstract="false" name="SHIPPEDDATE" xmi.id="a61">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a62"/>
+                                <CWM:TaggedValue tag="HIERARCHY_HAVING_ALL" value="Y" xmi.id="a63"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation isAbstract="false" name="SHIPPEDDATE" xmi.id="a64">
+                                    <CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                        <CWMOLAP:Level xmi.idref="a65"/>
+                                    </CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                </CWMOLAP:HierarchyLevelAssociation>
+                            </CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                        </CWMOLAP:LevelBasedHierarchy>
+                    </CWMOLAP:Dimension.hierarchy>
+                    <CWMOLAP:Dimension.memberSelection>
+                        <CWMOLAP:Level isAbstract="false" name="SHIPPEDDATE" xmi.id="a65">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_UNIQUE_MEMBERS" value="Y" xmi.id="a66"/>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_REFERENCE_COLUMN" value="bc_SHIPPEDDATE"
+                                                 xmi.id="a67"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:Level.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation xmi.idref="a64"/>
+                            </CWMOLAP:Level.hierarchyLevelAssociation>
+                        </CWMOLAP:Level>
+                    </CWMOLAP:Dimension.memberSelection>
+                </CWMOLAP:Dimension>
+                <CWMOLAP:Dimension isAbstract="false" isMeasure="false" isTime="false" name="STATUS" xmi.id="a25">
+                    <CWMOLAP:Dimension.cubeDimensionAssociation>
+                        <CWMOLAP:CubeDimensionAssociation xmi.idref="a24"/>
+                    </CWMOLAP:Dimension.cubeDimensionAssociation>
+                    <CWMOLAP:Dimension.hierarchy>
+                        <CWMOLAP:LevelBasedHierarchy isAbstract="false" name="STATUS" xmi.id="a68">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a69"/>
+                                <CWM:TaggedValue tag="HIERARCHY_HAVING_ALL" value="Y" xmi.id="a70"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation isAbstract="false" name="STATUS" xmi.id="a71">
+                                    <CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                        <CWMOLAP:Level xmi.idref="a72"/>
+                                    </CWMOLAP:HierarchyLevelAssociation.currentLevel>
+                                </CWMOLAP:HierarchyLevelAssociation>
+                            </CWMOLAP:LevelBasedHierarchy.hierarchyLevelAssociation>
+                        </CWMOLAP:LevelBasedHierarchy>
+                    </CWMOLAP:Dimension.hierarchy>
+                    <CWMOLAP:Dimension.memberSelection>
+                        <CWMOLAP:Level isAbstract="false" name="STATUS" xmi.id="a72">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_UNIQUE_MEMBERS" value="Y" xmi.id="a73"/>
+                                <CWM:TaggedValue tag="HIERARCHY_LEVEL_REFERENCE_COLUMN" value="bc_STATUS" xmi.id="a74"/>
+                            </CWM:ModelElement.taggedValue>
+                            <CWMOLAP:Level.hierarchyLevelAssociation>
+                                <CWMOLAP:HierarchyLevelAssociation xmi.idref="a71"/>
+                            </CWMOLAP:Level.hierarchyLevelAssociation>
+                        </CWMOLAP:Level>
+                    </CWMOLAP:Dimension.memberSelection>
+                </CWMOLAP:Dimension>
+            </CWMOLAP:Schema.dimension>
+        </CWMOLAP:Schema>
+        <CWMRDB:Catalog name="bv_sql-model-1.0" xmi.id="a75">
+            <CWM:ModelElement.taggedValue>
+                <CWM:TaggedValue tag="DATABASE_TYPE" value="HYPERSONIC" xmi.id="a76"/>
+                <CWM:TaggedValue tag="DATABASE_ACCESS" value="JNDI" xmi.id="a77"/>
+                <CWM:TaggedValue tag="DATABASE_DATABASE" value="SampleData" xmi.id="a78"/>
+                <CWM:TaggedValue tag="DATABASE_SERVER" value="" xmi.id="a79"/>
+                <CWM:TaggedValue tag="DATABASE_PORT" value="" xmi.id="a80"/>
+                <CWM:TaggedValue tag="DATABASE_USERNAME" value="" xmi.id="a81"/>
+                <CWM:TaggedValue tag="DATABASE_PASSWORD" value="" xmi.id="a82"/>
+                <CWM:TaggedValue tag="DATABASE_ATTRIBUTE_PREFIX_QUOTE_ALL_FIELDS" value="Y" xmi.id="a83"/>
+            </CWM:ModelElement.taggedValue>
+        </CWMRDB:Catalog>
+        <CWMRDB:Table isAbstract="false" isSystem="false" isTemporary="false" name="INLINE_SQL_1" xmi.id="a84">
+            <CWM:ModelElement.taggedValue>
+                <CWM:TaggedValue tag="TABLE_TARGET_DATABASE_NAME" value="bv_sql-model-1.0" xmi.id="a87"/>
+            </CWM:ModelElement.taggedValue>
+            <CWM:Namespace.ownedElement>
+                <CWMRDB:Column name="pc__ORDERNUMBER" xmi.id="a88"/>
+                <CWMRDB:Column name="pc__ORDERDATE" xmi.id="a93"/>
+                <CWMRDB:Column name="pc__REQUIREDDATE" xmi.id="a98"/>
+                <CWMRDB:Column name="pc__SHIPPEDDATE" xmi.id="a103"/>
+                <CWMRDB:Column name="pc__STATUS" xmi.id="a108"/>
+                <CWMRDB:Column name="pc__COMMENTS" xmi.id="a113"/>
+                <CWMRDB:Column name="pc__CUSTOMERNUMBER" xmi.id="a118"/>
+            </CWM:Namespace.ownedElement>
+        </CWMRDB:Table>
+        <CWMMDB:Schema name="MODEL_1" xmi.id="a123">
+            <CWM:Namespace.ownedElement>
+                <CWM:Extent name="sql-model-1.0" xmi.id="a129">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_CATEGORY_ROOT" value="Y" xmi.id="a131"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWM:Namespace.ownedElement>
+                        <CWM:Attribute name="bc_CUSTOMERNUMBER" xmi.id="a132">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="BUSINESS_CATEGORY_TYPE" value="Column" xmi.id="a133"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWM:Attribute>
+                        <CWM:Attribute name="bc_ORDERNUMBER" xmi.id="a134">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="BUSINESS_CATEGORY_TYPE" value="Column" xmi.id="a135"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWM:Attribute>
+                        <CWM:Attribute name="bc_COMMENTS" xmi.id="a136">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="BUSINESS_CATEGORY_TYPE" value="Column" xmi.id="a137"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWM:Attribute>
+                        <CWM:Attribute name="bc_ORDERDATE" xmi.id="a138">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="BUSINESS_CATEGORY_TYPE" value="Column" xmi.id="a139"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWM:Attribute>
+                        <CWM:Attribute name="bc_REQUIREDDATE" xmi.id="a140">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="BUSINESS_CATEGORY_TYPE" value="Column" xmi.id="a141"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWM:Attribute>
+                        <CWM:Attribute name="bc_SHIPPEDDATE" xmi.id="a142">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="BUSINESS_CATEGORY_TYPE" value="Column" xmi.id="a143"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWM:Attribute>
+                        <CWM:Attribute name="bc_STATUS" xmi.id="a144">
+                            <CWM:ModelElement.taggedValue>
+                                <CWM:TaggedValue tag="BUSINESS_CATEGORY_TYPE" value="Column" xmi.id="a145"/>
+                            </CWM:ModelElement.taggedValue>
+                        </CWM:Attribute>
+                    </CWM:Namespace.ownedElement>
+                </CWM:Extent>
+            </CWM:Namespace.ownedElement>
+            <CWMMDB:Schema.dimensionedObject>
+                <CWMMDB:DimensionedObject name="bc_ORDERNUMBER" xmi.id="a148">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a153"/>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_PHYSICAL_COLUMN_NAME" value="pc__ORDERNUMBER"
+                                         xmi.id="a154"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:DimensionedObject.dimension>
+                        <CWMMDB:Dimension xmi.idref="a146"/>
+                    </CWMMDB:DimensionedObject.dimension>
+                </CWMMDB:DimensionedObject>
+                <CWMMDB:DimensionedObject name="bc_ORDERDATE" xmi.id="a155">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a158"/>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_PHYSICAL_COLUMN_NAME" value="pc__ORDERDATE"
+                                         xmi.id="a159"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:DimensionedObject.dimension>
+                        <CWMMDB:Dimension xmi.idref="a146"/>
+                    </CWMMDB:DimensionedObject.dimension>
+                </CWMMDB:DimensionedObject>
+                <CWMMDB:DimensionedObject name="bc_REQUIREDDATE" xmi.id="a160">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a163"/>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_PHYSICAL_COLUMN_NAME" value="pc__REQUIREDDATE"
+                                         xmi.id="a164"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:DimensionedObject.dimension>
+                        <CWMMDB:Dimension xmi.idref="a146"/>
+                    </CWMMDB:DimensionedObject.dimension>
+                </CWMMDB:DimensionedObject>
+                <CWMMDB:DimensionedObject name="bc_SHIPPEDDATE" xmi.id="a165">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a168"/>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_PHYSICAL_COLUMN_NAME" value="pc__SHIPPEDDATE"
+                                         xmi.id="a169"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:DimensionedObject.dimension>
+                        <CWMMDB:Dimension xmi.idref="a146"/>
+                    </CWMMDB:DimensionedObject.dimension>
+                </CWMMDB:DimensionedObject>
+                <CWMMDB:DimensionedObject name="bc_STATUS" xmi.id="a170">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a173"/>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_PHYSICAL_COLUMN_NAME" value="pc__STATUS" xmi.id="a174"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:DimensionedObject.dimension>
+                        <CWMMDB:Dimension xmi.idref="a146"/>
+                    </CWMMDB:DimensionedObject.dimension>
+                </CWMMDB:DimensionedObject>
+                <CWMMDB:DimensionedObject name="bc_COMMENTS" xmi.id="a175">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a178"/>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_PHYSICAL_COLUMN_NAME" value="pc__COMMENTS" xmi.id="a179"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:DimensionedObject.dimension>
+                        <CWMMDB:Dimension xmi.idref="a146"/>
+                    </CWMMDB:DimensionedObject.dimension>
+                </CWMMDB:DimensionedObject>
+                <CWMMDB:DimensionedObject name="bc_CUSTOMERNUMBER" xmi.id="a180">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_BUSINESS_TABLE" value="LOGICAL_TABLE_1" xmi.id="a185"/>
+                        <CWM:TaggedValue tag="BUSINESS_COLUMN_PHYSICAL_COLUMN_NAME" value="pc__CUSTOMERNUMBER"
+                                         xmi.id="a186"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:DimensionedObject.dimension>
+                        <CWMMDB:Dimension xmi.idref="a146"/>
+                    </CWMMDB:DimensionedObject.dimension>
+                </CWMMDB:DimensionedObject>
+            </CWMMDB:Schema.dimensionedObject>
+            <CWMMDB:Schema.dimension>
+                <CWMMDB:Dimension isAbstract="false" name="LOGICAL_TABLE_1" xmi.id="a146">
+                    <CWM:ModelElement.taggedValue>
+                        <CWM:TaggedValue tag="BUSINESS_TABLE_PHYSICAL_TABLE_NAME" value="INLINE_SQL_1" xmi.id="a147"/>
+                    </CWM:ModelElement.taggedValue>
+                    <CWMMDB:Dimension.dimensionedObject>
+                        <CWMMDB:DimensionedObject xmi.idref="a148"/>
+                        <CWMMDB:DimensionedObject xmi.idref="a155"/>
+                        <CWMMDB:DimensionedObject xmi.idref="a160"/>
+                        <CWMMDB:DimensionedObject xmi.idref="a165"/>
+                        <CWMMDB:DimensionedObject xmi.idref="a170"/>
+                        <CWMMDB:DimensionedObject xmi.idref="a175"/>
+                        <CWMMDB:DimensionedObject xmi.idref="a180"/>
+                    </CWMMDB:Dimension.dimensionedObject>
+                </CWMMDB:Dimension>
+            </CWMMDB:Schema.dimension>
+        </CWMMDB:Schema>
+    </XMI.content>
+</XMI>

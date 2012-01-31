@@ -96,7 +96,7 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
     workspace.setModelIsChanging(true, !mainModel.getSuppressEvents());
 
     // remove all logical columns from existing logical tables
-    for (LogicalTable table : workspace.getDomain().getLogicalModels().get(0).getLogicalTables()) {
+    for (LogicalTable table : workspace.getLogicalModel(ModelerPerspective.ANALYSIS).getLogicalTables()) {
       if (table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX)) {
         table.getLogicalColumns().clear();
       }

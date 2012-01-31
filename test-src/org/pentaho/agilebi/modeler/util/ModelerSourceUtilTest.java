@@ -28,6 +28,7 @@ import org.pentaho.metadata.model.LogicalTable;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Created: 3/31/11
@@ -61,50 +62,29 @@ public class ModelerSourceUtilTest extends AbstractModelerTest {
     Domain d = ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName, tableName, true);
     assertNotNull(d);
 
+    assertEquals(2, d.getLogicalModels().size());
+    
     int physicalTables = d.getPhysicalModels().get(0).getPhysicalTables().size();
     int logicalTables = d.getLogicalModels().get(0).getLogicalTables().size();
-    assertEquals(physicalTables * 2, logicalTables);
+    assertEquals(physicalTables, logicalTables);
 
     int physicalColumns = d.getPhysicalModels().get(0).getPhysicalTables().get(0).getPhysicalColumns().size();
     int logicalColumns = 0;
     for (int i = 0; i < logicalTables; i++) {
       logicalColumns += d.getLogicalModels().get(0).getLogicalTables().get(i).getLogicalColumns().size();
     }
-    assertEquals(physicalColumns * 2, logicalColumns);
-
-  }
-
-  @Test
-  public void testDuplicateLogicalTablesForDualModelingMode() throws ModelerException {
-    String schemaName = "";
-    String tableName = "CUSTOMERS";
-
-    Domain d = ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName, tableName, false);
-    LogicalModel logicalModel =  d.getLogicalModels().get(0);
-
-    int physicalTables = d.getPhysicalModels().get(0).getPhysicalTables().size();
-    int logicalTables = d.getLogicalModels().get(0).getLogicalTables().size();
-    assertEquals(physicalTables, logicalTables);
-
-    int physicalColumns = d.getPhysicalModels().get(0).getPhysicalTables().get(0).getPhysicalColumns().size();
-    int logicalColumns = d.getLogicalModels().get(0).getLogicalTables().get(0).getLogicalColumns().size();
     assertEquals(physicalColumns, logicalColumns);
 
-    BaseModelerWorkspaceHelper.duplicateLogicalTablesForDualModelingMode(logicalModel);
-    logicalTables = d.getLogicalModels().get(0).getLogicalTables().size();
-    assertEquals(physicalTables * 2, logicalTables);
+    physicalTables = d.getPhysicalModels().get(0).getPhysicalTables().size();
+    logicalTables = d.getLogicalModels().get(1).getLogicalTables().size();
+    assertEquals(physicalTables, logicalTables);
 
+    physicalColumns = d.getPhysicalModels().get(0).getPhysicalTables().get(0).getPhysicalColumns().size();
     logicalColumns = 0;
     for (int i = 0; i < logicalTables; i++) {
-      logicalColumns += d.getLogicalModels().get(0).getLogicalTables().get(i).getLogicalColumns().size();
+      logicalColumns += d.getLogicalModels().get(1).getLogicalTables().get(i).getLogicalColumns().size();
     }
-    
-    assertEquals(physicalColumns * 2, logicalColumns);
-
-    // makes sure table names aren't the same either
-    LogicalTable origTable = logicalModel.getLogicalTables().get(0);
-    LogicalTable copyTable = logicalModel.getLogicalTables().get(1);
-    assertEquals(origTable.getId() + "_OLAP", copyTable.getId());
+    assertEquals(physicalColumns, logicalColumns);
 
   }
 
