@@ -88,6 +88,15 @@ public class ModelerSourceUtilTest extends AbstractModelerTest {
 
   }
 
+  @Test(expected = ModelerException.class )
+  public void testGenerateDomain_TableNeedsQuoted() throws ModelerException {
+    // this test is checking to make sure that a ModelerException is thrown when we generate a
+    // domain from a table that, when quoted, can't be found
+    String schemaName = "";
+    String tableName = "customers";
+    Domain d = ModelerSourceUtil.generateDomain(databaseMeta, schemaName, tableName, tableName, true);
+  }
+
   public static DatabaseMeta getDatabaseMeta() {
     DatabaseMeta database = new DatabaseMeta();
     database.setDatabaseType("Hypersonic");//$NON-NLS-1$

@@ -64,7 +64,7 @@ public class ModelerSourceUtil {
 
     // before generating model, let's check that the table exists and can be quoted.
     // Mondrian quotes tables, so we need to force this check.
-    //verifyTableExistsAndMayBeQuoted(databaseMeta, schemaName, tableName);
+    verifyTableExistsAndMayBeQuoted(databaseMeta, schemaName, tableName);
 
   	Domain domain = null;
   	try {
