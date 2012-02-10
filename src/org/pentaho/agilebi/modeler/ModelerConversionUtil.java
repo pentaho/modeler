@@ -6,10 +6,7 @@ import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: rfellows
@@ -236,7 +233,15 @@ public class ModelerConversionUtil {
         LocalizedString newName = appendOlap(col.getName());
         olapCol.setName(newName);
 
-        String colId = "LC_" + table.getPhysicalTable().getProperty("target_table") + "_"
+        String locale = "en_US";
+        if(logicalModel.getName().getLocales() != null && logicalModel.getName().getLocales().size() > 0) {
+          for(String l : logicalModel.getName().getLocales()) {
+            locale = l;
+            break;
+          }
+        }
+        
+        String colId = "LC_" + table.getPhysicalTable().getName(locale) + "_"
             + col.getPhysicalColumn().getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX;
 
         colId = BaseModelerWorkspaceHelper.uniquify(colId, olapColumns);
