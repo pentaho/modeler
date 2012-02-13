@@ -76,6 +76,9 @@ public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
               workspace.getModel().getMeasures().add(measure);
               existingMeasures.add(field.getName());
             }
+          } else {
+            // make sure the logical column for this gets added
+            workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS);
           }
         }
       } else {

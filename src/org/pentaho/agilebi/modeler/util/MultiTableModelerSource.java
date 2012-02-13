@@ -245,6 +245,7 @@
                 for (LogicalColumn logicalColumn : fromTable.getLogicalColumns()) {
                   if (logicalColumn.getPhysicalColumn().getProperty("target_column").equals(joinModel.getLeftKeyFieldModel().getName())) {
                     fromColumn = logicalColumn;
+                    break;
                   }
                 }
               }
@@ -254,6 +255,7 @@
                 for (LogicalColumn logicalColumn : toTable.getLogicalColumns()) {
                   if (logicalColumn.getPhysicalColumn().getProperty("target_column").equals(joinModel.getRightKeyFieldModel().getName())) {
                     toColumn = logicalColumn;
+                    break;
                   }
                 }
               }
