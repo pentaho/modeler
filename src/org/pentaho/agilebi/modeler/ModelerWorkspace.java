@@ -487,11 +487,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
 
   public boolean supportsOlap(Domain d){
-    if(d.getLogicalModels().size() == 0){
+    if(d.getLogicalModels().size() < 2){
       return false;
+    } else {
+      LogicalModel lModel = d.getLogicalModels().get(1);
+      return "true".equals(lModel.getProperty("DUAL_MODELING_SCHEMA")) || lModel.getProperty("MondrianCatalogRef") != null;
     }
-    LogicalModel lModel = this.getLogicalModel(ModelerPerspective.ANALYSIS);
-    return "true".equals(lModel.getProperty("DUAL_MODELING_SCHEMA")) || lModel.getProperty("MondrianCatalogRef") != null;
   }
 
   public void refresh(Domain newDomain) throws ModelerException {
