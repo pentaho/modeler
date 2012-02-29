@@ -77,7 +77,9 @@ public class ModelerConversionUtil {
     olapModel.setId(combinedModel.getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX);
     olapModel.setPhysicalModel(combinedModel.getPhysicalModel());
     olapModel.setDomain(combinedModel.getDomain());
-    olapModel.setRowLevelSecurity(combinedModel.getRowLevelSecurity());
+    if(combinedModel.getRowLevelSecurity() != null) {
+      olapModel.setRowLevelSecurity(combinedModel.getRowLevelSecurity());
+    }
 
     olapModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
     olapModel.setProperty("MODELING_SCHEMA", "OLAP");
@@ -191,8 +193,9 @@ public class ModelerConversionUtil {
     olapModel.setDescription(appendOlap(logicalModel.getName()));
     olapModel.setPhysicalModel(logicalModel.getPhysicalModel());
     olapModel.setDomain(logicalModel.getDomain());
-    olapModel.setRowLevelSecurity(logicalModel.getRowLevelSecurity());
-
+    if(logicalModel.getRowLevelSecurity() != null) {
+      olapModel.setRowLevelSecurity(logicalModel.getRowLevelSecurity());
+    }
 
     olapModel.setProperty("AGILE_BI_GENERATED_SCHEMA", "TRUE");
     olapModel.setProperty("MODELING_SCHEMA", "OLAP");
