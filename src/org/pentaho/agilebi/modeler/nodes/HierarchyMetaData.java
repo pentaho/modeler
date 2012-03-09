@@ -187,7 +187,8 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   @Override
   public boolean acceptsDrop(Object obj) {
     boolean isSupportedType = false;
-    isSupportedType = (obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData);
+    isSupportedType = (obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData
+        || obj instanceof MemberPropertyMetaData);
 
     // get the columns of children, make sure the potential drop object is backed by the same table
     if(isSupportedType) {
@@ -220,13 +221,13 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
       if(data instanceof AvailableField){
         ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
         level = getWorkspace().createLevelForParentWithNode(this, node);
-      } else if(data instanceof MeasureMetaData){
-        MeasureMetaData measure = (MeasureMetaData) data;
-        level = getWorkspace().createLevelForParentWithNode(this, measure);
-        level.setName(measure.getName());
       } else if(data instanceof LevelMetaData){
         level = (LevelMetaData) data;
         level.setParent(this);
+      } else if(data instanceof ColumnBackedNode){
+        ColumnBackedNode node = (ColumnBackedNode) data;
+        level = getWorkspace().createLevelForParentWithNode(this, node);
+        level.setName(node.getName());
       } else {
         throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
       }
