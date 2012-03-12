@@ -99,6 +99,7 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
 
     int geoDims = 0;
     int levelCount = 0;
+    String previousDim = null;
     for(DimensionMetaData dim : dims) {
       if (dim.getMemberAnnotations().get(GeoContext.ANNOTATION_DATA_ROLE) instanceof GeoRole) {
         // there should only be one hierarchy in a geo dimension
@@ -111,6 +112,13 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
           levelCount++;
         }
       }
+
+      //make sure the dimensions are in alphabetical order
+      if(previousDim != null && dim.getDisplayName() != null) {
+        assertTrue(previousDim.compareToIgnoreCase(dim.getDisplayName()) <= 0);
+        System.out.println(dim.getDisplayName());
+      }
+      previousDim = dim.getDisplayName();
     }
 
     int expectedLevelCount = 0;

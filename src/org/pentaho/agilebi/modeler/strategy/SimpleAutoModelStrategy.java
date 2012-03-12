@@ -28,9 +28,7 @@ import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.DataType;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created: 4/19/11
@@ -207,6 +205,12 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy{
       // get any geographic dimensions detected, add them
       List<DimensionMetaData> geoDims = geoContext.buildDimensions(workspace);
       dims.addAll(geoDims);
+      Collections.sort(dims, new Comparator<DimensionMetaData>() {
+        @Override
+        public int compare(DimensionMetaData dimMeta1, DimensionMetaData dimMeta2) {
+          return dimMeta1.getDisplayName().compareToIgnoreCase(dimMeta2.getDisplayName());
+        }
+      });
     }
   }
 
