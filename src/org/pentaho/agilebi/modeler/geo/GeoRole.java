@@ -23,7 +23,7 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializable, IMemberAnnotation, IDataRoleAnnotation, IGeoRoleAnnotation {
-  private String name;
+  private String name = null;
   private List<String> commonAliases;
   private String matchSeparator = "_";
   private List<GeoRole> requiredParentRoles;
@@ -185,6 +185,10 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
 
   @Override
   public void saveAnnotations(Object obj) {
+
+    if(this.getName() == null) {
+      return;
+    }
 
     OlapHierarchyLevel level = (OlapHierarchyLevel) obj;
     clearAnnotations(level);
