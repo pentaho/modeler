@@ -96,7 +96,8 @@ public class GeoContextFactory {
     IAnnotationFactory fact = new GeoAnnotationFactory(geo);
     MemberAnnotationFactory.registerFactory("Geo.Role", fact);
     MemberAnnotationFactory.registerFactory("Data.Role", fact);
-    
+    MemberAnnotationFactory.registerFactory("Geo.RequiredParents", fact);
+
     return geo;
 
   }

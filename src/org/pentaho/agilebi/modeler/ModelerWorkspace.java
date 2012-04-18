@@ -1003,6 +1003,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     IAnnotationFactory fact = new GeoAnnotationFactory(geoContext);
     MemberAnnotationFactory.registerFactory("Geo.Role", fact);
     MemberAnnotationFactory.registerFactory("Data.Role", fact);
+    MemberAnnotationFactory.registerFactory("Geo.RequiredParents", fact);
   }
 
   @Bindable
