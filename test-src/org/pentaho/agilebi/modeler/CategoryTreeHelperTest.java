@@ -143,7 +143,7 @@ public class CategoryTreeHelperTest {
     assertTrue(one != two);
 
     // make sure they got unique column id's
-    String expectedColId = "LC_" + ModelerWorkspace.toId(physicalColumn.getPhysicalTable().getName("en-US")) + "_" + physicalColumn.getName("en-US");
+    String expectedColId = "LC_" + ModelerWorkspace.toId(physicalColumn.getPhysicalTable().getName("en-US")) + "_" + ModelerWorkspace.toId(physicalColumn.getName("en-US"));
     assertEquals(expectedColId, one.getLogicalColumn().getId());
     assertEquals(expectedColId + "_2", two.getLogicalColumn().getId());
 
