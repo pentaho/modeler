@@ -247,7 +247,7 @@ public class ModelerConversionUtil {
         }
         
         String colId = "LC_" + ModelerWorkspace.toId(table.getPhysicalTable().getName(locale)) + "_"
-            + col.getPhysicalColumn().getId() + BaseModelerWorkspaceHelper.OLAP_SUFFIX;
+            + ModelerWorkspace.toId(col.getPhysicalColumn().getId()) + BaseModelerWorkspaceHelper.OLAP_SUFFIX;
 
         colId = BaseModelerWorkspaceHelper.uniquify(colId, olapColumns);
 

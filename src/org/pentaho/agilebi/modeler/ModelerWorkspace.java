@@ -1036,7 +1036,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         lCol.setAggregationType(field.getPhysicalColumn().getAggregationType());
       }
       lCol.setName(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
-      String colId = "LC_" + toId(lTab.getPhysicalTable().getName(locale)) + "_" + field.getPhysicalColumn().getId();
+      String colId = "LC_" + toId(lTab.getPhysicalTable().getName(locale)) + "_" + toId(field.getPhysicalColumn().getId());
 
 //      lCol.setDescription(new LocalizedString(locale, field.getPhysicalColumn().getName(locale)));
 
@@ -1108,7 +1108,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       return name;
     }
     name = name.replaceAll("[ .,:(){}\\[\\]]", "_"); //$NON-NLS-1$ //$NON-NLS-2$
-    name = name.replaceAll("[\"]", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    name = name.replaceAll("[\"`']", ""); //$NON-NLS-1$ //$NON-NLS-2$
     name = name.replaceAll("_+", "_"); //$NON-NLS-1$ //$NON-NLS-2$
     return name;
   }
@@ -1117,7 +1117,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (name == null) {
       return name;
     }
-    name = name.replaceAll("[\"]", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    name = name.replaceAll("[\"`']", ""); //$NON-NLS-1$ //$NON-NLS-2$
     return name;
   }
 
