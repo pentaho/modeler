@@ -22,52 +22,39 @@
 
     <dependency org="commons-vfs" name="commons-vfs" rev="1.0" conf="default->default"/>
 
-    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" conf="default->default"
-                changing="true"/>
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
-                changing="true"/>
-
-
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default" changing="true" />
 
-
-
-      <dependency org="org.slf4j" name="slf4j-api" rev="1.5.8" conf="default->default" />
-      <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default" />
-
-
-    <dependency org="com.google.gwt" name="gwt-servlet" rev="2.0.3" conf="default->default"/>
-
-    <!-- it doesn't matter what platform of gwt-dev we use here. GWT compile only cares about the API part of the jar -->
-    <dependency org="com.google.gwt" name="gwt-dev" rev="2.0.3" conf="default->default"/>
-    <dependency org="com.google.gwt" name="gwt-user" rev="2.0.3" conf="default->default"/>
-
-    <dependency org="org.zenica" name="gwt-datepicker" rev="r30" conf="default->default"/>
-    <dependency org="com.google.gwt" name="gwt-incubator" rev="2.0.1" conf="default->default"/>
-    <dependency org="com.allen_sauer" name="gwt-dnd" rev="3.0.1" conf="default->default"/>
-    <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" transitive="false" conf="default->default"/>
-
-    <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}"
-                conf="default->default"
-                changing="true">
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.5.8" conf="default->default" />
+    <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default" />
+    
+    <dependency org="org.zenica"            name="gwt-datepicker"     rev="r30" conf="default->default"/>
+    <!-- The organization of GWT Widgets can not be varied since we do not create optimized versions of the GWT Widgets -->
+    <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}" conf="default->default" changing="true">
       <artifact name="pentaho-gwt-widgets"/>
       <artifact name="pentaho-gwt-widgets" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
-
-    <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}"
-                conf="default->default"
-                changing="true">
-      <artifact name="pentaho-xul-gwt"/>
-      <artifact name="pentaho-xul-gwt" type="source" ext="jar" m:classifier="sources"/>
-    </dependency>
-
-    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" conf="default->default"
-                changing="true">
+    
+    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true">
       <artifact name="pentaho-xul-core"/>
       <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
+    
+    <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true">
+      <artifact name="pentaho-xul-gwt"/>
+      <artifact name="pentaho-xul-gwt" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+	
+	<dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="default->default" transitive="false"/>
+    <dependency org="com.google.gwt" name="gwt-incubator" rev="${dependency.gwt-incubator.revision}" conf="default->default" transitive="false"/>
+    <dependency org="com.allen_sauer" name="gwt-dnd" rev="${dependency.gwt-dnd.revision}"       conf="default->default"/>
+    <dependency org="com.google.gwt" name="gwt-user" rev="${dependency.gwt.revision}" conf="default->default"/>
+    <dependency org="com.google.gwt" name="gwt-dev"  rev="${dependency.gwt.revision}" conf="default->default"/>
+	<dependency org="com.google.gwt"        name="gwt-servlet"        rev="${dependency.gwt.revision}"/>
+                
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
+                changing="true"/>
 
     <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" changing="true"
                 transitive="false" conf="default->default">
@@ -87,11 +74,10 @@
 
     <dependency org="mysql" name="mysql-connector-java" rev="5.1.10"  conf="test->default"/>
     <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7"  conf="test->default"/>
-    <dependency org="pentaho" name="pentaho-bi-platform-engine-core" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default"/>
     <dependency org="simple-jndi" name="simple-jndi" rev="0.11.3" conf="test->default" transitive="false" />
 
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" changing="true" conf="test->default"/>
-
+    <dependency org="pentaho" name="pentaho-platform-core" rev="${dependency.pentaho-platform.revision}" changing="true" transitive="false" conf="test->default"/>
+    
     <dependency org="org.eclipse.core" name="commands" rev="3.3.0-I20070605-0010" transitive="false" conf="test->default"/>
     <dependency org="org.eclipse.equinox" name="common" rev="3.3.0-v20070426" transitive="false" conf="test->default"/>
 
