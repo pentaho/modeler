@@ -44,7 +44,6 @@
     <dependency org="com.google.gwt" name="gwt-dev" rev="2.0.3" conf="default->default"/>
     <dependency org="com.google.gwt" name="gwt-user" rev="2.0.3" conf="default->default"/>
 
-    <dependency org="org.zenica" name="gwt-datepicker" rev="r30" conf="default->default"/>
     <dependency org="com.google.gwt" name="gwt-incubator" rev="2.0.1" conf="default->default"/>
     <dependency org="com.allen_sauer" name="gwt-dnd" rev="3.0.1" conf="default->default"/>
     <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" transitive="false" conf="default->default"/>
