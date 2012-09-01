@@ -176,9 +176,9 @@
            }
 
          } catch (Exception e) {
-           e.printStackTrace();
+           logger.debug(e.getLocalizedMessage(), e);
            logger.info(e.getLocalizedMessage());
-           throw new ModelerException(e.getLocalizedMessage());
+           throw new ModelerException(e.getLocalizedMessage(), e);
          }
          return domain;
     }
