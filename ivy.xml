@@ -28,8 +28,7 @@
 
     <dependency org="org.slf4j" name="slf4j-api" rev="1.5.8" conf="default->default" />
     <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default" />
-    
-    <dependency org="org.zenica"            name="gwt-datepicker"     rev="r30" conf="default->default"/>
+
     <!-- The organization of GWT Widgets can not be varied since we do not create optimized versions of the GWT Widgets -->
     <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}" conf="default->default" changing="true">
       <artifact name="pentaho-gwt-widgets"/>
