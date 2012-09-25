@@ -16,7 +16,11 @@
  */
 package org.pentaho.agilebi.modeler.propforms;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.containers.XulDeck;
@@ -35,6 +39,19 @@ public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler
   protected static BindingConvertor<String, String> validMsgTruncatedBinding = BindingConvertor.truncatedString(45);
   protected static BindingConvertor<String, Boolean> showMsgBinding = new ShowMessagesBindingConvertor(45);
   protected ModelerWorkspace workspace;
+
+  /**
+   * This will listen for changes to all property values except for validation messages
+   * and flag the model as dirty. 
+   */
+  protected PropertyChangeListener propertyValueListener = new PropertyChangeListener() {
+    public void propertyChange( PropertyChangeEvent evt ) {
+      if (!("validMessages".equals(evt.getPropertyName()) || "valid".equals(evt.getPropertyName()))) {
+        // Set the model's dirty flag to true when anything except valid messages are changed
+        workspace.setDirty(true);
+      }
+    }
+  };
 
   public AbstractModelerNodeForm(String panelId){
     this.id = panelId;
@@ -62,6 +79,12 @@ public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler
 
   @Bindable
   public void setNode(T node) {
+    if (this.node instanceof XulEventSource) {
+      ((XulEventSource) this.node).removePropertyChangeListener(propertyValueListener);
+    }
+    if (node instanceof XulEventSource) {
+      ((XulEventSource) node).addPropertyChangeListener(propertyValueListener);
+    }
     this.node = node;
   }
 
