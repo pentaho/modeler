@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
+    <libelement value="file:///pentaho-database-gwt/lib-swt/linux/x86/swt.jar" />
     <conelement value="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=ivy.xml&amp;confs=default%2Ctest%2Csource%2Ccodegen%2Cruntime&amp;ivySettingsPath=file%3A.%2Fivysettings.xml&amp;buildPropertyFiles=build.properties&amp;acceptedTypes=jar%2Csource&amp;sourceTypes=xxx&amp;javadocTypes=javadoc&amp;sourceSuffixes=-source%2C-sources%2C-src&amp;javadocSuffixes=-javadoc%2C-javadocs%2C-doc%2C-docs&amp;doRetrieve=false&amp;retrievePattern=lib%2F%5Bconf%5D%2F%5Bartifact%5D.%5Bext%5D&amp;alphaOrder=true" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
+      <src_folder value="file://$MODULE_DIR$/test-src" expected_position="1" />
     </src_description>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
@@ -16,42 +18,16 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module-library" scope="RUNTIME">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/src" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library">
-      <library>
+      <library name="swt.jar">
         <CLASSES>
-          <root url="file://$MODULE_DIR$/test-src" />
+          <root url="file:///pentaho-database-gwt/lib-swt/linux/x86/swt.jar" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="pentaho-xul-core" />
-    <orderEntry type="module" module-name="pentaho-xul-gwt" />
-    <orderEntry type="module" module-name="pentaho-xul-swt" />
-    <orderEntry type="module-library">
-      <library name="jars">
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/lib" />
-          <root url="file://$MODULE_DIR$/test-lib" />
-          <root url="file://$MODULE_DIR$/test-lib" />
-          <root url="file://$MODULE_DIR$/lib" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
-        <jarDirectory url="file://$MODULE_DIR$/test-lib" recursive="false" />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="SWT" level="project" />
+    <orderEntry type="library" name="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=ivy.xml&amp;confs=default%2Ctest%2Csource%2Ccodegen%2Cruntime&amp;ivySettingsPath=file%3A.%2Fivysettings.xml&amp;buildPropertyFiles=build.properties&amp;acceptedTypes=jar%2Csource&amp;sourceTypes=xxx&amp;javadocTypes=javadoc&amp;sourceSuffixes=-source%2C-sources%2C-src&amp;javadocSuffixes=-javadoc%2C-javadocs%2C-doc%2C-docs&amp;doRetrieve=false&amp;retrievePattern=lib%2F%5Bconf%5D%2F%5Bartifact%5D.%5Bext%5D&amp;alphaOrder=true" level="application" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_detectors">
