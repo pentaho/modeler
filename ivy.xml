@@ -34,24 +34,24 @@
       <artifact name="pentaho-gwt-widgets"/>
       <artifact name="pentaho-gwt-widgets" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
-    
+
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true">
       <artifact name="pentaho-xul-core"/>
       <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
-    
+
     <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true">
       <artifact name="pentaho-xul-gwt"/>
       <artifact name="pentaho-xul-gwt" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
-	
-	<dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="default->default" transitive="false"/>
+
+    <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="default->default" transitive="false"/>
     <dependency org="com.google.gwt" name="gwt-incubator" rev="${dependency.gwt-incubator.revision}" conf="default->default" transitive="false"/>
     <dependency org="com.allen_sauer" name="gwt-dnd" rev="${dependency.gwt-dnd.revision}"       conf="default->default"/>
     <dependency org="com.google.gwt" name="gwt-user" rev="${dependency.gwt.revision}" conf="default->default"/>
     <dependency org="com.google.gwt" name="gwt-dev"  rev="${dependency.gwt.revision}" conf="default->default"/>
-	<dependency org="com.google.gwt"        name="gwt-servlet"        rev="${dependency.gwt.revision}"/>
-                
+    <dependency org="com.google.gwt"        name="gwt-servlet"        rev="${dependency.gwt.revision}"/>
+
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
                 changing="true"/>
 
@@ -76,7 +76,7 @@
     <dependency org="simple-jndi" name="simple-jndi" rev="0.11.3" conf="test->default" transitive="false" />
 
     <dependency org="pentaho" name="pentaho-platform-core" rev="${dependency.pentaho-platform.revision}" changing="true" transitive="false" conf="test->default"/>
-    
+
     <dependency org="org.eclipse.core" name="commands" rev="3.3.0-I20070605-0010" transitive="false" conf="test->default"/>
     <dependency org="org.eclipse.equinox" name="common" rev="3.3.0-v20070426" transitive="false" conf="test->default"/>
 
