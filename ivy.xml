@@ -61,6 +61,14 @@
       <artifact name="pentaho-metadata" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
 
+    <dependency org="pentaho" name="mondrian" rev="${dependency.mondrian.revision}" changing="true">
+      <exclude org="commons-lang"  name="commons-lang"/>
+      <exclude org="javax.servlet" name="jsp-api" />
+      <exclude org="javax.servlet" name="servlet-api" />
+      <exclude org="com.tonbeller" name="jpivot"/>
+      <exclude org="junit" name="junit"/>
+    </dependency>
+
     <dependency org="log4j" name="log4j" rev="1.2.14"/>
 
     <dependency org="org.eclipse.core" name="commands" rev="3.3.0-I20070605-0010" transitive="false" conf="test->default"/>

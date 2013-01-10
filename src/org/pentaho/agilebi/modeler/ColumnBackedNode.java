@@ -20,8 +20,19 @@ import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 
 public interface ColumnBackedNode {
-  void setLogicalColumn(LogicalColumn col);
-  LogicalColumn getLogicalColumn();
-  String getName();
-  IPhysicalTable getTableRestriction();
+  public static final String COLUMN_TYPE_SOURCE = "source";
+  public static final String COLUMN_TYPE_ORDINAL = "ordinal";
+  public static final String COLUMN_TYPE_CAPTION = "caption";
+  
+  public void setLogicalColumn(LogicalColumn col);
+  public LogicalColumn getLogicalColumn();
+
+  public void setLogicalOrdinalColumn(LogicalColumn col);
+  public LogicalColumn getLogicalOrdinalColumn();
+
+  public void setLogicalCaptionColumn(LogicalColumn col);
+  public LogicalColumn getLogicalCaptionColumn();
+
+  public String getName();
+  public IPhysicalTable getTableRestriction();
 }

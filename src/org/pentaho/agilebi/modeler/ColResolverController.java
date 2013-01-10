@@ -39,6 +39,7 @@ public class ColResolverController extends AbstractXulEventHandler {
   private ModelerWorkspace workspace;
   private XulDialog dialog;
   private ColumnBackedNode node;
+  private String columnType;
 
   private Binding fieldListBinding;
   private Binding selectedFieldsBinding;
@@ -50,8 +51,9 @@ public class ColResolverController extends AbstractXulEventHandler {
     items = new AvailableItemCollection();
   }
 
-  public void show( ModelerWorkspace workspace, ColumnBackedNode node, AvailableTable restrictedToTable ) {
+  public void show( ModelerWorkspace workspace, ColumnBackedNode node, String columnType, AvailableTable restrictedToTable ) {
     this.workspace = workspace;
+    this.columnType = columnType;
     items.clear();
     if (restrictedToTable != null) {
       items.add(restrictedToTable);
@@ -62,12 +64,8 @@ public class ColResolverController extends AbstractXulEventHandler {
     dialog.show();
   }
 
-  public void show( ModelerWorkspace workspace, ColumnBackedNode node ) {
-    this.workspace = workspace;
-    items.clear();
-    items.addAll(workspace.getAvailableTables());
-    this.node = node;
-    dialog.show();
+  public void show( ModelerWorkspace workspace, ColumnBackedNode node, String columnType) {
+    show(workspace, node, columnType, null);
   }
 
   public void init() {
@@ -82,13 +80,23 @@ public class ColResolverController extends AbstractXulEventHandler {
 
   @Bindable
   public void done() {
-    if (selectedFields.length == 1) {
-      ColumnBackedNode cnode = workspace.createColumnBackedNode((AvailableField)selectedFields[0], workspace.getCurrentModelerPerspective());
-      LogicalColumn lCol = cnode.getLogicalColumn();
+    if (selectedFields.length != 1) return;
+    AvailableField field = (AvailableField)selectedFields[0];
+    ColumnBackedNode cnode = workspace.createColumnBackedNode(field, workspace.getCurrentModelerPerspective());
+    LogicalColumn lCol = cnode.getLogicalColumn();
+    if (ColumnBackedNode.COLUMN_TYPE_SOURCE.equals(columnType)) {
       node.setLogicalColumn(lCol);
-      workspace.setDirty(true);
-      dialog.hide();
     }
+    else
+    if (ColumnBackedNode.COLUMN_TYPE_ORDINAL.equals(columnType)) {
+      node.setLogicalOrdinalColumn(lCol);
+    }
+    else
+    if (ColumnBackedNode.COLUMN_TYPE_CAPTION.equals(columnType)) {
+      node.setLogicalCaptionColumn(lCol);
+    }
+    workspace.setDirty(true);
+    dialog.hide();
   }
 
   @Bindable

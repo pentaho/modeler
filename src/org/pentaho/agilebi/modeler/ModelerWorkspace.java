@@ -652,7 +652,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setDomain(d, true);
   }
 
-  // this method signature is intended to provide a simpler path for unit testing the upConvert method on it's own
+  // this method signature is intended to provide a simpler path for unit testing the upConvert method on its own
   protected void setDomain(Domain d, boolean upConvertDesired) {
     this.domain = d;
     this.setModelIsChanging(true);
@@ -666,8 +666,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     if (upConvertDesired) needsUpConverted = upConvertLegacyModel();
     List<IAvailableItem> items = new ArrayList<IAvailableItem>();
     for (IPhysicalTable table : domain.getPhysicalModels().get(0).getPhysicalTables()) {
-      boolean isFact = table.getProperty("FACT_TABLE") != null ? (Boolean) table.getProperty("FACT_TABLE") : false;
-      items.add(new AvailableTable(table, isFact));
+      Boolean isFact = (Boolean)table.getProperty("FACT_TABLE");
+      items.add(new AvailableTable(table, isFact == null ? false : isFact.booleanValue()));
     }
 
     availableTables.setChildren(items);
@@ -679,7 +679,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setModelName(lModel.getName(workspaceHelper.getLocale()));
     setRelationalModelName(lModel.getName(workspaceHelper.getLocale()));
 
-    // Set the type of modeling session. This will propigate to the UI
+    // Set the type of modeling session. This will propagate to the UI
     if(supportsOlap(domain)){
       this.setModellingMode(ModelerMode.ANALYSIS_AND_REPORTING);
     } else {
@@ -746,7 +746,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         this.model.getDimensions().add(theDimensionMD);
       }
     }
-
     List<OlapCube> theCubes = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_CUBES); //$NON-NLS-1$
     if (theCubes != null) {
       Iterator<OlapCube> theCubeItr = theCubes.iterator();

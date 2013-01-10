@@ -68,6 +68,17 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
     this.parent = md;
   }
 
+  public HierarchyMetaData getHierarchyMetaData() {
+    return parent;
+  }
+  
+  public boolean isTimeLevel() {
+    HierarchyMetaData hierarchyMetaData = getHierarchyMetaData();
+    if (hierarchyMetaData == null) return false;
+    return hierarchyMetaData.isTimeHierarchy();
+  }
+
+  
   @Override
   public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
     return LevelsPropertiesForm.class;
@@ -77,12 +88,10 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result
-        + ((columnName == null) ? 0 : columnName.hashCode());
+    result = prime * result + ((columnName == null) ? 0 : columnName.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((parent == null) ? 0 : parent.hashCode());
-    result = prime * result
-        + ((uniqueMembers == null) ? 0 : uniqueMembers.hashCode());
+    result = prime * result + (uniqueMembers ? Boolean.TRUE : Boolean.FALSE).hashCode();
     return result;
   }
 
@@ -165,7 +174,13 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
   @Override
   public void validate() {
     super.validate();
-
+    if (isTimeLevel()) {
+      DataRole dataRole = this.getDataRole();
+      if (!(dataRole instanceof TimeRole) || dataRole == TimeRole.DUMMY) {
+        valid = false;
+        validationMessages.add(ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("TIME_LEVEL_TYPE_NOT_SET"), getName()));
+      }
+    }
     HashMap<String, MemberPropertyMetaData> usedNames = new HashMap<String, MemberPropertyMetaData>();
     if (children.size() > 0) {
       for (MemberPropertyMetaData memberProp : children) {

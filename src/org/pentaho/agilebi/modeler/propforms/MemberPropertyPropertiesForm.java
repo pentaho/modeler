@@ -101,7 +101,7 @@ public class MemberPropertyPropertiesForm extends LevelsPropertiesForm {
     getNode().addPropertyChangeListener(validListener);
 
     name.setValue(dim.getName());
-    setColumnName(dim.getLogicalColumn());
+    setColumnName(getColumnNameFromLogicalColumn(dim.getLogicalColumn()));
     desc.setValue(dim.getDescription());
     showValidations();
   }

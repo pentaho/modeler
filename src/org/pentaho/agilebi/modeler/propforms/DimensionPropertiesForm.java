@@ -21,6 +21,7 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulTextbox;
+import org.pentaho.ui.xul.components.XulCheckbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -30,6 +31,7 @@ import java.beans.PropertyChangeListener;
 public class DimensionPropertiesForm extends AbstractModelerNodeForm<DimensionMetaData> {
 
   private XulTextbox name;
+  private XulCheckbox isTimeDim;
   private XulVbox messageBox;
   private XulLabel messageLabel;
 
@@ -58,6 +60,7 @@ public class DimensionPropertiesForm extends AbstractModelerNodeForm<DimensionMe
     }
     dim.addPropertyChangeListener(propListener);
     name.setValue(dim.getName());
+    isTimeDim.setChecked(dim.isTimeDimension());
     showValidations();
   }
 
@@ -74,9 +77,11 @@ public class DimensionPropertiesForm extends AbstractModelerNodeForm<DimensionMe
   public void init(ModelerWorkspace workspace) {
     super.init(workspace);
     name = (XulTextbox) document.getElementById("dimension_name");
+    bf.createBinding(this, "name", name, "value");
+    isTimeDim = (XulCheckbox) document.getElementById("is_time_dimension");
+    bf.createBinding(this, "timeDimension", isTimeDim, "checked");
     messageBox = (XulVbox) document.getElementById("dimension_message");
     messageLabel = (XulLabel) document.getElementById("dimension_message_label");
-    bf.createBinding(this, "name", name, "value");
     bf.createBinding(this, "validMessages", messageLabel, "value", validMsgTruncatedBinding);
     messageBtn = (XulButton) document.getElementById("dimension_message_btn");
     bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
@@ -97,6 +102,23 @@ public class DimensionPropertiesForm extends AbstractModelerNodeForm<DimensionMe
       return null;
     }
     return getNode().getName();
+  }
+
+  @Bindable
+  public void setTimeDimension( boolean timeDimension) {
+    if (getNode() != null) {
+      getNode().setTimeDimension(timeDimension);
+    }
+    if (timeDimension == isTimeDim.isChecked()) return;
+    isTimeDim.setChecked(timeDimension);
+  }
+
+  @Bindable
+  public boolean isTimeDimension() {
+    if (getNode() == null) {
+      return false;
+    }
+    return getNode().isTimeDimension();
   }
 
   @Override

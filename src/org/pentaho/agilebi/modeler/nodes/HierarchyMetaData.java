@@ -66,7 +66,20 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
     }
   }
 
+  public DimensionMetaData getDimensionMetaData(){
+    return (DimensionMetaData) getParent();
+  }
+  
+  public boolean isTimeHierarchy(){
+    DimensionMetaData dimensionMetaData = getDimensionMetaData();
+    if (dimensionMetaData == null) return false;
+    return dimensionMetaData.isTimeDimension();
+  }
 
+  public void dimensionTypeChanged() {
+    validate();
+  }
+  
   @Override
   public void validate() {
     valid = true;
@@ -87,6 +100,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
       validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL"));
     }
     for (LevelMetaData level : children) {
+      level.validate();
       valid &= level.isValid();
       validationMessages.addAll(level.getValidationMessages());
       if (usedNames.containsKey(level.getName())) {
