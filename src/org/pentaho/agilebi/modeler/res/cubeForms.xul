@@ -189,6 +189,12 @@
             onclick="modeler.changeColumn()"
           />
         </vbox>
+        <vbox>
+          <button 
+            image="images/blank_button.png"
+            width="16"
+          />
+        </vbox>
       </hbox>
 
       <label value="${ordinal_column}:" flex="1"/>
@@ -197,29 +203,51 @@
           <label id="level_ordinal_col" value=""/>
         </vbox>
         <vbox>
-          <hbox>
-            <button 
-              image="images/remove.png"
-              onclick="modeler.clearOrdinalColumn()"
-            />
-            <button 
-              image="images/edit.png"
-              onclick="modeler.changeOrdinalColumn()"
-            />
-          </hbox> 
+          <button 
+            image="images/edit.png"
+            onclick="modeler.changeOrdinalColumn()"
+          />
+        </vbox>
+        <vbox>
+          <button 
+            id="clear_ordinal_column"
+            visible="false"
+            image="images/remove.png"
+            onclick="modeler.clearOrdinalColumn()"
+          />
         </vbox>
       </hbox>
 
-      <label id="level_geo_role_label" value="${geo_role}:" />
-      <menulist id="level_geo_role" pen:binding="displayName">
-          <menupopup/>
-      </menulist>
+      <vbox id="geo_level_elements">
+        <label id="level_geo_role_label" value="${geo_role}:" />
+        <menulist id="level_geo_role" pen:binding="displayName">
+            <menupopup/>
+        </menulist>
+      </vbox>
 
-      <label id="time_level_type_label" value="${time_level_type}:" />
-      <menulist id="time_level_type" pen:binding="name">
-          <menupopup/>
-      </menulist>
-
+      <vbox id="time_level_elements">
+        <label id="time_level_type_label" value="${time_level_type}:" />
+        <menulist id="time_level_type" pen:binding="name">
+            <menupopup/>
+        </menulist>
+      
+        <hbox>
+          <label id="time_level_format_label" value="${time_format}:"/>
+          <button
+            image="images/help_link2.png"
+            onclick="modeler.showHelp('${time_format_help_url}')"
+          />
+        </hbox>
+        <menulist id="time_level_format" editable="true">
+          <menupopup>
+            <menuitem label="[yyyy]"/>
+            <menuitem label="[yyyy].[q]"/>
+            <menuitem label="[yyyy].[q].[M]"/>
+            <menuitem label="[yyyy].[q].[M].[w]"/>
+            <menuitem label="[yyyy].[q].[M].[w].[yyyy-MM-dd]"/>
+          </menupopup>
+        </menulist>
+      </vbox>
     </groupbox>
 
   </vbox>

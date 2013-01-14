@@ -32,8 +32,10 @@ import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.components.XulCheckbox;
+import org.pentaho.ui.xul.XulContainer;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.binding.BindingConvertor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -53,6 +55,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   protected XulVbox messageBox;
   protected String colName;
   protected String ordinalColName;
+  protected XulButton clearOrdinalColumnBtn;
   protected String captionColName;
   protected String locale;
   protected XulButton messageBtn;
@@ -78,6 +81,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
       if (propertyName.equals("valid") ||
           propertyName.equals("logicalColumn") ||
           propertyName.equals("logicalOrdinalColumn") ||
+          propertyName.equals("ordinalColumnName") ||
           propertyName.equals("logicalCaptionColumn")
        ) {
         showValidations();
@@ -110,14 +114,14 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     Map<String, IMemberAnnotation> annotations = levelMetaData.getMemberAnnotations();
     
     if (levelMetaData.isTimeLevel()) {
-      setGeoVisible(false);
-      setTimeLevelTypeVisible(true);
+      setGeoLevelElementsVisible(false);
+      setTimeLevelElementsVisible(true);
       DataRole dataRole = getNode().getDataRole();
       setSelectedTimeLevelType(dataRole instanceof TimeRole ? ((TimeRole)dataRole) : TimeRole.DUMMY);
     }
     else {
-      setGeoVisible(true);
-      setTimeLevelTypeVisible(false);
+      setGeoLevelElementsVisible(true);
+      setTimeLevelElementsVisible(false);
       GeoRole geoRole = (GeoRole) annotations.get(GeoContext.ANNOTATION_GEO_ROLE);
       setSelectedGeoRole(geoRole);
       if(selectedGeoRole == null){
@@ -146,31 +150,14 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     messageBox.setVisible(getNode().getValidationMessages().size() > 0);
     setValidMessages(getNode().getValidationMessagesString());
   }
-
-  protected XulMenuList getGeoList(){
-    return (XulMenuList) document.getElementById("level_geo_role");
+  
+  
+  protected void setGeoLevelElementsVisible(boolean visible) {
+    setContainerVisible("geo_level_elements", visible);
   }
   
-  protected XulLabel getGeoLabel() {
-    return (XulLabel) document.getElementById("level_geo_role_label");
-  }
-  
-  protected void setGeoVisible(boolean visible) {
-    getGeoList().setVisible(visible);
-    getGeoLabel().setVisible(visible);
-  }
-  
-  protected XulMenuList getTimeLevelTypeList(){  
-    return (XulMenuList) document.getElementById("time_level_type");
-  }
-
-  protected XulLabel getTimeLevelTypeLabel() {
-    return (XulLabel) document.getElementById("time_level_type_label");
-  }
-
-  protected void setTimeLevelTypeVisible(boolean visible) {
-    getTimeLevelTypeList().setVisible(visible);
-    getTimeLevelTypeLabel().setVisible(visible);
+  protected void setTimeLevelElementsVisible(boolean visible) {
+    setContainerVisible("time_level_elements", visible);
   }
   
   public void init(ModelerWorkspace workspace) {
@@ -180,6 +167,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     hasUniqueMembers = (XulCheckbox) document.getElementById("has_unique_members");
     sourceLabel = (XulLabel) document.getElementById("level_source_col");
     ordinalLabel = (XulLabel) document.getElementById("level_ordinal_col");
+    clearOrdinalColumnBtn = (XulButton) document.getElementById("clear_ordinal_column");
     //captionLabel = (XulLabel) document.getElementById("level_source_col");
     level_message_label = (XulLabel) document.getElementById("level_message_label");
     messageBox = (XulVbox) document.getElementById("level_message");
@@ -187,6 +175,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
     bf.createBinding(this, "columnName", sourceLabel, "value");
     bf.createBinding(this, "ordinalColumnName", ordinalLabel, "value");
+    bf.createBinding(this, "ordinalColumnName", clearOrdinalColumnBtn, "visible", BindingConvertor.object2Boolean());
     
     bf.createBinding(this, "name", name, "value");
     bf.createBinding(this, "uniqueMembers", hasUniqueMembers, "checked");
@@ -194,7 +183,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     messageBtn = (XulButton) document.getElementById("level_message_btn");
     bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
 
-    geoList = getGeoList();
+    geoList = (XulMenuList) document.getElementById("level_geo_role");
     geoRoles.clear();
     geoRoles.add(dummyGeoRole);
     geoRoles.addAll(workspace.getGeoContext());
@@ -202,7 +191,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
     bf.createBinding(geoList, "selectedItem", this, "selectedGeoRole");
 
-    timeLevelTypeList = getTimeLevelTypeList();
+    timeLevelTypeList = (XulMenuList) document.getElementById("time_level_type");
     timeRoles.clear();
     timeRoles.addAll(TimeRole.getAllRoles());
     timeLevelTypeList.setElements(timeRoles);
@@ -239,8 +228,9 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
   @Bindable
   public void setOrdinalColumnName(String name) {
+    if ("".equals(name)) name = null;
     String prevName = ordinalColName;
-    if (prevName == null && name == "") return;
+    if (prevName == null && name == null) return;
     if (prevName != null && name != null && prevName.equals(name)) return;
     ordinalColName = name;
     this.firePropertyChange("ordinalColumnName", prevName, ordinalColName); //$NON-NLS-1$
