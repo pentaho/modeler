@@ -23,8 +23,6 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.DimensionPropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import mondrian.olap.DimensionType;
-
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -36,7 +34,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   private static final long serialVersionUID = -891901735974255178L;
 
   String name;
-  java.lang.Enum<DimensionType> dimensionType = DimensionType.StandardDimension;
+  String dimensionType = "StandardDimension";
 
   public DimensionMetaData(){
 
@@ -69,21 +67,24 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   
   @Bindable
   public String getDimensionType(){
-    return dimensionType.toString();
+    return dimensionType;
   }
   
   @Bindable
   public void setDimensionType(String type){
-    String oldType = getDimensionType();
+    String oldType = dimensionType;
     if (oldType.equals(type)) return;
-    dimensionType = DimensionType.valueOf(type);
-    
+    dimensionType = type;
     firePropertyChange("dimensionType", oldType, type);
   }
   
   @Bindable
   public boolean isTimeDimension(){
-    return DimensionType.TimeDimension.equals(dimensionType);
+    return isTimeDimension(dimensionType);
+  }
+
+  static boolean isTimeDimension(String dimensionType){
+    return "TimeDimension".equals(dimensionType);
   }
   
   @Bindable
@@ -91,7 +92,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
     boolean oldTimeDimension = isTimeDimension();
     if (timeDimension == oldTimeDimension) return;
     //TODO: call setDimensionType rather than writing the member.
-    dimensionType = timeDimension ? DimensionType.TimeDimension : DimensionType.StandardDimension;
+    dimensionType = timeDimension ? "TimeDimension" : "StandardDimension";
     firePropertyChange("timeDimension", oldTimeDimension, timeDimension);
     validateNode();
   }
