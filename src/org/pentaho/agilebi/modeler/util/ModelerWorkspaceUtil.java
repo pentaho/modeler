@@ -4,11 +4,13 @@ import org.pentaho.agilebi.modeler.*;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Utility class for generating ModelerModels for the User Interface.
@@ -34,37 +36,72 @@ public class ModelerWorkspaceUtil {
 
   private static String MODELER_NAME = "OutputStepModeler"; //$NON-NLS-1$
 
+  protected static void save(String content, String fileName) throws IOException {
+    File file = new File(fileName);
+    OutputStream out = new FileOutputStream(file);
+    out.write(content.getBytes("UTF-8"));
+    out.flush();
+    out.close();
+  }
+  
   public static void saveWorkspace(ModelerWorkspace aModel, String fileName) throws ModelerException {
-  	try {
+    try {
 
-	    String xmi = getMetadataXML(aModel);
+      String xmi = getMetadataXML(aModel);
 
-	    // write the XMI to a tmp file
-	    // models was created earlier.
-	    try{
+      // write the XMI to a tmp file
+      // models was created earlier.
+      try{
+        save(xmi, fileName);
+      } catch(IOException e){
+        logger.info(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
+        throw new ModelerException(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
+      }
 
-	      File file = new File(fileName);
-	      OutputStream out = new FileOutputStream(file);
-	      out.write(xmi.getBytes("UTF-8"));
-	      out.flush();
-	      out.close();
+    } catch (Exception e) {
+      logger.error("error", e);
+      throw new ModelerException(e);
+    }
+  }
 
-	    } catch(IOException e){
-	      logger.info(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
-	      throw new ModelerException(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
-	    }
+  public static void saveWorkspaceAsMondrianSchema(ModelerWorkspace aModel, String fileName, String locale) throws ModelerException {
+    try {
 
-  	} catch (Exception e) {
-  		logger.error("error", e);
-  		throw new ModelerException(e);
-  	}
+      String xml = getMondrianSchemaXml(aModel, locale);
+      if (xml == null) {
+        System.out.println("xml == null; exiting...");
+        return;
+      }
+      // write the XMI to a tmp file
+      // models was created earlier.
+      try{
+        save(xml, fileName);
+      } catch(IOException e){
+        logger.info(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
+        throw new ModelerException(BaseMessages.getString(ModelerWorkspace.class, "ModelerWorkspaceUtil.Populate.BadGenerateMetadata"),e); //$NON-NLS-1$
+      }
+
+    } catch (Exception e) {
+      logger.error("error", e);
+      throw new ModelerException(e);
+    }
   }
 
   public static String getMetadataXML(ModelerWorkspace aModel) throws ModelerException {
     aModel.getWorkspaceHelper().populateDomain(aModel);
     XmiParser parser = new XmiParser();
     return parser.generateXmi(aModel.getDomain());
-
+  }
+  
+  public static String getMondrianSchemaXml(ModelerWorkspace modelerWorkspace, String locale) throws Exception {
+    modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
+    LogicalModel logicalModel = modelerWorkspace.getLogicalModel(ModelerPerspective.ANALYSIS);
+    if (logicalModel == null) {
+      System.out.println("Logical model == null");
+      return null;
+    }
+    MondrianModelExporter exporter = new MondrianModelExporter(logicalModel, locale);
+    return exporter.createMondrianModelXML();
   }
 
   public static void loadWorkspace(String fileName, String aXml, ModelerWorkspace aModel) throws ModelerException {

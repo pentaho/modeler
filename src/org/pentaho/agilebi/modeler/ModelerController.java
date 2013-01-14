@@ -727,41 +727,95 @@ public class ModelerController extends AbstractXulEventHandler {
     }
   }
 
-
-  @Bindable
-  public void resolveMissingColumn() {
-    if (dimTreeHelper.getSelectedTreeItem() instanceof ColumnBackedNode
-        && ((AbstractMetaDataModelNode) dimTreeHelper.getSelectedTreeItem()).isValid() == false) {
-      changeColumn();
-    } else if (catTreeHelper.getSelectedTreeItem() instanceof ColumnBackedNode
-        && ((AbstractMetaDataModelNode) catTreeHelper.getSelectedTreeItem()).isValid() == false) {
-      changeColumn();
-    }
-  }
-
-  @Bindable
-  public void changeColumn() {
-    ModelerTreeHelper helper = null;
+  ModelerTreeHelper getCurrentModelerTreeHelper() {
+    ModelerTreeHelper helper;
     switch(workspace.getCurrentModelerPerspective()) {
       case REPORTING:
         helper = catTreeHelper;
         break;
-      default:
+      case ANALYSIS:
         helper = dimTreeHelper;
         break;
+      default:
+        helper = null;
+        break;
     }
-    ColumnBackedNode selected = (ColumnBackedNode) helper.getSelectedTreeItem();
-    AbstractMetaDataModelNode parent = (AbstractMetaDataModelNode)((AbstractMetaDataModelNode) helper.getSelectedTreeItem()).getParent();
+    return helper;
+  }
+  
+  Object getSelectedTreeItem() {
+    ModelerTreeHelper helper = getCurrentModelerTreeHelper();
+    if (helper == null) return null;
+    return helper.getSelectedTreeItem();
+  }
+  
+  @Bindable
+  public void resolveMissingColumn() {
+    Object selectedTreeItem = getSelectedTreeItem();
+    if (selectedTreeItem == null) return;
+    if (! (selectedTreeItem instanceof ColumnBackedNode)) return;
+    AbstractMetaDataModelNode selectedNode = (AbstractMetaDataModelNode) selectedTreeItem;
+    if (selectedNode.isValid()) return;
+    changeColumn();
+  }
+
+  public void changeColumn(String columnType) {
+    Object selectedTreeItem = getSelectedTreeItem();
+    if (selectedTreeItem == null) return;
+
+    ColumnBackedNode selectedColumnBackedNode = (ColumnBackedNode) selectedTreeItem ;
 
     // only restrict to a table if this node needs to & the node has siblings that might conflict when changing the parent
-    IPhysicalTable restrictedPhysicalTable = selected.getTableRestriction();
-    if( restrictedPhysicalTable != null ) {
-      AvailableTable restrictToTable = null;
-      restrictToTable = workspace.getAvailableTables().findAvailableTable(restrictedPhysicalTable.getName(getWorkspaceHelper().getLocale()));
-      colController.show(this.workspace, selected, restrictToTable);
-    } else {
-      colController.show(this.workspace, selected);
+    IPhysicalTable restrictedPhysicalTable = selectedColumnBackedNode.getTableRestriction();
+    if( restrictedPhysicalTable == null ) {
+      colController.show(workspace, selectedColumnBackedNode, columnType);
+      return;
     }
+    
+    AvailableTable restrictToTable = null;
+    AvailableItemCollection availableTables = workspace.getAvailableTables();
+    String name = restrictedPhysicalTable.getName(getWorkspaceHelper().getLocale());
+    restrictToTable = availableTables.findAvailableTable(name);
+    colController.show(workspace, selectedColumnBackedNode, columnType, restrictToTable);
+  }
+  
+  public void clearColumn(String columnType) {
+    Object selectedTreeItem = getSelectedTreeItem();
+    if (selectedTreeItem == null) return;
+
+    ColumnBackedNode selectedColumnBackedNode = (ColumnBackedNode) selectedTreeItem ;
+    if (ColumnBackedNode.COLUMN_TYPE_ORDINAL.equals(columnType)) {
+      selectedColumnBackedNode.setLogicalOrdinalColumn(null);
+    }
+    else
+    if (ColumnBackedNode.COLUMN_TYPE_CAPTION.equals(columnType)) {
+      selectedColumnBackedNode.setLogicalCaptionColumn(null);
+    }
+  }
+  
+  @Bindable
+  public void changeColumn(){
+    changeColumn(ColumnBackedNode.COLUMN_TYPE_SOURCE);
+  }
+
+  @Bindable
+  public void changeOrdinalColumn(){
+    changeColumn(ColumnBackedNode.COLUMN_TYPE_ORDINAL);
+  }
+
+  @Bindable
+  public void clearOrdinalColumn(){
+    clearColumn(ColumnBackedNode.COLUMN_TYPE_ORDINAL);
+  }
+
+  @Bindable
+  public void changeCaptionColumn(){
+    changeColumn(ColumnBackedNode.COLUMN_TYPE_CAPTION);
+  }
+
+  @Bindable
+  public void clearCaptionColumn(){
+    clearColumn(ColumnBackedNode.COLUMN_TYPE_CAPTION);
   }
 
   public void addPropertyForm( AbstractModelerNodeForm form ) {

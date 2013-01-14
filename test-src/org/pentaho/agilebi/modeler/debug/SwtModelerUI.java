@@ -21,7 +21,9 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.util.XmiParser;
+import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
@@ -37,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Properties;
+import java.util.List;
 
 /**
  * Created: 3/15/11
@@ -158,7 +161,10 @@ public class SwtModelerUI {
 
     
     MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
-    fileSaveItem.setText("&Save...");
+    fileSaveItem.setText("&Save xmi...");
+
+    MenuItem fileSaveMondrianItem = new MenuItem(fileMenu, SWT.PUSH);
+    fileSaveMondrianItem.setText("&Save mondrian...");
 
     MenuItem fileExitItem = new MenuItem(fileMenu, SWT.PUSH);
     fileExitItem.setText("E&xit");
@@ -166,6 +172,7 @@ public class SwtModelerUI {
     
     fileOpenItem.addSelectionListener(new FileOpenItemListener());
     fileSaveItem.addSelectionListener(new FileSaveItemListener());
+    fileSaveMondrianItem.addSelectionListener(new FileSaveMondrianItemListener());
     fileExitItem.addSelectionListener(new FileExitItemListener());
     
   }
@@ -230,7 +237,7 @@ public class SwtModelerUI {
       }
       String fname = dialog.open();
       if (fname != null) {
-        System.out.println("Save...");
+        System.out.println("Save xmi...");
         try {
           ModelerWorkspaceUtil.saveWorkspace(controller.getModel(), fname);
         } catch (Exception e) {
@@ -240,5 +247,32 @@ public class SwtModelerUI {
     }
   }
 
+  class FileSaveMondrianItemListener implements SelectionListener {
+    public void widgetSelected(SelectionEvent event) {
+      widgetDefaultSelected(event);
+    }
+
+    public void widgetDefaultSelected(SelectionEvent event) {
+      
+      FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+      if (lastPath != null) {
+        dialog.setFilterPath(lastPath);
+      }
+      String fname = dialog.open();
+      if (fname != null) {
+        System.out.println("Save mondrian xml...");
+        try {
+          ModelerWorkspaceUtil.saveWorkspaceAsMondrianSchema(
+            controller.getModel(), 
+            fname, 
+            controller.getWorkspaceHelper().getLocale()
+          );
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+  
 
 }

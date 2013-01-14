@@ -34,6 +34,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   private static final long serialVersionUID = -891901735974255178L;
 
   String name;
+  String dimensionType = "StandardDimension";
 
   public DimensionMetaData(){
 
@@ -63,6 +64,38 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
       validateNode();
     }
   }
+  
+  @Bindable
+  public String getDimensionType(){
+    return dimensionType;
+  }
+  
+  @Bindable
+  public void setDimensionType(String type){
+    String oldType = dimensionType;
+    if (oldType.equals(type)) return;
+    dimensionType = type;
+    firePropertyChange("dimensionType", oldType, type);
+  }
+  
+  @Bindable
+  public boolean isTimeDimension(){
+    return isTimeDimension(dimensionType);
+  }
+
+  static boolean isTimeDimension(String dimensionType){
+    return "TimeDimension".equals(dimensionType);
+  }
+  
+  @Bindable
+  public void setTimeDimension(boolean timeDimension) {
+    boolean oldTimeDimension = isTimeDimension();
+    if (timeDimension == oldTimeDimension) return;
+    //TODO: call setDimensionType rather than writing the member.
+    dimensionType = timeDimension ? "TimeDimension" : "StandardDimension";
+    firePropertyChange("timeDimension", oldTimeDimension, timeDimension);
+    validateNode();
+  }
 
   @Bindable
   public String toString() {
@@ -88,6 +121,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
     }
     HashMap<String, HierarchyMetaData> usedNames = new HashMap<String, HierarchyMetaData>();
     for (HierarchyMetaData hier : children) {
+      hier.validate();
       valid &= hier.isValid();
       validationMessages.addAll(hier.getValidationMessages());
       if (usedNames.containsKey(hier.getName())) {
