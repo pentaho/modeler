@@ -94,6 +94,22 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     }
     return str.toString();
   }
+  
+  @Bindable
+  public void setDataRole(DataRole dataRole){
+    if (this.dataRole == null && dataRole == null) return;
+    if (this.dataRole != null && dataRole != null && this.dataRole.equals(dataRole)) return;
+    DataRole oldDataRole = this.dataRole;
+    this.dataRole = dataRole;
+    if (suppressEvents) return;
+    firePropertyChange("dataRole", oldDataRole, dataRole);
+    validateNode();
+  }
+  
+  @Bindable
+  public DataRole getDataRole(){
+    return dataRole;
+  }
 
   @Bindable
   public Set<String> getValidationMessages() {

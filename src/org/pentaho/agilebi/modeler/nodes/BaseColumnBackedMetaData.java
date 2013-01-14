@@ -7,6 +7,7 @@ import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
@@ -21,7 +22,9 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   protected String name;
   protected String columnName;
   protected transient LogicalColumn logicalColumn;
-  protected Boolean uniqueMembers = false;
+  protected transient LogicalColumn logicalOrdinalColumn;
+  protected transient LogicalColumn logicalCaptionColumn;
+  protected boolean uniqueMembers = false;
   private static final String IMAGE = "images/sm_level_icon.png";
   private String description = "";
 
@@ -104,11 +107,38 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
     firePropertyChange("logicalColumn", prevVal, col);
   }
 
-  public void setUniqueMembers( Boolean uniqueMembers ) {
-    this.uniqueMembers = uniqueMembers;
+  @Bindable
+  public LogicalColumn getLogicalOrdinalColumn() {
+    return logicalOrdinalColumn;
   }
 
-  public Boolean isUniqueMembers() {
+  public void setLogicalOrdinalColumn(LogicalColumn col) {
+    LogicalColumn prevVal = this.logicalOrdinalColumn;
+    this.logicalOrdinalColumn = col;
+    validateNode();
+    firePropertyChange("logicalOrdinalColumn", prevVal, col);
+  }
+
+  @Bindable
+  public LogicalColumn getLogicalCaptionColumn() {
+    return logicalCaptionColumn;
+  }
+
+  public void setLogicalCaptionColumn( LogicalColumn col ) {
+    LogicalColumn prevVal = this.logicalCaptionColumn;
+    this.logicalCaptionColumn = col;
+    validateNode();
+    firePropertyChange("logicalCaptionColumn", prevVal, col);
+  }
+
+  public void setUniqueMembers( boolean uniqueMembers ) {
+    boolean oldUniqueMembers = this.uniqueMembers;
+    if (oldUniqueMembers == uniqueMembers) return;
+    this.uniqueMembers = uniqueMembers;
+    firePropertyChange("uniqueMembers", oldUniqueMembers, uniqueMembers);
+  }
+
+  public boolean isUniqueMembers() {
     return uniqueMembers;
   }
 
@@ -122,9 +152,19 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
       validationMessages.add(ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("MISSING_NAME")));
       valid = false;
     }
+    
     if (logicalColumn == null) {
       validationMessages.add(ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("MISSING_BACKING_COLUMN"), getName()));
       valid = false;
+    }
+    else {
+      LogicalTable logicalTable = logicalColumn.getLogicalTable();
+      if (logicalOrdinalColumn != null && !logicalOrdinalColumn.getLogicalTable().equals(logicalTable)) {
+        validationMessages.add(ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("INVALID_TABLE_FOR_ORDINAL_COLUMN"), getName()));
+      }
+      if (logicalCaptionColumn != null && !logicalCaptionColumn.getLogicalTable().equals(logicalTable)) {
+        validationMessages.add(ModelerMessagesHolder.getMessages().getString(getValidationMessageKey("INVALID_TABLE_FOR_CAPTION_COLUMN"), getName()));
+      }
     }
   }
 

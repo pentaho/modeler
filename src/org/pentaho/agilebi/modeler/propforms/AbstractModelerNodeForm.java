@@ -20,6 +20,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.ui.xul.XulContainer;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -64,6 +65,17 @@ public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler
 
   public void setBindingFactory(BindingFactory bf){
     this.bf = bf;
+  }
+  
+  /**
+   * Utility method to show/hide a container with specific components appropriate only in  particular circumstances.
+   * For example: only time dimension levels need time level type and format, but not geo type
+   * @param containerId
+   * @param visible
+   */
+  protected void setContainerVisible(String containerId, boolean visible) {
+    XulContainer container = (XulContainer) document.getElementById(containerId);
+    container.setVisible(visible);
   }
 
   public void init(ModelerWorkspace workspace) {
