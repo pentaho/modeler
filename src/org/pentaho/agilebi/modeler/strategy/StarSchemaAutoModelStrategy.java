@@ -76,16 +76,18 @@ public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
               workspace.getModel().getMeasures().add(measure);
               existingMeasures.add(field.getName());
             }
-          } else {
+          }
+          else {
             // make sure the logical column for this gets added
             workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS);
           }
         }
-      } else {
+      } 
+      else {
         // create a new dimension per table since it is not the fact table
         DimensionMetaData dim = new DimensionMetaData(table.getName());
         dim.setExpanded(false);
-
+  
         for( AvailableField field : table.getAvailableFields() ) {
           if(!isGeoField(field)) {
             // create a hierarchy per field
@@ -93,7 +95,7 @@ public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
             hierarchy.setParent(dim);
             hierarchy.setExpanded(false);
             dim.add(hierarchy);
-
+  
             // create a level
             LevelMetaData level = workspace.createLevelForParentWithNode(hierarchy, workspace.createColumnBackedNode(field, ModelerPerspective.ANALYSIS));
             if (level != null) {
@@ -106,7 +108,6 @@ public class StarSchemaAutoModelStrategy extends SimpleAutoModelStrategy {
           workspace.addDimension(dim);
         }
       }
-
     }
 
     addGeoDimensions(workspace.getModel().getDimensions(), workspace);

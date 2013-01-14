@@ -96,6 +96,9 @@ MAIN TARGETS
   * test :
     runs JUnit tests from your project's test source
     
+  * run:
+    Launches a stand-alone SwtModelerUI. Useful for testing.
+
 SPECIAL TARGETS
 ============
   * publish-local :
@@ -1268,7 +1271,15 @@ TYPICAL TARGET SEQUENCE
     </junitreport>
   </target>
 
-
+  <!--=======================================================================
+    Run the swt modeler stand-alone. 
+    ====================================================================-->
+  <target name="run" depends="compile,compile-tests">
+    <java classname="org.pentaho.agilebi.modeler.debug.SwtModelerUI">
+      <classpath refid="test.classpath" />
+    </java>
+  </target>
+	
   <!--=======================================================================
     clean-test-reports
 

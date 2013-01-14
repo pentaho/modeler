@@ -52,7 +52,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
   }
 
   public void populateDomain(ModelerWorkspace model) throws ModelerException {
-
     Domain domain = model.getDomain();
     domain.setId(model.getModelName());
 
@@ -75,159 +74,177 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       logicalModel.setName( new LocalizedString(locale, model.getModelName() + BaseModelerWorkspaceHelper.OLAP_SUFFIX) );
       logicalModel.setProperty("AGILE_BI_VERSION", AGILE_BI_VERSION);
     }
-
-    if(model.getModel() != null && model.getModel().getDimensions().size() > 0) {
-	    LogicalTable factTable = null;
-      //check to see if there's only one effective table
-      if(logicalModel.getLogicalTables().size() == 1){
-        factTable = logicalModel.getLogicalTables().get(0);
-      } else { // otherwise we're in a multi-table situation, find the table flagged as the fact table
-        for(LogicalTable lTable : logicalModel.getLogicalTables()) {
-          boolean isFact = lTable.getPhysicalTable().getProperty("FACT_TABLE") != null ? (Boolean) lTable.getPhysicalTable().getProperty("FACT_TABLE") : false;
-          if(isFact) {
-              factTable = lTable;
-            break;
-          }
-        }
+    
+    
+    MainModelNode mainModelNode = model.getModel();
+    if(mainModelNode == null) return;
+    DimensionMetaDataCollection dimensions = mainModelNode.getDimensions();
+    if (dimensions.size() == 0) return;
+    
+    LogicalTable factTable = null;
+    //check to see if there's only one effective table
+    if(logicalModel.getLogicalTables().size() == 1){
+      factTable = logicalModel.getLogicalTables().get(0);
+    } else { // otherwise we're in a multi-table situation, find the table flagged as the fact table
+      Object prop;
+      for(LogicalTable lTable : logicalModel.getLogicalTables()) {
+        prop = lTable.getPhysicalTable().getProperty("FACT_TABLE");
+        if (prop == null) continue;
+        if (((Boolean)prop).booleanValue() == false) continue;
+        factTable = lTable;
+        break;
       }
-
-      if(factTable == null) {
-        throw new IllegalStateException("Fact table is missing.");
-      }
-      List<OlapDimensionUsage> usages = new ArrayList<OlapDimensionUsage>();
-      List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
-      List<OlapMeasure> measures = new ArrayList<OlapMeasure>();
-
-      for (DimensionMetaData dim : model.getModel().getDimensions()) {
-
-        OlapDimension dimension = new OlapDimension();
-        String dimTitle = dim.getName();
-
-        dimension.setName(dimTitle);
-        dimension.setTimeDimension(dim.isTime());
-
-        List<OlapHierarchy> hierarchies = new ArrayList<OlapHierarchy>();
-
-        for (HierarchyMetaData hier : dim) {
-          OlapHierarchy hierarchy = new OlapHierarchy(dimension);
-          hierarchy.setName(hier.getName());
-          List<OlapHierarchyLevel> levels = new ArrayList<OlapHierarchyLevel>();
-
-          for (LevelMetaData lvl : hier) {
-            OlapHierarchyLevel level = new OlapHierarchyLevel(hierarchy);
-            level.setName(lvl.getName());
-            LogicalColumn lCol = lvl.getLogicalColumn();
-
-            if (lCol != null) {
-
-              // Due to a bug in LogicalTable's clone() logical columns will be a child of an OLAP while reporting a
-              // different parent.
-              LogicalTable supposedLTable = lCol.getLogicalTable();
-              LogicalTable olapCloneLTable = findOlapCloneForTableInDomain(supposedLTable, domain);
-
-              hierarchy.setLogicalTable(olapCloneLTable);
-              if (!olapCloneLTable.getLogicalColumns().contains(lCol)) {
-                olapCloneLTable.addLogicalColumn(lCol);
-              }
-
-              for(IMemberAnnotation anno : lvl.getMemberAnnotations().values()){
-                if(anno != null){
-                  anno.saveAnnotations(level);
-                }
-              }
-
-
-              level.setReferenceColumn(lCol);
-              hierarchy.setLogicalTable(olapCloneLTable);
-              if(logicalModel.getLogicalTables().size() > 1){ //only do this for multi-table situations
-                hierarchy.setPrimaryKey(findPrimaryKeyFor(logicalModel, factTable, olapCloneLTable));
-              }
-            }
-
-            for (MemberPropertyMetaData memberProp : lvl) {
-              LogicalColumn lc = memberProp.getLogicalColumn();
-              if ( lc != null && !level.getLogicalColumns().contains(lc) ) {
-                if(memberProp.getDescription() != null) {
-                  lc.setDescription(new LocalizedString(getLocale(), memberProp.getDescription()));
-                }
-                level.getLogicalColumns().add(lc);
-              }
-            }
-
-            level.setHavingUniqueMembers(lvl.isUniqueMembers());
-            levels.add(level);
-          }
-
-          hierarchy.setHierarchyLevels(levels);
-          hierarchies.add(hierarchy);
-        }
-
-        if(hierarchies.isEmpty()) {
-          // create a default hierarchy
-          OlapHierarchy defaultHierarchy = new OlapHierarchy(dimension);
-
-          defaultHierarchy.setLogicalTable(factTable);  // TODO: set this to what???
-
-          hierarchies.add(defaultHierarchy);
-        }
-
-        dimension.setHierarchies(hierarchies);
-
-        olapDimensions.add(dimension);
-        OlapDimensionUsage usage = new OlapDimensionUsage(dimension.getName(), dimension);
-        usages.add(usage);
-
-      }
-      
-      OlapCube cube = new OlapCube();	  
-      cube.setLogicalTable(factTable);
-      // TODO find a better way to generate default names
-      //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
-      cube.setName( model.getModelName() ); //$NON-NLS-1$
-      cube.setOlapDimensionUsages(usages);
-
-      Map<String, LogicalColumn> backingColumns = new HashMap<String, LogicalColumn>();
-      for (MeasureMetaData f : model.getModel().getMeasures()) {
-        LogicalColumn lCol = f.getLogicalColumn();
-        LogicalTable lTable = lCol.getLogicalTable();
-        OlapMeasure measure = new OlapMeasure();
-
-        String colKey = lTable.getId() + "." + lCol.getId();
-        // see if any measures already are using this LogicalColumn. if so, clone it.
-        if (backingColumns.containsKey(colKey)) {
-          // already used, duplicate it
-          LogicalColumn clone = (LogicalColumn)lCol.clone();
-          clone.setId(uniquify(clone.getId(), lTable.getLogicalColumns()));
-          lCol = clone;
-        } else {
-          backingColumns.put(colKey, lCol);
-        }
-
-        if (!lTable.getLogicalColumns().contains(lCol)) {
-          lTable.addLogicalColumn(lCol);
-        }
-
-        if (f.getDefaultAggregation() != null) {
-          lCol.setAggregationType(f.getDefaultAggregation());
-        }
-
-        setLogicalColumnFormat(f.getFormat(), lCol);
-        
-        measure.setName(f.getName());
-
-        measure.setLogicalColumn(lCol);
-        measures.add(measure);
-      }
-
-      cube.setOlapMeasures(measures);
-
-      if (olapDimensions.size() > 0) { // Metadata OLAP generator doesn't like empty lists.
-    	  logicalModel.setProperty("olap_dimensions", olapDimensions); //$NON-NLS-1$
-      }
-      List<OlapCube> cubes = new ArrayList<OlapCube>();
-      cubes.add(cube);
-      logicalModel.setProperty("olap_cubes", cubes); //$NON-NLS-1$
     }
+
+    if(factTable == null) {
+      throw new IllegalStateException("Fact table is missing.");
+    }
+    List<OlapDimensionUsage> usages = new ArrayList<OlapDimensionUsage>();
+    List<OlapDimension> olapDimensions = new ArrayList<OlapDimension>();
+    List<OlapMeasure> measures = new ArrayList<OlapMeasure>();
+
+    for (DimensionMetaData dim : dimensions) {
+
+      OlapDimension dimension = new OlapDimension();
+      String dimTitle = dim.getName();
+
+      dimension.setName(dimTitle);
+      boolean isTimeDimension = dim.isTimeDimension();
+      dimension.setTimeDimension(isTimeDimension);
+
+      List<OlapHierarchy> hierarchies = new ArrayList<OlapHierarchy>();
+
+      for (HierarchyMetaData hier : dim) {
+        OlapHierarchy hierarchy = new OlapHierarchy(dimension);
+        hierarchy.setName(hier.getName());
+        List<OlapHierarchyLevel> levels = new ArrayList<OlapHierarchyLevel>();
+
+        for (LevelMetaData lvl : hier) {
+          OlapHierarchyLevel level = new OlapHierarchyLevel(hierarchy);
+          level.setName(lvl.getName());
+          if (isTimeDimension) {
+            level.setLevelType(((TimeRole)lvl.getDataRole()).getMondrianAttributeValue());
+          }
+          LogicalColumn lCol = lvl.getLogicalColumn();
+
+          if (lCol != null) {
+
+            // Due to a bug in LogicalTable's clone() logical columns will be a child of an OLAP while reporting a
+            // different parent.
+            LogicalTable supposedLTable = lCol.getLogicalTable();
+            LogicalTable olapCloneLTable = findOlapCloneForTableInDomain(supposedLTable, domain);
+
+            hierarchy.setLogicalTable(olapCloneLTable);
+            if (!olapCloneLTable.getLogicalColumns().contains(lCol)) {
+              olapCloneLTable.addLogicalColumn(lCol);
+            }
+
+            for(IMemberAnnotation anno : lvl.getMemberAnnotations().values()){
+              if(anno != null){
+                anno.saveAnnotations(level);
+              }
+            }
+
+            level.setReferenceColumn(lCol);
+            hierarchy.setLogicalTable(olapCloneLTable);
+            if(logicalModel.getLogicalTables().size() > 1){ //only do this for multi-table situations
+              hierarchy.setPrimaryKey(findPrimaryKeyFor(logicalModel, factTable, olapCloneLTable));
+            }
+            
+            lCol = lvl.getLogicalOrdinalColumn();
+            if (lCol != null) {
+              level.setReferenceOrdinalColumn(lCol);
+            }
+            
+            lCol = lvl.getLogicalCaptionColumn();
+            if (lCol != null) {
+              level.setReferenceCaptionColumn(lCol);
+            }
+          }
+
+          for (MemberPropertyMetaData memberProp : lvl) {
+            LogicalColumn lc = memberProp.getLogicalColumn();
+            if ( lc != null && !level.getLogicalColumns().contains(lc) ) {
+              if(memberProp.getDescription() != null) {
+                lc.setDescription(new LocalizedString(getLocale(), memberProp.getDescription()));
+              }
+              level.getLogicalColumns().add(lc);
+            }
+          }
+
+          level.setHavingUniqueMembers(lvl.isUniqueMembers());
+          levels.add(level);
+        }
+
+        hierarchy.setHierarchyLevels(levels);
+        hierarchies.add(hierarchy);
+      }
+
+      if(hierarchies.isEmpty()) {
+        // create a default hierarchy
+        OlapHierarchy defaultHierarchy = new OlapHierarchy(dimension);
+
+        defaultHierarchy.setLogicalTable(factTable);  // TODO: set this to what???
+
+        hierarchies.add(defaultHierarchy);
+      }
+
+      dimension.setHierarchies(hierarchies);
+
+      olapDimensions.add(dimension);
+      OlapDimensionUsage usage = new OlapDimensionUsage(dimension.getName(), dimension);
+      usages.add(usage);
+
+    }
+    
+    OlapCube cube = new OlapCube();	  
+    cube.setLogicalTable(factTable);
+    // TODO find a better way to generate default names
+    //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
+    cube.setName( model.getModelName() ); //$NON-NLS-1$
+    cube.setOlapDimensionUsages(usages);
+
+    Map<String, LogicalColumn> backingColumns = new HashMap<String, LogicalColumn>();
+    for (MeasureMetaData f : model.getModel().getMeasures()) {
+      LogicalColumn lCol = f.getLogicalColumn();
+      LogicalTable lTable = lCol.getLogicalTable();
+      OlapMeasure measure = new OlapMeasure();
+
+      String colKey = lTable.getId() + "." + lCol.getId();
+      // see if any measures already are using this LogicalColumn. if so, clone it.
+      if (backingColumns.containsKey(colKey)) {
+        // already used, duplicate it
+        LogicalColumn clone = (LogicalColumn)lCol.clone();
+        clone.setId(uniquify(clone.getId(), lTable.getLogicalColumns()));
+        lCol = clone;
+      } else {
+        backingColumns.put(colKey, lCol);
+      }
+
+      if (!lTable.getLogicalColumns().contains(lCol)) {
+        lTable.addLogicalColumn(lCol);
+      }
+
+      if (f.getDefaultAggregation() != null) {
+        lCol.setAggregationType(f.getDefaultAggregation());
+      }
+
+      setLogicalColumnFormat(f.getFormat(), lCol);
+      
+      measure.setName(f.getName());
+
+      measure.setLogicalColumn(lCol);
+      measures.add(measure);
+    }
+
+    cube.setOlapMeasures(measures);
+
+    if (olapDimensions.size() > 0) { // Metadata OLAP generator doesn't like empty lists.
+      logicalModel.setProperty("olap_dimensions", olapDimensions); //$NON-NLS-1$
+    }
+    List<OlapCube> cubes = new ArrayList<OlapCube>();
+    cubes.add(cube);
+    logicalModel.setProperty("olap_cubes", cubes); //$NON-NLS-1$
 
   }
 
