@@ -20,7 +20,10 @@ public class TimeRole implements DataRole {
   public TimeRole(String name) {
     this.name = name;
   }
-
+  
+  /*
+  @Bindable
+  */
   public String getName() {
     if(this.name != null) {
       return this.name;
