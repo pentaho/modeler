@@ -106,7 +106,9 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     getNode().addPropertyChangeListener(validListener);
 
     name.setValue(levelMetaData.getName());
+    
     setColumnName(getColumnNameFromLogicalColumn(levelMetaData.getLogicalColumn()));
+    ordinalColName = "";
     setOrdinalColumnName(getColumnNameFromLogicalColumn(levelMetaData.getLogicalOrdinalColumn()));
     //setCaptionColumnName(getColumnNameFromLogicalColumn(levelMetaData.getLogicalCaptionColumn()));
     hasUniqueMembers.setChecked(levelMetaData.isUniqueMembers());
@@ -175,7 +177,21 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
     bf.createBinding(this, "columnName", sourceLabel, "value");
     bf.createBinding(this, "ordinalColumnName", ordinalLabel, "value");
-    bf.createBinding(this, "ordinalColumnName", clearOrdinalColumnBtn, "visible", BindingConvertor.object2Boolean());
+    bf.createBinding(this, "ordinalColumnName", clearOrdinalColumnBtn, "image", 
+      new BindingConvertor<String, String>(){
+
+        @Override
+        public String sourceToTarget(String value) {
+          return "images/" + (value == null ? "blank_button" : "remove") + ".png";
+        }
+
+        @Override
+        public String targetToSource(String value) {
+          // TODO Auto-generated method stub
+          return null;
+        }
+      }
+    );
     
     bf.createBinding(this, "name", name, "value");
     bf.createBinding(this, "uniqueMembers", hasUniqueMembers, "checked");
@@ -197,7 +213,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     timeLevelTypeList.setElements(timeRoles);
     
     bf.createBinding(timeLevelTypeList, "selectedItem", this, "selectedTimeLevelType");
-
   }
 
   protected String getColumnNameFromLogicalColumn(LogicalColumn col ) {
@@ -228,8 +243,8 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
   @Bindable
   public void setOrdinalColumnName(String name) {
-    if ("".equals(name)) name = null;
     String prevName = ordinalColName;
+    if ("".equals(name)) name = null;
     if (prevName == null && name == null) return;
     if (prevName != null && name != null && prevName.equals(name)) return;
     ordinalColName = name;

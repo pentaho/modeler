@@ -211,7 +211,6 @@
         <vbox>
           <button 
             id="clear_ordinal_column"
-            visible="false"
             image="images/remove.png"
             onclick="modeler.clearOrdinalColumn()"
           />

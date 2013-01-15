@@ -1,6 +1,7 @@
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
+import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.gwt.widgets.client.controls.schededitor.RecurrenceEditor;
 import java.util.List;
 import java.util.Arrays;
@@ -21,9 +22,7 @@ public class TimeRole implements DataRole {
     this.name = name;
   }
   
-  /*
   @Bindable
-  */
   public String getName() {
     if(this.name != null) {
       return this.name;
@@ -31,11 +30,21 @@ public class TimeRole implements DataRole {
     return DEFAULT_NAME;
   }
   
+  @Bindable
+  public void setName(String name) {
+    this.name = name;
+  }
+  
+  public String toString() {
+    return getName();
+  }
+  
   /**
    *  Returns the Mondrian Schema constant (as String) that represents this role
    *  See: http://mondrian.pentaho.com/documentation/schema.php#Time_dimensions
    *  and http://mondrian.pentaho.com/api/mondrian/olap/LevelType.html
    **/
+  @Bindable
   public String getMondrianAttributeValue() {
     String name = this.name;
     return name.substring(0, 1).toUpperCase() + name.substring(1) + "s";
