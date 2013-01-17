@@ -61,6 +61,8 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   protected XulButton messageBtn;
   protected XulMenuList geoList;
   protected XulMenuList timeLevelTypeList;
+  protected XulMenuList timeLevelFormatList;
+  protected String timeLevelFormat;
 
   protected List<GeoRole> geoRoles = new ArrayList<GeoRole>();
   protected GeoRole selectedGeoRole;
@@ -82,8 +84,10 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
           propertyName.equals("logicalColumn") ||
           propertyName.equals("logicalOrdinalColumn") ||
           propertyName.equals("ordinalColumnName") ||
-          propertyName.equals("logicalCaptionColumn")
+          propertyName.equals("logicalCaptionColumn") ||
+          propertyName.equals("timeLevelFormat")
        ) {
+        System.out.println("PropertyChange: " + propertyName);
         showValidations();
       }
     }
@@ -120,6 +124,8 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
       setTimeLevelElementsVisible(true);
       DataRole dataRole = getNode().getDataRole();
       setSelectedTimeLevelType(dataRole instanceof TimeRole ? ((TimeRole)dataRole) : TimeRole.DUMMY);
+      String timeLevelFormat = getNode().getTimeLevelFormat();
+      this.timeLevelFormatList.setValue(timeLevelFormat == null ? "" : timeLevelFormat);
     }
     else {
       setGeoLevelElementsVisible(true);
@@ -138,7 +144,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     if (getNode() == null) {
       return;
     }
-
     setNotValid(!getNode().isValid());
     LogicalColumn logicalColumn; 
 
@@ -213,7 +218,11 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     timeLevelTypeList.setElements(timeRoles);
     
     bf.createBinding(timeLevelTypeList, "selectedItem", this, "selectedTimeLevelType");
-  }
+
+    timeLevelFormatList = (XulMenuList) document.getElementById("time_level_format");
+    bf.createBinding(timeLevelFormatList, "value", this, "timeLevelFormat");
+    bf.createBinding(timeLevelFormatList, "selectedItem", this, "timeLevelFormat");
+}
 
   protected String getColumnNameFromLogicalColumn(LogicalColumn col ) {
     String columnName = ""; //$NON-NLS-1$
@@ -376,4 +385,26 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     getNode().setDataRole(selectedTimeLevelType);
     firePropertyChange("selectedTimeLevelType", oldTimeLevelType, selectedTimeLevelType);
   }
+  
+  @Bindable
+  public void setTimeLevelFormat( String format ) {
+    if ("".equals(format)) format = null;
+    if (format == null && timeLevelFormat == null) return;
+    if (format != null && timeLevelFormat != null && format.equals(timeLevelFormat)) return;
+    if (getNode() != null) {
+      getNode().setTimeLevelFormat(format);
+    }
+    getNode().validateNode();
+    showValidations();
+    timeLevelFormat = format;
+  }
+
+  @Bindable
+  public String getTimeLevelFormat() {
+    if (getNode() == null) {
+      return null;
+    }
+    return getNode().getTimeLevelFormat();
+  }
+  
 }

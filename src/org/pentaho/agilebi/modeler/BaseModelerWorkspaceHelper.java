@@ -123,7 +123,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
           OlapHierarchyLevel level = new OlapHierarchyLevel(hierarchy);
           level.setName(lvl.getName());
           if (isTimeDimension) {
-            level.setLevelType(((TimeRole)lvl.getDataRole()).getMondrianAttributeValue());
+            TimeRole timeRole = (TimeRole) lvl.getDataRole();
+            if (timeRole != null) level.setLevelType(timeRole.getMondrianAttributeValue());
           }
           LogicalColumn lCol = lvl.getLogicalColumn();
 

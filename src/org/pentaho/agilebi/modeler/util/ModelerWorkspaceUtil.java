@@ -68,10 +68,7 @@ public class ModelerWorkspaceUtil {
     try {
 
       String xml = getMondrianSchemaXml(aModel, locale);
-      if (xml == null) {
-        System.out.println("xml == null; exiting...");
-        return;
-      }
+      if (xml == null) return;
       // write the XMI to a tmp file
       // models was created earlier.
       try{
@@ -96,10 +93,7 @@ public class ModelerWorkspaceUtil {
   public static String getMondrianSchemaXml(ModelerWorkspace modelerWorkspace, String locale) throws Exception {
     modelerWorkspace.getWorkspaceHelper().populateDomain(modelerWorkspace);
     LogicalModel logicalModel = modelerWorkspace.getLogicalModel(ModelerPerspective.ANALYSIS);
-    if (logicalModel == null) {
-      System.out.println("Logical model == null");
-      return null;
-    }
+    if (logicalModel == null) return null;
     MondrianModelExporter exporter = new MondrianModelExporter(logicalModel, locale);
     return exporter.createMondrianModelXML();
   }
