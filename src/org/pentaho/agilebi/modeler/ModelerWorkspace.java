@@ -18,7 +18,9 @@ package org.pentaho.agilebi.modeler;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.nodes.*;
+import org.pentaho.agilebi.modeler.nodes.annotations.AnalyzerDateFormatAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.GeoAnnotationFactory;
+import org.pentaho.agilebi.modeler.nodes.annotations.IAnalyzerDateFormatAnnotation;
 import org.pentaho.agilebi.modeler.nodes.annotations.IAnnotationFactory;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
@@ -108,6 +110,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     simpleAutoModelStrategy = new SimpleAutoModelStrategy(workspaceHelper.getLocale(), geoContext);
     multiTableAutoModelStrategy = new MultiTableAutoModelStrategy(workspaceHelper.getLocale());
     starSchemaAutoModelStrategy = new StarSchemaAutoModelStrategy(workspaceHelper.getLocale(), geoContext);
+    AnalyzerDateFormatAnnotationFactory.register();
   }
 
   public GeoContext getGeoContext() {
@@ -693,8 +696,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       while (theDimensionItr.hasNext()) {
         OlapDimension theDimension = theDimensionItr.next();
 
-        DimensionMetaData theDimensionMD = new DimensionMetaData(theDimension.getName());
-
+        DimensionMetaData theDimensionMD = new DimensionMetaData(theDimension.getName(), theDimension.getType());
+        theDimensionMD.setTimeDimension(theDimension.isTimeDimension());
         List<OlapHierarchy> theHierarchies = (List) theDimension.getHierarchies();
         Iterator<OlapHierarchy> theHierarchiesItr = theHierarchies.iterator();
         while (theHierarchiesItr.hasNext()) {
@@ -709,14 +712,45 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
             theLevelMD.setParent(theHierarchyMD);
 
-            // Make sure we're dealing with the OLAP copy. Note that duplicated columns will have an OLAP_[0-9]+ at the end
-            String refID = theLevel.getReferenceColumn().getId();
-            if (!refID.endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !refID.contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_")) {
-              LogicalColumn olapCol = ModelerConversionUtil.findCorrespondingOlapColumn(theLevel.getReferenceColumn(), lModel);
-              theLevel.setReferenceColumn(olapCol);
+            theLevelMD.setUniqueMembers(theLevel.isHavingUniqueMembers());
+            if (theDimensionMD.isTimeDimension()) {
+              TimeRole role = TimeRole.fromMondrianAttributeValue(theLevel.getLevelType());
+              if (role != null) theLevelMD.setDataRole(role);
             }
-            theLevelMD.setLogicalColumn(theLevel.getReferenceColumn());
 
+            // Make sure we're dealing with the OLAP copy. Note that duplicated columns will have an OLAP_[0-9]+ at the end
+            String refID;
+            LogicalColumn olapCol;
+            
+            olapCol = theLevel.getReferenceColumn();
+            if (olapCol != null) {
+              refID = olapCol.getId();
+              if (!refID.endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !refID.contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_")) {
+                olapCol = ModelerConversionUtil.findCorrespondingOlapColumn(olapCol, lModel);
+                theLevel.setReferenceColumn(olapCol);
+              }
+              theLevelMD.setLogicalColumn(olapCol);
+            }
+            
+            olapCol = theLevel.getReferenceOrdinalColumn();
+            if (olapCol != null) {
+              refID = olapCol.getId();
+              if (!refID.endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !refID.contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_")) {
+                olapCol = ModelerConversionUtil.findCorrespondingOlapColumn(olapCol, lModel);
+                theLevel.setReferenceOrdinalColumn(olapCol);
+              }
+              theLevelMD.setLogicalOrdinalColumn(olapCol);
+            }
+
+            olapCol = theLevel.getReferenceCaptionColumn();
+            if (olapCol != null) {
+              refID = olapCol.getId();
+              if (!refID.endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX) && !refID.contains(BaseModelerWorkspaceHelper.OLAP_SUFFIX+"_")) {
+                olapCol = ModelerConversionUtil.findCorrespondingOlapColumn(olapCol, lModel);
+                theLevel.setReferenceCaptionColumn(olapCol);
+              }
+              theLevelMD.setLogicalCaptionColumn(olapCol);
+            }
             // get any logicalColumns and turn them into member properties
             if( theLevel.getLogicalColumns() != null && theLevel.getLogicalColumns().size() > 0 ) {
               for( LogicalColumn lc : theLevel.getLogicalColumns() ) {
@@ -730,9 +764,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
                 theLevelMD.add(memberProp);
               }
             }
-
-            if(theLevel.getAnnotations() != null){
-              for(OlapAnnotation anno : theLevel.getAnnotations()){
+            List<OlapAnnotation> annotations = theLevel.getAnnotations();
+            if(annotations != null){
+              for(OlapAnnotation anno : annotations){
                 IMemberAnnotation annoMeta = MemberAnnotationFactory.create(anno);
                 theLevelMD.getMemberAnnotations().put(anno.getName(), annoMeta);
               }

@@ -46,8 +46,21 @@ public class TimeRole implements DataRole {
    **/
   @Bindable
   public String getMondrianAttributeValue() {
-    String name = this.name;
-    return name.substring(0, 1).toUpperCase() + name.substring(1) + "s";
+    return "Time" + this.name;
+  }
+  
+  /**
+   * 
+   */
+  public static String mondrianAttributeValueToRoleName(String mondrianAttributeValue){
+    return mondrianAttributeValue.substring("Time".length());
+  }
+  
+  public static TimeRole fromMondrianAttributeValue(String mondrianAttributeValue){
+    for (TimeRole role : allRoles) {
+      if (role.getMondrianAttributeValue().equals(mondrianAttributeValue)) return role;
+    }
+    return null;
   }
 
   public boolean equals(Object obj) {
@@ -64,31 +77,32 @@ public class TimeRole implements DataRole {
   
   /* basic time roles */
   public static final TimeRole DUMMY = new TimeRole("");
-  public static final TimeRole YEAR = new TimeRole("year");
-  public static final TimeRole HALFYEAR = new TimeRole("halfYear");
-  public static final TimeRole QUARTER= new TimeRole("quarter");
-  public static final TimeRole MONTH= new TimeRole("month");
-  public static final TimeRole WEEK= new TimeRole("week");
-  public static final TimeRole DAY= new TimeRole("day");
-  public static final TimeRole HOUR = new TimeRole("hour");
-  public static final TimeRole MINUTE = new TimeRole("minute");
-  public static final TimeRole SECOND = new TimeRole("second");
+  public static final TimeRole YEARS = new TimeRole("Years");
+  public static final TimeRole HALFYEARS = new TimeRole("HalfYears");
+  public static final TimeRole QUARTERS = new TimeRole("Quarters");
+  public static final TimeRole MONTHS = new TimeRole("Months");
+  public static final TimeRole WEEKS = new TimeRole("Weeks");
+  public static final TimeRole DAYS = new TimeRole("Days");
+  public static final TimeRole HOURS = new TimeRole("Hours");
+  public static final TimeRole MINUTES = new TimeRole("Minutes");
+  public static final TimeRole SECONDS = new TimeRole("Seconds");
   
   public static final TimeRole[] ALL_ROLES = new TimeRole[]{
     DUMMY,
-    YEAR,
-    HALFYEAR,
-    QUARTER,
-    MONTH,
-    WEEK,
-    DAY,
-    HOUR,
-    MINUTE,
-    SECOND
+    YEARS,
+    HALFYEARS,
+    QUARTERS,
+    MONTHS,
+    WEEKS,
+    DAYS,
+    HOURS,
+    MINUTES,
+    SECONDS
   };
 
-  public static final List getAllRoles(){
-    return Arrays.asList(ALL_ROLES);
+  private static final List<TimeRole> allRoles = Arrays.asList(ALL_ROLES);
+  public static final List<TimeRole> getAllRoles(){
+    return allRoles;
   }
 }
 

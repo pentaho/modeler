@@ -27,6 +27,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Event aware node class that also listens to it's children's events and propagates them up.
@@ -38,7 +39,6 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   String name;
 
   public HierarchyMetaData(){
-    
   }
 
   public HierarchyMetaData( String name ) {
@@ -78,6 +78,10 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
 
   public void dimensionTypeChanged() {
     validate();
+  }
+  
+  public List<LevelMetaData> getLevels(){
+    return (List<LevelMetaData>)this.children;
   }
   
   @Override
