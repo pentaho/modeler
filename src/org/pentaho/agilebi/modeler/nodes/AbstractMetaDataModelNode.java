@@ -159,7 +159,8 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
         continue;
       }
       valid &= anno.isValid(this);
-      validationMessages.addAll(anno.getValidationMessages(this));
+      List<String> messages = anno.getValidationMessages(this);
+      if (messages != null) validationMessages.addAll(messages);
     }
 
     if (suppressEvents == false) {

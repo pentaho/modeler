@@ -6,8 +6,8 @@ import org.pentaho.agilebi.modeler.geo.LocationRole;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
 
 /**
- * This factory is used to rehydrate annotations forthe Modeler model form a saved state.
- * It takes in an OlapConnection from the saved model and returns the higher-level coresponding
+ * This factory is used to rehydrate annotations for the Modeler model form a saved state.
+ * It takes in an OlapAnnotation from the saved model and returns the higher-level corresponding
  * Object
  *
  * User: nbaker

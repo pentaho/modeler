@@ -239,11 +239,12 @@
         </hbox>
         <menulist id="time_level_format" editable="true">
           <menupopup>
-            <menuitem label="[yyyy]"/>
-            <menuitem label="[yyyy].[q]"/>
-            <menuitem label="[yyyy].[q].[M]"/>
-            <menuitem label="[yyyy].[q].[M].[w]"/>
-            <menuitem label="[yyyy].[q].[M].[w].[yyyy-MM-dd]"/>
+            <menuitem label=""/>
+            <menuitem label="yyyy"/>
+            <menuitem label="q"/>
+            <menuitem label="M"/>
+            <menuitem label="w"/>
+            <menuitem label="yyyy-MM-dd"/>
           </menupopup>
         </menulist>
       </vbox>

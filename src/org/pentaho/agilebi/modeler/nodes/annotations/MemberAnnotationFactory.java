@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This factory is used to rehydrate annotations from saved state. IAnotation factories are regiered for annotation
+ * This factory is used to rehydrate annotations from saved state. IAnotation factories are registered for annotation
  * keys (Geo.Role, Data.Role, etc) and are called on to recreate the Modeler annotation objects from Metadata versions.
  *
  * User: nbaker

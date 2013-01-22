@@ -41,7 +41,12 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   }
   
   public DimensionMetaData( String name ) {
+    this(name, "StandardDimension");
+  }
+
+  public DimensionMetaData( String name,  String dimensionType) {
     this.name = name;
+    this.dimensionType = dimensionType;
   }
 
   @Bindable
