@@ -96,8 +96,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   public void setTimeDimension(boolean timeDimension) {
     boolean oldTimeDimension = isTimeDimension();
     if (timeDimension == oldTimeDimension) return;
-    //TODO: call setDimensionType rather than writing the member.
-    dimensionType = timeDimension ? "TimeDimension" : "StandardDimension";
+    setDimensionType(timeDimension ? "TimeDimension" : "StandardDimension");
     firePropertyChange("timeDimension", oldTimeDimension, timeDimension);
     validateNode();
   }
@@ -163,7 +162,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
 
   @Bindable
   public boolean isTime() {
-    return this.dataRole instanceof TimeRole;
+    return isTimeDimension();
   }
 
   @Bindable

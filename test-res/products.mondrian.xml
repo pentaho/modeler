@@ -6,7 +6,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="BUYPRICE" column="BUYPRICE" type="Numeric" uniqueMembers="false">
+      <Level name="BUYPRICE" uniqueMembers="false" column="BUYPRICE" type="Numeric">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -17,7 +17,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="MSRP" column="MSRP" type="Numeric" uniqueMembers="false">
+      <Level name="MSRP" uniqueMembers="false" column="MSRP" type="Numeric">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -28,7 +28,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="PRODUCTCODE" column="PRODUCTCODE" type="String" uniqueMembers="false">
+      <Level name="PRODUCTCODE" uniqueMembers="false" column="PRODUCTCODE" type="String">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -39,7 +39,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="PRODUCTDESCRIPTION" column="PRODUCTDESCRIPTION" type="String" uniqueMembers="false">
+      <Level name="PRODUCTDESCRIPTION" uniqueMembers="false" column="PRODUCTDESCRIPTION" type="String">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -50,7 +50,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="PRODUCTLINE" column="PRODUCTLINE" type="String" uniqueMembers="false">
+      <Level name="PRODUCTLINE" uniqueMembers="false" column="PRODUCTLINE" type="String">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -61,7 +61,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="PRODUCTNAME" column="PRODUCTNAME" type="String" uniqueMembers="false">
+      <Level name="PRODUCTNAME" uniqueMembers="false" column="PRODUCTNAME" type="String">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -72,7 +72,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="PRODUCTSCALE" column="PRODUCTSCALE" type="String" uniqueMembers="false">
+      <Level name="PRODUCTSCALE" uniqueMembers="false" column="PRODUCTSCALE" type="String">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -83,7 +83,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="PRODUCTVENDOR" column="PRODUCTVENDOR" type="String" uniqueMembers="false">
+      <Level name="PRODUCTVENDOR" uniqueMembers="false" column="PRODUCTVENDOR" type="String">
       </Level>
     </Hierarchy>
   </Dimension>
@@ -94,7 +94,7 @@
          <![CDATA[select * from products]]>
         </SQL>
     </View>
-      <Level name="QUANTITYINSTOCK" column="QUANTITYINSTOCK" type="Numeric" uniqueMembers="false">
+      <Level name="QUANTITYINSTOCK" uniqueMembers="false" column="QUANTITYINSTOCK" type="Numeric">
       </Level>
     </Hierarchy>
   </Dimension>

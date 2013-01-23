@@ -17,9 +17,13 @@ public class TimeRole implements DataRole {
 
   private static final String DEFAULT_NAME = "time";
   public String name;
+  public String[] formats;
+  public List<String> formatsList;
 
-  public TimeRole(String name) {
+  public TimeRole(String name, String[] formats) {
     this.name = name;
+    this.formats = formats;
+    this.formatsList = Arrays.asList(formats);
   }
   
   @Bindable
@@ -37,6 +41,10 @@ public class TimeRole implements DataRole {
   
   public String toString() {
     return getName();
+  }
+  
+  public List<String>getFormatsList() {
+    return this.formatsList;
   }
   
   /**
@@ -76,16 +84,32 @@ public class TimeRole implements DataRole {
   }
   
   /* basic time roles */
-  public static final TimeRole DUMMY = new TimeRole("");
-  public static final TimeRole YEARS = new TimeRole("Years");
-  public static final TimeRole HALFYEARS = new TimeRole("HalfYears");
-  public static final TimeRole QUARTERS = new TimeRole("Quarters");
-  public static final TimeRole MONTHS = new TimeRole("Months");
-  public static final TimeRole WEEKS = new TimeRole("Weeks");
-  public static final TimeRole DAYS = new TimeRole("Days");
-  public static final TimeRole HOURS = new TimeRole("Hours");
-  public static final TimeRole MINUTES = new TimeRole("Minutes");
-  public static final TimeRole SECONDS = new TimeRole("Seconds");
+  public static final TimeRole DUMMY = new TimeRole("", new String[]{});
+  public static final TimeRole YEARS = new TimeRole("Years", new String[]{
+    "yy", "yyyy"
+  });
+  public static final TimeRole HALFYEARS = new TimeRole("HalfYears", new String[]{});
+  public static final TimeRole QUARTERS = new TimeRole("Quarters", new String[]{
+    "Q", "QQ", "QQQ"
+  });
+  public static final TimeRole MONTHS = new TimeRole("Months", new String[]{
+    "M", "MM", "MMM"
+  });
+  public static final TimeRole WEEKS = new TimeRole("Weeks", new String[]{
+    "w", "ww", "W"
+  });
+  public static final TimeRole DAYS = new TimeRole("Days", new String[]{
+    "d", "dd", "D", "DDD", "yyyy-MM-dd"
+  });
+  public static final TimeRole HOURS = new TimeRole("Hours", new String[]{
+    "k", "kk", "H", "HH", "K", "KK"
+  });
+  public static final TimeRole MINUTES = new TimeRole("Minutes", new String[]{
+    "m", "mm"
+  });
+  public static final TimeRole SECONDS = new TimeRole("Seconds", new String[]{
+    "s", "ss"
+  });
   
   public static final TimeRole[] ALL_ROLES = new TimeRole[]{
     DUMMY,
@@ -99,6 +123,13 @@ public class TimeRole implements DataRole {
     MINUTES,
     SECONDS
   };
+  
+  public static TimeRole findRoleByName(String name) {
+    for (TimeRole role : ALL_ROLES) {
+      if (role.getName().equals(name)) return role;
+    }
+    return null;
+  }
 
   private static final List<TimeRole> allRoles = Arrays.asList(ALL_ROLES);
   public static final List<TimeRole> getAllRoles(){
