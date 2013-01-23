@@ -24,6 +24,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.nodes.BaseColumnBackedMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.IPhysicalColumn;
@@ -69,7 +70,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   protected GeoRole dummyGeoRole = new GeoRole(ModelerMessagesHolder.getMessages().getString("none"), Collections.<String>emptyList());
   
   protected List<TimeRole> timeRoles = new ArrayList<TimeRole>();
-  protected TimeRole selectedTimeLevelType;
+  protected TimeRole selectedTimeLevelType = TimeRole.DUMMY;
 
   public LevelsPropertiesForm(String panelId, String locale) {
     super(panelId);
@@ -87,7 +88,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
           propertyName.equals("logicalCaptionColumn") ||
           propertyName.equals("timeLevelFormat")
        ) {
-        System.out.println("PropertyChange: " + propertyName);
         showValidations();
       }
     }
@@ -124,8 +124,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
       setTimeLevelElementsVisible(true);
       DataRole dataRole = getNode().getDataRole();
       setSelectedTimeLevelType(dataRole instanceof TimeRole ? ((TimeRole)dataRole) : TimeRole.DUMMY);
-      String timeLevelFormat = getNode().getTimeLevelFormat();
-      this.timeLevelFormatList.setValue(timeLevelFormat == null ? "" : timeLevelFormat);
     }
     else {
       setGeoLevelElementsVisible(true);
@@ -379,22 +377,44 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   @Bindable
   public void setSelectedTimeLevelType(TimeRole selectedTimeLevelType) {
     TimeRole oldTimeLevelType = this.getSelectedTimeLevelType();
-    if (oldTimeLevelType == null && selectedTimeLevelType == null) return;
-    if (oldTimeLevelType != null && selectedTimeLevelType != null && oldTimeLevelType.equals(selectedTimeLevelType)) return;
+    if (selectedTimeLevelType == null) selectedTimeLevelType = TimeRole.DUMMY;
+    //if (oldTimeLevelType == null && selectedTimeLevelType == null) return;
+    //if (oldTimeLevelType != null && selectedTimeLevelType != null && oldTimeLevelType.equals(selectedTimeLevelType)) return;
     this.selectedTimeLevelType = selectedTimeLevelType;
     getNode().setDataRole(selectedTimeLevelType);
+    List<String> formatsList = selectedTimeLevelType.getFormatsList();
+    String value = getNode().getTimeLevelFormat();
+    int selectedIndex = formatsList.indexOf(value);
+    timeLevelFormatList.setElements(formatsList);
+    if (selectedIndex == -1) {
+      timeLevelFormatList.setValue(value);
+    }
+    else {
+      timeLevelFormatList.setSelectedIndex(selectedIndex);
+    }
     firePropertyChange("selectedTimeLevelType", oldTimeLevelType, selectedTimeLevelType);
   }
   
   @Bindable
-  public void setTimeLevelFormat( String format ) {
+  public void setTimeLevelFormat(String format) {
     if ("".equals(format)) format = null;
     if (format == null && timeLevelFormat == null) return;
     if (format != null && timeLevelFormat != null && format.equals(timeLevelFormat)) return;
     if (getNode() != null) {
       getNode().setTimeLevelFormat(format);
     }
-    getNode().validateNode();
+    
+    LevelMetaData levelMetaData = (LevelMetaData)getNode();
+    HierarchyMetaData hierarchyMetaData = levelMetaData.getHierarchyMetaData();
+    List<LevelMetaData> levels = hierarchyMetaData.getLevels();
+    boolean isDescendant = false;
+    for (LevelMetaData descendant : levels) {
+      if (!isDescendant) {
+        if (descendant == levelMetaData) isDescendant = true;
+        continue;
+      }
+      descendant.validateNode();
+    }
     showValidations();
     timeLevelFormat = format;
   }

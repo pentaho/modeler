@@ -61,6 +61,11 @@ public class ColResolverController extends AbstractXulEventHandler {
       items.addAll(workspace.getAvailableTables());
     }
     this.node = node;
+    dialog.setTitle(
+        ModelerMessagesHolder.getMessages().getString(
+            "ColResolverController." + columnType + "_column_selection_dialog"
+        )
+    );
     dialog.show();
   }
 
