@@ -377,16 +377,19 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
   @Bindable
   public void setSelectedTimeLevelType(TimeRole selectedTimeLevelType) {
     TimeRole oldTimeLevelType = this.getSelectedTimeLevelType();
-    if (selectedTimeLevelType == null) selectedTimeLevelType = TimeRole.DUMMY;
+    if (selectedTimeLevelType == null) {
+      selectedTimeLevelType = TimeRole.DUMMY;
+    }
     //if (oldTimeLevelType == null && selectedTimeLevelType == null) return;
     //if (oldTimeLevelType != null && selectedTimeLevelType != null && oldTimeLevelType.equals(selectedTimeLevelType)) return;
     this.selectedTimeLevelType = selectedTimeLevelType;
     getNode().setDataRole(selectedTimeLevelType);
     List<String> formatsList = selectedTimeLevelType.getFormatsList();
-    String value = getNode().getTimeLevelFormat();
+    String value = getTimeLevelFormat();
     int selectedIndex = formatsList.indexOf(value);
     timeLevelFormatList.setElements(formatsList);
     if (selectedIndex == -1) {
+      if (value == null) value = "";
       timeLevelFormatList.setValue(value);
     }
     else {
