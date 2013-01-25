@@ -817,6 +817,11 @@ public class ModelerController extends AbstractXulEventHandler {
   public void clearCaptionColumn(){
     clearColumn(ColumnBackedNode.COLUMN_TYPE_CAPTION);
   }
+  
+  @Bindable
+  public void showHelp(String uri) {
+    System.out.println("show help " + uri);
+  }
 
   public void addPropertyForm( AbstractModelerNodeForm form ) {
     propertiesForms.put(form.getClass(), form);
