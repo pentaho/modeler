@@ -1270,15 +1270,6 @@ TYPICAL TARGET SEQUENCE
       <report format="frames" todir="${testreports.html.dir}" />
     </junitreport>
   </target>
-
-  <!--=======================================================================
-    Run the swt modeler stand-alone. 
-    ====================================================================-->
-  <target name="run">
-    <java classname="org.pentaho.agilebi.modeler.debug.SwtModelerUI">
-      <classpath refid="test.classpath" />
-    </java>
-  </target>
 	
   <!--=======================================================================
     clean-test-reports
