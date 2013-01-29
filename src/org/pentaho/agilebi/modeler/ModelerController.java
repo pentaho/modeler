@@ -19,17 +19,22 @@ package org.pentaho.agilebi.modeler;
 import org.pentaho.agilebi.modeler.nodes.*;
 import org.pentaho.agilebi.modeler.propforms.AbstractModelerNodeForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
+
 import org.pentaho.metadata.model.IPhysicalTable;
+
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
+
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.components.XulTabpanel;
+
 import org.pentaho.ui.xul.containers.*;
 import org.pentaho.ui.xul.dnd.DropEvent;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -54,6 +59,7 @@ public class ModelerController extends AbstractXulEventHandler {
 
   protected ModelerWorkspace workspace;
 
+  private IUriHandler uriHandler;
   private XulTree dimensionTree;
   private XulTree categoriesTree;
   private XulDeck propDeck;
@@ -85,6 +91,10 @@ public class ModelerController extends AbstractXulEventHandler {
 
   public ModelerController( ModelerWorkspace workspace ) {
     this.workspace = workspace;
+  }
+  
+  public void setUriHandler(IUriHandler uriHandler) {
+    this.uriHandler = uriHandler;
   }
 
   public String getName() {
@@ -820,7 +830,11 @@ public class ModelerController extends AbstractXulEventHandler {
   
   @Bindable
   public void showHelp(String uri) {
-    System.out.println("show help " + uri);
+    if (uriHandler == null) {
+      //TODO: log a warning that the uri handler is not defined.
+      return;
+    }
+    uriHandler.openUri(uri);
   }
 
   public void addPropertyForm( AbstractModelerNodeForm form ) {
