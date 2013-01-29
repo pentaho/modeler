@@ -1274,7 +1274,7 @@ TYPICAL TARGET SEQUENCE
   <!--=======================================================================
     Run the swt modeler stand-alone. 
     ====================================================================-->
-  <target name="run" depends="compile,compile-tests">
+  <target name="run">
     <java classname="org.pentaho.agilebi.modeler.debug.SwtModelerUI">
       <classpath refid="test.classpath" />
     </java>

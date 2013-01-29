@@ -236,7 +236,7 @@
           <label id="time_level_format_label" value="${time_format}:"/>
           <button
             image="images/help_link2.png"
-            tooltiptext="View data formatting documentation in Pentaho Infocenter."
+            tooltiptext="${time_format_help_tooltip}"
             onclick="modeler.showHelp('${time_format_help_url}')"
           />
         </hbox>
