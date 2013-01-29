@@ -22,4 +22,13 @@
 	<!-- Directory in which the source will be copied before a compile -->
 	<property name="temp-src.dir" value="${bin.dir}/src" />
 
+	<!--=======================================================================
+    Run the swt modeler stand-alone. 
+    ====================================================================-->
+  <target name="run">
+    <java classname="org.pentaho.agilebi.modeler.debug.SwtModelerUI">
+      <classpath refid="test.classpath" />
+    </java>
+  </target>
+
 </project>
