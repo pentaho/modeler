@@ -145,7 +145,6 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
 
     MondrianModelExporter exporter = new MondrianModelExporter(model, Locale.getDefault().toString());
     String mondrianSchema = exporter.createMondrianModelXML();
-
     String mondrianXmlBeforeUpConvert = readFileAsString("test-res/products.mondrian.xml");
 
     // just ignore any differences in line separators
@@ -157,6 +156,7 @@ public class ModelerWorkspaceTest extends AbstractModelerTest{
 
 //    assertTrue(StringUtils.deleteWhitespace(mondrianXmlBeforeUpConvert).equals(StringUtils.deleteWhitespace(mondrianSchema)));
     assertEquals(actual, expected);
+System.out.println("after assert");
 
   }
 

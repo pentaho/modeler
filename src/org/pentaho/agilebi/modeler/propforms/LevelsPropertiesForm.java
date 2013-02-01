@@ -219,7 +219,7 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
     timeLevelFormatList = (XulMenuList) document.getElementById("time_level_format");
     bf.createBinding(timeLevelFormatList, "value", this, "timeLevelFormat");
-    bf.createBinding(timeLevelFormatList, "selectedItem", this, "timeLevelFormat");
+    //bf.createBinding(timeLevelFormatList, "selectedItem", this, "timeLevelFormat");
 }
 
   protected String getColumnNameFromLogicalColumn(LogicalColumn col ) {
