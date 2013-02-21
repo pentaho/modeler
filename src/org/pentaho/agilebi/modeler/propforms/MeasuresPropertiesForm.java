@@ -225,8 +225,10 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   @Bindable
   public void setDefaultAggregation(AggregationType defaultAggregation) {
     AggregationType previousAggregation = this.defaultAggregation;
+    if (previousAggregation == null && defaultAggregation == null) return;
+    if (previousAggregation != null && defaultAggregation != null && previousAggregation.equals(defaultAggregation)) return;
     this.defaultAggregation = defaultAggregation;
-    this.firePropertyChange("defaultAggregation", null, defaultAggregation);
+    this.firePropertyChange("defaultAggregation", previousAggregation, defaultAggregation);
     if (getNode() != null) {
       getNode().setDefaultAggregation(defaultAggregation);
     }
