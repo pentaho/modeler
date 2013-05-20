@@ -4,13 +4,14 @@
 
   <configurations>
     <conf name="default"/>
+  	<conf name="runtime"/>
+   	<conf name="source" />    	
     <conf name="test" visibility="private"/>
     <conf name="source"/>
     <conf name="codegen" visibility="private"/>
     <conf name="codegen-mac" visibility="private" extends="codegen"/>
     <conf name="codegen-win" visibility="private" extends="codegen"/>
     <conf name="codegen-linux" visibility="private" extends="codegen"/>
-    <conf name="runtime"/>
   </configurations>
 
   <publications>
@@ -29,7 +30,7 @@
     <dependency org="org.slf4j" name="slf4j-jcl" rev="1.5.8" conf="default->default" />
 
     <!-- The organization of GWT Widgets can not be varied since we do not create optimized versions of the GWT Widgets -->
-    <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}" conf="default->default" changing="true">
+    <dependency org="pentaho" name="pentaho-gwt-widgets" rev="${dependency.pentaho-gwt-widgets.revision}" conf="codegen->default" changing="true">
       <artifact name="pentaho-gwt-widgets"/>
       <artifact name="pentaho-gwt-widgets" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
@@ -39,17 +40,19 @@
       <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
 
-    <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true">
+    <dependency org="pentaho" name="pentaho-xul-gwt" rev="${dependency.pentaho-xul.revision}" conf="codegen->default" changing="true">
       <artifact name="pentaho-xul-gwt"/>
       <artifact name="pentaho-xul-gwt" type="source" ext="jar" m:classifier="sources"/>
     </dependency>
 
-    <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="default->default" transitive="false"/>
-    <dependency org="com.google.gwt" name="gwt-incubator" rev="${dependency.gwt-incubator.revision}" conf="default->default" transitive="false"/>
-    <dependency org="com.allen_sauer" name="gwt-dnd" rev="${dependency.gwt-dnd.revision}"       conf="default->default"/>
-    <dependency org="com.google.gwt" name="gwt-user" rev="${dependency.gwt.revision}" conf="default->default"/>
-    <dependency org="com.google.gwt" name="gwt-dev"  rev="${dependency.gwt.revision}" conf="default->default"/>
-    <dependency org="com.google.gwt"        name="gwt-servlet"        rev="${dependency.gwt.revision}"/>
+    <dependency org="GWT-FX" name="GWT-FX" rev="0.5.0" conf="codegen->default" transitive="false"/>
+
+    <dependency org="com.google.code.gwtx" name="gwtx" rev="1.5.2" conf="codegen->default" transitive="false"/>
+    <dependency org="com.google.gwt" name="gwt-incubator" rev="${dependency.gwt-incubator.revision}" conf="codegen->default" transitive="false"/>
+    <dependency org="com.allen_sauer" name="gwt-dnd" rev="${dependency.gwt-dnd.revision}"       conf="codegen->default"/>
+    <dependency org="com.google.gwt" name="gwt-user" rev="${dependency.gwt.revision}" conf="codegen->default"/>
+    <dependency org="com.google.gwt" name="gwt-dev"  rev="${dependency.gwt.revision}" conf="codegen->default"/>
+    <dependency org="com.google.gwt"        name="gwt-servlet"        rev="${dependency.gwt.revision}" conf="codegen->default"/>
 
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
                 changing="true"/>
