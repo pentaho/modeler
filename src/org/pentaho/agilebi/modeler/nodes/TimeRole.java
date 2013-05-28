@@ -1,10 +1,9 @@
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
-import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.gwt.widgets.client.controls.schededitor.RecurrenceEditor;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +14,8 @@ import java.util.Arrays;
  */
 public class TimeRole implements DataRole {
 
+  private static final long serialVersionUID = -1386985942519602868L;
+  
   private static final String DEFAULT_NAME = "time";
   public String name;
   public String[] formats;
