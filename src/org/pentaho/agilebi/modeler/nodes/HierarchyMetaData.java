@@ -16,6 +16,10 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
@@ -25,10 +29,6 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-
 /**
  * Event aware node class that also listens to it's children's events and propagates them up.
  */
@@ -37,11 +37,14 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   private static final long serialVersionUID = 7063031303948537101L;
 
   String name;
+  private static final String CLASSNAME = "pentaho-smallhierarchybutton";
 
   public HierarchyMetaData(){
+    super(CLASSNAME);
   }
 
   public HierarchyMetaData( String name ) {
+    this();
     this.name = name;
   }
 

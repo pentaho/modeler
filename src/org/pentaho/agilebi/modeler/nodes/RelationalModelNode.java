@@ -17,16 +17,16 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.RelationalModelNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.Serializable;
 
 /**
  * Created: 3/18/11
@@ -42,8 +42,10 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
 
   private transient PropertyChangeListener listener;
   private ModelerWorkspace workspace;
+  private static final String CLASSNAME = "pentaho-smallmodelbutton";
 
   public RelationalModelNode() {
+    super(CLASSNAME);
     add(categories);
     setExpanded(true);
     categories.setExpanded(true);

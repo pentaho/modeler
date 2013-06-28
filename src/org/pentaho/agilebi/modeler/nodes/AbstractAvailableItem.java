@@ -17,11 +17,11 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
-
-import java.io.Serializable;
 
 /**
  * Created: 4/12/11
@@ -34,6 +34,7 @@ public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractMod
   private boolean expanded = true;
   private String name;
   private String image;
+  private String classname;
 
   @Bindable
   public boolean isExpanded() {
@@ -68,5 +69,15 @@ public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractMod
   @Bindable
   public void setImage(String image) {
     this.image = image;
+  }
+
+  @Bindable
+  public String getClassname() {
+    return this.classname;
+  }
+
+  @Bindable
+  public void setClassname(String classname) {
+    this.classname = classname;
   }
 }
