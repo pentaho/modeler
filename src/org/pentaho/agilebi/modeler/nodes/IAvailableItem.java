@@ -26,4 +26,5 @@ public interface IAvailableItem {
   String getName();
   String getDisplayName();
   String getImage();
+  String getClassname();
 }

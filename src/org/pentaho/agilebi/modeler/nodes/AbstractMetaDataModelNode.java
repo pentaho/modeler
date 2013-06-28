@@ -16,6 +16,15 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.pentaho.agilebi.modeler.IDropTarget;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
@@ -23,23 +32,23 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.Serializable;
-import java.util.*;
-
-public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T> implements
-                                                                                                                  Serializable, IDropTarget {
+public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T>
+    implements Serializable, IDropTarget {
 
   private static final long serialVersionUID = 1547202580713108254L;
 
   protected boolean valid = true;
   protected transient Set<String> validationMessages = new HashSet<String>();
+
   protected String image;
   protected boolean suppressEvents;
   protected boolean expanded;
   protected DataRole dataRole;
   protected Map<String, IMemberAnnotation> annotations = new AnnotationMap();
+
+  protected String classname;
+  protected String validClassname;
+  protected String invalidClassname = "pentaho-warningbutton";
   
 
   protected transient PropertyChangeListener validListener = new PropertyChangeListener() {
@@ -60,8 +69,10 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     }
   };
 
-  public AbstractMetaDataModelNode() {
+  public AbstractMetaDataModelNode(String classname) {
     this.image = getInvalidImage();
+    this.classname = classname;
+    this.validClassname = classname;
   }
 
 
@@ -146,6 +157,22 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     return (this.valid) ? getValidImage() : getInvalidImage();
   }
 
+  @Bindable
+  public String getClassname() {
+    return this.classname;
+  }
+
+  @Bindable
+  public void setClassname(String classname) {
+    if (this.classname == null || !this.classname.equals(classname)) {
+      String oldClassname = this.classname;
+      this.classname = classname;
+      if (!suppressEvents) {
+        this.firePropertyChange("classname", oldClassname, classname); //$NON-NLS-1$
+      }
+    }
+  }
+
   public abstract void validate();
 
   public void validateNode() {
@@ -170,8 +197,10 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
 
     if (valid) {
       setImage(getValidImage());
+      setClassname(this.validClassname);
     } else {
       setImage(getInvalidImage());
+      setClassname(this.invalidClassname);
     }
 
     if (prevValid != valid) {
@@ -182,9 +211,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
         rootNode.validateTree();
       }
     }
-
   }
-
 
   @SuppressWarnings("unchecked")
   public void validateTree() {
@@ -193,8 +220,6 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     }
     validateNode();
   }
-
-  ;
 
   @SuppressWarnings("unchecked")
   public boolean isTreeValid() {

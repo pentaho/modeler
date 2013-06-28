@@ -16,6 +16,11 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
@@ -24,17 +29,14 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaData> implements Serializable {
   private String name = "Measures";//BaseMessages.getString(ModelerWorkspace.class, "measures");
 
   public static String MEASURE_PROP = "potential_measure";
+  private static final String CLASSNAME = "pentaho-smallcategorybutton";
 
   public MeasuresCollection() {
+    super(CLASSNAME);
     this.valid = false;
   }
 

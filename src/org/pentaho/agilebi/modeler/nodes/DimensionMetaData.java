@@ -16,15 +16,15 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+import java.util.HashMap;
+
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.DimensionPropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.io.Serializable;
-import java.util.HashMap;
 
 /**
  * Event aware node class that also listens to it's children's events and propagates them up.
@@ -36,8 +36,10 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   String name;
   String dimensionType = "StandardDimension";
 
-  public DimensionMetaData(){
+  private final static String CLASSNAME = "pentaho-smalldimensionbutton";
 
+  public DimensionMetaData(){
+    super(CLASSNAME);
   }
   
   public DimensionMetaData( String name ) {
@@ -45,6 +47,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   }
 
   public DimensionMetaData( String name,  String dimensionType) {
+    this();
     this.name = name;
     this.dimensionType = dimensionType;
   }
