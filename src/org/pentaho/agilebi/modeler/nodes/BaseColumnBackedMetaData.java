@@ -1,22 +1,22 @@
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.nodes.annotations.AnalyzerDateFormatAnnotation;
-import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
-import org.pentaho.agilebi.modeler.nodes.annotations.IAnalyzerDateFormatAnnotation;
 import org.pentaho.agilebi.modeler.nodes.annotations.AnalyzerDateFormatAnnotationFactory;
+import org.pentaho.agilebi.modeler.nodes.annotations.IAnalyzerDateFormatAnnotation;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created: 3/18/11
@@ -34,21 +34,23 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   protected String timeLevelFormat;
   private static final String IMAGE = "images/sm_level_icon.png";
   private String description = "";
+  private static final String CLASSNAME = "pentaho-smalllevelbutton";
   
   public BaseColumnBackedMetaData(){
-
+    super(CLASSNAME);
   }
 
+  public BaseColumnBackedMetaData(String name) {
+    this();
+    this.name = name;
+    this.columnName = name;
+  }
+  
   @Override
   public String getValidImage() {
     return IMAGE;
   }
 
-  public BaseColumnBackedMetaData(String name) {
-    this.name = name;
-    this.columnName = name;
-  }
-  
   @Bindable
   public String getName() {
     return name;

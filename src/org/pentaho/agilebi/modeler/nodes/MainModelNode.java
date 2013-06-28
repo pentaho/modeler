@@ -38,8 +38,10 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
 
   private transient PropertyChangeListener listener;
   private ModelerWorkspace workspace;
+  private static final String CLASSNAME = "pentaho-smallmodelbutton";
 
   public MainModelNode() {
+    super(CLASSNAME);
     add(measures);
     add(dimensions);
     setExpanded(true);

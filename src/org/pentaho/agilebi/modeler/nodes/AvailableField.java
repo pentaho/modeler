@@ -16,11 +16,11 @@
  */
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
-
-import java.io.Serializable;
 
 public class AvailableField extends AbstractAvailableItem implements Serializable, IAvailableItem {
 
@@ -28,18 +28,20 @@ public class AvailableField extends AbstractAvailableItem implements Serializabl
   
   private transient IPhysicalColumn physicalColumn;
 
-  private static final String FIELD_IMAGE = "images/column.png";
-
-  public static String MEASURE_PROP = "potential_measure";
+  private static final String FIELD_IMAGE = "images/column.png"; //$NON-NLS-1$
+  private static final String CLASS_NAME = "pentaho-column"; //$NON-NLS-1$
+  public static String MEASURE_PROP = "potential_measure"; //$NON-NLS-1$
 
   public AvailableField(){
     setImage(FIELD_IMAGE);
+    setClassname(CLASS_NAME);
   }
 
   public AvailableField(IPhysicalColumn physicalColumn) {
     setPhysicalColumn(physicalColumn);
     setName(physicalColumn.getName(LocalizedString.DEFAULT_LOCALE));
     setImage(FIELD_IMAGE);
+    setClassname(CLASS_NAME);
   }
 
   public IPhysicalColumn getPhysicalColumn() {

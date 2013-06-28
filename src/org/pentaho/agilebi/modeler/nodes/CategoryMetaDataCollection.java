@@ -17,16 +17,16 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+import java.util.HashMap;
+
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.Serializable;
-import java.util.HashMap;
 
 
 
@@ -38,8 +38,10 @@ import java.util.HashMap;
 public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<CategoryMetaData> implements Serializable {
 
   private String name = "Categories";
+  private final static String CLASSNAME = "pentaho-smallcategorybutton";
 
   public CategoryMetaDataCollection() {
+    super(CLASSNAME);
     this.valid = false;
   }
 
