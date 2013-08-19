@@ -420,6 +420,8 @@ public class ModelerController extends AbstractXulEventHandler {
       XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
       prompt.setTitle(ModelerMessagesHolder.getMessages().getString("ModelerController.NewMeasureTitle")); //$NON-NLS-1$
       prompt.setMessage(ModelerMessagesHolder.getMessages().getString("ModelerController.NewMeasureText")); //$NON-NLS-1$
+      prompt.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("dialog.OK"));
+      prompt.setCancelLabel(ModelerMessagesHolder.getMessages().getString("dialog.CANCEL"));
       prompt.addDialogCallback(new XulDialogCallback() {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
@@ -457,6 +459,8 @@ public class ModelerController extends AbstractXulEventHandler {
       XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
       prompt.setTitle(ModelerMessagesHolder.getMessages().getString("ModelerController.NewHierarchyTitle")); //$NON-NLS-1$
       prompt.setMessage(ModelerMessagesHolder.getMessages().getString("ModelerController.NewHierarchyText")); //$NON-NLS-1$
+      prompt.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("dialog.OK"));
+      prompt.setCancelLabel(ModelerMessagesHolder.getMessages().getString("dialog.CANCEL"));
       prompt.addDialogCallback(new XulDialogCallback() {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
@@ -490,6 +494,8 @@ public class ModelerController extends AbstractXulEventHandler {
       XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
       prompt.setTitle(ModelerMessagesHolder.getMessages().getString("ModelerController.NewLevelTitle")); //$NON-NLS-1$
       prompt.setMessage(ModelerMessagesHolder.getMessages().getString("ModelerController.NewLevelText")); //$NON-NLS-1$
+      prompt.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("dialog.OK"));
+      prompt.setCancelLabel(ModelerMessagesHolder.getMessages().getString("dialog.CANCEL"));
       prompt.addDialogCallback(new XulDialogCallback() {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
@@ -524,6 +530,8 @@ public class ModelerController extends AbstractXulEventHandler {
       XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
       prompt.setTitle(ModelerMessagesHolder.getMessages().getString("ModelerController.NewMemberPropertyTitle")); //$NON-NLS-1$
       prompt.setMessage(ModelerMessagesHolder.getMessages().getString("ModelerController.NewMemberPropertyText")); //$NON-NLS-1$
+      prompt.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("dialog.OK"));
+      prompt.setCancelLabel(ModelerMessagesHolder.getMessages().getString("dialog.CANCEL"));
       prompt.addDialogCallback(new XulDialogCallback() {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
@@ -560,6 +568,9 @@ public class ModelerController extends AbstractXulEventHandler {
           ModelerMessagesHolder.getMessages().getString("ModelerController.NewDimensionTitle")); //$NON-NLS-1$
       prompt.setMessage(
           ModelerMessagesHolder.getMessages().getString("ModelerController.NewDimensionText")); //$NON-NLS-1$
+      prompt.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("dialog.OK"));
+      prompt.setCancelLabel(ModelerMessagesHolder.getMessages().getString("dialog.CANCEL"));
+
       prompt.addDialogCallback(new XulDialogCallback() {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
@@ -593,6 +604,8 @@ public class ModelerController extends AbstractXulEventHandler {
       XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
       prompt.setTitle(ModelerMessagesHolder.getMessages().getString("ModelerController.NewCategoryTitle")); //$NON-NLS-1$
       prompt.setMessage(ModelerMessagesHolder.getMessages().getString("ModelerController.NewCategoryText")); //$NON-NLS-1$
+      prompt.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("dialog.OK"));
+      prompt.setCancelLabel(ModelerMessagesHolder.getMessages().getString("dialog.CANCEL"));
       prompt.addDialogCallback(new XulDialogCallback() {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
@@ -625,6 +638,8 @@ public class ModelerController extends AbstractXulEventHandler {
       XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
       prompt.setTitle(ModelerMessagesHolder.getMessages().getString("ModelerController.NewFieldTitle")); //$NON-NLS-1$
       prompt.setMessage(ModelerMessagesHolder.getMessages().getString("ModelerController.NewFieldText")); //$NON-NLS-1$
+      prompt.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("dialog.OK"));
+      prompt.setCancelLabel(ModelerMessagesHolder.getMessages().getString("dialog.CANCEL"));
       prompt.addDialogCallback(new XulDialogCallback() {
 
         public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
