@@ -448,7 +448,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   }
   public LogicalTable findLogicalTable(IPhysicalTable table, ModelerPerspective perspective) {
     LogicalModel logicalModel = this.getLogicalModel(perspective);
-
+    if(logicalModel == null) {
+      return null;
+    }
     for (LogicalTable logicalTable : logicalModel.getLogicalTables()) {
       if (logicalTable.getPhysicalTable().equals(table)
           || logicalTable.getPhysicalTable().getId().equals(table.getId())
@@ -690,7 +692,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
 
     lModel = getLogicalModel(ModelerPerspective.ANALYSIS);
-    List<OlapDimension> theDimensions = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_DIMS); //$NON-NLS-1$
+    List<OlapDimension> theDimensions = null;
+    if (lModel != null) {
+      theDimensions = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_DIMS); //$NON-NLS-1$
+    }
     if (theDimensions != null) {
       Iterator<OlapDimension> theDimensionItr = theDimensions.iterator();
       while (theDimensionItr.hasNext()) {
@@ -780,7 +785,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         this.model.getDimensions().add(theDimensionMD);
       }
     }
-    List<OlapCube> theCubes = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_CUBES); //$NON-NLS-1$
+    List<OlapCube> theCubes = null;
+    if(lModel != null) {
+      theCubes = (List) lModel.getProperty(LogicalModel.PROPERTY_OLAP_CUBES); //$NON-NLS-1$
+    }
     if (theCubes != null) {
       Iterator<OlapCube> theCubeItr = theCubes.iterator();
       while (theCubeItr.hasNext()) {
@@ -1091,6 +1099,9 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     LogicalColumn col = null;
     IPhysicalTable physicalTable = column.getPhysicalTable();
     LogicalModel logicalModel = this.getLogicalModel(perspective);
+    if(logicalModel == null) {
+      return col;
+    }
     for (LogicalTable table : logicalModel.getLogicalTables()) {
       if (table.getPhysicalTable().getId().equals(physicalTable.getId())) {
         if ((perspective == ModelerPerspective.ANALYSIS && table.getId().endsWith(BaseModelerWorkspaceHelper.OLAP_SUFFIX))
@@ -1123,13 +1134,14 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     return getLogicalModel(ModelerPerspective.REPORTING);
   }
   public LogicalModel getLogicalModel(ModelerPerspective type) {
-    if(this.getDomain().getLogicalModels().size() == 1){
-      return this.getDomain().getLogicalModels().get(0);
-    }
-
     switch(type) {
       case ANALYSIS:
-        return this.getDomain().getLogicalModels().get(1);
+        if (this.getDomain().getLogicalModels().size() == 1) {
+          // we don't have an ANALYSIS model to return
+          return null;
+        } else {
+          return this.getDomain().getLogicalModels().get(1);
+        }
       default:
         return this.getDomain().getLogicalModels().get(0);
     }
