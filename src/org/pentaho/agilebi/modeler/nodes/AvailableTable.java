@@ -37,6 +37,9 @@ public class AvailableTable extends AbstractAvailableItem<AvailableField> implem
 
   private static final String FACT_TABLE_IMAGE = "images/table_fact.png";
   private static final String DIM_TABLE_IMAGE = "images/table.png";
+  private static final String FACT_TABLE_CLASSNAME = "icon-fact-table";
+  private static final String DIM_TABLE_CLASSNAME = "icon-table";
+
   private static final long serialVersionUID = -6428366981250876565L;
 
   private List<AvailableField> availableFields;
@@ -51,6 +54,8 @@ public class AvailableTable extends AbstractAvailableItem<AvailableField> implem
 
   public AvailableTable() {
     availableFields = new ArrayList<AvailableField>();
+    setImage(DIM_TABLE_IMAGE);
+    setClassname(DIM_TABLE_CLASSNAME);
   }
 
   public AvailableTable(IPhysicalTable physicalTable) {
@@ -59,6 +64,8 @@ public class AvailableTable extends AbstractAvailableItem<AvailableField> implem
   public AvailableTable(IPhysicalTable physicalTable, boolean isFactTable) {
     setPhysicalTable(physicalTable);
     setFactTable(isFactTable);
+    setImage(isFactTable ? FACT_TABLE_IMAGE : DIM_TABLE_IMAGE);
+    setClassname(isFactTable ? FACT_TABLE_CLASSNAME : DIM_TABLE_CLASSNAME);
   }
 
   protected void populateAvailableFields() {
@@ -119,15 +126,6 @@ public class AvailableTable extends AbstractAvailableItem<AvailableField> implem
 
   public void setFactTable(boolean factTable) {
     this.factTable = factTable;
-  }
-
-  @Bindable
-  public String getImage() {
-    if (isFactTable()) {
-      return FACT_TABLE_IMAGE;
-    } else {
-      return DIM_TABLE_IMAGE;
-    }
   }
 
   @Bindable
