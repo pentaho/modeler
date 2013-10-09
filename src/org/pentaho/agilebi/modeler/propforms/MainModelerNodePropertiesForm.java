@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.agilebi.modeler.propforms;
 
@@ -42,7 +42,7 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
   private PropertyChangeListener propListener = new PropertyChangeListener() {
 
     public void propertyChange( PropertyChangeEvent evt ) {
-      if (!evt.getPropertyName().equals("valid")) {
+      if ( !evt.getPropertyName().equals( "valid" ) ) {
         return;
       }
       showValidations();
@@ -50,70 +50,69 @@ public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainM
   };
   private XulButton messageBtn;
 
-
   public MainModelerNodePropertiesForm() {
-    super("mainprops");
+    super( "mainprops" );
   }
 
   public void setObject( MainModelNode dim ) {
-    if (this.getNode() == dim) {
+    if ( this.getNode() == dim ) {
       return;
     }
-    if (getNode() != null) {
-      getNode().removePropertyChangeListener(propListener);
+    if ( getNode() != null ) {
+      getNode().removePropertyChangeListener( propListener );
     }
-    setNode(dim);
-    if (dim == null) {
+    setNode( dim );
+    if ( dim == null ) {
       return;
     }
-    ;
-    name.setValue(dim.getName());
 
-    bf.setBindingType(Binding.Type.ONE_WAY);
-    bf.createBinding(dim, "name", name, "value");
+    name.setValue( dim.getName() );
+
+    bf.setBindingType( Binding.Type.ONE_WAY );
+    bf.createBinding( dim, "name", name, "value" );
 
     showValidations();
-    dim.addPropertyChangeListener(propListener);
+    dim.addPropertyChangeListener( propListener );
   }
 
   private void showValidations() {
-    if (getNode() != null) {
-      messageBox.setVisible(getNode().getValidationMessages().size() > 0);
-      setValidMessages(getNode().getValidationMessagesString());
+    if ( getNode() != null ) {
+      messageBox.setVisible( getNode().getValidationMessages().size() > 0 );
+      setValidMessages( getNode().getValidationMessagesString() );
     }
   }
 
-  public void init(ModelerWorkspace workspace) {
-    super.init(workspace);
-    name = (XulTextbox) document.getElementById("main_name");
-    messageBox = (XulVbox) document.getElementById("main_message");
-    messageLabel = (XulLabel) document.getElementById("mainnode_message_label");
-    bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    bf.createBinding(this, "name", name, "value");
-    bf.createBinding(this, "validMessages", messageLabel, "value", validMsgTruncatedBinding);
-    messageBtn = (XulButton) document.getElementById("mainnode_message_btn");
-    bf.createBinding(this, "validMessages", messageBtn, "visible", showMsgBinding);
+  public void init( ModelerWorkspace workspace ) {
+    super.init( workspace );
+    name = (XulTextbox) document.getElementById( "main_name" );
+    messageBox = (XulVbox) document.getElementById( "main_message" );
+    messageLabel = (XulLabel) document.getElementById( "mainnode_message_label" );
+    bf.setBindingType( Binding.Type.BI_DIRECTIONAL );
+    bf.createBinding( this, "name", name, "value" );
+    bf.createBinding( this, "validMessages", messageLabel, "value", validMsgTruncatedBinding );
+    messageBtn = (XulButton) document.getElementById( "mainnode_message_btn" );
+    bf.createBinding( this, "validMessages", messageBtn, "visible", showMsgBinding );
   }
 
   @Bindable
   public void setName( String name ) {
-    if (getNode() != null) {
-      getNode().setName(name);
+    if ( getNode() != null ) {
+      getNode().setName( name );
     }
-    this.name.setValue(name);
+    this.name.setValue( name );
   }
 
   @Bindable
   public String getName() {
-    if (getNode() == null) {
+    if ( getNode() == null ) {
       return null;
     }
     return getNode().getName();
   }
 
   @Override
-  public String getValidMessages()  {
-    if (getNode() != null) {
+  public String getValidMessages() {
+    if ( getNode() != null ) {
       return getNode().getValidationMessagesString();
     } else {
       return null;

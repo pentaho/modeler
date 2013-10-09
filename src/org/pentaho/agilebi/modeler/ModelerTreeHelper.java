@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.agilebi.modeler;
 
@@ -36,7 +36,7 @@ import java.util.Map;
 
 /**
  * Created: 3/21/11
- *
+ * 
  * @author rfellows
  */
 public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
@@ -52,8 +52,8 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   public ModelerTreeHelper() {
   }
 
-  public ModelerTreeHelper(Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> propertiesForms,
-                           XulDeck propsDeck, ModelerWorkspace workspace, Document document) {
+  public ModelerTreeHelper( Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> propertiesForms,
+      XulDeck propsDeck, ModelerWorkspace workspace, Document document ) {
     this.propertiesForms = propertiesForms;
     this.propsDeck = propsDeck;
     this.workspace = workspace;
@@ -66,94 +66,94 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   }
 
   @Bindable
-  public void setSelectedTreeItem(Object selectedTreeItem) {
+  public void setSelectedTreeItem( Object selectedTreeItem ) {
     this.selectedTreeItem = selectedTreeItem;
   }
 
   @Bindable
-  public void setTreeSelectionChanged(Object selection) {
-    setSelectedTreeItem(selection);
-    if (selection != null && selection instanceof AbstractMetaDataModelNode) {
+  public void setTreeSelectionChanged( Object selection ) {
+    setSelectedTreeItem( selection );
+    if ( selection != null && selection instanceof AbstractMetaDataModelNode ) {
       AbstractMetaDataModelNode node = (AbstractMetaDataModelNode) selection;
-      ModelerNodePropertiesForm form = propertiesForms.get(node.getPropertiesForm());
-      if (form != null) {
-        if (selectedForm != null && selectedForm != form) {
-          selectedForm.setObject(null);
+      ModelerNodePropertiesForm form = propertiesForms.get( node.getPropertiesForm() );
+      if ( form != null ) {
+        if ( selectedForm != null && selectedForm != form ) {
+          selectedForm.setObject( null );
         }
-        form.activate((AbstractMetaDataModelNode) selection);
+        form.activate( (AbstractMetaDataModelNode) selection );
         selectedForm = form;
         return;
       }
     }
-    if (propsDeck != null) {
-      propsDeck.setSelectedIndex(0);
+    if ( propsDeck != null ) {
+      propsDeck.setSelectedIndex( 0 );
     }
   }
 
   @Bindable
   public void moveFieldUp() {
-    if (selectedTreeItem == null) {
+    if ( selectedTreeItem == null ) {
       return;
     }
-    ((AbstractModelNode) selectedTreeItem).getParent().moveChildUp(selectedTreeItem);
+    ( (AbstractModelNode) selectedTreeItem ).getParent().moveChildUp( selectedTreeItem );
 
   }
 
   @Bindable
   public void moveFieldDown() {
-    if (selectedTreeItem == null) {
+    if ( selectedTreeItem == null ) {
       return;
     }
-    ((AbstractModelNode) selectedTreeItem).getParent().moveChildDown(selectedTreeItem);
+    ( (AbstractModelNode) selectedTreeItem ).getParent().moveChildDown( selectedTreeItem );
 
   }
 
   @Bindable
   public void removeField() {
-    ((AbstractModelNode) selectedTreeItem).getParent().remove(selectedTreeItem);
-    setTreeSelectionChanged(null);
+    ( (AbstractModelNode) selectedTreeItem ).getParent().remove( selectedTreeItem );
+    setTreeSelectionChanged( null );
   }
 
   @Bindable
-  public void clearFields(){
-	  try {
+  public void clearFields() {
+    try {
 
-		  XulConfirmBox confirm = (XulConfirmBox) document.createElement("confirmbox"); //$NON-NLS-1$
-          confirm.setTitle(ModelerMessagesHolder.getMessages().getString("clear_model_title")); //$NON-NLS-1$
-          confirm.setMessage(ModelerMessagesHolder.getMessages().getString("clear_model_msg")); //$NON-NLS-1$
-          confirm.setAcceptLabel(ModelerMessagesHolder.getMessages().getString("yes")); //$NON-NLS-1$
-          confirm.setCancelLabel(ModelerMessagesHolder.getMessages().getString("no")); //$NON-NLS-1$
+      XulConfirmBox confirm = (XulConfirmBox) document.createElement( "confirmbox" ); //$NON-NLS-1$
+      confirm.setTitle( ModelerMessagesHolder.getMessages().getString( "clear_model_title" ) ); //$NON-NLS-1$
+      confirm.setMessage( ModelerMessagesHolder.getMessages().getString( "clear_model_msg" ) ); //$NON-NLS-1$
+      confirm.setAcceptLabel( ModelerMessagesHolder.getMessages().getString( "yes" ) ); //$NON-NLS-1$
+      confirm.setCancelLabel( ModelerMessagesHolder.getMessages().getString( "no" ) ); //$NON-NLS-1$
 
-          confirm.addDialogCallback(new XulDialogCallback() {
-        	  public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
-        		  if (returnCode == Status.ACCEPT) {
-                clearTreeModel();
-        		  }
-        	  }
+      confirm.addDialogCallback( new XulDialogCallback() {
+        public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
+          if ( returnCode == Status.ACCEPT ) {
+            clearTreeModel();
+          }
+        }
 
-        	  public void onError( XulComponent sender, Throwable t ) {
-        	  }
-         });
-         confirm.open();
-      } catch (Exception e) {
-        e.printStackTrace();//logger.error(e);
-      }
+        public void onError( XulComponent sender, Throwable t ) {
+        }
+      } );
+      confirm.open();
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
   }
 
   @Bindable
   public abstract void clearTreeModel();
 
-  public void addField(Object[] selectedFields) throws ModelerException{
-    try{
+  public void addField( Object[] selectedFields ) throws ModelerException {
+    try {
       IDropTarget dropNode = (IDropTarget) getSelectedTreeItem();
 
-      for(Object selectedField : selectedFields){
-          AbstractModelNode newNode = (AbstractModelNode) dropNode.onDrop(selectedField);
-          ((AbstractModelNode) dropNode).add(newNode);
+      for ( Object selectedField : selectedFields ) {
+        AbstractModelNode newNode = (AbstractModelNode) dropNode.onDrop( selectedField );
+        ( (AbstractModelNode) dropNode ).add( newNode );
       }
 
-    } catch(IllegalStateException e){
-      throw new ModelerException(e);
+    } catch ( IllegalStateException e ) {
+      throw new ModelerException( e );
     }
   }
 
@@ -161,7 +161,8 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
     return propertiesForms;
   }
 
-  public void setPropertiesForms(Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> propertiesForms) {
+  public void setPropertiesForms(
+      Map<Class<? extends ModelerNodePropertiesForm>, ModelerNodePropertiesForm> propertiesForms ) {
     this.propertiesForms = propertiesForms;
   }
 
@@ -169,7 +170,7 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
     return selectedForm;
   }
 
-  public void setSelectedForm(ModelerNodePropertiesForm selectedForm) {
+  public void setSelectedForm( ModelerNodePropertiesForm selectedForm ) {
     this.selectedForm = selectedForm;
   }
 
@@ -177,7 +178,7 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
     return propsDeck;
   }
 
-  public void setPropsDeck(XulDeck propsDeck) {
+  public void setPropsDeck( XulDeck propsDeck ) {
     this.propsDeck = propsDeck;
   }
 
@@ -185,7 +186,7 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
     return workspace;
   }
 
-  public void setWorkspace(ModelerWorkspace workspace) {
+  public void setWorkspace( ModelerWorkspace workspace ) {
     this.workspace = workspace;
   }
 
@@ -193,37 +194,38 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
     return document;
   }
 
-  public void setDocument(Document document) {
+  public void setDocument( Document document ) {
     this.document = document;
   }
 
-  protected void removeLogicalColumnFromParentTable(ColumnBackedNode node) {
+  protected void removeLogicalColumnFromParentTable( ColumnBackedNode node ) {
     LogicalColumn lCol = node.getLogicalColumn();
-    if (lCol != null && lCol.getLogicalTable() != null) {
+    if ( lCol != null && lCol.getLogicalTable() != null ) {
       LogicalTable lTab = lCol.getLogicalTable();
-      lTab.getLogicalColumns().remove(lCol);
+      lTab.getLogicalColumns().remove( lCol );
     }
   }
 
-  public void onModelDrop(DropEvent event) throws ModelerException{
+  public void onModelDrop( DropEvent event ) throws ModelerException {
     boolean prevChangeState = isModelChanging();
-    try{
+    try {
       IDropTarget dropNode = (IDropTarget) event.getDropParent();
       Object newData = null;
-      for(Object data : event.getDataTransfer().getData()){
-        newData = dropNode.onDrop(data);
+      for ( Object data : event.getDataTransfer().getData() ) {
+        newData = dropNode.onDrop( data );
       }
-      if (newData == null) {
-        event.setAccepted(false);
+      if ( newData == null ) {
+        event.setAccepted( false );
       } else {
-        event.getDataTransfer().setData(Collections.singletonList(newData));
+        event.getDataTransfer().setData( Collections.singletonList( newData ) );
       }
-    } catch(ModelerException e){
+    } catch ( ModelerException e ) {
       throw e;
     }
   }
 
   protected abstract boolean isModelChanging();
-  protected abstract void setModelIsChanging(boolean changing);
+
+  protected abstract void setModelIsChanging( boolean changing );
 
 }
