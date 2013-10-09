@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.agilebi.modeler.nodes;
 
@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Created: 3/18/11
- *
+ * 
  * @author rfellows
  */
 public class FieldMetaData extends BaseAggregationMetaDataNode {
@@ -38,29 +38,23 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
   private CategoryMetaData parent;
 
   public FieldMetaData( String locale ) {
-    super(locale);
+    super( locale );
   }
 
-  public FieldMetaData(CategoryMetaData parent, String fieldName, String format, String displayName, String locale ) {
-    super(fieldName, format, displayName, locale);
+  public FieldMetaData( CategoryMetaData parent, String fieldName, String format, String displayName, String locale ) {
+    super( fieldName, format, displayName, locale );
     this.parent = parent;
   }
 
   @Override
   public List<AggregationType> getNumericAggregationTypes() {
-    return Arrays.asList(AggregationType.NONE,
-        AggregationType.SUM,
-        AggregationType.AVERAGE,
-        AggregationType.MINIMUM,
-        AggregationType.MAXIMUM,
-        AggregationType.COUNT,
-        AggregationType.COUNT_DISTINCT);
+    return Arrays.asList( AggregationType.NONE, AggregationType.SUM, AggregationType.AVERAGE, AggregationType.MINIMUM,
+        AggregationType.MAXIMUM, AggregationType.COUNT, AggregationType.COUNT_DISTINCT );
   }
-
 
   @Override
   public List<AggregationType> getTextAggregationTypes() {
-    return Arrays.asList(AggregationType.NONE, AggregationType.COUNT, AggregationType.COUNT_DISTINCT);
+    return Arrays.asList( AggregationType.NONE, AggregationType.COUNT, AggregationType.COUNT_DISTINCT );
   }
 
   public CategoryMetaData getParent() {
@@ -86,31 +80,30 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
     valid = true;
     validationMessages.clear();
     // check name
-    if (name == null || "".equals(name)) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.field.MISSING_NAME"));
+    if ( name == null || "".equals( name ) ) {
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString( "validation.field.MISSING_NAME" ) );
       valid = false;
     }
-    if (logicalColumn == null) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.field.MISSING_BACKING_COLUMN", getName()));
+    if ( logicalColumn == null ) {
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString( "validation.field.MISSING_BACKING_COLUMN",
+          getName() ) );
       valid = false;
     }
   }
 
-
   @Bindable
   public AggregationType getDefaultAggregation() {
-    if (logicalColumn == null) {
+    if ( logicalColumn == null ) {
       return null;
     }
-    if (defaultAggregation == null) {
+    if ( defaultAggregation == null ) {
       defaultAggregation = AggregationType.NONE;
     }
     return defaultAggregation;
   }
 
-
   @Override
-  public boolean acceptsDrop(Object obj) {
+  public boolean acceptsDrop( Object obj ) {
     return false;
   }
 

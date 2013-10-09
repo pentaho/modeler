@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.agilebi.modeler.nodes;
 
@@ -40,8 +40,8 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   String name;
   private static final String CLASSNAME = "pentaho-smallhierarchybutton";
 
-  public HierarchyMetaData(){
-    super(CLASSNAME);
+  public HierarchyMetaData() {
+    super( CLASSNAME );
   }
 
   public HierarchyMetaData( String name ) {
@@ -61,75 +61,81 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
 
   @Bindable
   public void setName( String name ) {
-    if (!name.equals(this.name)) {
+    if ( !name.equals( this.name ) ) {
       String oldName = this.name;
       this.name = name;
-      this.firePropertyChange("name", oldName, name); //$NON-NLS-1$
-      this.firePropertyChange("displayName", oldName, name); //$NON-NLS-1$
+      this.firePropertyChange( "name", oldName, name ); //$NON-NLS-1$
+      this.firePropertyChange( "displayName", oldName, name ); //$NON-NLS-1$
       validateNode();
     }
   }
 
-  public DimensionMetaData getDimensionMetaData(){
+  public DimensionMetaData getDimensionMetaData() {
     return (DimensionMetaData) getParent();
   }
-  
-  public boolean isTimeHierarchy(){
+
+  public boolean isTimeHierarchy() {
     DimensionMetaData dimensionMetaData = getDimensionMetaData();
-    if (dimensionMetaData == null) return false;
+    if ( dimensionMetaData == null ) {
+      return false;
+    }
     return dimensionMetaData.isTimeDimension();
   }
 
   public void dimensionTypeChanged() {
     validate();
   }
-  
-  public List<LevelMetaData> getLevels(){
-    return (List<LevelMetaData>)this.children;
+
+  public List<LevelMetaData> getLevels() {
+    return (List<LevelMetaData>) this.children;
   }
-  
+
   @Override
   public void validate() {
     valid = true;
     validationMessages.clear();
     // check name
-    if (name == null || "".equals(name)) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.hierarchy.MISSING_NAME"));
+    if ( name == null || "".equals( name ) ) {
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString( "validation.hierarchy.MISSING_NAME" ) );
       valid = false;
     }
-    if (size() == 0) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL"));
+    if ( size() == 0 ) {
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString(
+          "validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL" ) );
       valid = false;
     }
 
     HashMap<String, LevelMetaData> usedNames = new HashMap<String, LevelMetaData>();
-    if (children.size() == 0) {
+    if ( children.size() == 0 ) {
       valid = false;
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL"));
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString(
+          "validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL" ) );
     }
-    for (LevelMetaData level : children) {
+    for ( LevelMetaData level : children ) {
       level.validate();
       valid &= level.isValid();
-      validationMessages.addAll(level.getValidationMessages());
-      if (usedNames.containsKey(level.getName())) {
+      validationMessages.addAll( level.getValidationMessages() );
+      if ( usedNames.containsKey( level.getName() ) ) {
         valid = false;
-        String dupeString = ModelerMessagesHolder.getMessages().getString("validation.hierarchy.DUPLICATE_LEVEL_NAMES", level.getName());
-        validationMessages.add(dupeString);
+        String dupeString =
+            ModelerMessagesHolder.getMessages().getString( "validation.hierarchy.DUPLICATE_LEVEL_NAMES",
+                level.getName() );
+        validationMessages.add( dupeString );
 
         level.invalidate();
-        if (!level.getValidationMessages().contains(dupeString)) {
-          level.getValidationMessages().add(dupeString);
+        if ( !level.getValidationMessages().contains( dupeString ) ) {
+          level.getValidationMessages().add( dupeString );
         }
 
-        LevelMetaData l = usedNames.get(level.getName());
-        if (l.isValid()) {
+        LevelMetaData l = usedNames.get( level.getName() );
+        if ( l.isValid() ) {
           l.invalidate();
-          if (!l.getValidationMessages().contains(dupeString)) {
-            l.getValidationMessages().add(dupeString);
+          if ( !l.getValidationMessages().contains( dupeString ) ) {
+            l.getValidationMessages().add( dupeString );
           }
         }
       } else {
-        usedNames.put(level.getName(), level);
+        usedNames.put( level.getName(), level );
       }
     }
   }
@@ -162,17 +168,17 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
 
   @Override
   public void onAdd( LevelMetaData child ) {
-    child.addPropertyChangeListener("name", nameListener);
-    child.addPropertyChangeListener("valid", validListener);
-    child.addPropertyChangeListener("children", childrenListener);
+    child.addPropertyChangeListener( "name", nameListener );
+    child.addPropertyChangeListener( "valid", validListener );
+    child.addPropertyChangeListener( "children", childrenListener );
     validateNode();
   }
 
   @Override
   public void onRemove( LevelMetaData child ) {
-    child.removePropertyChangeListener(validListener);
-    child.removePropertyChangeListener(nameListener);
-    child.removePropertyChangeListener(childrenListener);
+    child.removePropertyChangeListener( validListener );
+    child.removePropertyChangeListener( nameListener );
+    child.removePropertyChangeListener( childrenListener );
     validateNode();
   }
 
@@ -180,56 +186,56 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
     return result;
   }
 
   public boolean equals( HierarchyMetaData obj ) {
-    if (this == obj) {
+    if ( this == obj ) {
       return true;
     }
-    if (obj == null) {
+    if ( obj == null ) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if ( getClass() != obj.getClass() ) {
       return false;
     }
     HierarchyMetaData other = (HierarchyMetaData) obj;
-    if (name == null) {
-      if (other.name != null) {
+    if ( name == null ) {
+      if ( other.name != null ) {
         return false;
       }
-    } else if (!name.equals(other.name)) {
+    } else if ( !name.equals( other.name ) ) {
       return false;
     }
     return true;
   }
 
-
   @Override
-  public boolean acceptsDrop(Object obj) {
+  public boolean acceptsDrop( Object obj ) {
     boolean isSupportedType = false;
-    isSupportedType = (obj instanceof AvailableField || obj instanceof LevelMetaData || obj instanceof MeasureMetaData
-        || obj instanceof MemberPropertyMetaData);
+    isSupportedType =
+        ( obj instanceof AvailableField || obj instanceof LevelMetaData
+            || obj instanceof MeasureMetaData || obj instanceof MemberPropertyMetaData );
 
     // get the columns of children, make sure the potential drop object is backed by the same table
-    if(isSupportedType) {
-      if (size() == 0) {
+    if ( isSupportedType ) {
+      if ( size() == 0 ) {
         // no children to compare tables with, accept the drop
         return true;
       }
-      LevelMetaData level = this.get(0);
-      if (level.getLogicalColumn() == null) {
+      LevelMetaData level = this.get( 0 );
+      if ( level.getLogicalColumn() == null ) {
         return false; // make them fix the broken column first
       }
       String myTableId = level.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId();
-      if( obj instanceof AvailableField ) {
+      if ( obj instanceof AvailableField ) {
         AvailableField field = (AvailableField) obj;
-        return myTableId.equals(field.getPhysicalColumn().getPhysicalTable().getId());
+        return myTableId.equals( field.getPhysicalColumn().getPhysicalTable().getId() );
       } else if ( obj instanceof ColumnBackedNode ) {
         // this will take care of both Levels & Measures
         ColumnBackedNode field = (ColumnBackedNode) obj;
-        return myTableId.equals(field.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId());
+        return myTableId.equals( field.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId() );
       }
     }
     return false;
@@ -237,31 +243,33 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   }
 
   @Override
-  public Object onDrop(Object data) throws ModelerException {
-    try{
+  public Object onDrop( Object data ) throws ModelerException {
+    try {
       LevelMetaData level = null;
-      if(data instanceof AvailableField){
-        ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
-        level = getWorkspace().createLevelForParentWithNode(this, node);
-      } else if(data instanceof LevelMetaData){
+      if ( data instanceof AvailableField ) {
+        ColumnBackedNode node =
+            getWorkspace().createColumnBackedNode( (AvailableField) data, ModelerPerspective.ANALYSIS );
+        level = getWorkspace().createLevelForParentWithNode( this, node );
+      } else if ( data instanceof LevelMetaData ) {
         level = (LevelMetaData) data;
-        level.setParent(this);
-      } else if(data instanceof ColumnBackedNode){
+        level.setParent( this );
+      } else if ( data instanceof ColumnBackedNode ) {
         ColumnBackedNode node = (ColumnBackedNode) data;
-        level = getWorkspace().createLevelForParentWithNode(this, node);
-        level.setName(node.getName());
+        level = getWorkspace().createLevelForParentWithNode( this, node );
+        level.setName( node.getName() );
       } else {
-        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
       }
-      if(size() > 0){
-        LogicalTable existingTable = get(0).getLogicalColumn().getLogicalTable();
-        if(level.getLogicalColumn().getLogicalTable().getId() != existingTable.getId()){
-          throw new IllegalStateException(ModelerMessagesHolder.getMessages().getString("DROP.ERROR.TWO_TABLES_IN_HIERARCHY"));
+      if ( size() > 0 ) {
+        LogicalTable existingTable = get( 0 ).getLogicalColumn().getLogicalTable();
+        if ( level.getLogicalColumn().getLogicalTable().getId() != existingTable.getId() ) {
+          throw new IllegalStateException( ModelerMessagesHolder.getMessages().getString(
+              "DROP.ERROR.TWO_TABLES_IN_HIERARCHY" ) );
         }
       }
       return level;
-    } catch(Exception e){
-      throw new ModelerException(e);
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
     }
   }
 

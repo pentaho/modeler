@@ -1,21 +1,22 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
 <dialog width="300" height="400" id="resolveColumnsDialog" title="Resolve Missing Columns"
-  ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()"
-  xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" onload="colResolver.init()" xmlns:pen="http://www.pentaho.org/2008/xul">
+        ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()"
+        onload="colResolver.init()"
+        xmlns:pen="http://www.pentaho.org/2008/xul">
   <groupbox flex="1">
-  <caption label="Choose a column from the available list"/>
-    <tree id="resolveColumnsTree" flex="1" editable="false" hiddenrootnode="true" preserveselection="false" >
+    <caption label="Choose a column from the available list"/>
+    <tree id="resolveColumnsTree" flex="1" editable="false" hiddenrootnode="true" preserveselection="false">
       <treecols>
         <treecol flex="1" label="" primary="true"
-          pen:binding="name" pen:childrenbinding="children"
-          pen:imagebinding="image" editable="false"
-          pen:expandedbinding="expanded"/>
+                 pen:binding="name" pen:childrenbinding="children"
+                 pen:imagebinding="image" editable="false"
+                 pen:expandedbinding="expanded"/>
       </treecols>
       <treechildren>
         <treeitem container="true" open="true">
           <treerow>
-            <treecell label="" />
+            <treecell label=""/>
           </treerow>
           <treechildren></treechildren>
         </treeitem>
