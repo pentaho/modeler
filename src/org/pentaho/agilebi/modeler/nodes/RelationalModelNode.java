@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.agilebi.modeler.nodes;
 
@@ -30,10 +30,11 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
  * Created: 3/18/11
- *
+ * 
  * @author rfellows
  */
-public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaDataCollection> implements Serializable, IRootModelNode {
+public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaDataCollection> implements Serializable,
+    IRootModelNode {
   private static final String IMAGE = "images/sm_model_icon.png";
   private static final long serialVersionUID = 818429477176656590L;
   String name = "Untitled";
@@ -45,13 +46,13 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   private static final String CLASSNAME = "pentaho-smallmodelbutton";
 
   public RelationalModelNode() {
-    super(CLASSNAME);
-    add(categories);
-    setExpanded(true);
-    categories.setExpanded(true);
+    super( CLASSNAME );
+    add( categories );
+    setExpanded( true );
+    categories.setExpanded( true );
   }
 
-  public RelationalModelNode(ModelerWorkspace workspace) {
+  public RelationalModelNode( ModelerWorkspace workspace ) {
     this();
     this.workspace = workspace;
   }
@@ -63,18 +64,17 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
 
   @Bindable
   public String getDisplayName() {
-    return ModelerMessagesHolder.getMessages().getString("Main.Model.Name.Template", getName()); //$NON-NLS-1$
+    return ModelerMessagesHolder.getMessages().getString( "Main.Model.Name.Template", getName() ); //$NON-NLS-1$
   }
 
   @Bindable
   public void setName( String name ) {
-    if (!name.equals(this.name)) {
+    if ( !name.equals( this.name ) ) {
       String oldName = this.name;
       String prevDisplay = getDisplayName();
       this.name = name;
-      this.firePropertyChange("name", oldName, this.name); //$NON-NLS-1$
-      this.firePropertyChange("displayName", prevDisplay,
-          getName()); //$NON-NLS-1$
+      this.firePropertyChange( "name", oldName, this.name ); //$NON-NLS-1$
+      this.firePropertyChange( "displayName", prevDisplay, getName() ); //$NON-NLS-1$
       validateNode();
     }
   }
@@ -90,20 +90,19 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   }
 
   protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this); //$NON-NLS-1$
+    this.changeSupport.firePropertyChange( "children", null, this ); //$NON-NLS-1$
   }
-
 
   @Override
   public void onAdd( CategoryMetaDataCollection child ) {
-    child.addPropertyChangeListener("children", getListener()); //$NON-NLS-1$
-    child.addPropertyChangeListener("valid", validListener); //$NON-NLS-1$
+    child.addPropertyChangeListener( "children", getListener() ); //$NON-NLS-1$
+    child.addPropertyChangeListener( "valid", validListener ); //$NON-NLS-1$
   }
 
   @Override
   public void onRemove( CategoryMetaDataCollection child ) {
-    child.removePropertyChangeListener(getListener());
-    child.removePropertyChangeListener(validListener);
+    child.removePropertyChangeListener( getListener() );
+    child.removePropertyChangeListener( validListener );
   }
 
   public CategoryMetaDataCollection getCategories() {
@@ -120,13 +119,14 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
     valid = true;
     this.validationMessages.clear();
 
-    if (this.children.size() != 1) {
+    if ( this.children.size() != 1 ) {
       valid = false;
-      this.validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.relationalmodel.INVALID_STRUCTURE"));
+      this.validationMessages.add( ModelerMessagesHolder.getMessages().getString(
+          "validation.relationalmodel.INVALID_STRUCTURE" ) );
     }
-    for (AbstractMetaDataModelNode child : children) {
+    for ( AbstractMetaDataModelNode child : children ) {
       valid &= child.isValid();
-      this.validationMessages.addAll(child.getValidationMessages());
+      this.validationMessages.addAll( child.getValidationMessages() );
     }
   }
 
@@ -134,17 +134,17 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
     return RelationalModelNodePropertiesForm.class;
   }
-  
+
   @Bindable
   public boolean isEditingDisabled() {
     return true;
   }
 
-  private PropertyChangeListener getListener(){
-    if(listener == null){
+  private PropertyChangeListener getListener() {
+    if ( listener == null ) {
       listener = new PropertyChangeListener() {
         public void propertyChange( PropertyChangeEvent evt ) {
-          if (!suppressEvents) {
+          if ( !suppressEvents ) {
             fireCollectionChanged();
           }
         }
@@ -154,9 +154,9 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   }
 
   public void setSupressEvents( boolean suppress ) {
-    super.setSupressEvents(suppress);
-    if (!suppress) {
-      firePropertyChange("valid", !isValid(), isValid());
+    super.setSupressEvents( suppress );
+    if ( !suppress ) {
+      firePropertyChange( "valid", !isValid(), isValid() );
     }
   }
 
@@ -165,13 +165,14 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   }
 
   @Override
-  public boolean acceptsDrop(Object obj) {
+  public boolean acceptsDrop( Object obj ) {
     return false;
   }
 
   @Override
-  public Object onDrop(Object data) throws ModelerException {
-    throw new ModelerException(new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop")));
+  public Object onDrop( Object data ) throws ModelerException {
+    throw new ModelerException( new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString(
+        "invalid_drop" ) ) );
   }
 
   @Override
@@ -179,7 +180,7 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
     return workspace;
   }
 
-  public void setWorkspace(ModelerWorkspace workspace) {
+  public void setWorkspace( ModelerWorkspace workspace ) {
     this.workspace = workspace;
   }
 }

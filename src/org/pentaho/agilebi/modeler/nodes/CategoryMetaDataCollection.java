@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.agilebi.modeler.nodes;
 
@@ -28,20 +28,18 @@ import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-
-
 /**
  * Created: 3/30/11
- *
+ * 
  * @author rfellows
  */
 public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<CategoryMetaData> implements Serializable {
 
   private String name = "Categories";
-  private final static String CLASSNAME = "pentaho-smallcategorybutton";
+  private static final String CLASSNAME = "pentaho-smallcategorybutton";
 
   public CategoryMetaDataCollection() {
-    super(CLASSNAME);
+    super( CLASSNAME );
     this.valid = false;
   }
 
@@ -71,25 +69,25 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
     }
   };
 
-  //TODO: investigate using "this" form of notification in super-class
+  // TODO: investigate using "this" form of notification in super-class
   protected void fireCollectionChanged() {
-    this.changeSupport.firePropertyChange("children", null, this); //$NON-NLS-1$
+    this.changeSupport.firePropertyChange( "children", null, this ); //$NON-NLS-1$
   }
 
   @Override
   public void onAdd( CategoryMetaData child ) {
-    child.setParent(this);
-    child.addPropertyChangeListener("name", nameListener);
-    child.addPropertyChangeListener("valid", validListener);
-    child.addPropertyChangeListener("children", childrenListener);
+    child.setParent( this );
+    child.addPropertyChangeListener( "name", nameListener );
+    child.addPropertyChangeListener( "valid", validListener );
+    child.addPropertyChangeListener( "children", childrenListener );
     validateNode();
   }
 
   @Override
   public void onRemove( CategoryMetaData child ) {
-    child.removePropertyChangeListener(validListener);
-    child.removePropertyChangeListener(nameListener);
-    child.removePropertyChangeListener(childrenListener);
+    child.removePropertyChangeListener( validListener );
+    child.removePropertyChangeListener( nameListener );
+    child.removePropertyChangeListener( childrenListener );
     validateNode();
   }
 
@@ -104,39 +102,41 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
     boolean prevValid = valid;
     valid = true;
     validationMessages.clear();
-    if (size() == 0) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.categorycollecion.REQUIRES_AT_LEAST_ONE_CATEGORY"));
+    if ( size() == 0 ) {
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString(
+          "validation.categorycollecion.REQUIRES_AT_LEAST_ONE_CATEGORY" ) );
       valid = false;
     }
 
-
     HashMap<String, CategoryMetaData> usedNames = new HashMap<String, CategoryMetaData>();
-    for (CategoryMetaData cat : children) {
+    for ( CategoryMetaData cat : children ) {
       valid &= cat.isValid();
-      validationMessages.addAll(cat.getValidationMessages());
-      if (usedNames.containsKey(cat.getName())) {
+      validationMessages.addAll( cat.getValidationMessages() );
+      if ( usedNames.containsKey( cat.getName() ) ) {
         valid = false;
-        String msg = ModelerMessagesHolder.getMessages().getString("validation.categorycollecion.DUPLICATE_CATEGORY_NAMES", cat.getName());
-        validationMessages.add(msg);
+        String msg =
+            ModelerMessagesHolder.getMessages().getString( "validation.categorycollecion.DUPLICATE_CATEGORY_NAMES",
+                cat.getName() );
+        validationMessages.add( msg );
 
         cat.invalidate();
-        if (!cat.getValidationMessages().contains(msg)) {
-          cat.getValidationMessages().add(msg);
+        if ( !cat.getValidationMessages().contains( msg ) ) {
+          cat.getValidationMessages().add( msg );
         }
-        CategoryMetaData c = usedNames.get(cat.getName());
-        if (c.isValid()) {
+        CategoryMetaData c = usedNames.get( cat.getName() );
+        if ( c.isValid() ) {
           c.invalidate();
-          if (!c.getValidationMessages().contains(msg)) {
-            c.getValidationMessages().add(msg);
+          if ( !c.getValidationMessages().contains( msg ) ) {
+            c.getValidationMessages().add( msg );
           }
         }
 
       } else {
-        usedNames.put(cat.getName(), cat);
+        usedNames.put( cat.getName(), cat );
       }
     }
-    if (this.suppressEvents == false) {
-      this.firePropertyChange("valid", null, valid);
+    if ( this.suppressEvents == false ) {
+      this.firePropertyChange( "valid", null, valid );
     }
   }
 
@@ -154,59 +154,59 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ( ( name == null ) ? 0 : name.hashCode() );
     return result;
   }
 
   public boolean equals( CategoryMetaDataCollection obj ) {
-    if (this == obj) {
+    if ( this == obj ) {
       return true;
     }
-    if (obj == null) {
+    if ( obj == null ) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if ( getClass() != obj.getClass() ) {
       return false;
     }
     CategoryMetaDataCollection other = (CategoryMetaDataCollection) obj;
-    if (name == null) {
-      if (other.name != null) {
+    if ( name == null ) {
+      if ( other.name != null ) {
         return false;
       }
-    } else if (!name.equals(other.name)) {
+    } else if ( !name.equals( other.name ) ) {
       return false;
     }
     return true;
   }
 
-
   @Override
-  public boolean acceptsDrop(Object obj) {
-    return obj instanceof AvailableField || obj instanceof FieldMetaData || obj instanceof AvailableTable || obj instanceof CategoryMetaData;
+  public boolean acceptsDrop( Object obj ) {
+    return obj instanceof AvailableField || obj instanceof FieldMetaData || obj instanceof AvailableTable
+        || obj instanceof CategoryMetaData;
   }
 
   @Override
-  public Object onDrop(Object data) throws ModelerException {
-    try{
-      if(data instanceof AvailableTable){
+  public Object onDrop( Object data ) throws ModelerException {
+    try {
+      if ( data instanceof AvailableTable ) {
         AvailableTable table = (AvailableTable) data;
-        CategoryMetaData cat = new CategoryMetaData(table.getName());
-        for (AvailableField field : table.getAvailableFields()) {
-          cat.add(getWorkspace().createFieldForParentWithNode(cat, field));
+        CategoryMetaData cat = new CategoryMetaData( table.getName() );
+        for ( AvailableField field : table.getAvailableFields() ) {
+          cat.add( getWorkspace().createFieldForParentWithNode( cat, field ) );
         }
         return cat;
-      } else if(data instanceof AvailableField){
+      } else if ( data instanceof AvailableField ) {
         AvailableField field = (AvailableField) data;
-        CategoryMetaData cat = new CategoryMetaData(field.getName());
-        cat.add(getWorkspace().createFieldForParentWithNode(cat, field));
+        CategoryMetaData cat = new CategoryMetaData( field.getName() );
+        cat.add( getWorkspace().createFieldForParentWithNode( cat, field ) );
         return cat;
-      } else if(data instanceof CategoryMetaData){
+      } else if ( data instanceof CategoryMetaData ) {
         return data;
       } else {
-        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
       }
-    } catch(Exception e){
-      throw new ModelerException(e);
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
     }
   }
 }

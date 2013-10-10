@@ -1,19 +1,19 @@
 /*!
-* This program is free software; you can redistribute it and/or modify it under the
-* terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
-* Foundation.
-*
-* You should have received a copy of the GNU Lesser General Public License along with this
-* program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-* or from the Free Software Foundation, Inc.,
-* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*
-* This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-* without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-* See the GNU Lesser General Public License for more details.
-*
-* Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
-*/
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ */
 
 package org.pentaho.agilebi.modeler.nodes;
 
@@ -37,17 +37,17 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   String name;
   String dimensionType = "StandardDimension";
 
-  private final static String CLASSNAME = "pentaho-smalldimensionbutton";
+  private static final String CLASSNAME = "pentaho-smalldimensionbutton";
 
-  public DimensionMetaData(){
-    super(CLASSNAME);
+  public DimensionMetaData() {
+    super( CLASSNAME );
   }
-  
+
   public DimensionMetaData( String name ) {
-    this(name, "StandardDimension");
+    this( name, "StandardDimension" );
   }
 
-  public DimensionMetaData( String name,  String dimensionType) {
+  public DimensionMetaData( String name, String dimensionType ) {
     this();
     this.name = name;
     this.dimensionType = dimensionType;
@@ -65,43 +65,47 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
 
   @Bindable
   public void setName( String name ) {
-    if (!name.equals(this.name)) {
+    if ( !name.equals( this.name ) ) {
       String oldName = this.name;
       this.name = name;
-      this.firePropertyChange("name", oldName, name); //$NON-NLS-1$
-      this.firePropertyChange("displayName", oldName, name); //$NON-NLS-1$
+      this.firePropertyChange( "name", oldName, name ); //$NON-NLS-1$
+      this.firePropertyChange( "displayName", oldName, name ); //$NON-NLS-1$
       validateNode();
     }
   }
-  
+
   @Bindable
-  public String getDimensionType(){
+  public String getDimensionType() {
     return dimensionType;
   }
-  
+
   @Bindable
-  public void setDimensionType(String type){
+  public void setDimensionType( String type ) {
     String oldType = dimensionType;
-    if (oldType.equals(type)) return;
+    if ( oldType.equals( type ) ) {
+      return;
+    }
     dimensionType = type;
-    firePropertyChange("dimensionType", oldType, type);
-  }
-  
-  @Bindable
-  public boolean isTimeDimension(){
-    return isTimeDimension(dimensionType);
+    firePropertyChange( "dimensionType", oldType, type );
   }
 
-  static boolean isTimeDimension(String dimensionType){
-    return "TimeDimension".equals(dimensionType);
-  }
-  
   @Bindable
-  public void setTimeDimension(boolean timeDimension) {
+  public boolean isTimeDimension() {
+    return isTimeDimension( dimensionType );
+  }
+
+  static boolean isTimeDimension( String dimensionType ) {
+    return "TimeDimension".equals( dimensionType );
+  }
+
+  @Bindable
+  public void setTimeDimension( boolean timeDimension ) {
     boolean oldTimeDimension = isTimeDimension();
-    if (timeDimension == oldTimeDimension) return;
-    setDimensionType(timeDimension ? "TimeDimension" : "StandardDimension");
-    firePropertyChange("timeDimension", oldTimeDimension, timeDimension);
+    if ( timeDimension == oldTimeDimension ) {
+      return;
+    }
+    setDimensionType( timeDimension ? "TimeDimension" : "StandardDimension" );
+    firePropertyChange( "timeDimension", oldTimeDimension, timeDimension );
     validateNode();
   }
 
@@ -119,46 +123,49 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   public void validate() {
     validationMessages.clear();
     valid = true;
-    if (name == null || "".equals(name)) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.dimension.MISSING_NAME"));
+    if ( name == null || "".equals( name ) ) {
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString( "validation.dimension.MISSING_NAME" ) );
       valid = false;
     }
-    if (size() == 0) {
-      validationMessages.add(ModelerMessagesHolder.getMessages().getString("validation.dimension.REQUIRES_AT_LEAST_ONE_HIERARCHY"));
+    if ( size() == 0 ) {
+      validationMessages.add( ModelerMessagesHolder.getMessages().getString(
+          "validation.dimension.REQUIRES_AT_LEAST_ONE_HIERARCHY" ) );
       valid = false;
     }
     HashMap<String, HierarchyMetaData> usedNames = new HashMap<String, HierarchyMetaData>();
-    for (HierarchyMetaData hier : children) {
+    for ( HierarchyMetaData hier : children ) {
       hier.validate();
       valid &= hier.isValid();
-      validationMessages.addAll(hier.getValidationMessages());
-      if (usedNames.containsKey(hier.getName())) {
+      validationMessages.addAll( hier.getValidationMessages() );
+      if ( usedNames.containsKey( hier.getName() ) ) {
         valid = false;
-        String msg = ModelerMessagesHolder.getMessages().getString("validation.dimension.DUPLICATE_HIERARCHY_NAMES", hier.getName());
-        validationMessages.add(msg);
+        String msg =
+            ModelerMessagesHolder.getMessages().getString( "validation.dimension.DUPLICATE_HIERARCHY_NAMES",
+                hier.getName() );
+        validationMessages.add( msg );
         hier.invalidate();
-        if (!hier.getValidationMessages().contains(msg)) {
-          hier.getValidationMessages().add(msg);
+        if ( !hier.getValidationMessages().contains( msg ) ) {
+          hier.getValidationMessages().add( msg );
         }
-        HierarchyMetaData h = usedNames.get(hier.getName());
-        if (h.isValid()) {
+        HierarchyMetaData h = usedNames.get( hier.getName() );
+        if ( h.isValid() ) {
           h.invalidate();
-          if (!h.getValidationMessages().contains(msg)) {
-            h.getValidationMessages().add(msg);
+          if ( !h.getValidationMessages().contains( msg ) ) {
+            h.getValidationMessages().add( msg );
           }
         }
 
       } else {
-        usedNames.put(hier.getName(), hier);
+        usedNames.put( hier.getName(), hier );
       }
     }
   }
 
   @Bindable
   public boolean equals( DimensionMetaData obj ) {
-    if (obj instanceof DimensionMetaData) {
+    if ( obj instanceof DimensionMetaData ) {
       DimensionMetaData dim = (DimensionMetaData) obj;
-      return name != null && name.equals(dim.name);
+      return name != null && name.equals( dim.name );
     } else {
       return false;
     }
@@ -184,54 +191,51 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   }
 
   public void onAdd( HierarchyMetaData child ) {
-    child.addPropertyChangeListener("name", nameListener);
-    child.addPropertyChangeListener("valid", validListener);
-    child.addPropertyChangeListener("children", childrenListener);
+    child.addPropertyChangeListener( "name", nameListener );
+    child.addPropertyChangeListener( "valid", validListener );
+    child.addPropertyChangeListener( "children", childrenListener );
     validateNode();
   }
 
   public void onRemove( HierarchyMetaData child ) {
-    child.removePropertyChangeListener(validListener);
-    child.removePropertyChangeListener(nameListener);
-    child.removePropertyChangeListener(childrenListener);
+    child.removePropertyChangeListener( validListener );
+    child.removePropertyChangeListener( nameListener );
+    child.removePropertyChangeListener( childrenListener );
     validateNode();
   }
 
-
   @Override
-  public boolean acceptsDrop(Object obj) {
-    return obj instanceof AvailableField
-        || obj instanceof HierarchyMetaData
-        || obj instanceof LevelMetaData
+  public boolean acceptsDrop( Object obj ) {
+    return obj instanceof AvailableField || obj instanceof HierarchyMetaData || obj instanceof LevelMetaData
         || obj instanceof MeasureMetaData;
   }
 
-
   @Override
-  public Object onDrop(Object data) throws ModelerException {
-    try{
-      if(data instanceof AvailableField){
-        ColumnBackedNode node = getWorkspace().createColumnBackedNode((AvailableField) data, ModelerPerspective.ANALYSIS);
-        return getWorkspace().createHierarchyForParentWithNode(this, node);
-      } else if(data instanceof HierarchyMetaData){
+  public Object onDrop( Object data ) throws ModelerException {
+    try {
+      if ( data instanceof AvailableField ) {
+        ColumnBackedNode node =
+            getWorkspace().createColumnBackedNode( (AvailableField) data, ModelerPerspective.ANALYSIS );
+        return getWorkspace().createHierarchyForParentWithNode( this, node );
+      } else if ( data instanceof HierarchyMetaData ) {
         return data;
-      } else if(data instanceof LevelMetaData){
+      } else if ( data instanceof LevelMetaData ) {
         LevelMetaData level = (LevelMetaData) data;
-        HierarchyMetaData hier = getWorkspace().createHierarchyForParentWithNode(this, level);
-        hier.setName(level.getName());
-        hier.get(0).setName(level.getName());
+        HierarchyMetaData hier = getWorkspace().createHierarchyForParentWithNode( this, level );
+        hier.setName( level.getName() );
+        hier.get( 0 ).setName( level.getName() );
         return hier;
-      } else if(data instanceof MeasureMetaData){
+      } else if ( data instanceof MeasureMetaData ) {
         MeasureMetaData measure = (MeasureMetaData) data;
-        HierarchyMetaData hier = getWorkspace().createHierarchyForParentWithNode(this, measure);
-        hier.setName(measure.getName());
-        hier.get(0).setName(measure.getName());
+        HierarchyMetaData hier = getWorkspace().createHierarchyForParentWithNode( this, measure );
+        hier.setName( measure.getName() );
+        hier.get( 0 ).setName( measure.getName() );
         return hier;
       } else {
-        throw new IllegalArgumentException(ModelerMessagesHolder.getMessages().getString("invalid_drop"));
+        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
       }
-    } catch(Exception e){
-      throw new ModelerException(e);
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
     }
   }
 }
