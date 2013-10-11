@@ -30,7 +30,7 @@ import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class DimensionPropertiesForm extends AbstractModelerNodeForm<DimensionMetaData> {
-
+  private static final long serialVersionUID = 7467855499137361995L;
   private XulTextbox name;
   private XulCheckbox isTimeDim;
   private XulVbox messageBox;

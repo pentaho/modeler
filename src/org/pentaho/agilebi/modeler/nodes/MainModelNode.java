@@ -169,7 +169,7 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
     if ( getClass() != obj.getClass() ) {
       return false;
     }
-    MainModelNode other = (MainModelNode) obj;
+    MainModelNode other = obj;
     if ( dimensions == null ) {
       if ( other.dimensions != null ) {
         return false;

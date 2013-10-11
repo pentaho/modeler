@@ -17,6 +17,9 @@
 
 package org.pentaho.agilebi.modeler.propforms;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
 import org.pentaho.ui.xul.components.XulButton;
@@ -25,15 +28,13 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 /**
  * Created: 3/18/11
  * 
  * @author rfellows
  */
 public class CategoryPropertiesForm extends AbstractModelerNodeForm<CategoryMetaData> {
+  private static final long serialVersionUID = 5960483514146415253L;
 
   private static final String ID = "categoryprops";
 

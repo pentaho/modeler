@@ -26,7 +26,7 @@ import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class HierarchyPropertiesForm extends AbstractModelerNodeForm<HierarchyMetaData> {
-
+  private static final long serialVersionUID = -4214767259175215383L;
   private XulTextbox name;
   private XulVbox messageBox;
   private XulLabel messageLabel;

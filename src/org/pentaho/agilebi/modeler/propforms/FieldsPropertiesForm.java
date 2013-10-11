@@ -38,7 +38,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  * @author rfellows
  */
 public class FieldsPropertiesForm extends MeasuresPropertiesForm {
-
+  private static final long serialVersionUID = 1554704803752425723L;
   private static final String ID = "fieldprops";
   private Collection<AggregationType> selectedAggregations;
   private XulButton messageBtn;

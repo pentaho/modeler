@@ -17,19 +17,17 @@
 
 package org.pentaho.agilebi.modeler.propforms;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
-import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 public class GenericPropertiesForm extends AbstractModelerNodeForm<AbstractMetaDataModelNode> {
 
-  private XulTextbox name;
   private XulVbox messageBox;
   private XulLabel messageLabel;
   private XulButton messageBtn;

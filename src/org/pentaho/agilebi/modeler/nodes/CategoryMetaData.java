@@ -76,7 +76,6 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
   @Override
   public void validate() {
     // make sure there is at least one field
-    boolean prevValid = valid;
     valid = true;
     this.validationMessages.clear();
 

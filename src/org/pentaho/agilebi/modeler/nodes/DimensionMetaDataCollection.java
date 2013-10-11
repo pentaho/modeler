@@ -98,7 +98,6 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
 
   @Override
   public void validate() {
-    boolean prevValid = valid;
     valid = true;
     validationMessages.clear();
     if ( size() == 0 ) {
@@ -166,7 +165,7 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
     if ( getClass() != obj.getClass() ) {
       return false;
     }
-    DimensionMetaDataCollection other = (DimensionMetaDataCollection) obj;
+    DimensionMetaDataCollection other = obj;
     if ( name == null ) {
       if ( other.name != null ) {
         return false;

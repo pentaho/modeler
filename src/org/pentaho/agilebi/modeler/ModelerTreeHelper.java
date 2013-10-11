@@ -17,6 +17,9 @@
 
 package org.pentaho.agilebi.modeler;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -30,9 +33,6 @@ import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 import org.pentaho.ui.xul.util.XulDialogCallback;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * Created: 3/21/11
@@ -207,7 +207,6 @@ public abstract class ModelerTreeHelper extends XulEventSourceAdapter {
   }
 
   public void onModelDrop( DropEvent event ) throws ModelerException {
-    boolean prevChangeState = isModelChanging();
     try {
       IDropTarget dropNode = (IDropTarget) event.getDropParent();
       Object newData = null;

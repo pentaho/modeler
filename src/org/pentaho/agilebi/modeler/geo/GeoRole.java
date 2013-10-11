@@ -38,6 +38,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  */
 public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializable, IMemberAnnotation,
     IDataRoleAnnotation, IGeoRoleAnnotation {
+  private static final long serialVersionUID = 815135675387559794L;
   private String name = null;
   private List<String> commonAliases;
   private String matchSeparator = "_";

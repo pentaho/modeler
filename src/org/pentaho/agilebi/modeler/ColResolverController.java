@@ -40,8 +40,6 @@ public class ColResolverController extends AbstractXulEventHandler {
   private ColumnBackedNode node;
   private String columnType;
 
-  private Binding fieldListBinding;
-  private Binding selectedFieldsBinding;
   private IAvailableItem[] selectedFields = new IAvailableItem[] {};
   private AvailableItemCollection items;
   BindingFactory bf;
@@ -75,8 +73,12 @@ public class ColResolverController extends AbstractXulEventHandler {
 
     this.dialog = (XulDialog) document.getElementById( "resolveColumnsDialog" );
     bf.setBindingType( Binding.Type.ONE_WAY );
-    fieldListBinding = bf.createBinding( items, "children", "resolveColumnsTree", "elements" ); //$NON-NLS-1$ //$NON-NLS-2$
-    selectedFieldsBinding = bf.createBinding( "resolveColumnsTree", "selectedItem", this, "selectedFieldsChanged" ); //$NON-NLS-1$//$NON-NLS-2$
+
+    // fieldListBinding
+    bf.createBinding(items, "children", "resolveColumnsTree", "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+
+    // selectedFieldsBinding
+    bf.createBinding("resolveColumnsTree", "selectedItem", this, "selectedFieldsChanged"); //$NON-NLS-1$//$NON-NLS-2$
 
   }
 

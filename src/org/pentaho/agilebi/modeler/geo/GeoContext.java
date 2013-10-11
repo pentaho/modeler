@@ -38,6 +38,7 @@ import org.pentaho.ui.xul.util.AbstractModelList;
  * that contribute to the construction of geography dimensions
  */
 public class GeoContext extends AbstractModelList<GeoRole> {
+  private static final long serialVersionUID = 7328118800436710452L;
   protected static final String GEO_PREFIX = "geo.";
   protected static final String GEO_DIM_NAME = "geo.dimension.name";
   protected static final String GEO_ROLE_KEY = "geo.roles";
@@ -104,8 +105,6 @@ public class GeoContext extends AbstractModelList<GeoRole> {
   public List<DimensionMetaData> buildDimensions( ModelerWorkspace workspace ) {
     List<DimensionMetaData> geoDims = new ArrayList<DimensionMetaData>();
     List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
-
-    String locale = workspace.getWorkspaceHelper().getLocale();
 
     // get all roles for the fields
     for ( AvailableTable table : tableList ) {

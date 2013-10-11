@@ -17,6 +17,8 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.MemberPropertyPropertiesForm;
@@ -24,13 +26,11 @@ import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.io.Serializable;
-
 /**
  * User: rfellows Date: 10/13/11 Time: 9:09 AM
  */
 public class MemberPropertyMetaData extends BaseColumnBackedMetaData implements Serializable {
-
+  private static final long serialVersionUID = 1416688972721247836L;
   private LevelMetaData parent;
   private static final String IMAGE = "images/sm_member_prop_icon.png";
 

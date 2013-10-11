@@ -19,6 +19,8 @@ package org.pentaho.agilebi.modeler;
 
 public class IncompatibleModelerException extends ModelerException {
 
+  private static final long serialVersionUID = 959187252916433860L;
+
   public IncompatibleModelerException() {
     super( "Not a valid Model" ); //$NON-NLS-1$
   }
