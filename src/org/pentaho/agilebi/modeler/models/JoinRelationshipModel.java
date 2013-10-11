@@ -17,14 +17,14 @@
 
 package org.pentaho.agilebi.modeler.models;
 
+import java.io.Serializable;
+
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.io.Serializable;
-
 public class JoinRelationshipModel extends XulEventSourceAdapter implements Serializable {
-
+  private static final long serialVersionUID = -1365363591444333452L;
   private JoinFieldModel leftKeyFieldModel;
   private JoinFieldModel rightKeyFieldModel;
 

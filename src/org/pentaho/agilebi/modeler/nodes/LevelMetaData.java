@@ -106,7 +106,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
     if ( getClass() != obj.getClass() ) {
       return false;
     }
-    LevelMetaData other = (LevelMetaData) obj;
+    LevelMetaData other = obj;
     if ( columnName == null ) {
       if ( other.columnName != null ) {
         return false;

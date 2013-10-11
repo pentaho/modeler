@@ -20,7 +20,7 @@ package org.pentaho.agilebi.modeler;
 import java.io.Serializable;
 
 public class SerializableModelWrapper implements Serializable {
-
+  private static final long serialVersionUID = -1350694219885660135L;
   private IModelerSource source;
   private String domain;
 

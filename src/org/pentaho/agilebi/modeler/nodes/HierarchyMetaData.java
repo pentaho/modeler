@@ -87,7 +87,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   }
 
   public List<LevelMetaData> getLevels() {
-    return (List<LevelMetaData>) this.children;
+    return this.children;
   }
 
   @Override
@@ -200,7 +200,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
     if ( getClass() != obj.getClass() ) {
       return false;
     }
-    HierarchyMetaData other = (HierarchyMetaData) obj;
+    HierarchyMetaData other = obj;
     if ( name == null ) {
       if ( other.name != null ) {
         return false;

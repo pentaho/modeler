@@ -20,6 +20,7 @@ package org.pentaho.agilebi.modeler;
 import java.io.Serializable;
 
 public class ModelerException extends Exception implements Serializable {
+  private static final long serialVersionUID = 3088017235255752108L;
 
   public ModelerException() {
   }

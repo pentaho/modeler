@@ -31,6 +31,8 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  * User: rfellows Date: 10/13/11 Time: 1:29 PM
  */
 public class MemberPropertyPropertiesForm extends LevelsPropertiesForm {
+  private static final long serialVersionUID = 7028408198072291535L;
+
   private static final String ID = "memberprops";
 
   private XulTextbox desc;

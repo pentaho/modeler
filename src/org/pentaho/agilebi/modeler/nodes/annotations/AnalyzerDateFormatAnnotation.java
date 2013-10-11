@@ -17,16 +17,16 @@
 
 package org.pentaho.agilebi.modeler.nodes.annotations;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
-
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AnalyzerDateFormatAnnotation implements IAnalyzerDateFormatAnnotation, PropertyChangeListener {
 
@@ -167,7 +167,7 @@ public class AnalyzerDateFormatAnnotation implements IAnalyzerDateFormatAnnotati
       return;
     }
     LevelMetaData levelMetaData = (LevelMetaData) source;
-    value = levelMetaData.getFullTimeLevelFormat();
+    String value = levelMetaData.getFullTimeLevelFormat();
     if ( this.value == null && value == null ) {
       return;
     }

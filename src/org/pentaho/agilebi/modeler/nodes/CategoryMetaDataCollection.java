@@ -34,7 +34,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  * @author rfellows
  */
 public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<CategoryMetaData> implements Serializable {
-
+  private static final long serialVersionUID = 7083527229930283278L;
   private String name = "Categories";
   private static final String CLASSNAME = "pentaho-smallcategorybutton";
 
@@ -99,7 +99,6 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
 
   @Override
   public void validate() {
-    boolean prevValid = valid;
     valid = true;
     validationMessages.clear();
     if ( size() == 0 ) {
@@ -168,7 +167,7 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
     if ( getClass() != obj.getClass() ) {
       return false;
     }
-    CategoryMetaDataCollection other = (CategoryMetaDataCollection) obj;
+    CategoryMetaDataCollection other = obj;
     if ( name == null ) {
       if ( other.name != null ) {
         return false;

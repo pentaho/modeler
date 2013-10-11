@@ -164,7 +164,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
   @Bindable
   public boolean equals( DimensionMetaData obj ) {
     if ( obj instanceof DimensionMetaData ) {
-      DimensionMetaData dim = (DimensionMetaData) obj;
+      DimensionMetaData dim = obj;
       return name != null && name.equals( dim.name );
     } else {
       return false;

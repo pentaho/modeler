@@ -37,6 +37,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  * User: nbaker Date: Jun 18, 2010
  */
 public class GwtModelerDebugServlet extends RemoteServiceServlet implements IGwtModelerService {
+  private static final long serialVersionUID = 3877637597240414312L;
 
   static {
     try {

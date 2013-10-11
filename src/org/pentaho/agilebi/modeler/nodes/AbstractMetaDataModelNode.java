@@ -220,7 +220,6 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     }
   }
 
-  @SuppressWarnings( "unchecked" )
   public void validateTree() {
     for ( T t : this ) {
       ( (AbstractMetaDataModelNode) t ).validateTree();
@@ -228,7 +227,6 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     validateNode();
   }
 
-  @SuppressWarnings( "unchecked" )
   public boolean isTreeValid() {
     if ( !isValid() ) {
       return false;
@@ -302,6 +300,8 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   }
 
   private class AnnotationMap extends HashMap<String, IMemberAnnotation> {
+    private static final long serialVersionUID = -578588442907941576L;
+
     @Override
     public IMemberAnnotation put( String s, IMemberAnnotation iMemberAnnotation ) {
       IMemberAnnotation prevVal = get( s );

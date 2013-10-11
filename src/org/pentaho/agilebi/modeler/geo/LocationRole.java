@@ -31,7 +31,7 @@ import org.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;
  * File Templates.
  */
 public class LocationRole extends GeoRole implements Serializable {
-
+  private static final long serialVersionUID = 308145806472677473L;
   private static final String LOCATION = "location";
   private LatLngRole latitudeRole;
   private LatLngRole longitudeRole;

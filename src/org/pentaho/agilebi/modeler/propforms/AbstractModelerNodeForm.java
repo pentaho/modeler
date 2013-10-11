@@ -32,7 +32,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 
 public abstract class AbstractModelerNodeForm<T> extends AbstractXulEventHandler implements
     ModelerNodePropertiesForm<T> {
-
+  private static final long serialVersionUID = -3087453988349932488L;
   protected BindingFactory bf;
   protected XulDeck deck;
   protected XulVbox panel;

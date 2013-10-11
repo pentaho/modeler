@@ -57,7 +57,6 @@ import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
@@ -87,8 +86,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private String sourceName;
 
   private transient IModelerSource source;
-
-  private String selectedServer;
 
   private String selectedVisualization;
 
@@ -691,9 +688,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     this.relationalModel.getCategories().clear();
     this.availableTables.clear();
 
-    boolean needsUpConverted = false;
     if ( upConvertDesired ) {
-      needsUpConverted = upConvertLegacyModel();
+      upConvertLegacyModel();
     }
     List<IAvailableItem> items = new ArrayList<IAvailableItem>();
     for ( IPhysicalTable table : domain.getPhysicalModels().get( 0 ).getPhysicalTables() ) {
@@ -953,7 +949,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public void resolveConnectionFromDomain() {
     // set up the datasource
     if ( domain != null && source != null ) {
-      SqlPhysicalModel physicalModel = (SqlPhysicalModel) domain.getPhysicalModels().get( 0 );
+      //      SqlPhysicalModel physicalModel = (SqlPhysicalModel) domain.getPhysicalModels().get( 0 );
       // TODO: resolve GWT DatabaseMeta databaseMeta = ThinModelConverter.convertToLegacy(physicalModel.getId(),
       // physicalModel.getDatasource());
       // TODO: resolve GWT source.setDatabaseMeta(databaseMeta);

@@ -17,6 +17,11 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -25,17 +30,13 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-
 /**
  * Created: 3/24/11
  * 
  * @author rfellows
  */
 public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaData {
+  private static final long serialVersionUID = -6574834791283543091L;
 
   public static final String FORMAT_NONE = "NONE"; //$NON-NLS-1$
 
