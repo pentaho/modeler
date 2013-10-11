@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
 <overlay id="label-test" title="Flow Test"
-	xmlns="http://www.pentaho.org/there.is.only.xul"
-	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="1000" onload="modeler.init()"
-    xmlns:pen="http://www.pentaho.org/2008/xul" >
+         xmlns="http://www.pentaho.org/there.is.only.xul"
+         xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" height="600" width="1000" onload="modeler.init()"
+         xmlns:pen="http://www.pentaho.org/2008/xul">
 
   <!--
     ~ This program is free software; you can redistribute it and/or modify it under the
@@ -24,11 +24,11 @@
 
   <vbox id="mainVBox">
     <hbox insertbefore="toolbar" id="debugContainer" spacing="0" padding="0">
-      <button id="showReportingOnlyButton" label="reporting only" onclick="modeler.showReportingOnlyMode()" />
-      <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()" />
+      <button id="showReportingOnlyButton" label="reporting only" onclick="modeler.showReportingOnlyMode()"/>
+      <button id="showAnalysisAndReportingButton" label="both" onclick="modeler.showAnalysisAndReportingMode()"/>
       <spacer flex="1"/>
-      <label value="Model isValid =" />
-      <label id="modelValidationStatus" value="?" />
+      <label value="Model isValid ="/>
+      <label id="modelValidationStatus" value="?"/>
     </hbox>
   </vbox>
 

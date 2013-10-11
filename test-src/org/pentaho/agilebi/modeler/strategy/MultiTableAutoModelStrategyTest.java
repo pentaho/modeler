@@ -30,7 +30,7 @@ import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
 
 /**
  * Created: 4/19/11
- * 
+ *
  * @author rfellows
  */
 public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {

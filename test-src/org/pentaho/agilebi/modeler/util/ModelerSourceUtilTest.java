@@ -28,7 +28,7 @@ import org.pentaho.metadata.model.Domain;
 
 /**
  * Created: 3/31/11
- * 
+ *
  * @author rfellows
  */
 public class ModelerSourceUtilTest extends AbstractModelerTest {
@@ -95,10 +95,10 @@ public class ModelerSourceUtilTest extends AbstractModelerTest {
 
   public static DatabaseMeta getDatabaseMeta() {
     DatabaseMeta database = new DatabaseMeta();
-    database.setDatabaseType( "Hypersonic" );//$NON-NLS-1$
+    database.setDatabaseType( "Hypersonic" ); //$NON-NLS-1$
     database.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
-    database.setDBName( "SampleData" );//$NON-NLS-1$
-    database.setName( "SampleData" );//$NON-NLS-1$
+    database.setDBName( "SampleData" ); //$NON-NLS-1$
+    database.setName( "SampleData" ); //$NON-NLS-1$
     return database;
   }
 

@@ -36,7 +36,7 @@ public class GeoRoleTest {
     GeoRole geoRole = new GeoRole( "State", "state, province" );
     assertEquals( "State", geoRole.getName() );
     assertEquals( 2, geoRole.getCommonAliases().size() );
-    assertArrayEquals( aliases, geoRole.getCommonAliases().toArray( new String[] {} ) );
+    assertArrayEquals( aliases, geoRole.getCommonAliases().toArray( new String[] { } ) );
   }
 
   @Test

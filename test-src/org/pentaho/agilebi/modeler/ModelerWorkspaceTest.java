@@ -45,7 +45,7 @@ import org.pentaho.metadata.util.XmiParser;
 
 /**
  * Created: 4/1/11
- * 
+ *
  * @author rfellows
  */
 public class ModelerWorkspaceTest extends AbstractModelerTest {
@@ -164,24 +164,27 @@ public class ModelerWorkspaceTest extends AbstractModelerTest {
     String expected = StringUtils.deleteWhitespace( mondrianSchema );
     String actual = StringUtils.deleteWhitespace( mondrianXmlBeforeUpConvert );
 
-    // assertTrue(StringUtils.deleteWhitespace(mondrianXmlBeforeUpConvert).equals(StringUtils.deleteWhitespace(mondrianSchema)));
+    // assertTrue(StringUtils.deleteWhitespace(mondrianXmlBeforeUpConvert).equals(StringUtils.deleteWhitespace
+    // (mondrianSchema)));
     assertEquals( actual, expected );
     System.out.println( "after assert" );
 
   }
 
   private static String readFileAsString( String filePath ) throws java.io.IOException {
-    byte[] buffer = new byte[(int) new File( filePath ).length()];
+    byte[] buffer = new byte[ (int) new File( filePath ).length() ];
     BufferedInputStream f = null;
     try {
       f = new BufferedInputStream( new FileInputStream( filePath ) );
       f.read( buffer );
     } finally {
-      if ( f != null )
+      if ( f != null ) {
         try {
           f.close();
         } catch ( IOException ignored ) {
+          // ignore
         }
+      }
     }
     return new String( buffer );
   }

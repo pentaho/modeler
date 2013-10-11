@@ -56,7 +56,7 @@ public class AvailableColumnsTest extends AbstractModelerTest {
     controller.addField();
     assertEquals( 1, workspace.getModel().getMeasures().size() );
     assertEquals( field1.getPhysicalColumn(), workspace.getModel().getMeasures().get( 0 ).getLogicalColumn()
-        .getPhysicalColumn() );
+      .getPhysicalColumn() );
 
     // Attempt to add the second field as a measure. It should fail and the list remain the same
     controller.setSelectedFields( new Object[] { field2 } );
