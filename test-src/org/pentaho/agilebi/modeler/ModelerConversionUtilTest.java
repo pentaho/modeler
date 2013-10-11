@@ -96,7 +96,8 @@ public class ModelerConversionUtilTest {
       assertEquals( rrel.getFromTable().getPhysicalTable().getId(), orel.getFromTable().getPhysicalTable().getId() );
       assertEquals( rrel.getToTable().getPhysicalTable().getId(), orel.getToTable().getPhysicalTable().getId() );
 
-      assertEquals( rrel.getFromColumn().getPhysicalColumn().getId(), orel.getFromColumn().getPhysicalColumn().getId() );
+      assertEquals( rrel.getFromColumn().getPhysicalColumn().getId(),
+        orel.getFromColumn().getPhysicalColumn().getId() );
       assertEquals( orel.getToColumn().getPhysicalColumn().getId(), orel.getToColumn().getPhysicalColumn().getId() );
     }
 
@@ -183,7 +184,8 @@ public class ModelerConversionUtilTest {
       assertEquals( rrel.getFromTable().getPhysicalTable().getId(), orel.getFromTable().getPhysicalTable().getId() );
       assertEquals( rrel.getToTable().getPhysicalTable().getId(), orel.getToTable().getPhysicalTable().getId() );
 
-      assertEquals( rrel.getFromColumn().getPhysicalColumn().getId(), orel.getFromColumn().getPhysicalColumn().getId() );
+      assertEquals( rrel.getFromColumn().getPhysicalColumn().getId(),
+        orel.getFromColumn().getPhysicalColumn().getId() );
       assertEquals( orel.getToColumn().getPhysicalColumn().getId(), orel.getToColumn().getPhysicalColumn().getId() );
     }
 

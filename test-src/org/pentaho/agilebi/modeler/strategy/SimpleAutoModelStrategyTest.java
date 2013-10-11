@@ -48,7 +48,7 @@ import org.pentaho.metadata.model.concept.types.DataType;
 
 /**
  * Created: 4/19/11
- * 
+ *
  * @author rfellows
  */
 public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
@@ -87,7 +87,8 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
         if ( !columns.contains( field.getName() ) ) {
           columns.add( field.getName() );
         }
-        if ( field.getPhysicalColumn().getDataType() == DataType.NUMERIC && !numericColumns.contains( field.getName() ) ) {
+        if ( field.getPhysicalColumn().getDataType() == DataType.NUMERIC && !numericColumns
+          .contains( field.getName() ) ) {
           numericColumns.add( field.getName() );
         }
       }
@@ -132,7 +133,7 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
 
     int expectedLevelCount = 0;
     for ( AvailableField field : workspace.getAvailableTables().getAsAvailableTablesList().get( 0 )
-        .getAvailableFields() ) {
+      .getAvailableFields() ) {
       expectedLevelCount++;
     }
     // make sure there are no duplicate fields between the 2 dimensions

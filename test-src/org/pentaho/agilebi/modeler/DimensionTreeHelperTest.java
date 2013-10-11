@@ -31,7 +31,7 @@ import static junit.framework.Assert.assertTrue;
 
 /**
  * Created: 4/18/11
- * 
+ *
  * @author rfellows
  */
 public class DimensionTreeHelperTest extends AbstractModelerTest {
@@ -149,17 +149,21 @@ public class DimensionTreeHelperTest extends AbstractModelerTest {
 
     @Override
     public boolean equals( Object o ) {
-      if ( this == o )
+      if ( this == o ) {
         return true;
-      if ( o == null || getClass() != o.getClass() )
+      }
+      if ( o == null || getClass() != o.getClass() ) {
         return false;
+      }
 
       TableCountInfo that = (TableCountInfo) o;
 
-      if ( columnCount != that.columnCount )
+      if ( columnCount != that.columnCount ) {
         return false;
-      if ( tableCount != that.tableCount )
+      }
+      if ( tableCount != that.tableCount ) {
         return false;
+      }
 
       return true;
     }

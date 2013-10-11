@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 
 /**
  * Created: 3/17/11
- * 
+ *
  * @author rfellows
  */
 public class ModelerMessages extends ResourceBundle {

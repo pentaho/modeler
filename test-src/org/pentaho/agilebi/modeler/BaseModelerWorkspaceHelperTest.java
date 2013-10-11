@@ -39,7 +39,7 @@ import org.pentaho.metadata.model.olap.OlapMeasure;
 
 /**
  * Created: 3/25/11
- * 
+ *
  * @author rfellows
  */
 public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
@@ -79,7 +79,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     assertEquals( firstField.getSelectedAggregations(), lCol.getAggregationList() );
 
     List<OlapCube> cubes =
-        (List<OlapCube>) workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "olap_cubes" );
+      (List<OlapCube>) workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "olap_cubes" );
     OlapMeasure measure = cubes.get( 0 ).getOlapMeasures().get( 0 );
     assertEquals( AggregationType.SUM, measure.getLogicalColumn().getAggregationType() );
 
@@ -115,7 +115,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
       assertEquals( orig.getDefaultAggregation(), lCol.getAggregationType() );
       if ( orig.getFormat().equals( "NONE" ) ) {
         if ( orig.getLogicalColumn().getDataType() == DataType.NUMERIC ) {
-          assertTrue( lCol.getProperty( "mask" ) == "#" );
+          assertTrue( "#".equals( lCol.getProperty( "mask" ) ) );
         } else {
           assertTrue( lCol.getProperty( "mask" ) == null );
         }

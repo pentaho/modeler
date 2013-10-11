@@ -90,8 +90,8 @@ public class AbstractModelerTest {
     SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1( true );
 
     MultiTableModelerSource modelerSource =
-        new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
-            "CUSTOMERNAME", "PRODUCTCODE" ) );
+      new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
+        "CUSTOMERNAME", "PRODUCTCODE" ) );
 
     Domain d = modelerSource.generateDomain( true );
     workspace.setDomain( d );
@@ -101,8 +101,8 @@ public class AbstractModelerTest {
     SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1( false );
 
     MultiTableModelerSource modelerSource =
-        new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
-            "CUSTOMERNAME", "PRODUCTCODE" ) );
+      new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
+        "CUSTOMERNAME", "PRODUCTCODE" ) );
 
     Domain d = modelerSource.generateDomain( false );
     workspace.setDomain( d );
@@ -110,10 +110,10 @@ public class AbstractModelerTest {
 
   public static DatabaseMeta getDatabaseMeta() {
     DatabaseMeta database = new DatabaseMeta();
-    database.setDatabaseType( "Hypersonic" );//$NON-NLS-1$
+    database.setDatabaseType( "Hypersonic" ); //$NON-NLS-1$
     database.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
-    database.setDBName( "SampleData" );//$NON-NLS-1$
-    database.setName( "SampleData" );//$NON-NLS-1$
+    database.setDBName( "SampleData" ); //$NON-NLS-1$
+    database.setName( "SampleData" ); //$NON-NLS-1$
     return database;
   }
 }
