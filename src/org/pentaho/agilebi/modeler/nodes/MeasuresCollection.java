@@ -31,6 +31,8 @@ import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaData> implements Serializable {
+  private static final long serialVersionUID = 5827211352596188503L;
+
   private String name = "Measures"; // BaseMessages.getString(ModelerWorkspace.class, "measures");
 
   public static String MEASURE_PROP = "potential_measure";
@@ -69,7 +71,6 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
 
   @Override
   public void validate() {
-    boolean prevVal = valid;
     valid = true;
     validationMessages.clear();
 
@@ -187,19 +188,6 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         measure = getWorkspace().createMeasureForNode( (AvailableField) data );
       } else if ( data instanceof AvailableTable ) {
         AvailableTable table = (AvailableTable) data;
-        String agileBiVersion =
-            (String) getWorkspace().getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "AGILE_BI_VERSION" );
-
-        if ( measure != null && agileBiVersion != null && Float.parseFloat( agileBiVersion ) >= 2.0 ) {
-          // if we're in a multi-table mode check for a fact table
-          if ( getWorkspace().getAvailableTables().size() > 1 ) {
-            Object factProp = table.getPhysicalTable().getProperty( "FACT_TABLE" );
-            if ( factProp == null || factProp.equals( Boolean.FALSE ) ) {
-              throw new IllegalStateException( ModelerMessagesHolder.getMessages().getString(
-                  "DROP.ERROR.MEASURE_NOT_FROM_FACT" ) );
-            }
-          }
-        }
         List<MeasureMetaData> measureList = new ArrayList<MeasureMetaData>();
 
         for ( AvailableField field : table.getChildren() ) {

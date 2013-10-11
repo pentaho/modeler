@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
@@ -306,20 +305,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
   }
 
-  private String combineRequiredParents( GeoRole role ) {
-    if ( role.getRequiredParentRoles().size() > 0 ) {
-      StringBuffer sb = new StringBuffer();
-      for ( GeoRole r : role.getRequiredParentRoles() ) {
-        if ( sb.length() > 0 ) {
-          sb.append( "," );
-        }
-        sb.append( r.getName() );
-      }
-      return sb.toString();
-    }
-    return null;
-  }
-
   private LogicalTable findOlapCloneForTableInDomain( LogicalTable supposedLTable, Domain domain ) {
     if ( supposedLTable.getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX ) ) {
       return supposedLTable;
@@ -459,8 +444,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         } else if ( o2 == null ) {
           return 1;
         }
-        String name1 = ( (AvailableField) o1 ).getDisplayName();
-        String name2 = ( (AvailableField) o2 ).getDisplayName();
+        String name1 = o1.getDisplayName();
+        String name2 = o2.getDisplayName();
         if ( name1 == null && name2 == null ) {
           return 0;
         } else if ( name1 == null ) {
@@ -481,15 +466,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
    */
   public void autoModelRelationalFlat( ModelerWorkspace workspace ) throws ModelerException {
     autoModelStrategy.autoModelRelational( workspace, getRelationalModelNode( workspace ) );
-  }
-
-  private FieldMetaData createFieldForCategoryWithColumn( CategoryMetaData parent, LogicalColumn column ) {
-    FieldMetaData field =
-        new FieldMetaData( parent, column.getName( getLocale() ), "", column.getName( getLocale() ), getLocale() ); //$NON-NLS-1$
-    field.setLogicalColumn( column );
-    field.setFieldTypeDesc( column.getDataType().getName() );
-    parent.add( field );
-    return field;
   }
 
   /**

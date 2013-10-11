@@ -17,6 +17,10 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
@@ -30,10 +34,6 @@ import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created: 3/18/11
@@ -286,7 +286,6 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
 
   @Override
   public void validate() {
-    String prevMessages = getValidationMessagesString();
     valid = true;
     validationMessages.clear();
     // check name

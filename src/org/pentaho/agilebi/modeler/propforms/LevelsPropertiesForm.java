@@ -46,7 +46,7 @@ import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBackedMetaData> {
-
+  private static final long serialVersionUID = 7387695478794340469L;
   protected XulTextbox name;
   protected XulCheckbox hasUniqueMembers;
   protected XulLabel sourceLabel;
@@ -185,7 +185,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
           @Override
           public String targetToSource( String value ) {
-            // TODO Auto-generated method stub
             return null;
           }
         } );
@@ -213,7 +212,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
 
     timeLevelFormatList = (XulMenuList) document.getElementById( "time_level_format" );
     bf.createBinding( timeLevelFormatList, "value", this, "timeLevelFormat" );
-    // bf.createBinding(timeLevelFormatList, "selectedItem", this, "timeLevelFormat");
   }
 
   protected String getColumnNameFromLogicalColumn( LogicalColumn col ) {
@@ -221,7 +219,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     if ( col != null ) {
       IPhysicalColumn physicalColumn = col.getPhysicalColumn();
       if ( physicalColumn != null ) {
-        // TODO: GWT locale
         columnName = physicalColumn.getName( locale );
       }
     }
@@ -389,9 +386,6 @@ public class LevelsPropertiesForm extends AbstractModelerNodeForm<BaseColumnBack
     if ( selectedTimeLevelType == null ) {
       selectedTimeLevelType = TimeRole.DUMMY;
     }
-    // if (oldTimeLevelType == null && selectedTimeLevelType == null) return;
-    // if (oldTimeLevelType != null && selectedTimeLevelType != null && oldTimeLevelType.equals(selectedTimeLevelType))
-    // return;
     this.selectedTimeLevelType = selectedTimeLevelType;
     getNode().setDataRole( selectedTimeLevelType );
     List<String> formatsList = selectedTimeLevelType.getFormatsList();

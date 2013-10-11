@@ -29,7 +29,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  */
 @SuppressWarnings( "unchecked" )
 public class MeasureMetaData extends BaseAggregationMetaDataNode {
-
+  private static final long serialVersionUID = -7974277299013394857L;
   private static final String IMAGE = "images/sm_measure_icon.png";
 
   public MeasureMetaData( String locale ) {

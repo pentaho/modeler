@@ -61,15 +61,16 @@ public class ModelerConversionUtil {
           || ( ( isAgileBiGenerated != null && isAgileBiGenerated.equals( "TRUE" ) ) || ( mondrianCatRef != null ) ) ) {
 
         double versionNumber = 1.0;
+        boolean ignored = false;
 
         try {
           versionNumber = Double.parseDouble( versionString );
         } catch ( NumberFormatException e ) {
           // not a valid version number, assume it was the original
-          boolean ignored = true;
+          ignored = true;
         } catch ( NullPointerException npe ) {
           // just use the pre-defined versionNumber
-          boolean ignored = true;
+          ignored = true;
         }
 
         if ( versionNumber < 2.0 ) {

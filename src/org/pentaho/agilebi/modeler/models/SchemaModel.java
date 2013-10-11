@@ -25,7 +25,7 @@ import java.util.List;
  * User: nbaker Date: 4/16/11
  */
 public class SchemaModel implements Serializable {
-
+  private static final long serialVersionUID = -3897309328565658403L;
   private JoinTableModel factTable;
   private List<JoinRelationshipModel> joins = new ArrayList<JoinRelationshipModel>();
 

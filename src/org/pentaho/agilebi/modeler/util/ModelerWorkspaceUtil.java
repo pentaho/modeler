@@ -57,8 +57,6 @@ public class ModelerWorkspaceUtil {
     return model;
   }
 
-  private static String MODELER_NAME = "OutputStepModeler"; //$NON-NLS-1$
-
   protected static void save( String content, String fileName ) throws IOException {
     File file = new File( fileName );
     OutputStream out = new FileOutputStream( file );

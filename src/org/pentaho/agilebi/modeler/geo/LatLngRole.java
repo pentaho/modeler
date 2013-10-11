@@ -26,7 +26,7 @@ import java.util.List;
  * File Templates.
  */
 public class LatLngRole extends GeoRole implements Serializable {
-
+  private static final long serialVersionUID = 3443044732976689019L;
   private String prefix = "";
 
   public LatLngRole() {

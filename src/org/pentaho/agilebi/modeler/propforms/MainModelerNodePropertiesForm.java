@@ -17,6 +17,10 @@
 
 package org.pentaho.agilebi.modeler.propforms;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.Serializable;
+
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MainModelNode;
 import org.pentaho.ui.xul.binding.Binding;
@@ -26,15 +30,11 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.Serializable;
-
 /*
  * Empty main node property form handler. Used as a key for the interface.
  */
 public class MainModelerNodePropertiesForm extends AbstractModelerNodeForm<MainModelNode> implements Serializable {
-
+  private static final long serialVersionUID = 2257973330712395088L;
   private XulTextbox name;
   private XulVbox messageBox;
   private XulLabel messageLabel;

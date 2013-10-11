@@ -26,7 +26,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class JoinTableModel extends XulEventSourceAdapter implements Serializable {
-
+  private static final long serialVersionUID = -8964972286672462570L;
   private String name;
   private AbstractModelList<JoinFieldModel> fields;
 

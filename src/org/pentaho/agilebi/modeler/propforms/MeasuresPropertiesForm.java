@@ -30,8 +30,7 @@ import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregationMetaDataNode> {
-
-  // protected BaseAggregationMetaDataNode fieldMeta;
+  private static final long serialVersionUID = -8703255300288774342L;
   protected Vector aggTypes;
   private String colName;
   private String locale;
