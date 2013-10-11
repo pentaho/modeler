@@ -81,7 +81,7 @@ public class ModelsDnDTest extends AbstractModelerTest {
 
     assertFalse( firstLevel.acceptsDrop( new MemberPropertyMetaData( firstLevel, "test" ) ) );
     assertTrue( firstLevel.acceptsDrop( workspace.createMemberPropertyForParentWithNode( firstLevel, workspace
-        .createColumnBackedNode( firstField, ModelerPerspective.ANALYSIS ) ) ) );
+      .createColumnBackedNode( firstField, ModelerPerspective.ANALYSIS ) ) ) );
     assertTrue( firstLevel.acceptsDrop( firstField ) );
   }
 
@@ -214,19 +214,23 @@ public class ModelsDnDTest extends AbstractModelerTest {
       assertNull( firstHier.onDrop( firstDim ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstLevel.onDrop( firstDim ) );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstLevel.onDrop( firstHier ) );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( dimensions.onDrop( workspace.getModel() ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
 
     // cannot drag dimensions and measures collections not the mainModelNode anywhere
@@ -234,96 +238,115 @@ public class ModelsDnDTest extends AbstractModelerTest {
       assertNull( dimensions.onDrop( measures ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( mainNode.onDrop( measures ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstDim.onDrop( measures ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstHier.onDrop( measures ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstLevel.onDrop( measures ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
 
     try {
       assertNull( measures.onDrop( dimensions ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( mainNode.onDrop( dimensions ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstDim.onDrop( dimensions ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstHier.onDrop( dimensions ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstLevel.onDrop( dimensions ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
 
     try {
       assertNull( measures.onDrop( mainNode ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( dimensions.onDrop( mainNode ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstDim.onDrop( mainNode ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstHier.onDrop( mainNode ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstLevel.onDrop( mainNode ) );
       fail( "Should have thrown an exception" );
     } catch ( ModelerException e ) {
+      // ignore
     }
 
     // same type of node onto another... universally bad
     try {
       assertNull( firstLevel.onDrop( secondLevel ) );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstHier.onDrop( secondHier ) );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstDim.onDrop( secondDim ) );
     } catch ( ModelerException e ) {
+      // ignore
     }
     try {
       assertNull( firstMeasure.onDrop( secondMeasure ) );
     } catch ( ModelerException e ) {
+      // ignore
     }
 
   }

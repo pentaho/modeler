@@ -61,7 +61,7 @@ public class GeoContextFactoryTest {
     String rolesCsv = props.getProperty( GEO_ROLE_KEY );
     String[] tokens = rolesCsv.split( "," );
     for ( int i = 0; i < tokens.length; i++ ) {
-      assertEquals( tokens[i].trim(), geo.getGeoRole( i ).getName() );
+      assertEquals( tokens[ i ].trim(), geo.getGeoRole( i ).getName() );
     }
 
     GeoRole state = geo.getGeoRoleByName( "state" );

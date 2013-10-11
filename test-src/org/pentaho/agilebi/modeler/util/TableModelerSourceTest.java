@@ -21,7 +21,7 @@ import org.junit.Test;
 
 /**
  * Created: 3/31/11
- * 
+ *
  * @author rfellows
  */
 public class TableModelerSourceTest {

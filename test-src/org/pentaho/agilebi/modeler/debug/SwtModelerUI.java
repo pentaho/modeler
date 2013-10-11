@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Created: 3/15/11
- * 
+ *
  * @author rfellows
  */
 public class SwtModelerUI {
@@ -81,7 +81,8 @@ public class SwtModelerUI {
       loader.registerClassLoader( getClass().getClassLoader() );
       loader.setOuterContext( shell );
       container =
-          loader.loadXul( "org/pentaho/agilebi/modeler/res/panel.xul", new ModelerMessages( ModelerWorkspace.class ) ); //$NON-NLS-1$
+        loader.loadXul( "org/pentaho/agilebi/modeler/res/panel.xul",
+          new ModelerMessages( ModelerWorkspace.class ) ); //$NON-NLS-1$
       container.loadOverlay( "org/pentaho/agilebi/modeler/debug/panel_overlay.xul" ); //$NON-NLS-1$
 
       controller = new ModelerController( workspace );
@@ -133,13 +134,6 @@ public class SwtModelerUI {
       Domain d = ModelerSourceUtil.generateDomain( getDatabaseMeta(), "", "CUSTOMERS" );
       workspace.setDomain( d );
       XmiParser parser = new XmiParser();
-      try {
-        // Domain domain = parser.parseXmi(new FileInputStream(new File("test-res/testMulti.xmi")));
-        // workspace.setDomain(domain);
-      } catch ( Exception e ) {
-        e.printStackTrace();
-      }
-      // workspace.setDomain(d);
     } catch ( ModelerException e ) {
       e.printStackTrace();
     } catch ( KettleException e ) {
@@ -156,14 +150,14 @@ public class SwtModelerUI {
   private static DatabaseMeta getDatabaseMeta() {
     DatabaseMeta database = new DatabaseMeta();
     // database.setDatabaseInterface(new HypersonicDatabaseMeta());
-    database.setDatabaseType( "Hypersonic" );//$NON-NLS-1$
-    //database.setUsername("sa");//$NON-NLS-1$
-    //database.setPassword("");//$NON-NLS-1$
+    database.setDatabaseType( "Hypersonic" ); //$NON-NLS-1$
+    //database.setUsername("sa"); //$NON-NLS-1$
+    //database.setPassword(""); //$NON-NLS-1$
     database.setAccessType( DatabaseMeta.TYPE_ACCESS_JNDI );
     // database.setHostname(".");
-    database.setDBName( "SampleData" );//$NON-NLS-1$
-    //database.setDBPort("9001");//$NON-NLS-1$
-    database.setName( "SampleData" );//$NON-NLS-1$
+    database.setDBName( "SampleData" ); //$NON-NLS-1$
+    //database.setDBPort("9001"); //$NON-NLS-1$
+    database.setName( "SampleData" ); //$NON-NLS-1$
     return database;
   }
 
@@ -284,7 +278,7 @@ public class SwtModelerUI {
         System.out.println( "Save mondrian xml..." );
         try {
           ModelerWorkspaceUtil.saveWorkspaceAsMondrianSchema( controller.getModel(), fname, controller
-              .getWorkspaceHelper().getLocale() );
+            .getWorkspaceHelper().getLocale() );
         } catch ( Exception e ) {
           e.printStackTrace();
         }
