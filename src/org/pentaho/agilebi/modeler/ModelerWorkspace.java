@@ -949,7 +949,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   public void resolveConnectionFromDomain() {
     // set up the datasource
     if ( domain != null && source != null ) {
-      //      SqlPhysicalModel physicalModel = (SqlPhysicalModel) domain.getPhysicalModels().get( 0 );
+      domain.getPhysicalModels().get( 0 );
       // TODO: resolve GWT DatabaseMeta databaseMeta = ThinModelConverter.convertToLegacy(physicalModel.getId(),
       // physicalModel.getDatasource());
       // TODO: resolve GWT source.setDatabaseMeta(databaseMeta);
