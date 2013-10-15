@@ -75,10 +75,10 @@ public class ColResolverController extends AbstractXulEventHandler {
     bf.setBindingType( Binding.Type.ONE_WAY );
 
     // fieldListBinding
-    bf.createBinding(items, "children", "resolveColumnsTree", "elements"); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding( items, "children", "resolveColumnsTree", "elements" );
 
     // selectedFieldsBinding
-    bf.createBinding("resolveColumnsTree", "selectedItem", this, "selectedFieldsChanged"); //$NON-NLS-1$//$NON-NLS-2$
+    bf.createBinding( "resolveColumnsTree", "selectedItem", this, "selectedFieldsChanged" );
 
   }
 
