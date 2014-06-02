@@ -28,6 +28,7 @@ import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -42,6 +43,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
   private static final String ID = "fieldprops";
   private Collection<AggregationType> selectedAggregations;
   private XulButton messageBtn;
+  protected XulMenuList formatFieldList;
 
   public FieldsPropertiesForm( String locale ) {
     super( ID, locale );
@@ -57,6 +59,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     this.workspace = workspace;
     deck = (XulDeck) document.getElementById( "propertiesdeck" );
     panel = (XulVbox) document.getElementById( ID );
+    formatFieldList = (XulMenuList) document.getElementById( "fieldformatstring" );
 
     bf.createBinding( this, "notValid", "fieldmessages", "visible" );
     bf.createBinding( this, "validMessages", "fieldmessageslabel", "value", validMsgTruncatedBinding );
@@ -67,7 +70,7 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     bf.createBinding( this, "possibleAggregations", "field_defaultAggregation", "elements" );
     bf.createBinding( this, "defaultAggregation", "field_defaultAggregation", "selectedItem" );
 
-    bf.createBinding( this, "format", "fieldformatstring", "selectedItem", new FormatStringConverter() );
+    bf.createBinding( this, "format", formatFieldList, "value", new FormatStringConverter() );
     bf.createBinding( this, "backingColumnAvailable", "fixFieldColumnsBtn", "!visible" );
     bf.createBinding( this, "columnName", "field_column_name", "value" );
     messageBtn = (XulButton) document.getElementById( "field_message_btn" );

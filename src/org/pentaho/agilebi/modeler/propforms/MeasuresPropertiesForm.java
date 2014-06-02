@@ -27,6 +27,7 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregationMetaDataNode> {
@@ -36,6 +37,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   private String locale;
   protected AggregationType defaultAggregation;
   protected String format;
+  protected XulMenuList formatList;
   private XulButton messageBtn;
 
   public MeasuresPropertiesForm( String panelId, String locale ) {
@@ -76,13 +78,15 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   public void init( ModelerWorkspace workspace ) {
     super.init( workspace );
 
+    formatList = (XulMenuList) document.getElementById( "formatstring" );
+
     bf.createBinding( this, "notValid", "messages2", "visible" );
     bf.createBinding( this, "validMessages", "messages2label", "value", validMsgTruncatedBinding );
     bf.createBinding( this, "displayName", "displayname", "value" );
     bf.createBinding( this, "possibleAggregations", "defaultAggregation", "elements" );
     bf.createBinding( this, "defaultAggregation", "defaultAggregation", "selectedItem" );
 
-    bf.createBinding( this, "format", "formatstring", "selectedItem", new FormatStringConverter() );
+    bf.createBinding( this, "format", formatList, "value", new FormatStringConverter() );
     bf.createBinding( this, "backingColumnAvailable", "fixMeasuresColumnsBtn", "!visible" );
     bf.createBinding( this, "columnName", "measure_column_name", "value" );
     messageBtn = (XulButton) document.getElementById( "measure_message_btn" );
