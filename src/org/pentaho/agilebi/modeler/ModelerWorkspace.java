@@ -787,6 +787,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
             // get any logicalColumns and turn them into member properties
             if ( theLevel.getLogicalColumns() != null && theLevel.getLogicalColumns().size() > 0 ) {
               for ( LogicalColumn lc : theLevel.getLogicalColumns() ) {
+                // BISERVER-11578 - Protect against null lc's in the collection. We still need to
+                // investigate why this can happen in the model.
+                if( lc == null ){
+                  continue;
+                }
+
                 if ( !lc.getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX )
                     && !lc.getId().contains( BaseModelerWorkspaceHelper.OLAP_SUFFIX + "_" ) ) {
                   // not pointing to the olap col
