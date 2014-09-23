@@ -64,13 +64,21 @@ public class ModelerSourceUtil {
     } catch ( ModelerException e ) {
       try {
         // Second try to see if lower casing will match DB (Ex. Postgres)
-        schemaName = schemaName.toLowerCase();
-        tableName = tableName.toLowerCase();
+        if ( !StringUtils.isBlank( schemaName ) ) {
+          schemaName = schemaName.toLowerCase();
+        }
+        if ( !StringUtils.isBlank( tableName ) ) {
+          tableName = tableName.toLowerCase();
+        }
         verifyTableExistsAndMayBeQuoted( databaseMeta, schemaName, tableName );
       } catch ( ModelerException e2 ) {
         // Third try to see if upper casing will match DB (Ex. H2, ORACLE)
-        schemaName = schemaName.toUpperCase();
-        tableName = tableName.toUpperCase();
+        if ( !StringUtils.isBlank( schemaName ) ) {
+          schemaName = schemaName.toUpperCase();
+        }
+        if ( !StringUtils.isBlank( tableName ) ) {
+          tableName = tableName.toUpperCase();
+        }
         verifyTableExistsAndMayBeQuoted( databaseMeta, schemaName, tableName );
       }
     }
