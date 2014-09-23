@@ -44,6 +44,47 @@ public class ModelerSourceUtil {
   private static ModelGenerator generator = new ModelGenerator();
   private static Logger logger = LoggerFactory.getLogger( ModelerSourceUtil.class );
 
+  /**
+   * PDI allows users to run SQLs where the table names are not quoted.  This results in the
+   * DB converting to lower case or upper case depending on the DB vendor.  However, Mondrian
+   * will always quote table names so when generating the schema on an unquoted table name,
+   * you can use this function to determine what the table name should be if it were quoted.
+   * 
+   * @param databaseMeta
+   * @param schemaName
+   * @param tableName
+   * @return
+   * @throws ModelerException
+   */
+  public static String[] discoverTableCasing( DatabaseMeta databaseMeta, String schemaName, String tableName )
+    throws ModelerException {
+    try {
+      // First try to see if current casing of tableName matches DB (Ex. MySQL doesn't matter)
+      verifyTableExistsAndMayBeQuoted( databaseMeta, schemaName, tableName );
+    } catch ( ModelerException e ) {
+      try {
+        // Second try to see if lower casing will match DB (Ex. Postgres)
+        if ( !StringUtils.isBlank( schemaName ) ) {
+          schemaName = schemaName.toLowerCase();
+        }
+        if ( !StringUtils.isBlank( tableName ) ) {
+          tableName = tableName.toLowerCase();
+        }
+        verifyTableExistsAndMayBeQuoted( databaseMeta, schemaName, tableName );
+      } catch ( ModelerException e2 ) {
+        // Third try to see if upper casing will match DB (Ex. H2, ORACLE)
+        if ( !StringUtils.isBlank( schemaName ) ) {
+          schemaName = schemaName.toUpperCase();
+        }
+        if ( !StringUtils.isBlank( tableName ) ) {
+          tableName = tableName.toUpperCase();
+        }
+        verifyTableExistsAndMayBeQuoted( databaseMeta, schemaName, tableName );
+      }
+    }
+    return new String[] { schemaName, tableName };
+  }
+
   public static void verifyTableExistsAndMayBeQuoted( DatabaseMeta databaseMeta, String schemaName, String tableName )
     throws ModelerException {
     Database database = new Database( databaseMeta );
@@ -81,10 +122,10 @@ public class ModelerSourceUtil {
   public static Domain generateDomain( DatabaseMeta databaseMeta, String schemaName, String tableName,
       String datasourceName, boolean dualModelingMode ) throws ModelerException {
 
-    // before generating model, let's check that the table exists and can be quoted.
-    // Mondrian quotes tables, so we need to force this check.
-    verifyTableExistsAndMayBeQuoted( databaseMeta, schemaName, tableName );
-
+    String[] schemaTable = discoverTableCasing( databaseMeta, schemaName, tableName );
+    schemaName = schemaTable[0];
+    tableName = schemaTable[1];
+    
     Domain domain = null;
     try {
       // modelName, databaseMeta, , "joe", tableOutputMeta.getTablename(), profiles);
