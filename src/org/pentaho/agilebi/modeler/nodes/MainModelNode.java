@@ -19,17 +19,14 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.Serializable;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.propforms.MainModelerNodePropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataModelNode> implements Serializable,
-    IRootModelNode {
+public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataModelNode> implements IRootModelNode {
 
   private static final long serialVersionUID = 2399128598598210134L;
 
@@ -118,7 +115,7 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
   }
 
   @Override
-  public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
+  public Class<MainModelerNodePropertiesForm> getPropertiesForm() {
     return MainModelerNodePropertiesForm.class;
   }
 

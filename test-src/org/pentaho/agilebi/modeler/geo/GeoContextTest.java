@@ -17,8 +17,14 @@
 
 package org.pentaho.agilebi.modeler.geo;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileReader;
@@ -46,6 +52,7 @@ import org.pentaho.agilebi.modeler.nodes.annotations.IDataRoleAnnotation;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
@@ -246,7 +253,7 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
 
     expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
     expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
@@ -266,7 +273,7 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable2.getName( LOCALE ) ).andReturn( "ORDERFACT" ).anyTimes();
     expect( mockTable2.getPhysicalColumns() ).andReturn( cols2 ).anyTimes();
     expect( mockTable2.getId() ).andReturn( "PT_ORDERFACT" ).anyTimes();
-    expect( mockTable2.getProperty( "target_table" ) ).andReturn( "PT_ORDERFACT" ).anyTimes();
+    expect( mockTable2.getProperty( "target_table" ) ).andReturn( new Property( "PT_ORDERFACT" ) ).anyTimes();
 
     expect( mockCountryCol.getName( LOCALE ) ).andReturn( "Country" ).anyTimes();
     expect( mockCountryCol.getName( "en-US" ) ).andReturn( "Country" ).anyTimes();
@@ -352,8 +359,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // state col
     expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
@@ -379,8 +386,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name", new Property<String>( "Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -392,8 +399,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name", new Property<String>( "Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     replay( mockTable1 );
@@ -497,8 +504,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // state col
     expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
@@ -518,8 +525,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name", new Property<String>( "Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -531,8 +538,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name", new Property<String>( "Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     replay( mockTable1 );
@@ -612,8 +619,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // lat col
     expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
@@ -624,8 +631,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name", new Property<String>( "Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -637,8 +644,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name", new Property<String>( "Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     // customer col
@@ -728,7 +735,7 @@ public class GeoContextTest extends AbstractModelerTest {
     verify( mockStateCol );
 
     workspace.getWorkspaceHelper().populateDomain( workspace );
-    List olapDimensions = (List) workspace.getDomain().getLogicalModels().get( 1 ).getProperty( "olap_dimensions" );
+    List olapDimensions = (List) workspace.getDomain().getLogicalModels().get( 1 ).getProperty( "olap_dimensions" ).getValue();
     boolean foundLevel = false;
     for ( Object d : olapDimensions ) {
       OlapDimension dim = (OlapDimension) d;
@@ -769,8 +776,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // customer col
     expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "Customer" ).anyTimes();
@@ -796,8 +803,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getId() ).andReturn( "CUSTOMER_LATITUDE" ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Customer_Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name", new Property<String> ( "Customer_Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -809,8 +816,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getId() ).andReturn( "CUSTOMER_LONGITUDE" ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Customer_Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name",  new Property<String> ( "Customer_Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     replay( mockTable1 );
@@ -855,8 +862,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // customer col
     expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "CustomerName" ).anyTimes();
@@ -882,8 +889,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getId() ).andReturn( "CUSTOMER_LATITUDE" ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Customer_Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name",  new Property<String> ( "Customer_Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -895,8 +902,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getId() ).andReturn( "CUSTOMER_LONGITUDE" ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Customer_Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name",  new Property<String> ( "Customer_Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     replay( mockTable1 );
@@ -944,8 +951,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // customer col
     expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "Customer" ).anyTimes();
@@ -971,8 +978,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getId() ).andReturn( "CUSTOMER_LATITUDE" ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Customer_Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name",  new Property<String> ( "Customer_Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -984,8 +991,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getId() ).andReturn( "CUSTOMER_LONGITUDE" ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Customer_Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name",  new Property<String> ( "Customer_Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     // street col
@@ -1003,8 +1010,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol2.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol2.getId() ).andReturn( "LATITUDE" ).anyTimes();
 
-    latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Latitude" );
+    latProperties = new HashMap<String, Property>();
+    latProperties.put( "name",  new Property<String> ( "Latitude" ) );
     expect( mockLatitudeCol2.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col2
@@ -1016,8 +1023,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol2.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol2.getId() ).andReturn( "LONGITUDE" ).anyTimes();
 
-    lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Longitude" );
+    lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name",  new Property<String> ( "Longitude" ) );
     expect( mockLongitudeCol2.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     replay( mockTable1 );
@@ -1067,8 +1074,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // country
     expect( mockCountryCol.getName( LOCALE ) ).andReturn( "Country" ).anyTimes();
@@ -1112,8 +1119,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name",  new Property<String> ( "Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -1125,8 +1132,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name",  new Property<String> ( "Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     replay( mockTable1 );
@@ -1205,8 +1212,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
     expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
     expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( new Property( "PT_CUSTOMERS" ) ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( new Property( "CUSTOMERS" ) ).anyTimes();
 
     // country
     expect( mockCountryCol.getName( LOCALE ) ).andReturn( "Country" ).anyTimes();
@@ -1250,8 +1257,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
-    latProperties.put( "name", "Latitude" );
+    HashMap<String, Property> latProperties = new HashMap<String, Property>();
+    latProperties.put( "name",  new Property<String> ( "Latitude" ) );
     expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
 
     // lng col
@@ -1263,8 +1270,8 @@ public class GeoContextTest extends AbstractModelerTest {
     expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
     expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
-    lngProperties.put( "name", "Longitude" );
+    HashMap<String, Property> lngProperties = new HashMap<String, Property>();
+    lngProperties.put( "name",  new Property<String> ( "Longitude" ) );
     expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
 
     // geography col

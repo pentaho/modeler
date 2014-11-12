@@ -31,6 +31,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.IConcept;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.security.Security;
 import org.pentaho.metadata.model.concept.security.SecurityOwner;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -151,8 +152,8 @@ public class ModelerSourceUtil {
       domain.setId( tableName ); // replaced with user specified name later
 
       LogicalModel businessModel = domain.getLogicalModels().get( 0 ); // schemaMeta.getActiveModel();
-      businessModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", "TRUE" );
-      businessModel.setProperty( "DUAL_MODELING_SCHEMA", "" + dualModelingMode );
+      businessModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", new Property<String> ( "TRUE" ) );
+      businessModel.setProperty( "DUAL_MODELING_SCHEMA", new Property<String> ( "" + dualModelingMode ) );
 
       // TODO do this with messages
       businessModel.setName( new LocalizedString( locale, tableName ) );
@@ -190,10 +191,15 @@ public class ModelerSourceUtil {
 
   public static void setRoleAccess( String role, int rights, IConcept concept ) {
     SecurityOwner owner = new SecurityOwner( SecurityOwner.OwnerType.ROLE, role );
-    Security security = (Security) concept.getProperty( DefaultPropertyID.SECURITY.getId() );
+    Security security = null;
+    Property property = concept.getProperty( DefaultPropertyID.SECURITY.getId() );
+    if ( property != null ) {
+      security = (Security) property.getValue();
+    }
+    
     if ( security == null ) {
       security = new Security();
-      concept.setProperty( DefaultPropertyID.SECURITY.getId(), security );
+      concept.setProperty( DefaultPropertyID.SECURITY.getId(), new Property<Security>( security ) );
     }
     security.putOwnerRights( owner, rights );
   }

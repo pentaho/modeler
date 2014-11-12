@@ -27,6 +27,7 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.Concept;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -39,10 +40,30 @@ public class ModelerConversionUtil {
   public static double upConvertDomain( Domain domain ) {
     int modelCount = domain.getLogicalModels().size();
     LogicalModel model = domain.getLogicalModels().get( 0 );
-    String versionString = (String) model.getProperty( "AGILE_BI_VERSION" );
-    String isAgileBiGenerated = (String) model.getProperty( "AGILE_BI_GENERATED_SCHEMA" );
-    String mondrianCatRef = (String) model.getProperty( "MondrianCatalogRef" );
-    String dualModelingMode = (String) model.getProperty( "DUAL_MODELING_SCHEMA" );
+    
+    String versionString = null;
+    Property vStringProp = model.getProperty( "AGILE_BI_VERSION" );
+    if ( vStringProp != null ) {
+      versionString = (String) vStringProp.getValue();
+    }
+    
+    String isAgileBiGenerated = null;
+    Property agileBiProp = model.getProperty( "AGILE_BI_GENERATED_SCHEMA" );
+    if ( agileBiProp != null ) {
+      isAgileBiGenerated = (String) agileBiProp.getValue();
+    }
+    
+    String mondrianCatRef = null;
+    Property mondrianProp = model.getProperty( "MondrianCatalogRef" );
+    if ( mondrianProp != null ) {
+      mondrianCatRef = (String) mondrianProp.getValue();
+    }
+    
+    String dualModelingMode = null;
+    Property dualProp = model.getProperty( "DUAL_MODELING_SCHEMA" );
+    if ( dualProp != null ) {
+      dualModelingMode = (String) dualProp.getValue();
+    }
 
     double currentVersion = Double.parseDouble( BaseModelerWorkspaceHelper.AGILE_BI_VERSION );
 
@@ -106,10 +127,10 @@ public class ModelerConversionUtil {
       olapModel.setRowLevelSecurity( combinedModel.getRowLevelSecurity() );
     }
 
-    olapModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", "TRUE" );
-    olapModel.setProperty( "MODELING_SCHEMA", "OLAP" );
-    olapModel.setProperty( "DUAL_MODELING_SCHEMA", "true" );
-    olapModel.setProperty( "visible", "false" );
+    olapModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", new Property<String>( "TRUE" ) );
+    olapModel.setProperty( "MODELING_SCHEMA", new Property<String>( "OLAP" ) );
+    olapModel.setProperty( "DUAL_MODELING_SCHEMA", new Property<String>( "true" ) );
+    olapModel.setProperty( "visible", new Property<String>( "false" ) );
 
     List<LogicalTable> relationalTables = new ArrayList<LogicalTable>();
     List<LogicalTable> olapTables = new ArrayList<LogicalTable>();
@@ -137,8 +158,8 @@ public class ModelerConversionUtil {
     }
 
     // update the model version number to the current version
-    combinedModel.setProperty( "AGILE_BI_VERSION", BaseModelerWorkspaceHelper.AGILE_BI_VERSION );
-    olapModel.setProperty( "AGILE_BI_VERSION", BaseModelerWorkspaceHelper.AGILE_BI_VERSION );
+    combinedModel.setProperty( "AGILE_BI_VERSION", new Property<String>( BaseModelerWorkspaceHelper.AGILE_BI_VERSION ) );
+    olapModel.setProperty( "AGILE_BI_VERSION", new Property<String>( BaseModelerWorkspaceHelper.AGILE_BI_VERSION ) );
 
     // remove the olap_cubes and olap_dimensions properties from the non-olap model
     combinedModel.removeChildProperty( "olap_cubes" );
@@ -222,10 +243,10 @@ public class ModelerConversionUtil {
       olapModel.setRowLevelSecurity( logicalModel.getRowLevelSecurity() );
     }
 
-    olapModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", "TRUE" );
-    olapModel.setProperty( "MODELING_SCHEMA", "OLAP" );
-    olapModel.setProperty( "DUAL_MODELING_SCHEMA", "true" );
-    olapModel.setProperty( "visible", "false" );
+    olapModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", new Property<String>( "TRUE" ) );
+    olapModel.setProperty( "MODELING_SCHEMA", new Property<String>( "OLAP" ) );
+    olapModel.setProperty( "DUAL_MODELING_SCHEMA", new Property<String>( "true" ) );
+    olapModel.setProperty( "visible", new Property<String>( "false" ) );
 
     for ( LogicalTable table : logicalModel.getLogicalTables() ) {
       LogicalTable copiedTable = (LogicalTable) table.clone();
@@ -255,7 +276,7 @@ public class ModelerConversionUtil {
         if ( col.getProperty( "mask" ) != null ) {
           olapCol.setProperty( "mask", col.getProperty( "mask" ) );
         } else if ( olapCol.getDataType().equals( DataType.NUMERIC ) ) {
-          olapCol.setProperty( "mask", "#" );
+          olapCol.setProperty( "mask", new Property<String>( "#" ) );
         }
 
         LocalizedString newName = appendOlap( col.getName() );
@@ -287,7 +308,7 @@ public class ModelerConversionUtil {
 
     duplicateRelationshipsForOlap( logicalModel, olapModel );
 
-    olapModel.setProperty( "AGILE_BI_VERSION", BaseModelerWorkspaceHelper.AGILE_BI_VERSION );
+    olapModel.setProperty( "AGILE_BI_VERSION", new Property<String>( BaseModelerWorkspaceHelper.AGILE_BI_VERSION ) );
 
     // remove the olap_cubes and olap_dimensions properties from the non-olap model
     logicalModel.removeChildProperty( "olap_cubes" );
@@ -297,7 +318,7 @@ public class ModelerConversionUtil {
   }
 
   private static void duplicateProperties( LogicalModel relationalModel, LogicalModel olapModel ) {
-    Map<String, Object> props = relationalModel.getProperties();
+    Map<String, Property> props = relationalModel.getProperties();
     olapModel.getProperties().clear();
     for ( String key : props.keySet() ) {
       olapModel.setProperty( key, props.get( key ) );

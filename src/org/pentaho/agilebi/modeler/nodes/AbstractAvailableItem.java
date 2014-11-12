@@ -29,7 +29,7 @@ import org.pentaho.ui.xul.util.AbstractModelNode;
  * @author rfellows
  */
 public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractModelNode<T> implements XulEventSource,
-    Serializable, IAvailableItem {
+    IAvailableItem {
 
   private static final long serialVersionUID = 2938604837324271097L;
   private boolean expanded = true;

@@ -50,6 +50,7 @@ import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.IConcept;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -109,7 +110,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     logicalModel.setId( "MODEL_1" );
     logicalModel.setName( new LocalizedString( locale, model.getModelName() ) );
-    logicalModel.setProperty( "AGILE_BI_VERSION", AGILE_BI_VERSION );
+    logicalModel.setProperty( "AGILE_BI_VERSION", new Property<String>( AGILE_BI_VERSION ) );
 
     populateCategories( model );
 
@@ -119,7 +120,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       logicalModel.setId( "MODEL_1" + BaseModelerWorkspaceHelper.OLAP_SUFFIX );
       logicalModel
           .setName( new LocalizedString( locale, model.getModelName() + BaseModelerWorkspaceHelper.OLAP_SUFFIX ) );
-      logicalModel.setProperty( "AGILE_BI_VERSION", AGILE_BI_VERSION );
+      logicalModel.setProperty( "AGILE_BI_VERSION", new Property<String>( AGILE_BI_VERSION ) );
     }
 
     MainModelNode mainModelNode = model.getModel();
@@ -136,13 +137,13 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     if ( logicalModel.getLogicalTables().size() == 1 ) {
       factTable = logicalModel.getLogicalTables().get( 0 );
     } else { // otherwise we're in a multi-table situation, find the table flagged as the fact table
-      Object prop;
+      Property prop;
       for ( LogicalTable lTable : logicalModel.getLogicalTables() ) {
         prop = lTable.getPhysicalTable().getProperty( "FACT_TABLE" );
         if ( prop == null ) {
           continue;
         }
-        if ( ( (Boolean) prop ).booleanValue() == false ) {
+        if ( ( (Boolean) prop.getValue() ).booleanValue() == false ) {
           continue;
         }
         factTable = lTable;
@@ -297,11 +298,11 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     cube.setOlapMeasures( measures );
 
     if ( olapDimensions.size() > 0 ) { // Metadata OLAP generator doesn't like empty lists.
-      logicalModel.setProperty( "olap_dimensions", olapDimensions ); //$NON-NLS-1$
+      logicalModel.setProperty( "olap_dimensions", new Property<List<OlapDimension>>( olapDimensions ) ); //$NON-NLS-1$ 
     }
     List<OlapCube> cubes = new ArrayList<OlapCube>();
     cubes.add( cube );
-    logicalModel.setProperty( "olap_cubes", cubes ); //$NON-NLS-1$
+    logicalModel.setProperty( "olap_cubes", new Property<List<OlapCube>>( cubes ) ); //$NON-NLS-1$
 
   }
 
@@ -404,9 +405,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       formatMask = null;
     }
     if ( formatMask != null ) {
-      lCol.setProperty( "mask", formatMask ); //$NON-NLS-1$
+      lCol.setProperty( "mask", new Property<String>( formatMask)  ); //$NON-NLS-1$
     } else if ( lCol.getDataType() == DataType.NUMERIC ) {
-      lCol.setProperty( "mask", "#" );
+      lCol.setProperty( "mask", new Property<String>( "#" ) );
     } else {
       // remove old mask that might have been set
       if ( lCol.getChildProperty( "mask" ) != null ) { //$NON-NLS-1$

@@ -17,7 +17,6 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
@@ -30,7 +29,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 /**
  * Event aware node class that also listens to it's children's events and propagates them up.
  */
-public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaData> implements Serializable {
+public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaData> {
 
   private static final long serialVersionUID = -891901735974255178L;
 
@@ -186,7 +185,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
     return false;
   }
 
-  public Class getPropertiesForm() {
+  public Class<DimensionPropertiesForm> getPropertiesForm() {
     return DimensionPropertiesForm.class;
   }
 

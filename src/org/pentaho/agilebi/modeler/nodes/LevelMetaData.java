@@ -17,7 +17,6 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.pentaho.agilebi.modeler.ColumnBackedNode;
@@ -26,17 +25,15 @@ import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 @SuppressWarnings( "unchecked" )
-public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaData> implements Serializable {
+public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaData> {
 
   private static final long serialVersionUID = -8026104295937064671L;
   private static final String IMAGE = "images/sm_level_icon.png";
-  private HierarchyMetaData parent;
 
   public LevelMetaData() {
     super();
@@ -46,7 +43,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
   public LevelMetaData( HierarchyMetaData parent, String name ) {
     super( name );
     super.setUniqueList( true );
-    this.parent = parent;
+    setParent( parent );
   }
 
   @Bindable
@@ -60,16 +57,8 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
     return IMAGE;
   }
 
-  public HierarchyMetaData getParent() {
-    return parent;
-  }
-
-  public void setParent( HierarchyMetaData md ) {
-    this.parent = md;
-  }
-
   public HierarchyMetaData getHierarchyMetaData() {
-    return parent;
+    return ( HierarchyMetaData ) getParent();
   }
 
   public boolean isTimeLevel() {
@@ -81,7 +70,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
   }
 
   @Override
-  public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
+  public Class<LevelsPropertiesForm> getPropertiesForm() {
     return LevelsPropertiesForm.class;
   }
 
@@ -229,7 +218,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
     }
     // restricted by siblings table
     if ( parent != null && parent.size() > 0 ) {
-      for ( LevelMetaData sibling : parent ) {
+      for ( LevelMetaData sibling : getHierarchyMetaData() ) {
         if ( sibling != this && sibling.getLogicalColumn() != null ) {
           return sibling.getLogicalColumn().getPhysicalColumn().getPhysicalTable();
         }
