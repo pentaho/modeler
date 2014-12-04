@@ -23,7 +23,13 @@ import static junit.framework.Assert.assertNotNull;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.Domain;
 
 /**
@@ -91,6 +97,38 @@ public class ModelerSourceUtilTest extends AbstractModelerTest {
     String schemaName = "joe";
     String tableName = "customers";
     Domain d = ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, tableName, true );
+  }
+
+  @Test
+  public void testAcceptsAStragegyForDefiningRowMeta() throws Exception {
+    String schemaName = "";
+    String tableName = "CUSTOMERS";
+    Domain d = ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, tableName, false,
+      rowMetaStrategy() );
+    assertNotNull( d );
+
+    int physicalTables = d.getPhysicalModels().get( 0 ).getPhysicalTables().size();
+    int logicalTables = d.getLogicalModels().get( 0 ).getLogicalTables().size();
+    assertEquals( physicalTables, logicalTables );
+
+    int physicalColumns = d.getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ).getPhysicalColumns().size();
+    int logicalColumns = d.getLogicalModels().get( 0 ).getLogicalTables().get( 0 ).getLogicalColumns().size();
+    assertEquals( 2, physicalColumns );
+    assertEquals( 2, logicalColumns );
+
+  }
+
+  private PhysicalTableImporter.RowMetaStrategy rowMetaStrategy() {
+    return new PhysicalTableImporter.RowMetaStrategy() {
+      @Override public RowMetaInterface rowMeta( final Database database, final String schemaName,
+                                                 final String tableName )
+        throws KettleDatabaseException {
+        RowMeta rowMeta = new RowMeta();
+        rowMeta.addValueMeta( new ValueMetaString( "CUSTOMERNAME" ) );
+        rowMeta.addValueMeta( new ValueMetaString( "CONTACTLASTNAME" ) );
+        return rowMeta;
+      }
+    };
   }
 
   public static DatabaseMeta getDatabaseMeta() {
