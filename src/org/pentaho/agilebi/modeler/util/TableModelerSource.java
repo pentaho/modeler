@@ -20,6 +20,7 @@ package org.pentaho.agilebi.modeler.util;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
@@ -70,6 +71,10 @@ public class TableModelerSource implements ISpoonModelerSource {
   @Override
   public Domain generateDomain( boolean dualModelingMode ) throws ModelerException {
     return ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, datasourceName, dualModelingMode );
+  }
+
+  public Domain generateDomain( final PhysicalTableImporter.RowMetaStrategy rowMetaStrategy ) throws ModelerException {
+    return ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, datasourceName, true, rowMetaStrategy );
   }
 
   public void initialize( Domain domain ) throws ModelerException {

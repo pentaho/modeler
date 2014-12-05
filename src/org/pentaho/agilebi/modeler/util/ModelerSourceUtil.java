@@ -25,6 +25,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.automodel.PhysicalTableImporter.RowMetaStrategy;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -37,6 +38,8 @@ import org.pentaho.pms.core.exception.PentahoMetadataException;
 import org.pentaho.pms.schema.concept.DefaultPropertyID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.pentaho.metadata.automodel.PhysicalTableImporter.defaultRowMetaStrategy;
 
 public class ModelerSourceUtil {
 
@@ -121,11 +124,17 @@ public class ModelerSourceUtil {
 
   public static Domain generateDomain( DatabaseMeta databaseMeta, String schemaName, String tableName,
       String datasourceName, boolean dualModelingMode ) throws ModelerException {
+    return generateDomain(
+      databaseMeta, schemaName, tableName, datasourceName, dualModelingMode, defaultRowMetaStrategy );
+  }
 
+  public static Domain generateDomain( DatabaseMeta databaseMeta, String schemaName, String tableName,
+                                       String datasourceName, boolean dualModelingMode,
+                                       RowMetaStrategy rowMetaStrategy ) throws ModelerException {
     String[] schemaTable = discoverTableCasing( databaseMeta, schemaName, tableName );
     schemaName = schemaTable[0];
     tableName = schemaTable[1];
-    
+
     Domain domain = null;
     try {
       // modelName, databaseMeta, , "joe", tableOutputMeta.getTablename(), profiles);
@@ -138,7 +147,7 @@ public class ModelerSourceUtil {
       // TODO: support schema names.
       tableNames[0] = new SchemaTable( schemaName, tableName );
       generator.setTableNames( tableNames );
-      domain = generator.generateDomain();
+      domain = generator.generateDomain( rowMetaStrategy );
       domain.setId( tableName ); // replaced with user specified name later
 
       LogicalModel businessModel = domain.getLogicalModels().get( 0 ); // schemaMeta.getActiveModel();
