@@ -39,13 +39,14 @@ public class ModelPropertyTest {
     Measure measure = new Measure();
 
     List<String> propertyNames = measure.getModelPropertyNames();
-    assertEquals( propertyNames.size(), 6 );
+    assertEquals( propertyNames.size(), 7 );
 
     measure.setModelPropertyName( "Display Name", "A" );
     measure.setModelPropertyName( "Description", "B" );
     measure.setModelPropertyName( "Unique Members", "true" ); // ignored. passed string but type is boolean
     measure.setModelPropertyName( "Localized Name", "C" );
     measure.setModelPropertyName( "Format String", "D" );
+    measure.setModelPropertyName( "Hidden", true );
     measure.setModelPropertyName( "Aggregate Type", ModelAnnotation.AggregateType.COUNT_ANY );
     measure.setModelPropertyName( "XXX", "Does not exist" ); // should not fail
 
@@ -54,6 +55,7 @@ public class ModelPropertyTest {
     assertEquals( measure.getLocalizedName(), "C" );
     assertEquals( measure.getFormatString(), "D" );
     assertEquals( measure.isUniqueMembers(), false );
+    assertEquals( measure.isHidden(), true );
     assertEquals( measure.getAggregateType(), ModelAnnotation.AggregateType.COUNT_ANY );
 
     measure.setModelPropertyName( "Unique Members", true );
@@ -86,12 +88,16 @@ public class ModelPropertyTest {
 
   @Test
   public void testHeirarchyLevel() throws Exception {
+    HierarchyLevel parent = new HierarchyLevel();
     HierarchyLevel hierarchyLevel = new HierarchyLevel();
 
     hierarchyLevel.setModelPropertyName( "Level Ordinal", 0 );
     hierarchyLevel.setModelPropertyName( "Unique Members", true );
+    hierarchyLevel.setModelPropertyName( "Parent", parent );
 
     assertEquals( hierarchyLevel.getLevelOrdinal(), 0 );
     assertEquals( hierarchyLevel.isUniqueMembers(), true );
+    assertEquals( hierarchyLevel.getParent(), parent );
+    assertEquals( hierarchyLevel.getModelPropertyNames().size(), 11 );
   }
 }

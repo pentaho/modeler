@@ -51,6 +51,9 @@ public abstract class AnnotationType implements Serializable {
   @ModelProperty( name = "Unique Members" )
   private boolean uniqueMembers;
 
+  @ModelProperty( name = "Hidden" )
+  private boolean hidden;
+
   public String getName() {
     return name;
   }
@@ -81,6 +84,14 @@ public abstract class AnnotationType implements Serializable {
 
   public void setUniqueMembers( boolean uniqueMembers ) {
     this.uniqueMembers = uniqueMembers;
+  }
+
+  public boolean isHidden() {
+    return hidden;
+  }
+
+  public void setHidden( boolean hidden ) {
+    this.hidden = hidden;
   }
 
   protected List<Field> findAllFields( List<Field> fields, Class<?> type ) {
