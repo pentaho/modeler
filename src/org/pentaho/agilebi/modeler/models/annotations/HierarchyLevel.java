@@ -24,13 +24,15 @@ package org.pentaho.agilebi.modeler.models.annotations;
 /**
  * @author Rowell Belen
  */
-public class HierarchyLevel extends AnnotationType {
+public class HierarchyLevel extends Attribute {
 
   private static final long serialVersionUID = -3718152962184687037L;
 
   @ModelProperty( name = "Level Ordinal" )
   private int levelOrdinal;
 
+  @ModelProperty( name = "Parent" )
+  private HierarchyLevel parent;
 
   public int getLevelOrdinal() {
     return levelOrdinal;
@@ -38,5 +40,13 @@ public class HierarchyLevel extends AnnotationType {
 
   public void setLevelOrdinal( int levelOrdinal ) {
     this.levelOrdinal = levelOrdinal;
+  }
+
+  public HierarchyLevel getParent() {
+    return parent;
+  }
+
+  public void setParent( HierarchyLevel parent ) {
+    this.parent = parent;
   }
 }
