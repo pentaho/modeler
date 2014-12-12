@@ -22,6 +22,8 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+
 /**
  * @author Rowell Belen
  */
@@ -38,5 +40,9 @@ public class Dimension extends AnnotationType {
 
   public void setLevelType( ModelAnnotation.LevelType levelType ) {
     this.levelType = levelType;
+  }
+
+  @Override public void apply( final ModelerWorkspace workspace, final String column ) {
+    throw new UnsupportedOperationException();
   }
 }

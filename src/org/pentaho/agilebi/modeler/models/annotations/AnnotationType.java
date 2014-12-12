@@ -25,6 +25,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -134,4 +135,6 @@ public abstract class AnnotationType implements Serializable {
       }
     }
   }
+
+  public abstract void apply( final ModelerWorkspace workspace, final String column );
 }

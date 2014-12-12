@@ -21,6 +21,16 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.pentaho.agilebi.modeler.ModelerPerspective;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.SqlPhysicalColumn;
+import org.pentaho.metadata.model.concept.types.AggregationType;
+
+import java.util.List;
+
 /**
  * @author Rowell Belen
  */
@@ -28,17 +38,17 @@ public class Measure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
-  @ModelProperty(name = "Aggregate Type")
-  private ModelAnnotation.AggregateType aggregateType;
+  @ModelProperty( name = "Aggregate Type" )
+  private AggregationType aggregateType;
 
-  @ModelProperty(name = "Format String")
+  @ModelProperty( name = "Format String" )
   private String formatString;
 
-  public ModelAnnotation.AggregateType getAggregateType() {
+  public AggregationType getAggregateType() {
     return aggregateType;
   }
 
-  public void setAggregateType( ModelAnnotation.AggregateType aggregateType ) {
+  public void setAggregateType( AggregationType aggregateType ) {
     this.aggregateType = aggregateType;
   }
 
@@ -48,5 +58,24 @@ public class Measure extends AnnotationType {
 
   public void setFormatString( String formatString ) {
     this.formatString = formatString;
+  }
+
+  @Override
+  public void apply( final ModelerWorkspace workspace, final String column ) {
+    List<LogicalTable> logicalTables = workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables();
+    for ( LogicalTable logicalTable : logicalTables ) {
+      List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
+      for ( LogicalColumn logicalColumn : logicalColumns ) {
+        if ( logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN ).equals( column ) ) {
+          MeasureMetaData measureMetaData =
+              new MeasureMetaData( column, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
+          measureMetaData.setLogicalColumn( logicalColumn );
+          measureMetaData.setDefaultAggregation( getAggregateType() );
+          measureMetaData.setName( getName() );
+          workspace.addMeasure( measureMetaData );
+        }
+      }
+
+    }
   }
 }
