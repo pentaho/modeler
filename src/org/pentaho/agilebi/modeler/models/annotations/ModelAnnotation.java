@@ -23,6 +23,8 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,7 +35,16 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final long serialVersionUID = 5742135911581602697L;
 
   private String column;
-  private List<T> annotations;
+
+  private T annotation;
+
+  public ModelAnnotation() {
+  }
+
+  public ModelAnnotation( String column, T annotation ) {
+    setColumn( column );
+    setAnnotation( annotation );
+  }
 
   public String getColumn() {
     return column;
@@ -43,12 +54,83 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     this.column = column;
   }
 
-  public List<T> getAnnotations() {
-    return annotations;
+  public T getAnnotation() {
+    return annotation;
   }
 
-  public void setAnnotations( List<T> annotations ) {
-    this.annotations = annotations;
+  public void setAnnotation( T annotation ) {
+    this.annotation = annotation;
+  }
+
+  public boolean isMeasure() {
+
+    if ( this.annotation instanceof Measure ) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isDimension() {
+
+    if ( this.annotation instanceof Dimension ) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean asAttribute() {
+
+    if ( this.annotation != null && this.annotation.getClass().equals( Attribute.class ) ) { // don't match subclass
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isHierarchyLevel() {
+    if ( this.annotation instanceof HierarchyLevel ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * **** Utility methods ******
+   */
+
+  public static List<ModelAnnotation<Measure>> getMeasures(
+      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
+    return filter( annotations, Measure.class );
+  }
+
+  public static List<ModelAnnotation<Attribute>> getAttributes(
+      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
+    return filter( annotations, Attribute.class );
+  }
+
+  public static List<ModelAnnotation<Dimension>> getDimensions(
+      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
+    return filter( annotations, Dimension.class );
+  }
+
+  public static List<ModelAnnotation<HierarchyLevel>> getHeirachyLevels(
+      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
+    return filter( annotations, HierarchyLevel.class );
+  }
+
+  private static <S extends AnnotationType> List<ModelAnnotation<S>> filter(
+      final List<ModelAnnotation<? extends AnnotationType>> annotations, Class<S> cls ) {
+
+    List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
+    if ( cls != null && annotations != null && annotations.size() > 0 ) {
+      annotations.removeAll( Collections.singleton( null ) ); // remove nulls
+      for ( ModelAnnotation<?> annotation : annotations ) {
+        if ( annotation.getAnnotation() != null && cls.equals( annotation.getAnnotation().getClass() ) ) {
+          list.add( (ModelAnnotation<S>) annotation );
+        }
+      }
+    }
+
+    return list;
   }
 
   public static enum Actions {
