@@ -21,9 +21,9 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ModelAnnotationGroupTest {
 

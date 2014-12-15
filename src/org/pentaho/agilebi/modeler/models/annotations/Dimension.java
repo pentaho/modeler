@@ -31,7 +31,7 @@ public class Dimension extends AnnotationType {
 
   private static final long serialVersionUID = 6240723009910986173L;
 
-  @ModelProperty( name = "Type" )
+  @ModelProperty( id = "levelType", name = "Type" )
   private ModelAnnotation.LevelType levelType;
 
   public ModelAnnotation.LevelType getLevelType() {
@@ -44,5 +44,10 @@ public class Dimension extends AnnotationType {
 
   @Override public void apply( final ModelerWorkspace workspace, final String column ) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public AnnotationSubType getType() {
+    return AnnotationSubType.DIMENSION;
   }
 }
