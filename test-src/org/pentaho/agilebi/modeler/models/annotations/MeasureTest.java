@@ -21,16 +21,21 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.util.XmiParser;
 
 import java.io.FileInputStream;
+
+import static junit.framework.Assert.assertEquals;
+import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
+import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
 
 public class MeasureTest {
   @Test
@@ -52,5 +57,27 @@ public class MeasureTest {
     assertEquals( "Avg Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AVERAGE, measureMetaData.getDefaultAggregation() );
+  }
+
+  @Test
+  public void testMeasureNotDuplicatedWhenMultipleLogicalColumns() throws Exception {
+    Measure measure = new Measure();
+    measure.setAggregateType( MINIMUM );
+    measure.setName( "Min Weight" );
+    measure.setFormatString( "##.##" );
+
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    LogicalTable logicalTable = model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
+    logicalTable.addLogicalColumn( (LogicalColumn) logicalTable.getLogicalColumns().get( 6 ).clone() );
+    measure.apply( model, "QUANTITYINSTOCK" );
+    MeasuresCollection measures = model.getModel().getMeasures();
+    assertEquals( 4, measures.size() );
+    MeasureMetaData measureMetaData = measures.get( 3 );
+    assertEquals( "QUANTITYINSTOCK", measureMetaData.getColumnName() );
+    assertEquals( "Min Weight", measureMetaData.getName() );
+    assertEquals( "##.##", measureMetaData.getFormat() );
+    assertEquals( MINIMUM, measureMetaData.getDefaultAggregation() );
   }
 }
