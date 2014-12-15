@@ -39,6 +39,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
@@ -176,7 +177,7 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
     ModelAnnotation modelAnnotationOne = annotation( applied, 0 );
     ModelAnnotation modelAnnotationTwo = annotation( applied, 1 );
     SimpleAutoModelStrategy strategy =
-        new SimpleAutoModelStrategy( LOCALE, geo, asList( modelAnnotationOne, modelAnnotationTwo ) );
+        new SimpleAutoModelStrategy( LOCALE, geo, new ModelAnnotationGroup( modelAnnotationOne, modelAnnotationTwo ) );
     strategy.autoModelOlap( workspace, new MainModelNode() );
     for ( boolean b : applied ) {
       assertTrue( b );

@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
@@ -51,10 +52,10 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy {
 
   private String locale;
   protected GeoContext geoContext;
-  private final List<ModelAnnotation> annotations;
+  private final ModelAnnotationGroup annotations;
 
   public SimpleAutoModelStrategy( String locale ) {
-    this( locale, null, Collections.<ModelAnnotation>emptyList() );
+    this( locale, null, new ModelAnnotationGroup() );
   }
 
   /**
@@ -65,7 +66,7 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy {
    * @param geoContext
    */
   public SimpleAutoModelStrategy( String locale, GeoContext geoContext ) {
-    this( locale, geoContext, Collections.<ModelAnnotation>emptyList() );
+    this( locale, geoContext, new ModelAnnotationGroup() );
   }
 
   /**
@@ -78,7 +79,7 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy {
    * @param annotations
    */
   public SimpleAutoModelStrategy( final String locale, final GeoContext geoContext,
-                                  final List<ModelAnnotation> annotations ) {
+                                  final ModelAnnotationGroup annotations ) {
     this.locale = locale;
     this.geoContext = geoContext;
     this.annotations = annotations;
