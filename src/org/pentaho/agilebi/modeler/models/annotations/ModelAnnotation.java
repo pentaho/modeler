@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rowell Belen
@@ -62,37 +63,6 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   public void setAnnotation( T annotation ) {
     this.annotation = annotation;
-  }
-
-  public boolean isMeasure() {
-
-    if ( this.annotation instanceof Measure ) {
-      return true;
-    }
-    return false;
-  }
-
-  public boolean isDimension() {
-
-    if ( this.annotation instanceof Dimension ) {
-      return true;
-    }
-    return false;
-  }
-
-  public boolean asAttribute() {
-
-    if ( this.annotation != null && this.annotation.getClass().equals( Attribute.class ) ) { // don't match subclass
-      return true;
-    }
-    return false;
-  }
-
-  public boolean isHierarchyLevel() {
-    if ( this.annotation instanceof HierarchyLevel ) {
-      return true;
-    }
-    return false;
   }
 
   /**
@@ -137,6 +107,28 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   public void apply( final ModelerWorkspace modelerWorkspace ) {
     annotation.apply( modelerWorkspace, getColumn() );
+  }
+
+  public AnnotationType.AnnotationSubType getType() {
+    if ( annotation != null ) {
+      return annotation.getType();
+    }
+
+    return null;
+  }
+
+  public Map<String, Serializable> describeAnnotation() {
+    if ( annotation != null ) {
+      return annotation.describe();
+    }
+
+    return null;
+  }
+
+  public void populateAnnotation( final Map<String, Serializable> properties ) {
+    if ( annotation != null ) {
+      annotation.populate( properties );
+    }
   }
 
   public static enum Actions {

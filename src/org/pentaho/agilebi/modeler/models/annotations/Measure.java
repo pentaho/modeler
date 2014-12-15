@@ -38,10 +38,10 @@ public class Measure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
-  @ModelProperty( name = "Aggregate Type" )
+  @ModelProperty( id = "aggregateType", name = "Aggregate Type" )
   private AggregationType aggregateType;
 
-  @ModelProperty( name = "Format String" )
+  @ModelProperty( id = "formatString", name = "Format String" )
   private String formatString;
 
   public AggregationType getAggregateType() {
@@ -77,5 +77,10 @@ public class Measure extends AnnotationType {
       }
 
     }
+  }
+
+  @Override
+  public AnnotationSubType getType() {
+    return AnnotationSubType.MEASURE;
   }
 }

@@ -42,14 +42,14 @@ public class ModelPropertyTest {
     List<String> propertyNames = measure.getModelPropertyNames();
     assertEquals( propertyNames.size(), 7 );
 
-    measure.setModelPropertyName( "Display Name", "A" );
-    measure.setModelPropertyName( "Description", "B" );
-    measure.setModelPropertyName( "Unique Members", "true" ); // ignored. passed string but type is boolean
-    measure.setModelPropertyName( "Localized Name", "C" );
-    measure.setModelPropertyName( "Format String", "D" );
-    measure.setModelPropertyName( "Hidden", true );
-    measure.setModelPropertyName( "Aggregate Type", AggregationType.COUNT );
-    measure.setModelPropertyName( "XXX", "Does not exist" ); // should not fail
+    measure.setModelPropertyByName( "Display Name", "A" );
+    measure.setModelPropertyByName( "Description", "B" );
+    measure.setModelPropertyByName( "Unique Members", "true" ); // ignored. passed string but type is boolean
+    measure.setModelPropertyByName( "Localized Name", "C" );
+    measure.setModelPropertyByName( "Format String", "D" );
+    measure.setModelPropertyByName( "Hidden", true );
+    measure.setModelPropertyByName( "Aggregate Type", AggregationType.COUNT );
+    measure.setModelPropertyByName( "XXX", "Does not exist" ); // should not fail
 
     assertEquals( measure.getName(), "A" );
     assertEquals( measure.getDescription(), "B" );
@@ -59,7 +59,7 @@ public class ModelPropertyTest {
     assertEquals( measure.isHidden(), true );
     assertEquals( measure.getAggregateType(), AggregationType.COUNT );
 
-    measure.setModelPropertyName( "Unique Members", true );
+    measure.setModelPropertyByName( "Unique Members", true );
     assertEquals( measure.isUniqueMembers(), true );
   }
 
@@ -69,10 +69,10 @@ public class ModelPropertyTest {
     Attribute attribute = new Attribute();
     GeoRole geoRole = new GeoRole();
 
-    attribute.setModelPropertyName( "Level Type", ModelAnnotation.LevelType.Regular );
-    attribute.setModelPropertyName( "Attribute Type", ModelAnnotation.AttributeType.PROPERTY );
-    attribute.setModelPropertyName( "Format String", "B" );
-    attribute.setModelPropertyName( "Geo Role", geoRole );
+    attribute.setModelPropertyByName( "Level Type", ModelAnnotation.LevelType.Regular );
+    attribute.setModelPropertyByName( "Attribute Type", ModelAnnotation.AttributeType.PROPERTY );
+    attribute.setModelPropertyByName( "Format String", "B" );
+    attribute.setModelPropertyByName( "Geo Role", geoRole );
 
     assertEquals( attribute.getLevelType(), ModelAnnotation.LevelType.Regular );
     assertEquals( attribute.getAttributeType(), ModelAnnotation.AttributeType.PROPERTY );
@@ -83,7 +83,7 @@ public class ModelPropertyTest {
   @Test
   public void testDimension() throws Exception {
     Dimension dimension = new Dimension();
-    dimension.setModelPropertyName( "Type", ModelAnnotation.LevelType.Regular );
+    dimension.setModelPropertyByName( "Type", ModelAnnotation.LevelType.Regular );
     assertEquals( dimension.getLevelType(), ModelAnnotation.LevelType.Regular );
   }
 
@@ -92,9 +92,9 @@ public class ModelPropertyTest {
     HierarchyLevel parent = new HierarchyLevel();
     HierarchyLevel hierarchyLevel = new HierarchyLevel();
 
-    hierarchyLevel.setModelPropertyName( "Level Ordinal", 0 );
-    hierarchyLevel.setModelPropertyName( "Unique Members", true );
-    hierarchyLevel.setModelPropertyName( "Parent", parent );
+    hierarchyLevel.setModelPropertyByName( "Level Ordinal", 0 );
+    hierarchyLevel.setModelPropertyByName( "Unique Members", true );
+    hierarchyLevel.setModelPropertyByName( "Parent", parent );
 
     assertEquals( hierarchyLevel.getLevelOrdinal(), 0 );
     assertEquals( hierarchyLevel.isUniqueMembers(), true );

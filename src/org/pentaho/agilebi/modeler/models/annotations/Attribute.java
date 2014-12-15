@@ -32,16 +32,16 @@ public class Attribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
 
-  @ModelProperty( name = "Level Type" )
+  @ModelProperty( id = "levelType", name = "Level Type" )
   private ModelAnnotation.LevelType levelType;
 
-  @ModelProperty( name = "Attribute Type" )
+  @ModelProperty( id = "attributeType", name = "Attribute Type" )
   private ModelAnnotation.AttributeType attributeType;
 
-  @ModelProperty( name = "Format String" )
+  @ModelProperty( id = "formatString", name = "Format String" )
   private String formatString;
 
-  @ModelProperty( name = "Geo Role" )
+  @ModelProperty( id = "geoRole", name = "Geo Role" )
   private GeoRole geoRole;
 
   public ModelAnnotation.LevelType getLevelType() {
@@ -78,5 +78,10 @@ public class Attribute extends AnnotationType {
 
   @Override public void apply( final ModelerWorkspace workspace, final String column ) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public AnnotationSubType getType() {
+    return AnnotationSubType.ATTRIBUTE;
   }
 }

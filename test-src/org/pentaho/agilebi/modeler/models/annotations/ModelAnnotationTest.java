@@ -27,7 +27,6 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -49,10 +48,7 @@ public class ModelAnnotationTest {
 
     // check
     assertEquals( md.getColumn(), "testColumn" );
-    assertTrue( md.isMeasure() );
-    assertFalse( md.asAttribute() );
-    assertFalse( md.isDimension() );
-    assertFalse( md.isHierarchyLevel() );
+    assertEquals( md.getType(), AnnotationType.AnnotationSubType.MEASURE );
   }
 
   @Test
@@ -67,10 +63,7 @@ public class ModelAnnotationTest {
 
     // check
     assertEquals( md.getColumn(), "testColumn" );
-    assertFalse( md.isMeasure() );
-    assertTrue( md.asAttribute() );
-    assertFalse( md.isDimension() );
-    assertFalse( md.isHierarchyLevel() );
+    assertEquals( md.getType(), AnnotationType.AnnotationSubType.ATTRIBUTE );
   }
 
   @Test
@@ -85,10 +78,7 @@ public class ModelAnnotationTest {
 
     // check
     assertEquals( md.getColumn(), "testColumn" );
-    assertFalse( md.isMeasure() );
-    assertFalse( md.asAttribute() );
-    assertTrue( md.isDimension() );
-    assertFalse( md.isHierarchyLevel() );
+    assertEquals( md.getType(), AnnotationType.AnnotationSubType.DIMENSION );
   }
 
   @Test
@@ -103,10 +93,7 @@ public class ModelAnnotationTest {
 
     // check
     assertEquals( md.getColumn(), "testColumn" );
-    assertFalse( md.isMeasure() );
-    assertFalse( md.asAttribute() );
-    assertFalse( md.isDimension() );
-    assertTrue( md.isHierarchyLevel() );
+    assertEquals( md.getType(), AnnotationType.AnnotationSubType.HIERARCHY_LEVEL );
   }
 
   @Test
@@ -133,6 +120,10 @@ public class ModelAnnotationTest {
       public void apply( final ModelerWorkspace workspace, final String column ) {
         assertSame( workspace, modelerWorkspace );
         assertEquals( "amount", column );
+      }
+
+      @Override public AnnotationSubType getType() {
+        return null;
       }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();

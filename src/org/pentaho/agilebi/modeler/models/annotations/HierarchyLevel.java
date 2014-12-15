@@ -28,10 +28,10 @@ public class HierarchyLevel extends Attribute {
 
   private static final long serialVersionUID = -3718152962184687037L;
 
-  @ModelProperty( name = "Level Ordinal" )
+  @ModelProperty( id = "levelOrdinal", name = "Level Ordinal" )
   private int levelOrdinal;
 
-  @ModelProperty( name = "Parent" )
+  @ModelProperty( id = "parent", name = "Parent" )
   private HierarchyLevel parent;
 
   public int getLevelOrdinal() {
@@ -48,5 +48,10 @@ public class HierarchyLevel extends Attribute {
 
   public void setParent( HierarchyLevel parent ) {
     this.parent = parent;
+  }
+
+  @Override
+  public AnnotationSubType getType() {
+    return AnnotationSubType.HIERARCHY_LEVEL;
   }
 }

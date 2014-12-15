@@ -21,17 +21,16 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
 import org.pentaho.metadata.util.XmiParser;
 
 import java.io.FileInputStream;
-
-import static junit.framework.Assert.assertEquals;
-import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
 
 public class MeasureTest {
   @Test
@@ -42,9 +41,8 @@ public class MeasureTest {
     measure.setFormatString( "##.##" );
 
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
-
 
     measure.apply( model, "QUANTITYINSTOCK" );
     MeasuresCollection measures = model.getModel().getMeasures();

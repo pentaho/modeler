@@ -22,16 +22,21 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rowell Belen
@@ -40,19 +45,21 @@ public abstract class AnnotationType implements Serializable {
 
   private static final long serialVersionUID = 3952409344571242884L;
 
-  @ModelProperty( name = "Display Name" )
+  private static transient Logger logger = LoggerFactory.getLogger( AnnotationType.class );
+
+  @ModelProperty( id = "name", name = "Display Name" )
   private String name;
 
-  @ModelProperty( name = "Localized Name" )
+  @ModelProperty( id = "localizedName", name = "Localized Name" )
   private String localizedName;
 
-  @ModelProperty( name = "Description" )
+  @ModelProperty( id = "description", name = "Description" )
   private String description;
 
-  @ModelProperty( name = "Unique Members" )
+  @ModelProperty( id = "uniqueMembers", name = "Unique Members" )
   private boolean uniqueMembers;
 
-  @ModelProperty( name = "Hidden" )
+  @ModelProperty( id = "hidden", name = "Hidden" )
   private boolean hidden;
 
   public String getName() {
@@ -106,6 +113,51 @@ public abstract class AnnotationType implements Serializable {
     return fields;
   }
 
+  public List<String> getModelPropertyIds() {
+
+    List<String> ids = new ArrayList<String>();
+
+    List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
+    for ( Field f : fields ) {
+      if ( f.isAnnotationPresent( ModelProperty.class ) ) {
+        ModelProperty mp = f.getAnnotation( ModelProperty.class );
+        ids.add( mp.id() );
+      }
+    }
+
+    return ids;
+  }
+
+  public void setModelPropertyValueById( String id, Object value ) throws Exception {
+
+    List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
+    for ( Field f : fields ) {
+      if ( f.isAnnotationPresent( ModelProperty.class ) ) {
+        ModelProperty mp = f.getAnnotation( ModelProperty.class );
+        if ( StringUtils.equals( mp.id(), id ) ) {
+          if ( ClassUtils.isAssignable( f.getType(), value.getClass(), true ) ) {
+            PropertyUtils.setProperty( this, f.getName(), value );
+          }
+        }
+      }
+    }
+  }
+
+  public Object getModelPropertyValueById( String id ) throws Exception {
+
+    List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
+    for ( Field f : fields ) {
+      if ( f.isAnnotationPresent( ModelProperty.class ) ) {
+        ModelProperty mp = f.getAnnotation( ModelProperty.class );
+        if ( StringUtils.equals( mp.id(), id ) ) {
+          return PropertyUtils.getProperty( this, f.getName() );
+        }
+      }
+    }
+
+    return null;
+  }
+
   public List<String> getModelPropertyNames() {
 
     List<String> propertyNames = new ArrayList<String>();
@@ -121,7 +173,7 @@ public abstract class AnnotationType implements Serializable {
     return propertyNames;
   }
 
-  public void setModelPropertyName( String modelPropertyName, Object value ) throws Exception {
+  public void setModelPropertyByName( String modelPropertyName, Object value ) throws Exception {
 
     List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
     for ( Field f : fields ) {
@@ -129,12 +181,61 @@ public abstract class AnnotationType implements Serializable {
         ModelProperty mp = f.getAnnotation( ModelProperty.class );
         if ( StringUtils.equals( mp.name(), modelPropertyName ) ) {
           if ( ClassUtils.isAssignable( f.getType(), value.getClass(), true ) ) {
-            BeanUtils.setProperty( this, f.getName(), value );
+            PropertyUtils.setProperty( this, f.getName(), value );
           }
         }
       }
     }
   }
 
+  public Map<String, Serializable> describe() {
+    Map<String, Serializable> map = new HashMap<String, Serializable>();
+
+    List<String> ids = getModelPropertyIds();
+    for ( String id : ids ) {
+      try {
+        Object value = getModelPropertyValueById( id );
+        if ( value != null && isSerializable( value.getClass() ) ) {
+          map.put( id, (Serializable) value );
+        }
+      } catch ( Exception e ) {
+        // ignore
+        logger.warn( "Unable to get value of id: " + id, e );
+      }
+    }
+    return map;
+  }
+
+  public void populate( final Map<String, Serializable> propertiesMap ) {
+
+    if ( propertiesMap != null && propertiesMap.keySet() != null ) {
+
+      Iterator<String> itr = propertiesMap.keySet().iterator();
+      while ( itr.hasNext() ) {
+
+        String id = itr.next();
+        try {
+          setModelPropertyValueById( id, propertiesMap.get( id ) );
+        } catch ( Exception e ) {
+          // do nothing
+          logger.warn( "Unable to set value for id: " + id, e );
+        }
+      }
+    }
+  }
+
+  private boolean isSerializable( Class<?> classToCheck ) {
+    return Serializable.class.isAssignableFrom( classToCheck );
+  }
+
   public abstract void apply( final ModelerWorkspace workspace, final String column );
+
+  public abstract AnnotationSubType getType();
+
+  public static enum AnnotationSubType {
+    ATTRIBUTE,
+    HIERARCHY_LEVEL,
+    MEASURE,
+    DIMENSION
+  }
 }
