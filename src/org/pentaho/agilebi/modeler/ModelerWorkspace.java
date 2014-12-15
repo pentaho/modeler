@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableItemCollection;
@@ -119,10 +120,19 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private transient ModelerTreeHelper currentModelerTreeHelper;
 
   public ModelerWorkspace( IModelerWorkspaceHelper helper ) {
-    this( helper, null );
+    this( helper, null, new ModelAnnotationGroup() );
+  }
+
+  public ModelerWorkspace( IModelerWorkspaceHelper helper, ModelAnnotationGroup annotations ) {
+    this( helper, null, annotations );
   }
 
   public ModelerWorkspace( IModelerWorkspaceHelper helper, GeoContext geoContext ) {
+
+    this( helper, geoContext, new ModelAnnotationGroup() );
+  }
+
+  public ModelerWorkspace( IModelerWorkspaceHelper helper, GeoContext geoContext, ModelAnnotationGroup annotations ) {
 
     this.isTemporary = true;
     this.workspaceHelper = helper;
@@ -131,7 +141,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setRelationalModel( new RelationalModelNode( this ) );
 
     this.geoContext = geoContext;
-    simpleAutoModelStrategy = new SimpleAutoModelStrategy( workspaceHelper.getLocale(), geoContext );
+    simpleAutoModelStrategy = new SimpleAutoModelStrategy( workspaceHelper.getLocale(), geoContext, annotations );
     multiTableAutoModelStrategy = new MultiTableAutoModelStrategy( workspaceHelper.getLocale() );
     starSchemaAutoModelStrategy = new StarSchemaAutoModelStrategy( workspaceHelper.getLocale(), geoContext );
     AnalyzerDateFormatAnnotationFactory.register();
@@ -789,7 +799,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
               for ( LogicalColumn lc : theLevel.getLogicalColumns() ) {
                 // BISERVER-11578 - Protect against null lc's in the collection. We still need to
                 // investigate why this can happen in the model.
-                if( lc == null ){
+                if ( lc == null ) {
                   continue;
                 }
 
