@@ -25,6 +25,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class ModelPropertyTest {
     measure.setModelPropertyName( "Localized Name", "C" );
     measure.setModelPropertyName( "Format String", "D" );
     measure.setModelPropertyName( "Hidden", true );
-    measure.setModelPropertyName( "Aggregate Type", ModelAnnotation.AggregateType.COUNT_ANY );
+    measure.setModelPropertyName( "Aggregate Type", AggregationType.COUNT );
     measure.setModelPropertyName( "XXX", "Does not exist" ); // should not fail
 
     assertEquals( measure.getName(), "A" );
@@ -56,7 +57,7 @@ public class ModelPropertyTest {
     assertEquals( measure.getFormatString(), "D" );
     assertEquals( measure.isUniqueMembers(), false );
     assertEquals( measure.isHidden(), true );
-    assertEquals( measure.getAggregateType(), ModelAnnotation.AggregateType.COUNT_ANY );
+    assertEquals( measure.getAggregateType(), AggregationType.COUNT );
 
     measure.setModelPropertyName( "Unique Members", true );
     assertEquals( measure.isUniqueMembers(), true );

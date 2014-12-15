@@ -22,6 +22,8 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -133,6 +135,10 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     return list;
   }
 
+  public void apply( final ModelerWorkspace modelerWorkspace ) {
+    annotation.apply( modelerWorkspace, getColumn() );
+  }
+
   public static enum Actions {
     CREATE_HEIRARCHY_LEVEL,
     UPDATE_HEIRARCHY_LEVEL,
@@ -168,15 +174,5 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     NAME,
     ORDINAL,
     PROPERTY
-  }
-
-  public static enum AggregateType {
-    SUM,
-    AVERAGE,
-    MIN,
-    MAX,
-    COUNT_DISTINCT,
-    COUNT_ANY,
-    COUNT_ALL
   }
 }

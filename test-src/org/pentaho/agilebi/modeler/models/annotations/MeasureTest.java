@@ -19,64 +19,40 @@
  * confidentiality and non-disclosure agreements or other agreements with Pentaho,
  * explicitly covering such access.
  */
-
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
+import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.pentaho.metadata.util.XmiParser;
 
-/**
- * @author Rowell Belen
- */
-public class Attribute extends AnnotationType {
+import java.io.FileInputStream;
 
-  private static final long serialVersionUID = 5169827225345800226L;
+import static junit.framework.Assert.assertEquals;
+import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
 
-  @ModelProperty( name = "Level Type" )
-  private ModelAnnotation.LevelType levelType;
+public class MeasureTest {
+  @Test
+  public void testCreatesNewMeasureWithAggregation() throws Exception {
+    Measure measure = new Measure();
+    measure.setAggregateType( AVERAGE );
+    measure.setName( "Avg Weight" );
+    measure.setFormatString( "##.##" );
 
-  @ModelProperty( name = "Attribute Type" )
-  private ModelAnnotation.AttributeType attributeType;
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
 
-  @ModelProperty( name = "Format String" )
-  private String formatString;
 
-  @ModelProperty( name = "Geo Role" )
-  private GeoRole geoRole;
-
-  public ModelAnnotation.LevelType getLevelType() {
-    return levelType;
-  }
-
-  public void setLevelType( ModelAnnotation.LevelType levelType ) {
-    this.levelType = levelType;
-  }
-
-  public ModelAnnotation.AttributeType getAttributeType() {
-    return attributeType;
-  }
-
-  public void setAttributeType( ModelAnnotation.AttributeType attributeType ) {
-    this.attributeType = attributeType;
-  }
-
-  public String getFormatString() {
-    return formatString;
-  }
-
-  public void setFormatString( String formatString ) {
-    this.formatString = formatString;
-  }
-
-  public GeoRole getGeoRole() {
-    return geoRole;
-  }
-
-  public void setGeoRole( GeoRole geoRole ) {
-    this.geoRole = geoRole;
-  }
-
-  @Override public void apply( final ModelerWorkspace workspace, final String column ) {
-    throw new UnsupportedOperationException();
+    measure.apply( model, "QUANTITYINSTOCK" );
+    MeasuresCollection measures = model.getModel().getMeasures();
+    assertEquals( 4, measures.size() );
+    MeasureMetaData measureMetaData = measures.get( 3 );
+    assertEquals( "QUANTITYINSTOCK", measureMetaData.getColumnName() );
+    assertEquals( "Avg Weight", measureMetaData.getName() );
+    assertEquals( "##.##", measureMetaData.getFormat() );
+    assertEquals( AVERAGE, measureMetaData.getDefaultAggregation() );
   }
 }

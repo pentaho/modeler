@@ -22,13 +22,15 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Rowell Belen
@@ -121,5 +123,21 @@ public class ModelAnnotationTest {
     assertEquals( ModelAnnotation.getAttributes( annotations ).size(), 1 );
     assertEquals( ModelAnnotation.getDimensions( annotations ).size(), 1 );
     assertEquals( ModelAnnotation.getHeirachyLevels( annotations ).size(), 1 );
+  }
+
+  @Test
+  public void testAppliesAllAnnotationsToWorkspace() throws Exception {
+    final ModelerWorkspace modelerWorkspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    AnnotationType annotationType = new AnnotationType() {
+      @Override
+      public void apply( final ModelerWorkspace workspace, final String column ) {
+        assertSame( workspace, modelerWorkspace );
+        assertEquals( "amount", column );
+      }
+    };
+    ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
+    modelAnnotation.setColumn( "amount" );
+    modelAnnotation.setAnnotation( annotationType );
+    modelAnnotation.apply( modelerWorkspace );
   }
 }

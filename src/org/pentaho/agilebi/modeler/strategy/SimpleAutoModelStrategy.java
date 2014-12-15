@@ -28,6 +28,8 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
@@ -50,9 +52,10 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy {
 
   private String locale;
   protected GeoContext geoContext;
+  private final ModelAnnotationGroup annotations;
 
   public SimpleAutoModelStrategy( String locale ) {
-    this.locale = locale;
+    this( locale, null, new ModelAnnotationGroup() );
   }
 
   /**
@@ -63,7 +66,23 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy {
    * @param geoContext
    */
   public SimpleAutoModelStrategy( String locale, GeoContext geoContext ) {
+    this( locale, geoContext, new ModelAnnotationGroup() );
+  }
+
+  /**
+   * Create a new SimpleAutoModelStrategy with geo-aware context. This context will attempt to identify geographic
+   * fields in the model and build appropriate geography dimensions.
+   * Modeling will also apply all annotations in the list
+   *
+   * @param locale
+   * @param geoContext
+   * @param annotations
+   */
+  public SimpleAutoModelStrategy( final String locale, final GeoContext geoContext,
+                                  final ModelAnnotationGroup annotations ) {
+    this.locale = locale;
     this.geoContext = geoContext;
+    this.annotations = annotations;
   }
 
   public String getLocale() {
@@ -142,6 +161,13 @@ public class SimpleAutoModelStrategy implements AutoModelStrategy {
     if ( !mainModel.getSuppressEvents() ) {
       workspace.setModelIsChanging( prevChangeState );
       workspace.setSelectedNode( workspace.getModel() );
+    }
+    applyAnnotations( workspace );
+  }
+
+  private void applyAnnotations( final ModelerWorkspace workspace ) {
+    for ( ModelAnnotation annotation : annotations ) {
+      annotation.apply( workspace );
     }
   }
 

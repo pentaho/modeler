@@ -19,30 +19,24 @@
  * confidentiality and non-disclosure agreements or other agreements with Pentaho,
  * explicitly covering such access.
  */
-
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.junit.Test;
 
-/**
- * @author Rowell Belen
- */
-public class Dimension extends AnnotationType {
+import static org.junit.Assert.*;
 
-  private static final long serialVersionUID = 6240723009910986173L;
+public class ModelAnnotationGroupTest {
 
-  @ModelProperty( name = "Type" )
-  private ModelAnnotation.LevelType levelType;
-
-  public ModelAnnotation.LevelType getLevelType() {
-    return levelType;
-  }
-
-  public void setLevelType( ModelAnnotation.LevelType levelType ) {
-    this.levelType = levelType;
-  }
-
-  @Override public void apply( final ModelerWorkspace workspace, final String column ) {
-    throw new UnsupportedOperationException();
+  @SuppressWarnings( "MismatchedQueryAndUpdateOfCollection" )
+  @Test
+  public void testHasAVarArgsConstructor() throws Exception {
+    ModelAnnotation<Measure> measure = new ModelAnnotation<Measure>();
+    ModelAnnotation<Attribute> attribute = new ModelAnnotation<Attribute>();
+    ModelAnnotationGroup annotationGroup = new ModelAnnotationGroup( measure, attribute );
+    annotationGroup.setId( "cleverIdentifier" );
+    assertEquals( 2, annotationGroup.size() );
+    assertSame( measure, annotationGroup.get( 0 ) );
+    assertSame( attribute, annotationGroup.get( 1 ) );
+    assertEquals( "cleverIdentifier", annotationGroup.getId() );
   }
 }

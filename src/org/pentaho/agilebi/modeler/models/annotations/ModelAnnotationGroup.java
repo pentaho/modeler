@@ -19,30 +19,24 @@
  * confidentiality and non-disclosure agreements or other agreements with Pentaho,
  * explicitly covering such access.
  */
-
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
 
-/**
- * @author Rowell Belen
- */
-public class Dimension extends AnnotationType {
+import java.util.ArrayList;
+import java.util.Arrays;
 
-  private static final long serialVersionUID = 6240723009910986173L;
+public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
+  private String id;
 
-  @ModelProperty( name = "Type" )
-  private ModelAnnotation.LevelType levelType;
-
-  public ModelAnnotation.LevelType getLevelType() {
-    return levelType;
+  public ModelAnnotationGroup( ModelAnnotation ... modelAnnotations ) {
+    super( Arrays.asList( modelAnnotations ) );
   }
 
-  public void setLevelType( ModelAnnotation.LevelType levelType ) {
-    this.levelType = levelType;
+  public void setId( final String id ) {
+    this.id = id;
   }
 
-  @Override public void apply( final ModelerWorkspace workspace, final String column ) {
-    throw new UnsupportedOperationException();
+  public String getId() {
+    return id;
   }
 }
