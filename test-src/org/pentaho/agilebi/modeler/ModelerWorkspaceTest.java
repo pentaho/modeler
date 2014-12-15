@@ -224,8 +224,8 @@ public class ModelerWorkspaceTest extends AbstractModelerTest {
     work.setDomain( workspace.getDomain() );
     work.getWorkspaceHelper().autoModelFlat( work );
     MeasuresCollection measures = work.getModel().getMeasures();
-    assertEquals( 5, measures.size() );
-    assertEquals( AggregationType.MAXIMUM, measures.get( 4 ).getDefaultAggregation() );
-    assertEquals( "SALESREPEMPLOYEENUMBER", measures.get( 4 ).getColumnName() );
+    assertEquals( 4, measures.size() );
+    assertEquals( AggregationType.MAXIMUM, measures.get( 3 ).getDefaultAggregation() );
+    assertEquals( "SALESREPEMPLOYEENUMBER", measures.get( 3 ).getColumnName() );
   }
 }

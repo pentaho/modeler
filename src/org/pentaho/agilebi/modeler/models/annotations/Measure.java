@@ -73,6 +73,7 @@ public class Measure extends AnnotationType {
           measureMetaData.setDefaultAggregation( getAggregateType() );
           measureMetaData.setName( getName() );
           workspace.addMeasure( measureMetaData );
+          return;
         }
       }
 
