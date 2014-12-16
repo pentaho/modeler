@@ -88,6 +88,10 @@ public class ModelAnnotationTest {
         assertEquals( "amount", column );
       }
 
+      @Override public boolean isActionSupported( ModelAnnotation.Action action ) {
+        return false;
+      }
+
       @Override public AnnotationSubType getType() {
         return null;
       }
