@@ -44,7 +44,7 @@ public class ModelPropertyTest {
 
     measure.setModelPropertyByName( "Display Name", "A" );
     measure.setModelPropertyByName( "Description", "B" );
-    measure.setModelPropertyByName( "Unique Members", "true" ); // ignored. passed string but type is boolean
+    measure.setModelPropertyByName( "Unique Members", "true" ); // auto converted
     measure.setModelPropertyByName( "Localized Name", "C" );
     measure.setModelPropertyByName( "Format String", "D" );
     measure.setModelPropertyByName( "Hidden", true );
@@ -55,7 +55,7 @@ public class ModelPropertyTest {
     assertEquals( measure.getDescription(), "B" );
     assertEquals( measure.getLocalizedName(), "C" );
     assertEquals( measure.getFormatString(), "D" );
-    assertEquals( measure.isUniqueMembers(), false );
+    assertEquals( measure.isUniqueMembers(), true );
     assertEquals( measure.isHidden(), true );
     assertEquals( measure.getAggregateType(), AggregationType.COUNT );
 

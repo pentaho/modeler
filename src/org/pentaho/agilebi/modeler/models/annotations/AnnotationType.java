@@ -23,8 +23,10 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 
 import java.io.Serializable;
@@ -134,9 +136,7 @@ public abstract class AnnotationType implements Serializable {
       if ( f.isAnnotationPresent( ModelProperty.class ) ) {
         ModelProperty mp = f.getAnnotation( ModelProperty.class );
         if ( StringUtils.equals( mp.id(), id ) ) {
-          if ( ClassUtils.isAssignable( f.getType(), value.getClass(), true ) ) {
-            PropertyUtils.setProperty( this, f.getName(), value );
-          }
+          attemptAutoConvertAndAssign( f, value );
         }
       }
     }
@@ -179,10 +179,25 @@ public abstract class AnnotationType implements Serializable {
       if ( f.isAnnotationPresent( ModelProperty.class ) ) {
         ModelProperty mp = f.getAnnotation( ModelProperty.class );
         if ( StringUtils.equals( mp.name(), modelPropertyName ) ) {
-          if ( ClassUtils.isAssignable( f.getType(), value.getClass(), true ) ) {
-            PropertyUtils.setProperty( this, f.getName(), value );
-          }
+          attemptAutoConvertAndAssign( f, value );
         }
+      }
+    }
+  }
+
+  protected void attemptAutoConvertAndAssign( final Field field, final Object value ) throws Exception {
+
+    if ( ClassUtils.isAssignable( value.getClass(), field.getType(), true ) ) {
+      PropertyUtils.setProperty( this, field.getName(), value );
+    } else {
+      if ( ClassUtils.isAssignable( field.getType(), Boolean.class, true ) ) {
+        PropertyUtils.setProperty( this, field.getName(), BooleanUtils.toBoolean( value.toString() ) );
+        return;
+      }
+
+      if ( NumberUtils.isNumber( value.toString() ) ) {
+        Number number = NumberUtils.createNumber( value.toString() );
+        PropertyUtils.setProperty( this, field.getName(), number );
       }
     }
   }
