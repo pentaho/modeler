@@ -17,14 +17,12 @@
 
 package org.pentaho.agilebi.modeler.strategy;
 
-import static java.util.Arrays.asList;
 import static junit.framework.Assert.*;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
@@ -32,14 +30,11 @@ import java.util.Properties;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
@@ -168,29 +163,5 @@ public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
       assertEquals( tables.get( cat.getName() ).intValue(), cat.size() );
     }
 
-  }
-
-  @Test
-  public void testAutoModelAppliesAnnotations() throws Exception {
-    GeoContext geo = GeoContextFactory.create( config );
-    final boolean applied[] = {false, false};
-    ModelAnnotation modelAnnotationOne = annotation( applied, 0 );
-    ModelAnnotation modelAnnotationTwo = annotation( applied, 1 );
-    SimpleAutoModelStrategy strategy =
-        new SimpleAutoModelStrategy( LOCALE, geo, new ModelAnnotationGroup( modelAnnotationOne, modelAnnotationTwo ) );
-    strategy.autoModelOlap( workspace, new MainModelNode() );
-    for ( boolean b : applied ) {
-      assertTrue( b );
-    }
-  }
-
-  private ModelAnnotation annotation( final boolean[] applied, final int i ) {
-    return new ModelAnnotation() {
-      @Override
-      public void apply( final ModelerWorkspace actualWorkspace ) {
-        assertEquals( workspace, actualWorkspace );
-        applied[ i ] = true;
-      }
-    };
   }
 }

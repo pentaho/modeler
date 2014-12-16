@@ -27,9 +27,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.pentaho.agilebi.modeler.models.annotations.Measure;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
@@ -37,14 +34,12 @@ import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
-import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 
@@ -213,19 +208,4 @@ public class ModelerWorkspaceTest extends AbstractModelerTest {
     assertNotSame( logicalColumn, lCol );
   }
 
-  @Test
-  public void testWorkspaceAnnotationsForAutoModel() throws Exception {
-    generateTestDomain();
-    ModelAnnotationGroup annotations = new ModelAnnotationGroup();
-    Measure measure = new Measure();
-    measure.setAggregateType( AggregationType.MAXIMUM );
-    annotations.add( new ModelAnnotation<Measure>( "SALESREPEMPLOYEENUMBER", measure ) );
-    ModelerWorkspace work = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ), annotations );
-    work.setDomain( workspace.getDomain() );
-    work.getWorkspaceHelper().autoModelFlat( work );
-    MeasuresCollection measures = work.getModel().getMeasures();
-    assertEquals( 4, measures.size() );
-    assertEquals( AggregationType.MAXIMUM, measures.get( 3 ).getDefaultAggregation() );
-    assertEquals( "SALESREPEMPLOYEENUMBER", measures.get( 3 ).getColumnName() );
-  }
 }

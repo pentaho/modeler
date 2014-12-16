@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableItemCollection;
@@ -121,20 +120,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
   private transient ModelerTreeHelper currentModelerTreeHelper;
 
   public ModelerWorkspace( IModelerWorkspaceHelper helper ) {
-    this( helper, null, new ModelAnnotationGroup() );
-  }
-
-  public ModelerWorkspace( IModelerWorkspaceHelper helper, ModelAnnotationGroup annotations ) {
-    this( helper, null, annotations );
+    this( helper, null );
   }
 
   public ModelerWorkspace( IModelerWorkspaceHelper helper, GeoContext geoContext ) {
-
-    this( helper, geoContext, new ModelAnnotationGroup() );
-  }
-
-  public ModelerWorkspace( IModelerWorkspaceHelper helper, GeoContext geoContext, ModelAnnotationGroup annotations ) {
-
     this.isTemporary = true;
     this.workspaceHelper = helper;
 
@@ -142,7 +131,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     setRelationalModel( new RelationalModelNode( this ) );
 
     this.geoContext = geoContext;
-    simpleAutoModelStrategy = new SimpleAutoModelStrategy( workspaceHelper.getLocale(), geoContext, annotations );
+    simpleAutoModelStrategy = new SimpleAutoModelStrategy( workspaceHelper.getLocale(), geoContext );
     multiTableAutoModelStrategy = new MultiTableAutoModelStrategy( workspaceHelper.getLocale() );
     starSchemaAutoModelStrategy = new StarSchemaAutoModelStrategy( workspaceHelper.getLocale(), geoContext );
     AnalyzerDateFormatAnnotationFactory.register();
@@ -531,19 +520,19 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       return false;
     } else {
       LogicalModel lModel = d.getLogicalModels().get( 1 );
-      
+
       String dualModelingSchema = "false";
       Property dualProperty = lModel.getProperty( "DUAL_MODELING_SCHEMA" );
       if ( dualProperty != null ) {
         dualModelingSchema = (String) dualProperty.getValue();
       }
-      
+
       String mondrianCat = "";
       Property mondrianProperty = lModel.getProperty( "MondrianCatalogRef" );
       if ( mondrianProperty != null ) {
         mondrianCat = (String) mondrianProperty.getValue();
       }
-      
+
       return "true".equals( dualModelingSchema )
           || mondrianCat != null;
     }
@@ -665,19 +654,19 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     // If the new model was previously "auto-modeled" we need to clean that now
     LogicalModel newLModel = getLogicalModel( ModelerPerspective.ANALYSIS );
     if ( newLModel != null ) {
-      
+
       List<OlapDimension> theDimensions = null;
       Property dimProperty = newLModel.getProperty( "olap_dimensions" ); //$NON-NLS-1$
-      if( dimProperty != null ) {
+      if ( dimProperty != null ) {
         theDimensions = (List) dimProperty.getValue();
       }
       if ( theDimensions != null ) {
         theDimensions.clear();
       }
-      
+
       List<OlapCube> theCubes = null;
       Property cubesProperty = newLModel.getProperty( "olap_cubes" ); //$NON-NLS-1$
-      if( cubesProperty != null ) {
+      if ( cubesProperty != null ) {
         theCubes = (List) cubesProperty.getValue();
       }
       if ( theCubes != null ) {
@@ -751,7 +740,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     lModel = getLogicalModel( ModelerPerspective.ANALYSIS );
     List<OlapDimension> theDimensions = null;
     if ( lModel != null ) {
-      Property dimsProperty = lModel.getProperty( LogicalModel.PROPERTY_OLAP_DIMS ); 
+      Property dimsProperty = lModel.getProperty( LogicalModel.PROPERTY_OLAP_DIMS );
       if ( dimsProperty != null ) {
         theDimensions = (List) dimsProperty.getValue();
       }
@@ -861,7 +850,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
     List<OlapCube> theCubes = null;
     if ( lModel != null ) {
-      Property cubesProperty = lModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ); 
+      Property cubesProperty = lModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES );
       if ( cubesProperty != null ) {
         theCubes = (List) cubesProperty.getValue();
       }
@@ -927,10 +916,10 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
         String formatMask = null;
         Property maskProperty = col.getProperty( "mask" );
-        if ( maskProperty != null && maskProperty.getValue() != null) {
+        if ( maskProperty != null && maskProperty.getValue() != null ) {
           formatMask = maskProperty.toString();
         }
-        
+
         String colName = col.getName( workspaceHelper.getLocale() );
         AggregationType aggType = col.getAggregationType();
 
