@@ -17,13 +17,11 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.io.Serializable;
-
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 
-public class AvailableField extends AbstractAvailableItem implements Serializable, IAvailableItem {
+public class AvailableField extends AbstractAvailableItem<IAvailableItem> implements IAvailableItem {
 
   private static final long serialVersionUID = -4430951279551589688L;
 

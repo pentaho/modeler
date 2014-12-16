@@ -17,8 +17,6 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.Serializable;
 import java.util.HashMap;
 
@@ -27,10 +25,9 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<DimensionMetaData> implements Serializable {
+public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<DimensionMetaData> {
 
   private static final long serialVersionUID = -6327799582519270107L;
 
@@ -61,12 +58,6 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
   public boolean isUiExpanded() {
     return true;
   }
-
-  private transient PropertyChangeListener listener = new PropertyChangeListener() {
-    public void propertyChange( PropertyChangeEvent evt ) {
-      fireCollectionChanged();
-    }
-  };
 
   // TODO: investigate using "this" form of notification in super-class
   protected void fireCollectionChanged() {
@@ -143,7 +134,7 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
   }
 
   @Override
-  public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
+  public Class<GenericPropertiesForm> getPropertiesForm() {
     return GenericPropertiesForm.class;
   }
 

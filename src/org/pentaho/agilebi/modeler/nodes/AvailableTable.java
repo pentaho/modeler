@@ -17,23 +17,22 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.metadata.model.IPhysicalColumn;
-import org.pentaho.metadata.model.IPhysicalTable;
-import org.pentaho.metadata.model.concept.types.LocalizedString;
-import org.pentaho.ui.xul.stereotype.Bindable;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.pentaho.metadata.model.IPhysicalColumn;
+import org.pentaho.metadata.model.IPhysicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
  * Created: 4/11/11
  * 
  * @author rfellows
  */
-public class AvailableTable extends AbstractAvailableItem<AvailableField> implements Serializable, IAvailableItem {
+public class AvailableTable extends AbstractAvailableItem<AvailableField> implements IAvailableItem {
 
   private static final String FACT_TABLE_IMAGE = "images/table_fact.png";
   private static final String DIM_TABLE_IMAGE = "images/table.png";

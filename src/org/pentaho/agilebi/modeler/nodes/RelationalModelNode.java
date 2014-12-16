@@ -19,12 +19,10 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.Serializable;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.RelationalModelNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -33,8 +31,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  * 
  * @author rfellows
  */
-public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaDataCollection> implements Serializable,
-    IRootModelNode {
+public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaDataCollection> implements IRootModelNode {
   private static final String IMAGE = "images/sm_model_icon.png";
   private static final long serialVersionUID = 818429477176656590L;
   String name = "Untitled";
@@ -131,7 +128,7 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
   }
 
   @Override
-  public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
+  public Class<RelationalModelNodePropertiesForm> getPropertiesForm() {
     return RelationalModelNodePropertiesForm.class;
   }
 

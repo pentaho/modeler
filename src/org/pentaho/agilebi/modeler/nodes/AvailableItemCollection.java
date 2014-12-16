@@ -32,7 +32,7 @@ import org.pentaho.ui.xul.util.AbstractModelList;
  * 
  * @author rfellows
  */
-public class AvailableItemCollection extends AbstractModelList<IAvailableItem> implements Serializable {
+public class AvailableItemCollection extends AbstractModelList<IAvailableItem> {
   public static final String IMAGE_FILE = "";
   private static final long serialVersionUID = -3640424842982505015L;
 

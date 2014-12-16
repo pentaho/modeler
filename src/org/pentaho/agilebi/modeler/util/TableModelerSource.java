@@ -25,6 +25,7 @@ import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.SqlPhysicalModel;
 import org.pentaho.metadata.model.SqlPhysicalTable;
+import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.util.ThinModelConverter;
 
 /**
@@ -81,7 +82,11 @@ public class TableModelerSource implements ISpoonModelerSource {
     SqlPhysicalModel model = (SqlPhysicalModel) domain.getPhysicalModels().get( 0 );
     SqlPhysicalTable table = model.getPhysicalTables().get( 0 );
 
-    String targetTable = (String) table.getProperty( "target_table" );
+    String targetTable = null;
+    Property property = table.getProperty( "target_table" );
+    if ( property != null ) {
+      targetTable = (String) property.getValue();
+    }
     if ( !StringUtils.isEmpty( targetTable ) ) {
       domain.setId( targetTable );
     }
@@ -97,7 +102,7 @@ public class TableModelerSource implements ISpoonModelerSource {
 
   public void serializeIntoDomain( Domain d ) {
     LogicalModel lm = d.getLogicalModels().get( 0 );
-    lm.setProperty( "source_type", SOURCE_TYPE );
+    lm.setProperty( "source_type", new Property<String>( SOURCE_TYPE ) );
   }
 
   public DatabaseMeta getDatabaseMeta() {

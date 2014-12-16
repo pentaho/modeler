@@ -69,7 +69,7 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
 
     assertNotNull( domain );
     LogicalModel olapModel = domain.getLogicalModels().get( 1 );
-    List<OlapCube> cubes = (List) olapModel.getProperty( "olap_cubes" );
+    List<OlapCube> cubes = (List) olapModel.getProperty( "olap_cubes" ).getValue();
     OlapCube cube = cubes.get( 0 );
 
     // Ensure cube has a fact table.

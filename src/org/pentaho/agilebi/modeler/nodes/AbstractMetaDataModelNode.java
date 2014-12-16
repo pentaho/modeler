@@ -34,7 +34,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T>
-    implements Serializable, IDropTarget {
+    implements IDropTarget {
 
   private static final long serialVersionUID = 1547202580713108254L;
 

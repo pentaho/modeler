@@ -17,7 +17,6 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +40,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  * @author rfellows
  */
 public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> extends AbstractMetaDataModelNode<T>
-    implements Serializable, ColumnBackedNode {
+    implements ColumnBackedNode {
   private static final long serialVersionUID = -7342401951588541248L;
   protected String name;
   protected String columnName;

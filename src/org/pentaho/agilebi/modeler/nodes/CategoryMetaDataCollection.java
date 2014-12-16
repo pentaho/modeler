@@ -17,15 +17,11 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
@@ -33,7 +29,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  * 
  * @author rfellows
  */
-public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<CategoryMetaData> implements Serializable {
+public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<CategoryMetaData> {
   private static final long serialVersionUID = 7083527229930283278L;
   private String name = "Categories";
   private static final String CLASSNAME = "pentaho-smallcategorybutton";
@@ -62,12 +58,6 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
   public boolean isUiExpanded() {
     return true;
   }
-
-  private transient PropertyChangeListener listener = new PropertyChangeListener() {
-    public void propertyChange( PropertyChangeEvent evt ) {
-      fireCollectionChanged();
-    }
-  };
 
   // TODO: investigate using "this" form of notification in super-class
   protected void fireCollectionChanged() {
@@ -145,7 +135,7 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
   }
 
   @Override
-  public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
+  public Class<GenericPropertiesForm> getPropertiesForm() {
     return GenericPropertiesForm.class;
   }
 
