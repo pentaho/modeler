@@ -42,6 +42,7 @@ public class AnnotationTypeTest {
     properties.put( "name", "NameTest" );
     properties.put( "localizedName", 12 ); // type doesn't match, not saved
     properties.put( "geoRole", new GeoRole(  ) );
+    properties.put( "hidden", "yes" );
 
     Attribute attribute = new Attribute();
     attribute.populate( properties );
@@ -49,5 +50,30 @@ public class AnnotationTypeTest {
     assertEquals( attribute.getName(), "NameTest" );
     assertNull( attribute.getLocalizedName() );
     assertNotNull( attribute.getGeoRole() );
+    assertTrue( attribute.isHidden() );
+
+    properties.put( "hidden", "false" );
+    attribute.populate( properties );
+    assertFalse( attribute.isHidden() );
+  }
+
+  @Test
+  public void testConvertAndAssign() {
+
+    Map<String, Serializable> properties = new HashMap<String, Serializable>();
+    properties.put( "i", "11" );
+    properties.put( "d", 11.11 );
+    properties.put( "f", "22.22" );
+    properties.put( "l", Long.MAX_VALUE + "" );
+    properties.put( "s", Short.MAX_VALUE );
+
+    MockAnnotationType mockAnnotationType = new MockAnnotationType();
+    mockAnnotationType.populate( properties );
+
+    assertEquals( mockAnnotationType.getI(), 11 );
+    assertEquals( mockAnnotationType.getD(), 11.11D, 0 );
+    assertEquals( mockAnnotationType.getF(), 22.22F, 0 );
+    assertEquals( mockAnnotationType.getL(), Long.MAX_VALUE );
+    assertEquals( mockAnnotationType.getS(), Short.MAX_VALUE );
   }
 }
