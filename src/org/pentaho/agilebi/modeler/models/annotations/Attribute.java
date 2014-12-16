@@ -32,52 +32,73 @@ public class Attribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
 
-  @ModelProperty( id = "levelType", name = "Level Type" )
-  private ModelAnnotation.LevelType levelType;
+  @ModelProperty( id = "unique", name = "Is Unique" )
+  private boolean unique;
 
-  @ModelProperty( id = "attributeType", name = "Attribute Type" )
-  private ModelAnnotation.AttributeType attributeType;
+  @ModelProperty( id = "timeFormat", name = "Time Format" )
+  private String timeFormat;
 
-  @ModelProperty( id = "formatString", name = "Format String" )
-  private String formatString;
+  @ModelProperty( id = "timeType", name = "Time Type" )
+  private ModelAnnotation.TimeType timeType;
 
-  @ModelProperty( id = "geoRole", name = "Geo Role" )
-  private GeoRole geoRole;
+  @ModelProperty( id = "geoType", name = "Geo Type" )
+  private ModelAnnotation.GeoType geoType;
 
-  public ModelAnnotation.LevelType getLevelType() {
-    return levelType;
+  @ModelProperty( id = "ordinalField", name = "Ordinal Field" )
+  private String ordinalField;
+
+  public boolean isUnique() {
+    return unique;
   }
 
-  public void setLevelType( ModelAnnotation.LevelType levelType ) {
-    this.levelType = levelType;
+  public void setUnique( boolean unique ) {
+    this.unique = unique;
   }
 
-  public ModelAnnotation.AttributeType getAttributeType() {
-    return attributeType;
+  public String getTimeFormat() {
+    return timeFormat;
   }
 
-  public void setAttributeType( ModelAnnotation.AttributeType attributeType ) {
-    this.attributeType = attributeType;
+  public void setTimeFormat( String timeFormat ) {
+    this.timeFormat = timeFormat;
   }
 
-  public String getFormatString() {
-    return formatString;
+  public ModelAnnotation.TimeType getTimeType() {
+    return timeType;
   }
 
-  public void setFormatString( String formatString ) {
-    this.formatString = formatString;
+  public void setTimeType( ModelAnnotation.TimeType timeType ) {
+    this.timeType = timeType;
   }
 
-  public GeoRole getGeoRole() {
-    return geoRole;
+  public ModelAnnotation.GeoType getGeoType() {
+    return geoType;
   }
 
-  public void setGeoRole( GeoRole geoRole ) {
-    this.geoRole = geoRole;
+  public void setGeoType( ModelAnnotation.GeoType geoType ) {
+    this.geoType = geoType;
   }
 
-  @Override public void apply( final ModelerWorkspace workspace, final String column ) {
+  public String getOrdinalField() {
+    return ordinalField;
+  }
+
+  public void setOrdinalField( String ordinalField ) {
+    this.ordinalField = ordinalField;
+  }
+
+  @Override
+  public void apply( final ModelerWorkspace workspace, final String column ) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean isActionSupported( ModelAnnotation.Action action ) {
+    if ( ModelAnnotation.Action.CREATE == action ) {
+      return true; // only supported action for now
+    }
+
+    return false;
   }
 
   @Override

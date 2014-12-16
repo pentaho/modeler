@@ -51,17 +51,17 @@ public abstract class AnnotationType implements Serializable {
   @ModelProperty( id = "name", name = "Display Name" )
   private String name;
 
-  @ModelProperty( id = "localizedName", name = "Localized Name" )
+  @ModelProperty( id = "caption", name = "Caption" )
   private String localizedName;
 
   @ModelProperty( id = "description", name = "Description" )
   private String description;
 
-  @ModelProperty( id = "uniqueMembers", name = "Unique Members" )
-  private boolean uniqueMembers;
-
   @ModelProperty( id = "hidden", name = "Hidden" )
   private boolean hidden;
+
+  @ModelProperty( id = "businessGroup", name = "Business Group" )
+  private String businessGroup;
 
   public String getName() {
     return name;
@@ -87,20 +87,20 @@ public abstract class AnnotationType implements Serializable {
     this.description = description;
   }
 
-  public boolean isUniqueMembers() {
-    return uniqueMembers;
-  }
-
-  public void setUniqueMembers( boolean uniqueMembers ) {
-    this.uniqueMembers = uniqueMembers;
-  }
-
   public boolean isHidden() {
     return hidden;
   }
 
   public void setHidden( boolean hidden ) {
     this.hidden = hidden;
+  }
+
+  public String getBusinessGroup() {
+    return businessGroup;
+  }
+
+  public void setBusinessGroup( String businessGroup ) {
+    this.businessGroup = businessGroup;
   }
 
   protected List<Field> findAllFields( List<Field> fields, Class<?> type ) {
@@ -244,12 +244,12 @@ public abstract class AnnotationType implements Serializable {
 
   public abstract void apply( final ModelerWorkspace workspace, final String column );
 
+  public abstract boolean isActionSupported( final ModelAnnotation.Action action );
+
   public abstract AnnotationSubType getType();
 
   public static enum AnnotationSubType {
     ATTRIBUTE,
-    HIERARCHY_LEVEL,
-    MEASURE,
-    DIMENSION
+    MEASURE
   }
 }

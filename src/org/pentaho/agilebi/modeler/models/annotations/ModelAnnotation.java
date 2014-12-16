@@ -37,6 +37,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
 
+  private Action action;
+
   private String column;
 
   private T annotation;
@@ -44,9 +46,18 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   public ModelAnnotation() {
   }
 
-  public ModelAnnotation( String column, T annotation ) {
+  public ModelAnnotation( final Action action, final String column, final T annotation ) {
+    setAction( action );
     setColumn( column );
     setAnnotation( annotation );
+  }
+
+  public Action getAction() {
+    return action;
+  }
+
+  public void setAction( Action action ) {
+    this.action = action;
   }
 
   public String getColumn() {
@@ -77,16 +88,6 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   public static List<ModelAnnotation<Attribute>> getAttributes(
       final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
     return filter( annotations, Attribute.class );
-  }
-
-  public static List<ModelAnnotation<Dimension>> getDimensions(
-      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
-    return filter( annotations, Dimension.class );
-  }
-
-  public static List<ModelAnnotation<HierarchyLevel>> getHeirachyLevels(
-      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
-    return filter( annotations, HierarchyLevel.class );
   }
 
   private static <S extends AnnotationType> List<ModelAnnotation<S>> filter(
@@ -131,22 +132,20 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     }
   }
 
-  public static enum Actions {
-    CREATE_HEIRARCHY_LEVEL,
-    UPDATE_HEIRARCHY_LEVEL,
-    REMOVE_HEIRARCHY_LEVEL,
-    CREATE_MEASURE,
-    UPDATE_MEASURE,
-    REMOVE_MEASURE,
-    HIDE_UNHIDE_MEASURE,
-    LINK_DIMENSION,
-    CREATE_ATTRIBUTE,
-    UPDATE_ATTRIBUTE,
-    REMOVE_ATTRIBUTE,
-    HIDE_UNHIDE_ATTRIBUTE
+  public boolean isActionSupported( final Action action ) {
+    if ( annotation != null ) {
+      return annotation.isActionSupported( action );
+    }
+    return false;
   }
 
-  public static enum LevelType {
+  public static enum Action {
+    CREATE,
+    UPDATE,
+    REMOVE
+  }
+
+  public static enum TimeType {
     Regular,
     TimeYears,
     TimeHalfYears,
@@ -161,10 +160,14 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     Null
   }
 
-  public static enum AttributeType {
-    KEY,
-    NAME,
-    ORDINAL,
-    PROPERTY
+  public static enum GeoType {
+    Lat_Long,
+    Country,
+    City,
+    State,
+    County,
+    Postal_Code,
+    Continent,
+    Territory
   }
 }

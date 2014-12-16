@@ -40,27 +40,25 @@ public class ModelPropertyTest {
     Measure measure = new Measure();
 
     List<String> propertyNames = measure.getModelPropertyNames();
-    assertEquals( propertyNames.size(), 7 );
+    assertEquals( propertyNames.size(), 8 );
 
     measure.setModelPropertyByName( "Display Name", "A" );
     measure.setModelPropertyByName( "Description", "B" );
     measure.setModelPropertyByName( "Unique Members", "true" ); // auto converted
-    measure.setModelPropertyByName( "Localized Name", "C" );
+    measure.setModelPropertyByName( "Caption", "C" );
     measure.setModelPropertyByName( "Format String", "D" );
     measure.setModelPropertyByName( "Hidden", true );
-    measure.setModelPropertyByName( "Aggregate Type", AggregationType.COUNT );
+    measure.setModelPropertyByName( "Aggregation Type", AggregationType.COUNT );
     measure.setModelPropertyByName( "XXX", "Does not exist" ); // should not fail
 
     assertEquals( measure.getName(), "A" );
     assertEquals( measure.getDescription(), "B" );
     assertEquals( measure.getLocalizedName(), "C" );
     assertEquals( measure.getFormatString(), "D" );
-    assertEquals( measure.isUniqueMembers(), true );
     assertEquals( measure.isHidden(), true );
     assertEquals( measure.getAggregateType(), AggregationType.COUNT );
 
     measure.setModelPropertyByName( "Unique Members", true );
-    assertEquals( measure.isUniqueMembers(), true );
   }
 
   @Test
@@ -69,36 +67,12 @@ public class ModelPropertyTest {
     Attribute attribute = new Attribute();
     GeoRole geoRole = new GeoRole();
 
-    attribute.setModelPropertyByName( "Level Type", ModelAnnotation.LevelType.Regular );
-    attribute.setModelPropertyByName( "Attribute Type", ModelAnnotation.AttributeType.PROPERTY );
-    attribute.setModelPropertyByName( "Format String", "B" );
-    attribute.setModelPropertyByName( "Geo Role", geoRole );
+    attribute.setModelPropertyByName( "Time Type", ModelAnnotation.TimeType.Regular );
+    attribute.setModelPropertyByName( "Time Format", "B" );
+    attribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.City );
 
-    assertEquals( attribute.getLevelType(), ModelAnnotation.LevelType.Regular );
-    assertEquals( attribute.getAttributeType(), ModelAnnotation.AttributeType.PROPERTY );
-    assertEquals( attribute.getFormatString(), "B" );
-    assertEquals( attribute.getGeoRole(), geoRole );
-  }
-
-  @Test
-  public void testDimension() throws Exception {
-    Dimension dimension = new Dimension();
-    dimension.setModelPropertyByName( "Type", ModelAnnotation.LevelType.Regular );
-    assertEquals( dimension.getLevelType(), ModelAnnotation.LevelType.Regular );
-  }
-
-  @Test
-  public void testHeirarchyLevel() throws Exception {
-    HierarchyLevel parent = new HierarchyLevel();
-    HierarchyLevel hierarchyLevel = new HierarchyLevel();
-
-    hierarchyLevel.setModelPropertyByName( "Level Ordinal", 0 );
-    hierarchyLevel.setModelPropertyByName( "Unique Members", true );
-    hierarchyLevel.setModelPropertyByName( "Parent", parent );
-
-    assertEquals( hierarchyLevel.getLevelOrdinal(), 0 );
-    assertEquals( hierarchyLevel.isUniqueMembers(), true );
-    assertEquals( hierarchyLevel.getParent(), parent );
-    assertEquals( hierarchyLevel.getModelPropertyNames().size(), 11 );
+    assertEquals( attribute.getTimeType(), ModelAnnotation.TimeType.Regular );
+    assertEquals( attribute.getTimeFormat(), "B" );
+    assertEquals( attribute.getGeoType(), ModelAnnotation.GeoType.City );
   }
 }

@@ -42,7 +42,7 @@ public class ModelAnnotationTest {
     Measure measure = new Measure();
 
     List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<Measure>( "testColumn", measure ) );
+    list.add( new ModelAnnotation<Measure>( ModelAnnotation.Action.CREATE, "testColumn", measure ) );
 
     ModelAnnotation<?> md = list.get( 0 ); // don't know the type
 
@@ -57,7 +57,7 @@ public class ModelAnnotationTest {
     Attribute attribute = new Attribute();
 
     List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<Attribute>( "testColumn", attribute ) );
+    list.add( new ModelAnnotation<Attribute>( ModelAnnotation.Action.CREATE, "testColumn", attribute ) );
 
     ModelAnnotation<?> md = list.get( 0 ); // don't know the type
 
@@ -67,49 +67,15 @@ public class ModelAnnotationTest {
   }
 
   @Test
-  public void testDimension() {
-
-    Dimension dimension = new Dimension();
-
-    List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<Dimension>( "testColumn", dimension ) );
-
-    ModelAnnotation<?> md = list.get( 0 ); // don't know the type
-
-    // check
-    assertEquals( md.getColumn(), "testColumn" );
-    assertEquals( md.getType(), AnnotationType.AnnotationSubType.DIMENSION );
-  }
-
-  @Test
-  public void testHierarchyLevel() {
-
-    HierarchyLevel hierarchyLevel = new HierarchyLevel();
-
-    List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<HierarchyLevel>( "testColumn", hierarchyLevel ) );
-
-    ModelAnnotation<?> md = list.get( 0 ); // don't know the type
-
-    // check
-    assertEquals( md.getColumn(), "testColumn" );
-    assertEquals( md.getType(), AnnotationType.AnnotationSubType.HIERARCHY_LEVEL );
-  }
-
-  @Test
   public void testGetAndFilter() {
 
     List<ModelAnnotation<?>> annotations = new ArrayList<ModelAnnotation<?>>();
-    annotations.add( new ModelAnnotation<Measure>( "A", new Measure() ) );
-    annotations.add( new ModelAnnotation<Attribute>( "B", new Attribute() ) );
-    annotations.add( new ModelAnnotation<Dimension>( "C", new Dimension() ) );
-    annotations.add( new ModelAnnotation<HierarchyLevel>( "D", new HierarchyLevel() ) );
-    annotations.add( new ModelAnnotation<Measure>( "E", new Measure() ) );
+    annotations.add( new ModelAnnotation<Measure>( ModelAnnotation.Action.CREATE, "A", new Measure() ) );
+    annotations.add( new ModelAnnotation<Attribute>( ModelAnnotation.Action.CREATE, "B", new Attribute() ) );
+    annotations.add( new ModelAnnotation<Measure>( ModelAnnotation.Action.CREATE, "E", new Measure() ) );
 
     assertEquals( ModelAnnotation.getMeasures( annotations ).size(), 2 );
     assertEquals( ModelAnnotation.getAttributes( annotations ).size(), 1 );
-    assertEquals( ModelAnnotation.getDimensions( annotations ).size(), 1 );
-    assertEquals( ModelAnnotation.getHeirachyLevels( annotations ).size(), 1 );
   }
 
   @Test

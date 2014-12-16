@@ -21,22 +21,26 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
   private String id;
 
-  public ModelAnnotationGroup( ModelAnnotation ... modelAnnotations ) {
+  public ModelAnnotationGroup() {
+    super();
+  }
+
+  public ModelAnnotationGroup( ModelAnnotation... modelAnnotations ) {
     super( Arrays.asList( modelAnnotations ) );
+  }
+
+  public String getId() {
+    return id;
   }
 
   public void setId( final String id ) {
     this.id = id;
   }
 
-  public String getId() {
-    return id;
-  }
 }
