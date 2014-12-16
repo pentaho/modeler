@@ -41,7 +41,7 @@ public class AnnotationTypeTest {
     properties.put( null, null );
     properties.put( "name", "NameTest" );
     properties.put( "localizedName", 12 ); // type doesn't match, not saved
-    properties.put( "geoRole", new GeoRole(  ) );
+    properties.put( "geoType", ModelAnnotation.GeoType.Continent );
     properties.put( "hidden", "yes" );
 
     Attribute attribute = new Attribute();
@@ -49,7 +49,7 @@ public class AnnotationTypeTest {
 
     assertEquals( attribute.getName(), "NameTest" );
     assertNull( attribute.getLocalizedName() );
-    assertNotNull( attribute.getGeoRole() );
+    assertNotNull( attribute.getGeoType() );
     assertTrue( attribute.isHidden() );
 
     properties.put( "hidden", "false" );

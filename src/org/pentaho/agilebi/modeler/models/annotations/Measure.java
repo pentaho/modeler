@@ -38,11 +38,14 @@ public class Measure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
-  @ModelProperty( id = "aggregateType", name = "Aggregate Type" )
+  @ModelProperty( id = "aggregateType", name = "Aggregation Type" )
   private AggregationType aggregateType;
 
   @ModelProperty( id = "formatString", name = "Format String" )
   private String formatString;
+
+  @ModelProperty( id = "expression", name = "MDX Expression" )
+  private String expression;
 
   public AggregationType getAggregateType() {
     return aggregateType;
@@ -58,6 +61,14 @@ public class Measure extends AnnotationType {
 
   public void setFormatString( String formatString ) {
     this.formatString = formatString;
+  }
+
+  public String getExpression() {
+    return expression;
+  }
+
+  public void setExpression( String expression ) {
+    this.expression = expression;
   }
 
   @Override
@@ -84,5 +95,14 @@ public class Measure extends AnnotationType {
   @Override
   public AnnotationSubType getType() {
     return AnnotationSubType.MEASURE;
+  }
+
+  @Override
+  public boolean isActionSupported( ModelAnnotation.Action action ) {
+    if ( ModelAnnotation.Action.CREATE == action ) {
+      return true; // only supported action for now
+    }
+
+    return false;
   }
 }
