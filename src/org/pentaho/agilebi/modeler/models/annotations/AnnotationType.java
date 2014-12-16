@@ -26,8 +26,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -37,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * @author Rowell Belen
@@ -45,7 +44,7 @@ public abstract class AnnotationType implements Serializable {
 
   private static final long serialVersionUID = 3952409344571242884L;
 
-  private static transient Logger logger = LoggerFactory.getLogger( AnnotationType.class );
+  private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
 
   @ModelProperty( id = "name", name = "Display Name" )
   private String name;
@@ -200,7 +199,7 @@ public abstract class AnnotationType implements Serializable {
         }
       } catch ( Exception e ) {
         // ignore
-        logger.warn( "Unable to get value of id: " + id, e );
+        logger.warning( "Unable to set value for id: " + id );
       }
     }
     return map;
@@ -218,7 +217,7 @@ public abstract class AnnotationType implements Serializable {
           setModelPropertyValueById( id, propertiesMap.get( id ) );
         } catch ( Exception e ) {
           // do nothing
-          logger.warn( "Unable to set value for id: " + id, e );
+          logger.warning( "Unable to set value for id: " + id );
         }
       }
     }
