@@ -23,6 +23,7 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -137,6 +138,12 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       return annotation.isActionSupported( action );
     }
     return false;
+  }
+
+  public void iterateProperties( final KeyValueClosure closure ) {
+    if ( annotation != null ) {
+      annotation.iterateProperties( closure );
+    }
   }
 
   public static enum Action {

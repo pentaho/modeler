@@ -7,10 +7,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -75,5 +78,32 @@ public class AnnotationTypeTest {
     assertEquals( mockAnnotationType.getF(), 22.22F, 0 );
     assertEquals( mockAnnotationType.getL(), Long.MAX_VALUE );
     assertEquals( mockAnnotationType.getS(), Short.MAX_VALUE );
+  }
+
+  @Test
+  public void testIterateProperties() {
+
+    Map<String, Serializable> properties = new HashMap<String, Serializable>();
+    properties.put( null, null );
+    properties.put( "name", "NameTest" );
+    properties.put( "localizedName", 12 ); // type doesn't match, not saved
+    properties.put( "geoType", ModelAnnotation.GeoType.Continent );
+    properties.put( "hidden", "yes" );
+    properties.put( "timeFormat", null );
+
+    Attribute attribute = new Attribute();
+    attribute.populate( properties );
+
+    final List<String> keyList = new ArrayList<String>();
+    final List<Serializable> valueList = new ArrayList<Serializable>();
+    attribute.iterateProperties( new KeyValueClosure() {
+      @Override public void execute( String key, Serializable serializable ) {
+        keyList.add( key );
+        valueList.add( serializable );
+      }
+    } );
+
+    assertEquals( 4, keyList.size() );
+    assertEquals( 4, valueList.size() );
   }
 }
