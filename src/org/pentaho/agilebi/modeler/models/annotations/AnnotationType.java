@@ -28,6 +28,7 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -233,6 +234,25 @@ public abstract class AnnotationType implements Serializable {
         } catch ( Exception e ) {
           // do nothing
           logger.warning( "Unable to set value for id: " + id );
+        }
+      }
+    }
+  }
+
+  public void iterateProperties( KeyValueClosure closure ) {
+
+    Map<String, Serializable> properties = describe();
+    if ( closure == null || properties == null || properties.keySet() == null ) {
+      return;
+    }
+
+    Iterator<String> itr = properties.keySet().iterator();
+    while ( itr.hasNext() ) {
+      String key = itr.next();
+      if ( StringUtils.isNotBlank( key ) ) {
+        Serializable value = properties.get( key );
+        if ( value != null ) {
+          closure.execute( key, value );
         }
       }
     }
