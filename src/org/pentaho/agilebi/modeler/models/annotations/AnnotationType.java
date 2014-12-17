@@ -49,19 +49,34 @@ public abstract class AnnotationType implements Serializable {
 
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
 
-  @ModelProperty( id = "name", name = "Display Name" )
+  protected static final String NAME_ID = "name";
+  protected static final String NAME_NAME = "Display Name";
+
+  protected static final String CAPTION_ID = "caption";
+  protected static final String CAPTION_NAME = "Caption";
+
+  protected static final String DESCRIPTION_ID = "description";
+  protected static final String DESCRIPTION_NAME = "Description";
+
+  protected static final String HIDDEN_ID = "hidden";
+  protected static final String HIDDEN_NAME = "Hidden";
+
+  protected static final String BUSINESS_GROUP_ID = "businessGroup";
+  protected static final String BUSINESS_GROUP_NAME = "Business Group";
+
+  @ModelProperty( id = NAME_ID, name = NAME_NAME )
   private String name;
 
-  @ModelProperty( id = "caption", name = "Caption" )
+  @ModelProperty( id = CAPTION_ID, name = CAPTION_NAME )
   private String localizedName;
 
-  @ModelProperty( id = "description", name = "Description" )
+  @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME )
   private String description;
 
-  @ModelProperty( id = "hidden", name = "Hidden" )
+  @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME )
   private boolean hidden;
 
-  @ModelProperty( id = "businessGroup", name = "Business Group" )
+  @ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME )
   private String businessGroup;
 
   public String getName() {
