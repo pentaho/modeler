@@ -23,7 +23,9 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.geo.GeoRole;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author Rowell Belen
@@ -90,6 +92,28 @@ public class Attribute extends AnnotationType {
   @Override
   public void apply( final ModelerWorkspace workspace, final String column ) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void populate( final Map<String, Serializable> propertiesMap ) {
+
+    super.populate( propertiesMap ); // let base class handle primitives, etc.
+
+    // correctly convert time type
+    if ( propertiesMap.containsKey( "timeType" ) ) {
+      Serializable value = propertiesMap.get( "timeType" );
+      if ( value != null ) {
+        setTimeType( ModelAnnotation.TimeType.valueOf( value.toString() ) );
+      }
+    }
+
+    // correctly convert geo type
+    if ( propertiesMap.containsKey( "geoType" ) ) {
+      Serializable value = propertiesMap.get( "geoType" );
+      if ( value != null ) {
+        setGeoType( ModelAnnotation.GeoType.valueOf( value.toString() ) );
+      }
+    }
   }
 
   @Override

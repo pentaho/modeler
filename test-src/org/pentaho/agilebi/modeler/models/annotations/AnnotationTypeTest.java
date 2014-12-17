@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 
@@ -46,6 +45,7 @@ public class AnnotationTypeTest {
     properties.put( "localizedName", 12 ); // type doesn't match, not saved
     properties.put( "geoType", ModelAnnotation.GeoType.Continent );
     properties.put( "hidden", "yes" );
+    properties.put( "timeType", "TimeDays" ); // auto-convert
 
     Attribute attribute = new Attribute();
     attribute.populate( properties );
@@ -54,10 +54,19 @@ public class AnnotationTypeTest {
     assertNull( attribute.getLocalizedName() );
     assertNotNull( attribute.getGeoType() );
     assertTrue( attribute.isHidden() );
+    assertEquals( attribute.getTimeType(), ModelAnnotation.TimeType.TimeDays );
+    assertEquals( attribute.getGeoType(), ModelAnnotation.GeoType.Continent );
 
     properties.put( "hidden", "false" );
     attribute.populate( properties );
     assertFalse( attribute.isHidden() );
+
+    // Test Measure
+    properties = new HashMap<String, Serializable>();
+    properties.put( "aggregateType", "MAXIMUM" );
+    Measure measure = new Measure();
+    measure.populate( properties );
+    assertEquals( measure.getAggregateType(), AggregationType.MAXIMUM );
   }
 
   @Test

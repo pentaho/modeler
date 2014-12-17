@@ -29,7 +29,9 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rowell Belen
@@ -93,6 +95,20 @@ public class Measure extends AnnotationType {
   }
 
   @Override
+  public void populate( final Map<String, Serializable> propertiesMap ) {
+
+    super.populate( propertiesMap ); // let base class handle primitives, etc.
+
+    // correctly convert aggregate type
+    if ( propertiesMap.containsKey( "aggregateType" ) ) {
+      Serializable value = propertiesMap.get( "aggregateType" );
+      if ( value != null ) {
+        setAggregateType( AggregationType.valueOf( value.toString() ) );
+      }
+    }
+  }
+
+    @Override
   public AnnotationSubType getType() {
     return AnnotationSubType.MEASURE;
   }
