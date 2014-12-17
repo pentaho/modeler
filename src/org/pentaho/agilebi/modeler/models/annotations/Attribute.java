@@ -34,19 +34,34 @@ public class Attribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
 
-  @ModelProperty( id = "unique", name = "Is Unique" )
+  protected static final String UNIQUE_ID = "unique";
+  protected static final String UNIQUE_NAME = "Is Unique";
+
+  protected static final String TIME_FORMAT_ID = "timeFormat";
+  protected static final String TIME_FORMAT_NAME = "Time Format";
+
+  protected static final String TIME_TYPE_ID = "timeType";
+  protected static final String TIME_TYPE_NAME = "Time Type";
+
+  protected static final String GEO_TYPE_ID = "geoType";
+  protected static final String GEO_TYPE_NAME = "Geo Type";
+
+  protected static final String ORDINAL_FIELD_ID = "ordinalField";
+  protected static final String ORDINAL_FIELD_NAME = "Ordinal Field";
+
+  @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME )
   private boolean unique;
 
-  @ModelProperty( id = "timeFormat", name = "Time Format" )
+  @ModelProperty( id = TIME_FORMAT_ID, name = TIME_FORMAT_NAME )
   private String timeFormat;
 
-  @ModelProperty( id = "timeType", name = "Time Type" )
+  @ModelProperty( id = TIME_TYPE_ID, name = TIME_TYPE_NAME )
   private ModelAnnotation.TimeType timeType;
 
-  @ModelProperty( id = "geoType", name = "Geo Type" )
+  @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME )
   private ModelAnnotation.GeoType geoType;
 
-  @ModelProperty( id = "ordinalField", name = "Ordinal Field" )
+  @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME )
   private String ordinalField;
 
   public boolean isUnique() {
@@ -100,16 +115,16 @@ public class Attribute extends AnnotationType {
     super.populate( propertiesMap ); // let base class handle primitives, etc.
 
     // correctly convert time type
-    if ( propertiesMap.containsKey( "timeType" ) ) {
-      Serializable value = propertiesMap.get( "timeType" );
+    if ( propertiesMap.containsKey( TIME_TYPE_ID ) ) {
+      Serializable value = propertiesMap.get( TIME_TYPE_ID );
       if ( value != null ) {
         setTimeType( ModelAnnotation.TimeType.valueOf( value.toString() ) );
       }
     }
 
     // correctly convert geo type
-    if ( propertiesMap.containsKey( "geoType" ) ) {
-      Serializable value = propertiesMap.get( "geoType" );
+    if ( propertiesMap.containsKey( GEO_TYPE_ID ) ) {
+      Serializable value = propertiesMap.get( GEO_TYPE_ID );
       if ( value != null ) {
         setGeoType( ModelAnnotation.GeoType.valueOf( value.toString() ) );
       }

@@ -40,13 +40,22 @@ public class Measure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
-  @ModelProperty( id = "aggregateType", name = "Aggregation Type" )
+  protected static final String AGGREGATE_TYPE_ID = "aggregateType";
+  protected static final String AGGREGATE_TYPE_NAME = "Aggregation Type";
+
+  protected static final String FORMAT_STRING_ID = "formatString";
+  protected static final String FORMAT_STRING_NAME = "Format String";
+
+  protected static final String EXPRESSION_ID = "expression";
+  protected static final String EXPRESSION_NAME = "MDX Expression";
+
+  @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME )
   private AggregationType aggregateType;
 
-  @ModelProperty( id = "formatString", name = "Format String" )
+  @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME )
   private String formatString;
 
-  @ModelProperty( id = "expression", name = "MDX Expression" )
+  @ModelProperty( id = EXPRESSION_ID, name = EXPRESSION_NAME )
   private String expression;
 
   public AggregationType getAggregateType() {
@@ -100,15 +109,15 @@ public class Measure extends AnnotationType {
     super.populate( propertiesMap ); // let base class handle primitives, etc.
 
     // correctly convert aggregate type
-    if ( propertiesMap.containsKey( "aggregateType" ) ) {
-      Serializable value = propertiesMap.get( "aggregateType" );
+    if ( propertiesMap.containsKey( AGGREGATE_TYPE_ID ) ) {
+      Serializable value = propertiesMap.get( AGGREGATE_TYPE_ID );
       if ( value != null ) {
         setAggregateType( AggregationType.valueOf( value.toString() ) );
       }
     }
   }
 
-    @Override
+  @Override
   public AnnotationSubType getType() {
     return AnnotationSubType.MEASURE;
   }
