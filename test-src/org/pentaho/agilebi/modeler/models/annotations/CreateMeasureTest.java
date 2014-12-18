@@ -21,7 +21,6 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static junit.framework.Assert.assertEquals;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -30,11 +29,17 @@ import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
-import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
-import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
+import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.util.XmiParser;
 
 import java.io.FileInputStream;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static org.pentaho.metadata.model.LogicalModel.PROPERTY_OLAP_CUBES;
+import static org.pentaho.metadata.model.SqlPhysicalColumn.TARGET_COLUMN;
+import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
+import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
 
 public class CreateMeasureTest {
   @Test
@@ -47,6 +52,7 @@ public class CreateMeasureTest {
     ModelerWorkspace model =
         new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
 
     createMeasure.apply( model, "QUANTITYINSTOCK" );
     MeasuresCollection measures = model.getModel().getMeasures();
@@ -56,6 +62,18 @@ public class CreateMeasureTest {
     assertEquals( "Avg Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AVERAGE, measureMetaData.getDefaultAggregation() );
+
+    @SuppressWarnings( "unchecked" )
+    OlapCube cube =
+      ( (List<OlapCube>) model.getDomain().getLogicalModels().get( 1 ).getProperty( PROPERTY_OLAP_CUBES ) )
+        .get( 0 );
+
+    //only fields in rowMeta should be present
+    assertEquals( 4, cube.getOlapMeasures().size() );
+    assertEquals( "Avg Weight", cube.getOlapMeasures().get( 3 ).getName() );
+    assertEquals(
+      "QUANTITYINSTOCK",
+      cube.getOlapMeasures().get( 3 ).getLogicalColumn().getPhysicalColumn().getProperty( TARGET_COLUMN ) );
   }
 
   @Test
