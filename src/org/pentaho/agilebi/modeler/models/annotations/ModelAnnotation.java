@@ -38,35 +38,24 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
 
-  private Action action;
-
-  private String column;
+  private String field;
 
   private T annotation;
 
   public ModelAnnotation() {
   }
 
-  public ModelAnnotation( final Action action, final String column, final T annotation ) {
-    setAction( action );
-    setColumn( column );
+  public ModelAnnotation( final String field, final T annotation ) {
+    setField( field );
     setAnnotation( annotation );
   }
 
-  public Action getAction() {
-    return action;
+  public String getField() {
+    return field;
   }
 
-  public void setAction( Action action ) {
-    this.action = action;
-  }
-
-  public String getColumn() {
-    return column;
-  }
-
-  public void setColumn( String column ) {
-    this.column = column;
+  public void setField( String field ) {
+    this.field = field;
   }
 
   public T getAnnotation() {
@@ -81,18 +70,18 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    * **** Utility methods ******
    */
 
-  public static List<ModelAnnotation<Measure>> getMeasures(
-      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
-    return filter( annotations, Measure.class );
+  public static List<ModelAnnotation<CreateMeasure>> getMeasures(
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    return filter( annotations, CreateMeasure.class );
   }
 
-  public static List<ModelAnnotation<Attribute>> getAttributes(
-      final List<ModelAnnotation<? extends AnnotationType>> annotations ) {
-    return filter( annotations, Attribute.class );
+  public static List<ModelAnnotation<CreateAttribute>> getAttributes(
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    return filter( annotations, CreateAttribute.class );
   }
 
-  private static <S extends AnnotationType> List<ModelAnnotation<S>> filter(
-      final List<ModelAnnotation<? extends AnnotationType>> annotations, Class<S> cls ) {
+  private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>> filter(
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations, Class<S> cls ) {
 
     List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
     if ( cls != null && annotations != null && annotations.size() > 0 ) {
@@ -108,10 +97,10 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public void apply( final ModelerWorkspace modelerWorkspace ) {
-    annotation.apply( modelerWorkspace, getColumn() );
+    annotation.apply( modelerWorkspace, getField() );
   }
 
-  public AnnotationType.AnnotationSubType getType() {
+  public org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.Type getType() {
     if ( annotation != null ) {
       return annotation.getType();
     }
@@ -133,23 +122,15 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     }
   }
 
-  public boolean isActionSupported( final Action action ) {
-    if ( annotation != null ) {
-      return annotation.isActionSupported( action );
-    }
-    return false;
-  }
-
   public void iterateProperties( final KeyValueClosure closure ) {
     if ( annotation != null ) {
       annotation.iterateProperties( closure );
     }
   }
 
-  public static enum Action {
-    CREATE,
-    UPDATE,
-    REMOVE
+  public static enum Type {
+    CREATE_MEASURE,
+    CREATE_ATTRIBUTE
   }
 
   public static enum TimeType {

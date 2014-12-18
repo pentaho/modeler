@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * @author Rowell Belen
  */
-public class Measure extends AnnotationType {
+public class CreateMeasure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
@@ -118,16 +118,7 @@ public class Measure extends AnnotationType {
   }
 
   @Override
-  public AnnotationSubType getType() {
-    return AnnotationSubType.MEASURE;
-  }
-
-  @Override
-  public boolean isActionSupported( ModelAnnotation.Action action ) {
-    if ( ModelAnnotation.Action.CREATE == action ) {
-      return true; // only supported action for now
-    }
-
-    return false;
+  public ModelAnnotation.Type getType() {
+    return ModelAnnotation.Type.CREATE_MEASURE;
   }
 }

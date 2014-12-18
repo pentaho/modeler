@@ -23,17 +23,17 @@ public class AnnotationTypeTest {
   @Test
   public void testDescribe() {
 
-    Measure measure = new Measure();
-    measure.setAggregateType( AggregationType.AVERAGE );
-    measure.setFormatString( "SSSS" );
-    measure.setName( "avg" );
-    measure.setDescription( "description" );
-    measure.setLocalizedName( null );
-    measure.setHidden( false );
+    CreateMeasure createMeasure = new CreateMeasure();
+    createMeasure.setAggregateType( AggregationType.AVERAGE );
+    createMeasure.setFormatString( "SSSS" );
+    createMeasure.setName( "avg" );
+    createMeasure.setDescription( "description" );
+    createMeasure.setLocalizedName( null );
+    createMeasure.setHidden( false );
 
-    assertTrue( measure.describe().containsKey( "name" ) );
-    assertFalse( measure.describe().containsKey( "localizedName" ) ); // null
-    assertEquals( measure.describe().get( "aggregateType" ), AggregationType.AVERAGE );
+    assertTrue( createMeasure.describe().containsKey( "name" ) );
+    assertFalse( createMeasure.describe().containsKey( "localizedName" ) ); // null
+    assertEquals( createMeasure.describe().get( "aggregateType" ), AggregationType.AVERAGE );
   }
 
   @Test
@@ -47,26 +47,26 @@ public class AnnotationTypeTest {
     properties.put( "hidden", "yes" );
     properties.put( "timeType", "TimeDays" ); // auto-convert
 
-    Attribute attribute = new Attribute();
-    attribute.populate( properties );
+    CreateAttribute createAttribute = new CreateAttribute();
+    createAttribute.populate( properties );
 
-    assertEquals( attribute.getName(), "NameTest" );
-    assertNull( attribute.getLocalizedName() );
-    assertNotNull( attribute.getGeoType() );
-    assertTrue( attribute.isHidden() );
-    assertEquals( attribute.getTimeType(), ModelAnnotation.TimeType.TimeDays );
-    assertEquals( attribute.getGeoType(), ModelAnnotation.GeoType.Continent );
+    assertEquals( createAttribute.getName(), "NameTest" );
+    assertNull( createAttribute.getLocalizedName() );
+    assertNotNull( createAttribute.getGeoType() );
+    assertTrue( createAttribute.isHidden() );
+    assertEquals( createAttribute.getTimeType(), ModelAnnotation.TimeType.TimeDays );
+    assertEquals( createAttribute.getGeoType(), ModelAnnotation.GeoType.Continent );
 
     properties.put( "hidden", "false" );
-    attribute.populate( properties );
-    assertFalse( attribute.isHidden() );
+    createAttribute.populate( properties );
+    assertFalse( createAttribute.isHidden() );
 
     // Test Measure
     properties = new HashMap<String, Serializable>();
     properties.put( "aggregateType", "MAXIMUM" );
-    Measure measure = new Measure();
-    measure.populate( properties );
-    assertEquals( measure.getAggregateType(), AggregationType.MAXIMUM );
+    CreateMeasure createMeasure = new CreateMeasure();
+    createMeasure.populate( properties );
+    assertEquals( createMeasure.getAggregateType(), AggregationType.MAXIMUM );
   }
 
   @Test
@@ -100,12 +100,12 @@ public class AnnotationTypeTest {
     properties.put( "hidden", "yes" );
     properties.put( "timeFormat", null );
 
-    Attribute attribute = new Attribute();
-    attribute.populate( properties );
+    CreateAttribute createAttribute = new CreateAttribute();
+    createAttribute.populate( properties );
 
     final List<String> keyList = new ArrayList<String>();
     final List<Serializable> valueList = new ArrayList<Serializable>();
-    attribute.iterateProperties( new KeyValueClosure() {
+    createAttribute.iterateProperties( new KeyValueClosure() {
       @Override public void execute( String key, Serializable serializable ) {
         keyList.add( key );
         valueList.add( serializable );

@@ -37,42 +37,42 @@ public class ModelPropertyTest {
   @Test
   public void testMeasure() throws Exception {
 
-    Measure measure = new Measure();
+    CreateMeasure createMeasure = new CreateMeasure();
 
-    List<String> propertyNames = measure.getModelPropertyNames();
+    List<String> propertyNames = createMeasure.getModelPropertyNames();
     assertEquals( propertyNames.size(), 8 );
 
-    measure.setModelPropertyByName( "Display Name", "A" );
-    measure.setModelPropertyByName( "Description", "B" );
-    measure.setModelPropertyByName( "Unique Members", "true" ); // auto converted
-    measure.setModelPropertyByName( "Caption", "C" );
-    measure.setModelPropertyByName( "Format String", "D" );
-    measure.setModelPropertyByName( "Hidden", true );
-    measure.setModelPropertyByName( "Aggregation Type", AggregationType.COUNT );
-    measure.setModelPropertyByName( "XXX", "Does not exist" ); // should not fail
+    createMeasure.setModelPropertyByName( "Display Name", "A" );
+    createMeasure.setModelPropertyByName( "Description", "B" );
+    createMeasure.setModelPropertyByName( "Unique Members", "true" ); // auto converted
+    createMeasure.setModelPropertyByName( "Caption", "C" );
+    createMeasure.setModelPropertyByName( "Format String", "D" );
+    createMeasure.setModelPropertyByName( "Hidden", true );
+    createMeasure.setModelPropertyByName( "Aggregation Type", AggregationType.COUNT );
+    createMeasure.setModelPropertyByName( "XXX", "Does not exist" ); // should not fail
 
-    assertEquals( measure.getName(), "A" );
-    assertEquals( measure.getDescription(), "B" );
-    assertEquals( measure.getLocalizedName(), "C" );
-    assertEquals( measure.getFormatString(), "D" );
-    assertEquals( measure.isHidden(), true );
-    assertEquals( measure.getAggregateType(), AggregationType.COUNT );
+    assertEquals( createMeasure.getName(), "A" );
+    assertEquals( createMeasure.getDescription(), "B" );
+    assertEquals( createMeasure.getLocalizedName(), "C" );
+    assertEquals( createMeasure.getFormatString(), "D" );
+    assertEquals( createMeasure.isHidden(), true );
+    assertEquals( createMeasure.getAggregateType(), AggregationType.COUNT );
 
-    measure.setModelPropertyByName( "Unique Members", true );
+    createMeasure.setModelPropertyByName( "Unique Members", true );
   }
 
   @Test
   public void testAttribute() throws Exception {
 
-    Attribute attribute = new Attribute();
+    CreateAttribute createAttribute = new CreateAttribute();
     GeoRole geoRole = new GeoRole();
 
-    attribute.setModelPropertyByName( "Time Type", ModelAnnotation.TimeType.Regular );
-    attribute.setModelPropertyByName( "Time Format", "B" );
-    attribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.City );
+    createAttribute.setModelPropertyByName( "Time Type", ModelAnnotation.TimeType.Regular );
+    createAttribute.setModelPropertyByName( "Time Format", "B" );
+    createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.City );
 
-    assertEquals( attribute.getTimeType(), ModelAnnotation.TimeType.Regular );
-    assertEquals( attribute.getTimeFormat(), "B" );
-    assertEquals( attribute.getGeoType(), ModelAnnotation.GeoType.City );
+    assertEquals( createAttribute.getTimeType(), ModelAnnotation.TimeType.Regular );
+    assertEquals( createAttribute.getTimeFormat(), "B" );
+    assertEquals( createAttribute.getGeoType(), ModelAnnotation.GeoType.City );
   }
 }
