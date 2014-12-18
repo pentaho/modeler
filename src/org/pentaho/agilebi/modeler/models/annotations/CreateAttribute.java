@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * @author Rowell Belen
  */
-public class Attribute extends AnnotationType {
+public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
 
@@ -132,16 +132,7 @@ public class Attribute extends AnnotationType {
   }
 
   @Override
-  public boolean isActionSupported( ModelAnnotation.Action action ) {
-    if ( ModelAnnotation.Action.CREATE == action ) {
-      return true; // only supported action for now
-    }
-
-    return false;
-  }
-
-  @Override
-  public AnnotationSubType getType() {
-    return AnnotationSubType.ATTRIBUTE;
+  public ModelAnnotation.Type getType() {
+    return ModelAnnotation.Type.CREATE_ATTRIBUTE;
   }
 }

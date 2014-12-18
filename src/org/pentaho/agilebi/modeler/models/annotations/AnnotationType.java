@@ -45,25 +45,18 @@ import java.util.logging.Logger;
  */
 public abstract class AnnotationType implements Serializable {
 
-  private static final long serialVersionUID = 3952409344571242884L;
-
-  private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
-
   protected static final String NAME_ID = "name";
   protected static final String NAME_NAME = "Display Name";
-
   protected static final String CAPTION_ID = "caption";
   protected static final String CAPTION_NAME = "Caption";
-
   protected static final String DESCRIPTION_ID = "description";
   protected static final String DESCRIPTION_NAME = "Description";
-
   protected static final String HIDDEN_ID = "hidden";
   protected static final String HIDDEN_NAME = "Hidden";
-
   protected static final String BUSINESS_GROUP_ID = "businessGroup";
   protected static final String BUSINESS_GROUP_NAME = "Business Group";
-
+  private static final long serialVersionUID = 3952409344571242884L;
+  private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
   @ModelProperty( id = NAME_ID, name = NAME_NAME )
   private String name;
 
@@ -279,12 +272,6 @@ public abstract class AnnotationType implements Serializable {
 
   public abstract void apply( final ModelerWorkspace workspace, final String column );
 
-  public abstract boolean isActionSupported( final ModelAnnotation.Action action );
+  public abstract ModelAnnotation.Type getType();
 
-  public abstract AnnotationSubType getType();
-
-  public static enum AnnotationSubType {
-    ATTRIBUTE,
-    MEASURE
-  }
 }

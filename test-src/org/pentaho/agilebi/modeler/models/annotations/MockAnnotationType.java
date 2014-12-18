@@ -7,19 +7,19 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
  */
 public class MockAnnotationType extends AnnotationType {
 
-  @ModelProperty(id = "i")
+  @ModelProperty( id = "i" )
   private int i;
 
-  @ModelProperty(id = "d")
+  @ModelProperty( id = "d" )
   private double d;
 
-  @ModelProperty(id = "f")
+  @ModelProperty( id = "f" )
   private float f;
 
-  @ModelProperty(id = "l")
+  @ModelProperty( id = "l" )
   private long l;
 
-  @ModelProperty(id = "s")
+  @ModelProperty( id = "s" )
   private short s;
 
   public int getI() {
@@ -62,15 +62,12 @@ public class MockAnnotationType extends AnnotationType {
     this.s = s;
   }
 
-  @Override public void apply( ModelerWorkspace workspace, String column ) {
-
+  @Override
+  public void apply( ModelerWorkspace workspace, String column ) {
   }
 
-  @Override public boolean isActionSupported( ModelAnnotation.Action action ) {
-    return false;
-  }
-
-  @Override public AnnotationSubType getType() {
+  @Override
+  public ModelAnnotation.Type getType() {
     return null;
   }
 }

@@ -30,8 +30,8 @@ public class ModelAnnotationGroupTest {
   @SuppressWarnings( "MismatchedQueryAndUpdateOfCollection" )
   @Test
   public void testHasAVarArgsConstructor() throws Exception {
-    ModelAnnotation<Measure> measure = new ModelAnnotation<Measure>();
-    ModelAnnotation<Attribute> attribute = new ModelAnnotation<Attribute>();
+    ModelAnnotation<CreateMeasure> measure = new ModelAnnotation<CreateMeasure>();
+    ModelAnnotation<CreateAttribute> attribute = new ModelAnnotation<CreateAttribute>();
     ModelAnnotationGroup annotationGroup = new ModelAnnotationGroup( measure, attribute );
     annotationGroup.setId( "cleverIdentifier" );
     assertEquals( 2, annotationGroup.size() );

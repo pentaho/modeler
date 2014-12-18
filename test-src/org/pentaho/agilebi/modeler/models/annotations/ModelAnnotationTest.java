@@ -22,14 +22,14 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * @author Rowell Belen
@@ -39,40 +39,40 @@ public class ModelAnnotationTest {
   @Test
   public void testMeasure() {
 
-    Measure measure = new Measure();
+    CreateMeasure createMeasure = new CreateMeasure();
 
     List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<Measure>( ModelAnnotation.Action.CREATE, "testColumn", measure ) );
+    list.add( new ModelAnnotation<CreateMeasure>( "testColumn", createMeasure ) );
 
     ModelAnnotation<?> md = list.get( 0 ); // don't know the type
 
     // check
-    assertEquals( md.getColumn(), "testColumn" );
-    assertEquals( md.getType(), AnnotationType.AnnotationSubType.MEASURE );
+    assertEquals( md.getField(), "testColumn" );
+    assertEquals( md.getType(), ModelAnnotation.Type.CREATE_MEASURE );
   }
 
   @Test
   public void testAttribute() {
 
-    Attribute attribute = new Attribute();
+    CreateAttribute createAttribute = new CreateAttribute();
 
     List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<Attribute>( ModelAnnotation.Action.CREATE, "testColumn", attribute ) );
+    list.add( new ModelAnnotation<CreateAttribute>( "testColumn", createAttribute ) );
 
     ModelAnnotation<?> md = list.get( 0 ); // don't know the type
 
     // check
-    assertEquals( md.getColumn(), "testColumn" );
-    assertEquals( md.getType(), AnnotationType.AnnotationSubType.ATTRIBUTE );
+    assertEquals( md.getField(), "testColumn" );
+    assertEquals( md.getType(), ModelAnnotation.Type.CREATE_ATTRIBUTE );
   }
 
   @Test
   public void testGetAndFilter() {
 
     List<ModelAnnotation<?>> annotations = new ArrayList<ModelAnnotation<?>>();
-    annotations.add( new ModelAnnotation<Measure>( ModelAnnotation.Action.CREATE, "A", new Measure() ) );
-    annotations.add( new ModelAnnotation<Attribute>( ModelAnnotation.Action.CREATE, "B", new Attribute() ) );
-    annotations.add( new ModelAnnotation<Measure>( ModelAnnotation.Action.CREATE, "E", new Measure() ) );
+    annotations.add( new ModelAnnotation<CreateMeasure>( "A", new CreateMeasure() ) );
+    annotations.add( new ModelAnnotation<CreateAttribute>( "B", new CreateAttribute() ) );
+    annotations.add( new ModelAnnotation<CreateMeasure>( "E", new CreateMeasure() ) );
 
     assertEquals( ModelAnnotation.getMeasures( annotations ).size(), 2 );
     assertEquals( ModelAnnotation.getAttributes( annotations ).size(), 1 );
@@ -88,16 +88,12 @@ public class ModelAnnotationTest {
         assertEquals( "amount", column );
       }
 
-      @Override public boolean isActionSupported( ModelAnnotation.Action action ) {
-        return false;
-      }
-
-      @Override public AnnotationSubType getType() {
+      @Override public ModelAnnotation.Type getType() {
         return null;
       }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
-    modelAnnotation.setColumn( "amount" );
+    modelAnnotation.setField( "amount" );
     modelAnnotation.setAnnotation( annotationType );
     modelAnnotation.apply( modelerWorkspace );
   }
