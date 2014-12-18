@@ -89,7 +89,7 @@ public class Measure extends AnnotationType {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
       for ( LogicalColumn logicalColumn : logicalColumns ) {
         if ( column
-            .equals( logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN ).getValue() ) ) {
+            .equals( logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN ) ) ) {
           MeasureMetaData measureMetaData =
               new MeasureMetaData( column, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
           measureMetaData.setLogicalColumn( logicalColumn );

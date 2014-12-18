@@ -81,9 +81,9 @@ public class ModelerConversionUtilTest {
     assertEquals( originalModel.getLogicalTables().size(), olapModel.getLogicalTables().size() );
 
     // check the version numbers
-    assertEquals( BaseModelerWorkspaceHelper.AGILE_BI_VERSION, originalModel.getProperty( "AGILE_BI_VERSION" ).getValue() );
-    assertEquals( BaseModelerWorkspaceHelper.AGILE_BI_VERSION, olapModel.getProperty( "AGILE_BI_VERSION" ).getValue() );
-    assertEquals( "OLAP", olapModel.getProperty( "MODELING_SCHEMA" ).getValue() );
+    assertEquals( BaseModelerWorkspaceHelper.AGILE_BI_VERSION, originalModel.getProperty( "AGILE_BI_VERSION" ) );
+    assertEquals( BaseModelerWorkspaceHelper.AGILE_BI_VERSION, olapModel.getProperty( "AGILE_BI_VERSION" ) );
+    assertEquals( "OLAP", olapModel.getProperty( "MODELING_SCHEMA" ) );
 
     // check the relationships
     assertEquals( originalJoinCount / 2, originalModel.getLogicalRelationships().size() );

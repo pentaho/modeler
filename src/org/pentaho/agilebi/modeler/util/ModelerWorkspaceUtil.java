@@ -31,7 +31,6 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 import org.slf4j.Logger;
@@ -137,15 +136,15 @@ public class ModelerWorkspaceUtil {
 
       LogicalModel logical = domain.getLogicalModels().get( 0 );
 
-      Property agileBiProp = logical.getProperty( "AGILE_BI_GENERATED_SCHEMA" );
-      if ( agileBiProp == null || agileBiProp.getValue() == null || "FALSE".equals( (String) agileBiProp.getValue() ) ) {
+      Object agileBiProp = logical.getProperty( "AGILE_BI_GENERATED_SCHEMA" );
+      if ( agileBiProp == null || "FALSE".equals( agileBiProp ) ) {
         throw new IncompatibleModelerException();
       }
 
       // re-hydrate the source
-      Property property = logical.getProperty( "source_type" ); //$NON-NLS-1$
-      if ( property != null && property.getValue() != null) {
-        IModelerSource theSource = ModelerSourceFactory.generateSource( property.getValue().toString() );
+      Object property = logical.getProperty( "source_type" ); //$NON-NLS-1$
+      if ( property != null ) {
+        IModelerSource theSource = ModelerSourceFactory.generateSource( property.toString() );
         theSource.initialize( domain );
         aModel.setModelSource( theSource );
       }

@@ -17,7 +17,6 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.pentaho.agilebi.modeler.ColumnBackedNode;

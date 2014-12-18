@@ -17,9 +17,7 @@
 
 package org.pentaho.agilebi.modeler;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +32,6 @@ import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.olap.OlapCube;
@@ -82,7 +79,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     assertEquals( firstField.getSelectedAggregations(), lCol.getAggregationList() );
 
     List<OlapCube> cubes =
-      (List<OlapCube>) workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "olap_cubes" ).getValue();
+      (List<OlapCube>) workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "olap_cubes" );
     OlapMeasure measure = cubes.get( 0 ).getOlapMeasures().get( 0 );
     assertEquals( AggregationType.SUM, measure.getLogicalColumn().getAggregationType() );
 
@@ -118,7 +115,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
       assertEquals( orig.getDefaultAggregation(), lCol.getAggregationType() );
       if ( orig.getFormat().equals( "NONE" ) ) {
         if ( orig.getLogicalColumn().getDataType() == DataType.NUMERIC ) {
-          assertTrue( "#".equals( lCol.getProperty( "mask" ).getValue() ) );
+          assertTrue( "#".equals( lCol.getProperty( "mask" ) ) );
         } else {
           assertTrue( lCol.getProperty( "mask" ) == null );
         }
@@ -160,17 +157,12 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
         assertEquals( orig.getDefaultAggregation(), lCol.getAggregationType() );
         if ( orig.getFormat().equals( "NONE" ) ) {
           if ( orig.getLogicalColumn().getDataType() == DataType.NUMERIC ) {
-            String mask = null;
-            Property property = lCol.getProperty( "mask" );
-            if ( property != null ) {
-              mask = (String) property.getValue();
-            }
-            assertTrue( mask.indexOf( "#" ) > -1 );
+            assertTrue( ( (String) lCol.getProperty( "mask" ) ).indexOf( "#" ) > -1 );
           } else {
             assertTrue( lCol.getProperty( "mask" ) == null );
           }
         } else {
-          assertEquals( orig.getFormat(), lCol.getProperty( "mask" ).getValue() );
+          assertEquals( orig.getFormat(), lCol.getProperty( "mask" ) );
         }
       }
     }

@@ -57,7 +57,6 @@ import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
@@ -520,21 +519,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       return false;
     } else {
       LogicalModel lModel = d.getLogicalModels().get( 1 );
-
-      String dualModelingSchema = "false";
-      Property dualProperty = lModel.getProperty( "DUAL_MODELING_SCHEMA" );
-      if ( dualProperty != null ) {
-        dualModelingSchema = (String) dualProperty.getValue();
-      }
-
-      String mondrianCat = "";
-      Property mondrianProperty = lModel.getProperty( "MondrianCatalogRef" );
-      if ( mondrianProperty != null ) {
-        mondrianCat = (String) mondrianProperty.getValue();
-      }
-
-      return "true".equals( dualModelingSchema )
-          || mondrianCat != null;
+      return "true".equals( lModel.getProperty( "DUAL_MODELING_SCHEMA" ) )
+          || lModel.getProperty( "MondrianCatalogRef" ) != null;
     }
   }
 
@@ -542,8 +528,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
 
     List<IAvailableItem> items = new ArrayList<IAvailableItem>();
     for ( IPhysicalTable table : newDomain.getPhysicalModels().get( 0 ).getPhysicalTables() ) {
-      Property property = table.getProperty( "FACT_TABLE" );
-      boolean isFact = property != null ? (Boolean) property.getValue() : false;
+      boolean isFact = table.getProperty( "FACT_TABLE" ) != null ? (Boolean) table.getProperty( "FACT_TABLE" ) : false;
       items.add( new AvailableTable( table, isFact ) );
     }
 
@@ -654,21 +639,11 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     // If the new model was previously "auto-modeled" we need to clean that now
     LogicalModel newLModel = getLogicalModel( ModelerPerspective.ANALYSIS );
     if ( newLModel != null ) {
-
-      List<OlapDimension> theDimensions = null;
-      Property dimProperty = newLModel.getProperty( "olap_dimensions" ); //$NON-NLS-1$
-      if ( dimProperty != null ) {
-        theDimensions = (List) dimProperty.getValue();
-      }
+      List<OlapDimension> theDimensions = (List) newLModel.getProperty( "olap_dimensions" ); //$NON-NLS-1$
       if ( theDimensions != null ) {
         theDimensions.clear();
       }
-
-      List<OlapCube> theCubes = null;
-      Property cubesProperty = newLModel.getProperty( "olap_cubes" ); //$NON-NLS-1$
-      if ( cubesProperty != null ) {
-        theCubes = (List) cubesProperty.getValue();
-      }
+      List<OlapCube> theCubes = (List) newLModel.getProperty( "olap_cubes" ); //$NON-NLS-1$
       if ( theCubes != null ) {
         theCubes.clear();
       }
@@ -717,8 +692,8 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
     List<IAvailableItem> items = new ArrayList<IAvailableItem>();
     for ( IPhysicalTable table : domain.getPhysicalModels().get( 0 ).getPhysicalTables() ) {
-      Property isFact = table.getProperty( "FACT_TABLE" );
-      items.add( new AvailableTable( table, isFact == null ? false : (Boolean) isFact.getValue() ) );
+      Boolean isFact = (Boolean) table.getProperty( "FACT_TABLE" );
+      items.add( new AvailableTable( table, isFact == null ? false : isFact.booleanValue() ) );
     }
 
     availableTables.setChildren( items );
@@ -740,10 +715,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     lModel = getLogicalModel( ModelerPerspective.ANALYSIS );
     List<OlapDimension> theDimensions = null;
     if ( lModel != null ) {
-      Property dimsProperty = lModel.getProperty( LogicalModel.PROPERTY_OLAP_DIMS );
-      if ( dimsProperty != null ) {
-        theDimensions = (List) dimsProperty.getValue();
-      }
+      theDimensions = (List) lModel.getProperty( LogicalModel.PROPERTY_OLAP_DIMS ); //$NON-NLS-1$
     }
     if ( theDimensions != null ) {
       Iterator<OlapDimension> theDimensionItr = theDimensions.iterator();
@@ -850,10 +822,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     }
     List<OlapCube> theCubes = null;
     if ( lModel != null ) {
-      Property cubesProperty = lModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES );
-      if ( cubesProperty != null ) {
-        theCubes = (List) cubesProperty.getValue();
-      }
+      theCubes = (List) lModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ); //$NON-NLS-1$
     }
     if ( theCubes != null ) {
       Iterator<OlapCube> theCubeItr = theCubes.iterator();
@@ -872,7 +841,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           } else {
             theMeasureMD.setName( theMeasure.getName() );
           }
-          theMeasureMD.setFormat( (String) theMeasure.getLogicalColumn().getProperty( "mask" ).getValue() ); //$NON-NLS-1$
+          theMeasureMD.setFormat( (String) theMeasure.getLogicalColumn().getProperty( "mask" ) ); //$NON-NLS-1$
           theMeasureMD.setDefaultAggregation( theMeasure.getLogicalColumn().getAggregationType() );
           String possibleMeasureName = theMeasure.getLogicalColumn().getId();
           if ( !theMeasure.getLogicalColumn().getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX )
@@ -914,17 +883,12 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           table.addLogicalColumn( col );
         }
 
-        String formatMask = null;
-        Property maskProperty = col.getProperty( "mask" );
-        if ( maskProperty != null && maskProperty.getValue() != null ) {
-          formatMask = maskProperty.toString();
-        }
-
+        Object formatMask = col.getProperty( "mask" );
         String colName = col.getName( workspaceHelper.getLocale() );
         AggregationType aggType = col.getAggregationType();
 
         FieldMetaData field =
-            new FieldMetaData( catMeta, colName, formatMask == null ? null : formatMask, colName,
+            new FieldMetaData( catMeta, colName, formatMask == null ? null : formatMask.toString(), colName,
                 workspaceHelper.getLocale() );
         if ( aggType != null ) {
           field.setDefaultAggregation( aggType );

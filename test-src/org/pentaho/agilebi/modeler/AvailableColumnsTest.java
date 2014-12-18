@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.concept.Property;
 
 /**
  * User: nbaker Date: 4/8/11
@@ -44,8 +43,8 @@ public class AvailableColumnsTest extends AbstractModelerTest {
     // replicating work that would be done by the auto-modeler
     AvailableField field1 = tablesList.get( 0 ).getAvailableFields().get( 0 );
 
-    workspace.getDomain().getLogicalModels().get( 0 ).setProperty( "AGILE_BI_VERSION", new Property<String>( "2.0" ) );
-    tablesList.get( 0 ).getPhysicalTable().setProperty( "FACT_TABLE", new Property<Boolean>( true ) );
+    workspace.getDomain().getLogicalModels().get( 0 ).setProperty( "AGILE_BI_VERSION", "2.0" );
+    tablesList.get( 0 ).getPhysicalTable().setProperty( "FACT_TABLE", true );
 
     AvailableField field2 = tablesList.get( 0 ).getAvailableFields().get( 1 );
 
@@ -61,7 +60,7 @@ public class AvailableColumnsTest extends AbstractModelerTest {
 
     // Attempt to add the second field as a measure. It should fail and the list remain the same
     controller.setSelectedFields( new Object[] { field2 } );
-    tablesList.get( 0 ).getPhysicalTable().setProperty( "FACT_TABLE", new Property<Boolean>( false ) );
+    tablesList.get( 0 ).getPhysicalTable().setProperty( "FACT_TABLE", false );
     controller.addField();
     assertEquals( 1, workspace.getModel().getMeasures().size() );
 

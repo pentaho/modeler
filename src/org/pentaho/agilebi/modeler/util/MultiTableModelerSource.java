@@ -43,7 +43,6 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.concept.types.RelationshipType;
 import org.slf4j.Logger;
@@ -130,13 +129,13 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
         helper.setAutoModelStrategy( new MultiTableAutoModelStrategy( locale ) );
       }
 
-      domain.getLogicalModels().get( 0 ).setProperty( "DUAL_MODELING_SCHEMA", new Property<String>( "" + doOlap ) );
+      domain.getLogicalModels().get( 0 ).setProperty( "DUAL_MODELING_SCHEMA", "" + doOlap );
 
       ModelerWorkspace workspace = new ModelerWorkspace( helper, geoContext );
       workspace.setDomain( domain );
 
       LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.REPORTING );
-      logicalModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", new Property<String>( "TRUE" ) );
+      logicalModel.setProperty( "AGILE_BI_GENERATED_SCHEMA", "TRUE" );
       logicalModel.setName( new LocalizedString( locale, datasourceName ) );
       logicalModel.setDescription( new LocalizedString( locale, "This is the data model for " + datasourceName ) );
       workspace.setModelName( datasourceName );
@@ -154,7 +153,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
         if ( factTable == null ) {
           throw new IllegalStateException( "Fact table not found" );
         } else {
-          factTable.getPhysicalTable().setProperty( "FACT_TABLE", new Property<Boolean>( true ) );
+          factTable.getPhysicalTable().setProperty( "FACT_TABLE", true );
           workspace.getAvailableTables().setFactTable( factTable.getPhysicalTable() );
         }
         // somehow the strategy is getting set to simple. setting it back again.
@@ -222,8 +221,8 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
     LogicalTable factTable = null;
     for ( LogicalTable lTable : logicalModel.getLogicalTables() ) {
       if ( lTable.getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX ) ) {
-        Property prop = lTable.getPhysicalTable().getProperty( "target_table" );
-        if ( prop != null && prop.getValue() != null && ( (String) prop.getValue() ).equals( table ) ) {
+        Object prop = lTable.getPhysicalTable().getProperty( "target_table" );
+        if ( prop != null && prop.equals( table ) ) {
           factTable = lTable;
           break;
         }
@@ -252,22 +251,22 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
           continue;
         }
 
-        if ( ( (String) logicalTable.getPhysicalTable().getProperty( "target_table" ).getValue()).equals( lTable ) ) {
+        if ( logicalTable.getPhysicalTable().getProperty( "target_table" ).equals( lTable ) ) {
           fromTable = logicalTable;
 
           for ( LogicalColumn logicalColumn : fromTable.getLogicalColumns() ) {
-            if ( ( (String) logicalColumn.getPhysicalColumn().getProperty( "target_column" ).getValue()).equals(
+            if ( logicalColumn.getPhysicalColumn().getProperty( "target_column" ).equals(
                 joinModel.getLeftKeyFieldModel().getName() ) ) {
               fromColumn = logicalColumn;
               break;
             }
           }
         }
-        if ( ( (String) logicalTable.getPhysicalTable().getProperty( "target_table" ).getValue()).equals( rTable ) ) {
+        if ( logicalTable.getPhysicalTable().getProperty( "target_table" ).equals( rTable ) ) {
           toTable = logicalTable;
 
           for ( LogicalColumn logicalColumn : toTable.getLogicalColumns() ) {
-            if ( ( (String) logicalColumn.getPhysicalColumn().getProperty( "target_column" ).getValue()).equals(
+            if ( logicalColumn.getPhysicalColumn().getProperty( "target_column" ).equals(
                 joinModel.getRightKeyFieldModel().getName() ) ) {
               toColumn = logicalColumn;
               break;
@@ -306,7 +305,7 @@ public class MultiTableModelerSource implements ISpoonModelerSource {
   @Override
   public void serializeIntoDomain( Domain d ) {
     LogicalModel lm = d.getLogicalModels().get( 0 );
-    lm.setProperty( "source_type", new Property<String>( SOURCE_TYPE ) );
+    lm.setProperty( "source_type", SOURCE_TYPE );
   }
 
   @Override
