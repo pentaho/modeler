@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 
@@ -96,7 +97,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     return list;
   }
 
-  public void apply( final ModelerWorkspace modelerWorkspace ) {
+  public void apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
     annotation.apply( modelerWorkspace, getField() );
   }
 

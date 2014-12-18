@@ -27,6 +27,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 
@@ -270,7 +271,7 @@ public abstract class AnnotationType implements Serializable {
     return Serializable.class.isAssignableFrom( classToCheck );
   }
 
-  public abstract void apply( final ModelerWorkspace workspace, final String column );
+  public abstract void apply( final ModelerWorkspace workspace, final String column ) throws ModelerException;
 
   public abstract ModelAnnotation.Type getType();
 

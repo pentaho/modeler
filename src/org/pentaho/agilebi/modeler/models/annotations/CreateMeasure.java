@@ -21,6 +21,7 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
@@ -83,7 +84,7 @@ public class CreateMeasure extends AnnotationType {
   }
 
   @Override
-  public void apply( final ModelerWorkspace workspace, final String column ) {
+  public void apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
     List<LogicalTable> logicalTables = workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables();
     for ( LogicalTable logicalTable : logicalTables ) {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
@@ -96,6 +97,7 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setDefaultAggregation( getAggregateType() );
           measureMetaData.setName( getName() );
           workspace.addMeasure( measureMetaData );
+          workspace.getWorkspaceHelper().populateDomain( workspace );
           return;
         }
       }
