@@ -28,7 +28,6 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
-import org.pentaho.metadata.model.concept.Property;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaData> implements Serializable {
@@ -165,16 +164,13 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
   }
 
   private boolean isFactTable( IPhysicalTable table ) {
-    String agileBiVersion = null;
-    Property property = getWorkspace().getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "AGILE_BI_VERSION" );
-    if ( property != null ) {
-      agileBiVersion = (String) property.getValue();
-    }
+    String agileBiVersion =
+        (String) getWorkspace().getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "AGILE_BI_VERSION" );
     if ( agileBiVersion != null && Float.parseFloat( agileBiVersion ) >= 2.0 ) {
       // if we're in a multi-table mode check for a fact table
       if ( getWorkspace().getAvailableTables().size() > 1 ) {
-        Property factProp = table.getProperty( "FACT_TABLE" );
-        if ( factProp == null || factProp.getValue() == null || ( (Boolean) factProp.getValue() ).equals( Boolean.FALSE ) ) {
+        Object factProp = table.getProperty( "FACT_TABLE" );
+        if ( factProp == null || factProp.equals( Boolean.FALSE ) ) {
           return false;
         } else {
           return true;
@@ -212,16 +208,14 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
       } else {
         throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
       }
-      String agileBiVersion = null;
-      Property property = getWorkspace().getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "AGILE_BI_VERSION" );
-      if ( property != null ) {
-        agileBiVersion = (String) property.getValue();
-      }
+      String agileBiVersion =
+          (String) getWorkspace().getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "AGILE_BI_VERSION" );
+
       if ( measure != null && agileBiVersion != null && Float.parseFloat( agileBiVersion ) >= 2.0 ) {
         // if we're in a multi-table mode check for a fact table
         if ( getWorkspace().getAvailableTables().size() > 1 ) {
-          Property factProp = measure.getLogicalColumn().getLogicalTable().getPhysicalTable().getProperty( "FACT_TABLE" );
-          if ( factProp == null || factProp.getValue() == null || ( (Boolean) factProp.getValue() ).equals( Boolean.FALSE ) ) {
+          Object factProp = measure.getLogicalColumn().getLogicalTable().getPhysicalTable().getProperty( "FACT_TABLE" );
+          if ( factProp == null || factProp.equals( Boolean.FALSE ) ) {
             throw new IllegalStateException( ModelerMessagesHolder.getMessages()
                 .getString( "DROP.ERROR.NON_FACT_TABLE" ) );
           }

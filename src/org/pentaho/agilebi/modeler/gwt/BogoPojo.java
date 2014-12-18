@@ -65,6 +65,7 @@ public class BogoPojo implements Serializable {
   TargetTableType targetTableType;
   LocalizedString localizedString;
   DataType dataType;
+  AggregationType aggType;
   TargetColumnType targetColumnType;
   LocaleType localeType;
   RowLevelSecurity rowLevelSecurity;
@@ -86,10 +87,10 @@ public class BogoPojo implements Serializable {
   OlapHierarchyLevel level;
   OlapDimensionUsage dimUsage;
   OlapAnnotation olapAnnotation;
-  LogicalTable logicalTable;
-  LogicalModel logicalModel;
-  LogicalColumn logicalColumn;
-  LogicalRelationship logicalRelationship;
+  LogicalTable lTable;
+  LogicalModel lModel;
+  LogicalColumn lColumn;
+  LogicalRelationship lRelationship;
   Domain domain;
   JoinRelationshipModel joinDTO;
   JoinFieldModel joinFieldDTO;
@@ -98,25 +99,8 @@ public class BogoPojo implements Serializable {
   LocationRole locationRole;
   GeoContext geoContext;
 
-  private AggregationType[] aggregationTypes;
-  private AggregationType aggregationType;
-  
-  public AggregationType[] getAggregationTypes() {
-    return aggregationTypes;
-  }
+  private AggregationType[] aggTypes;
 
-  public void setAggregationTypes( AggregationType[] aggregationTypes ) {
-    this.aggregationTypes = aggregationTypes;
-  }
-
-  public AggregationType getAggregationType() {
-    return aggregationType;
-  }
-
-  public void setAggregationType( AggregationType aggregationType ) {
-    this.aggregationType = aggregationType;
-  }  
-  
   public Domain getDomain() {
     return domain;
   }
@@ -125,36 +109,28 @@ public class BogoPojo implements Serializable {
     this.domain = domain;
   }
 
-  public LogicalRelationship getLogicalRelationship() {
-    return logicalRelationship;
+  public LogicalColumn getlColumn() {
+    return lColumn;
   }
 
-  public void setLogicalRelationship( LogicalRelationship logicalRelationship ) {
-    this.logicalRelationship = logicalRelationship;
-  }
-  
-  public LogicalColumn getLogicalColumn() {
-    return logicalColumn;
+  public void setlColumn( LogicalColumn lColumn ) {
+    this.lColumn = lColumn;
   }
 
-  public void setLogicalColumn( LogicalColumn logicalColumn ) {
-    this.logicalColumn = logicalColumn;
+  public LogicalModel getlModel() {
+    return lModel;
   }
 
-  public LogicalModel getLogicalModel() {
-    return logicalModel;
+  public void setlModel( LogicalModel lModel ) {
+    this.lModel = lModel;
   }
 
-  public void setLogicalModel( LogicalModel logicalModel ) {
-    this.logicalModel = logicalModel;
+  public LogicalTable getlTable() {
+    return lTable;
   }
 
-  public LogicalTable getLogicalTable() {
-    return logicalTable;
-  }
-
-  public void setLogicalTable( LogicalTable logicalTable ) {
-    this.logicalTable = logicalTable;
+  public void setlTable( LogicalTable lTable ) {
+    this.lTable = lTable;
   }
 
   public Boolean getBooleanValue() {
@@ -243,6 +219,22 @@ public class BogoPojo implements Serializable {
 
   public void setDataType( DataType dataType ) {
     this.dataType = dataType;
+  }
+
+  public AggregationType getAggregationType() {
+    return aggType;
+  }
+
+  public void setAggregationType( AggregationType aggType ) {
+    this.aggType = aggType;
+  }
+
+  public AggregationType[] getAggregationTypes() {
+    return aggTypes;
+  }
+
+  public void setAggregationTypes( AggregationType[] aggTypes ) {
+    this.aggTypes = aggTypes;
   }
 
   public TargetColumnType getTargetColumnType() {
