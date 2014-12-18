@@ -73,8 +73,9 @@ public class TableModelerSource implements ISpoonModelerSource {
     return ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, datasourceName, dualModelingMode );
   }
 
-  public Domain generateDomain( final PhysicalTableImporter.RowMetaStrategy rowMetaStrategy ) throws ModelerException {
-    return ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, datasourceName, true, rowMetaStrategy );
+  public Domain generateDomain( final PhysicalTableImporter.ImportStrategy importStrategy ) throws ModelerException {
+    return ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, datasourceName, true,
+      importStrategy );
   }
 
   public void initialize( Domain domain ) throws ModelerException {
