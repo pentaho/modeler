@@ -54,26 +54,26 @@ public class CreateMeasureTest {
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
-    createMeasure.apply( model, "QUANTITYINSTOCK" );
+    createMeasure.apply( model, "QUANTITYINstock" );
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 4, measures.size() );
     MeasureMetaData measureMetaData = measures.get( 3 );
-    assertEquals( "QUANTITYINSTOCK", measureMetaData.getColumnName() );
+    assertEquals( "QUANTITYINstock", measureMetaData.getColumnName() );
     assertEquals( "Avg Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AVERAGE, measureMetaData.getDefaultAggregation() );
 
     @SuppressWarnings( "unchecked" )
     OlapCube cube =
-      ( (List<OlapCube>) model.getDomain().getLogicalModels().get( 1 ).getProperty( PROPERTY_OLAP_CUBES ) )
+        ( (List<OlapCube>) model.getDomain().getLogicalModels().get( 1 ).getProperty( PROPERTY_OLAP_CUBES ) )
         .get( 0 );
 
     //only fields in rowMeta should be present
     assertEquals( 4, cube.getOlapMeasures().size() );
     assertEquals( "Avg Weight", cube.getOlapMeasures().get( 3 ).getName() );
     assertEquals(
-      "QUANTITYINSTOCK",
-      cube.getOlapMeasures().get( 3 ).getLogicalColumn().getPhysicalColumn().getProperty( TARGET_COLUMN ) );
+        "QUANTITYINSTOCK",
+        cube.getOlapMeasures().get( 3 ).getLogicalColumn().getPhysicalColumn().getProperty( TARGET_COLUMN ) );
   }
 
   @Test
