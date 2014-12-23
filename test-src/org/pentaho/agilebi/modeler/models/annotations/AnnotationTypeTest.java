@@ -115,4 +115,21 @@ public class AnnotationTypeTest {
     assertEquals( 4, keyList.size() );
     assertEquals( 4, valueList.size() );
   }
+
+  @Test
+  public void testGetModelPropertyValueByName() throws Exception {
+
+    CreateAttribute createAttribute = new CreateAttribute();
+    createAttribute.setModelPropertyByName( "Time Forma...", "xxxxx" );
+    assertNull( createAttribute.getModelPropertyValueByName( "Time Forma..." ) ); // doesn't exist
+
+    createAttribute.setModelPropertyByName( "Time Format", "xxxxx" );
+    assertTrue( createAttribute.getTimeFormat().equalsIgnoreCase( "xxxxx" ) );
+
+    createAttribute.setModelPropertyByName( "Time Type", ModelAnnotation.TimeType.Regular );
+    assertTrue( createAttribute.getTimeType().equals( ModelAnnotation.TimeType.Regular ) );
+
+    createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.Continent.toString() );
+    assertTrue( createAttribute.getGeoType().equals( ModelAnnotation.GeoType.Continent ) );
+  }
 }

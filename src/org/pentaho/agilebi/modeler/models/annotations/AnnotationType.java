@@ -30,6 +30,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -167,6 +168,21 @@ public abstract class AnnotationType implements Serializable {
     return null;
   }
 
+  public Object getModelPropertyValueByName( String name ) throws Exception {
+
+    List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
+    for ( Field f : fields ) {
+      if ( f.isAnnotationPresent( ModelProperty.class ) ) {
+        ModelProperty mp = f.getAnnotation( ModelProperty.class );
+        if ( StringUtils.equals( mp.name(), name ) ) {
+          return PropertyUtils.getProperty( this, f.getName() );
+        }
+      }
+    }
+
+    return null;
+  }
+
   public List<String> getModelPropertyNames() {
 
     List<String> propertyNames = new ArrayList<String>();
@@ -202,6 +218,30 @@ public abstract class AnnotationType implements Serializable {
     } else {
       if ( ClassUtils.isAssignable( field.getType(), Boolean.class, true ) ) {
         PropertyUtils.setProperty( this, field.getName(), BooleanUtils.toBoolean( value.toString() ) );
+        return;
+      }
+
+      if ( ClassUtils.isAssignable( field.getType(), AggregationType.class, true ) ) {
+        AggregationType type = AggregationType.valueOf( value.toString() );
+        if ( type != null ) {
+          PropertyUtils.setProperty( this, field.getName(), type );
+        }
+        return;
+      }
+
+      if ( ClassUtils.isAssignable( field.getType(), ModelAnnotation.TimeType.class, true ) ) {
+        ModelAnnotation.TimeType type = ModelAnnotation.TimeType.valueOf( value.toString() );
+        if ( type != null ) {
+          PropertyUtils.setProperty( this, field.getName(), type );
+        }
+        return;
+      }
+
+      if ( ClassUtils.isAssignable( field.getType(), ModelAnnotation.GeoType.class, true ) ) {
+        ModelAnnotation.GeoType type = ModelAnnotation.GeoType.valueOf( value.toString() );
+        if ( type != null ) {
+          PropertyUtils.setProperty( this, field.getName(), type );
+        }
         return;
       }
 
