@@ -91,9 +91,11 @@ public class CreateMeasure extends AnnotationType {
       for ( LogicalColumn logicalColumn : logicalColumns ) {
         if ( column
             .equalsIgnoreCase(
-              (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN ) ) ) {
+              logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) ) ) {
+          String targetColumn =
+            (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
-              new MeasureMetaData( column, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
+              new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
           measureMetaData.setLogicalColumn( logicalColumn );
           measureMetaData.setDefaultAggregation( getAggregateType() );
           measureMetaData.setName( getName() );
