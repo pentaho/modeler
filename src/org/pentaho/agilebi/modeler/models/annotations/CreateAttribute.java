@@ -22,7 +22,9 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.w3c.dom.Document;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -105,11 +107,6 @@ public class CreateAttribute extends AnnotationType {
   }
 
   @Override
-  public void apply( final ModelerWorkspace workspace, final String column ) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public void populate( final Map<String, Serializable> propertiesMap ) {
 
     super.populate( propertiesMap ); // let base class handle primitives, etc.
@@ -134,5 +131,25 @@ public class CreateAttribute extends AnnotationType {
   @Override
   public ModelAnnotation.Type getType() {
     return ModelAnnotation.Type.CREATE_ATTRIBUTE;
+  }
+
+  @Override
+  public void apply( final ModelerWorkspace workspace, final String column ) {
+    throw new UnsupportedOperationException();
+  }
+  
+  @Override
+  public void apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void apply( Document schema, String field ) throws ModelerException {
+    throw new UnsupportedOperationException();
   }
 }

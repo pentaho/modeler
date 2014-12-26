@@ -21,6 +21,16 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -29,10 +39,10 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
+import org.pentaho.metadata.util.MondrianModelExporter;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 /**
  * @author Rowell Belen
@@ -104,8 +114,46 @@ public class CreateMeasure extends AnnotationType {
       }
 
     }
+    // TOOD: Throw exception if the logical column was not found and we were unable to create the measure
+  }
+  
+  @Override
+  public void apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+    // TODO:
+    // 1.  Find hierarchy level or measure in the schema
+    // 2.  Validate that the level/measure is based on a physical column
+    // 3.  Create a new measure under the same cube using the physical column
+    throw new UnsupportedOperationException();
   }
 
+  @Override
+  public void apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
+    // TODO Auto-generated method stub
+    // Find the underlying physical table and column
+    // Then directly call apply (workspace, field)
+  }
+
+  @Override
+  public void apply( Document doc, String field ) throws ModelerException {
+    // Surgically add the measure into the cube...
+    try {      
+      XPathFactory xPathFactory = XPathFactory.newInstance();
+      XPath xPath = xPathFactory.newXPath();
+      StringBuffer xPathExpr = new StringBuffer();
+      xPathExpr.append( "/Schema/Cube" ); // TODO: Handle multiple cubes...
+      XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
+      Node cube = (Node) xPathExpression.evaluate( doc, XPathConstants.NODE );
+      Element measureElement = null;
+      measureElement = doc.createElement( "Measure" );
+      cube.appendChild( measureElement ); // TODO: Measures need to come after calculated measures
+      measureElement.setAttribute( "name", getName() );
+      measureElement.setAttribute( "column", field );
+      measureElement.setAttribute( "aggregator", MondrianModelExporter.convertToMondrian( getAggregateType() ));
+    } catch (XPathExpressionException e) {
+      throw new ModelerException (e);
+    }
+  }
+  
   @Override
   public void populate( final Map<String, Serializable> propertiesMap ) {
 
@@ -124,4 +172,5 @@ public class CreateMeasure extends AnnotationType {
   public ModelAnnotation.Type getType() {
     return ModelAnnotation.Type.CREATE_MEASURE;
   }
+
 }

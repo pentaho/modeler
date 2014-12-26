@@ -22,16 +22,6 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
-import org.pentaho.metadata.model.concept.types.AggregationType;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -41,6 +31,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.w3c.dom.Document;
 
 /**
  * @author Rowell Belen
@@ -311,7 +312,43 @@ public abstract class AnnotationType implements Serializable {
     return Serializable.class.isAssignableFrom( classToCheck );
   }
 
-  public abstract void apply( final ModelerWorkspace workspace, final String column ) throws ModelerException;
+  /**
+   * Applies modeling changes on a Metadata model using a field as the source.
+   * 
+   * @param workspace
+   * @param field
+   * @throws ModelerException
+   */
+  public abstract void apply( final ModelerWorkspace workspace, final String field ) throws ModelerException;
+
+  /**
+   * Applies modeling changes on a Metadata model using an Olap element as the source.
+   * 
+   * @param workspace
+   * @param column
+   * @throws ModelerException
+   */
+  public abstract void apply( final ModelerWorkspace workspace, final String cube, final String hierarchy, final String name ) throws ModelerException;
+
+  /**
+   * Applies modeling change on a Mondrian schema using a field as the source..
+   * 
+   * @param schema
+   * @param field
+   * @throws ModelerException
+   */
+  public abstract void apply( final Document schema, final String field) throws ModelerException;
+
+  /**
+   * Applies modeling change on a Mondrian schema using an Olap elemnt as the source..
+   * 
+   * @param schema
+   * @param cube
+   * @param hierarchy
+   * @param name
+   * @throws ModelerException
+   */
+  public abstract void apply( final Document schema, final String cube, final String hierarchy, final String name) throws ModelerException;
 
   public abstract ModelAnnotation.Type getType();
 

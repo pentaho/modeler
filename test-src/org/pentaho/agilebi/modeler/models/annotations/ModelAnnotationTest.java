@@ -25,8 +25,10 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,6 +92,25 @@ public class ModelAnnotationTest {
 
       @Override public ModelAnnotation.Type getType() {
         return null;
+      }
+
+      @Override
+      public void apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void apply( ModelerWorkspace workspace, String cube, String hierarchy, String name )
+        throws ModelerException {
+        // TODO Auto-generated method stub
+        
+      }
+
+      @Override
+      public void apply( Document schema, String field ) throws ModelerException {
+        // TODO Auto-generated method stub
+        
       }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();

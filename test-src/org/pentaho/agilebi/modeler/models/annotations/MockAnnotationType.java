@@ -1,6 +1,8 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.w3c.dom.Document;
 
 /**
  * @author Rowell Belen
@@ -69,5 +71,23 @@ public class MockAnnotationType extends AnnotationType {
   @Override
   public ModelAnnotation.Type getType() {
     return null;
+  }
+
+  @Override
+  public void apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void apply( Document schema, String field ) throws ModelerException {
+    // TODO Auto-generated method stub
+    
   }
 }

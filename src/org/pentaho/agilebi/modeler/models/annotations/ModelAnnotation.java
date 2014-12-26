@@ -22,15 +22,16 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.w3c.dom.Document;
 
 /**
  * @author Rowell Belen
@@ -40,6 +41,10 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final long serialVersionUID = 5742135911581602697L;
 
   private String field;
+  
+  private String cube;
+  private String hierarchy;
+  private String name;
 
   private T annotation;
 
@@ -48,6 +53,13 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   public ModelAnnotation( final String field, final T annotation ) {
     setField( field );
+    setAnnotation( annotation );
+  }
+  
+  public ModelAnnotation( final String cube, final String hierarchy, final String name, final T annotation ) {
+    setCube( cube );
+    setHierarchy( hierarchy );
+    setName( name );
     setAnnotation( annotation );
   }
 
@@ -59,6 +71,30 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     this.field = field;
   }
 
+  public String getCube() {
+    return cube;
+  }
+
+  public void setCube( String cube ) {
+    this.cube = cube;
+  }
+
+  public String getHierarchy() {
+    return hierarchy;
+  }
+
+  public void setHierarchy( String hierarchy ) {
+    this.hierarchy = hierarchy;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
+  
   public T getAnnotation() {
     return annotation;
   }
@@ -98,7 +134,19 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public void apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    annotation.apply( modelerWorkspace, getField() );
+    if (getField () != null) {
+      annotation.apply( modelerWorkspace, getField() );
+    } else {
+      annotation.apply( modelerWorkspace, getCube(), getHierarchy(), getName() );
+    }
+  }
+  
+  public void apply( final Document schema ) throws ModelerException {
+    if (getField () != null) {
+      annotation.apply( schema, getField() );
+    } else {
+      annotation.apply( schema, getCube(), getHierarchy(), getName() );
+    }
   }
 
   public org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.Type getType() {
@@ -159,4 +207,5 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     Continent,
     Territory
   }
+
 }
