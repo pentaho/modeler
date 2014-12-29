@@ -84,7 +84,7 @@ public class CreateMeasure extends AnnotationType {
   }
 
   @Override
-  public void apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
+  public boolean apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
     List<LogicalTable> logicalTables = workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables();
     for ( LogicalTable logicalTable : logicalTables ) {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
@@ -93,7 +93,7 @@ public class CreateMeasure extends AnnotationType {
             .equalsIgnoreCase(
               logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) ) ) {
           String targetColumn =
-            (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
+              (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
               new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
           measureMetaData.setLogicalColumn( logicalColumn );
@@ -101,11 +101,12 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setName( getName() );
           workspace.addMeasure( measureMetaData );
           workspace.getWorkspaceHelper().populateDomain( workspace );
-          return;
+          return true;
         }
       }
 
     }
+    return true;
   }
 
   @Override

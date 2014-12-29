@@ -311,7 +311,7 @@ public abstract class AnnotationType implements Serializable {
     return Serializable.class.isAssignableFrom( classToCheck );
   }
 
-  public abstract void apply( final ModelerWorkspace workspace, final String column ) throws ModelerException;
+  public abstract boolean apply( final ModelerWorkspace workspace, final String column ) throws ModelerException;
 
   public abstract ModelAnnotation.Type getType();
 

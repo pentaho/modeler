@@ -97,8 +97,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     return list;
   }
 
-  public void apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    annotation.apply( modelerWorkspace, getField() );
+  public boolean apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
+    return annotation.apply( modelerWorkspace, getField() );
   }
 
   public org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.Type getType() {

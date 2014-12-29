@@ -63,7 +63,8 @@ public class MockAnnotationType extends AnnotationType {
   }
 
   @Override
-  public void apply( ModelerWorkspace workspace, String column ) {
+  public boolean apply( ModelerWorkspace workspace, String column ) {
+    return true;
   }
 
   @Override
