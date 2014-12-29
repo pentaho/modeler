@@ -49,6 +49,7 @@ public class ModelAnnotationTest {
     // check
     assertEquals( md.getField(), "testColumn" );
     assertEquals( md.getType(), ModelAnnotation.Type.CREATE_MEASURE );
+    assertEquals( md.getType().description(), "Create Measure" );
   }
 
   @Test
@@ -64,6 +65,7 @@ public class ModelAnnotationTest {
     // check
     assertEquals( md.getField(), "testColumn" );
     assertEquals( md.getType(), ModelAnnotation.Type.CREATE_ATTRIBUTE );
+    assertEquals( md.getType().description(), "Create Attribute" );
   }
 
   @Test
