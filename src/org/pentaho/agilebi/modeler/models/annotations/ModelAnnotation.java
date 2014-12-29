@@ -139,7 +139,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       this.description = description;
     }
 
-    String description() {
+    public String description() {
       return description;
     }
   }
