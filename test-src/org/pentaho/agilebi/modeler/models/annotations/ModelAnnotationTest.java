@@ -85,9 +85,10 @@ public class ModelAnnotationTest {
     final ModelerWorkspace modelerWorkspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     AnnotationType annotationType = new AnnotationType() {
       @Override
-      public void apply( final ModelerWorkspace workspace, final String column ) {
+      public boolean apply( final ModelerWorkspace workspace, final String column ) {
         assertSame( workspace, modelerWorkspace );
         assertEquals( "amount", column );
+        return true;
       }
 
       @Override public ModelAnnotation.Type getType() {
