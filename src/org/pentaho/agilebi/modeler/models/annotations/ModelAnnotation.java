@@ -130,8 +130,18 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public static enum Type {
-    CREATE_MEASURE,
-    CREATE_ATTRIBUTE
+    CREATE_MEASURE( "Create Measure" ),
+    CREATE_ATTRIBUTE( "Create Attribute" );
+
+    private final String description;
+
+    Type( String description ) {
+      this.description = description;
+    }
+
+    String description() {
+      return description;
+    }
   }
 
   public static enum TimeType {
