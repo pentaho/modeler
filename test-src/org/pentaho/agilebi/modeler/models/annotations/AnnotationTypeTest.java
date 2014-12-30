@@ -132,4 +132,18 @@ public class AnnotationTypeTest {
     createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.Continent.toString() );
     assertTrue( createAttribute.getGeoType().equals( ModelAnnotation.GeoType.Continent ) );
   }
+
+  @Test
+  public void testGetModelPropertyNameClassType() throws Exception {
+
+    CreateAttribute createAttribute = new CreateAttribute();
+
+    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Forma.." ), null );
+    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Format" ), String.class );
+    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Type" ), ModelAnnotation.TimeType.class );
+    assertEquals( createAttribute.getModelPropertyNameClassType( "Geo Type" ), ModelAnnotation.GeoType.class );
+
+    CreateMeasure createMeasure = new CreateMeasure();
+    assertEquals( createMeasure.getModelPropertyNameClassType( "Aggregation Type" ), AggregationType.class );
+  }
 }
