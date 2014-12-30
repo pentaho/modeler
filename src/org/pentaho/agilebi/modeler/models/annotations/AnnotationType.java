@@ -48,16 +48,16 @@ import org.w3c.dom.Document;
  */
 public abstract class AnnotationType implements Serializable {
 
-  protected static final String NAME_ID = "name";
-  protected static final String NAME_NAME = "Display Name";
-  protected static final String CAPTION_ID = "caption";
-  protected static final String CAPTION_NAME = "Caption";
-  protected static final String DESCRIPTION_ID = "description";
-  protected static final String DESCRIPTION_NAME = "Description";
-  protected static final String HIDDEN_ID = "hidden";
-  protected static final String HIDDEN_NAME = "Hidden";
-  protected static final String BUSINESS_GROUP_ID = "businessGroup";
-  protected static final String BUSINESS_GROUP_NAME = "Business Group";
+  public static final String NAME_ID = "name";
+  public static final String NAME_NAME = "Display Name";
+  public static final String CAPTION_ID = "caption";
+  public static final String CAPTION_NAME = "Caption";
+  public static final String DESCRIPTION_ID = "description";
+  public static final String DESCRIPTION_NAME = "Description";
+  public static final String HIDDEN_ID = "hidden";
+  public static final String HIDDEN_NAME = "Hidden";
+  public static final String BUSINESS_GROUP_ID = "businessGroup";
+  public static final String BUSINESS_GROUP_NAME = "Business Group";
   private static final long serialVersionUID = 3952409344571242884L;
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
   @ModelProperty( id = NAME_ID, name = NAME_NAME )
