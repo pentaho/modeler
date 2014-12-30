@@ -51,14 +51,14 @@ public class CreateMeasure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
-  protected static final String AGGREGATE_TYPE_ID = "aggregateType";
-  protected static final String AGGREGATE_TYPE_NAME = "Aggregation Type";
+  public static final String AGGREGATE_TYPE_ID = "aggregateType";
+  public static final String AGGREGATE_TYPE_NAME = "Aggregation Type";
 
-  protected static final String FORMAT_STRING_ID = "formatString";
-  protected static final String FORMAT_STRING_NAME = "Format String";
+  public static final String FORMAT_STRING_ID = "formatString";
+  public static final String FORMAT_STRING_NAME = "Format String";
 
-  protected static final String EXPRESSION_ID = "expression";
-  protected static final String EXPRESSION_NAME = "MDX Expression";
+  public static final String EXPRESSION_ID = "expression";
+  public static final String EXPRESSION_NAME = "MDX Expression";
 
   @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME )
   private AggregationType aggregateType;

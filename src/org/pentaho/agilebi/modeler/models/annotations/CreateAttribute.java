@@ -45,32 +45,32 @@ public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
 
-  protected static final String UNIQUE_ID = "unique";
-  protected static final String UNIQUE_NAME = "Is Unique";
+  public static final String UNIQUE_ID = "unique";
+  public static final String UNIQUE_NAME = "Is Unique";
 
-  protected static final String TIME_FORMAT_ID = "timeFormat";
-  protected static final String TIME_FORMAT_NAME = "Time Format";
+  public static final String TIME_FORMAT_ID = "timeFormat";
+  public static final String TIME_FORMAT_NAME = "Time Format";
 
-  protected static final String TIME_TYPE_ID = "timeType";
-  protected static final String TIME_TYPE_NAME = "Time Type";
+  public static final String TIME_TYPE_ID = "timeType";
+  public static final String TIME_TYPE_NAME = "Time Type";
 
-  protected static final String GEO_TYPE_ID = "geoType";
-  protected static final String GEO_TYPE_NAME = "Geo Type";
+  public static final String GEO_TYPE_ID = "geoType";
+  public static final String GEO_TYPE_NAME = "Geo Type";
 
-  protected static final String ORDINAL_FIELD_ID = "ordinalField";
-  protected static final String ORDINAL_FIELD_NAME = "Ordinal Field";
+  public static final String ORDINAL_FIELD_ID = "ordinalField";
+  public static final String ORDINAL_FIELD_NAME = "Ordinal Field";
 
-  protected static final String PARENT_ATTRIBUTE_ID = "parentAttribute";
-  protected static final String PARENT_ATTRIBUTE_NAME = "Parent Attribute";
+  public static final String PARENT_ATTRIBUTE_ID = "parentAttribute";
+  public static final String PARENT_ATTRIBUTE_NAME = "Parent Attribute";
 
-  protected static final String DIMENSION_ID = "dimension";
-  protected static final String DIMENSION_NAME = "Dimension";
+  public static final String DIMENSION_ID = "dimension";
+  public static final String DIMENSION_NAME = "Dimension";
 
-  protected static final String HIERARCHY_ID = "hierarchy";
-  protected static final String HIERARCHY_NAME = "Hierarchy";
+  public static final String HIERARCHY_ID = "hierarchy";
+  public static final String HIERARCHY_NAME = "Hierarchy";
 
-  protected static final String CAPTION_ID = "caption";
-  protected static final String CAPTION_NAME = "Caption Column";
+  public static final String CAPTION_ID = "caption";
+  public static final String CAPTION_NAME = "Caption Column";
 
 
   @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME )
