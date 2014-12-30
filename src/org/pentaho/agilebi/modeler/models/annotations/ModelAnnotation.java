@@ -133,19 +133,19 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     return list;
   }
 
-  public void apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
+  public boolean apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
     if (getField () != null) {
-      annotation.apply( modelerWorkspace, getField() );
+      return annotation.apply( modelerWorkspace, getField() );
     } else {
-      annotation.apply( modelerWorkspace, getCube(), getHierarchy(), getName() );
+      return annotation.apply( modelerWorkspace, getCube(), getHierarchy(), getName() );
     }
   }
   
-  public void apply( final Document schema ) throws ModelerException {
+  public boolean apply( final Document schema ) throws ModelerException {
     if (getField () != null) {
-      annotation.apply( schema, getField() );
+      return annotation.apply( schema, getField() );
     } else {
-      annotation.apply( schema, getCube(), getHierarchy(), getName() );
+      return annotation.apply( schema, getCube(), getHierarchy(), getName() );
     }
   }
 
