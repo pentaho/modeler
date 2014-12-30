@@ -184,6 +184,20 @@ public abstract class AnnotationType implements Serializable {
     return null;
   }
 
+  public Class getModelPropertyNameClassType( String name ) {
+    List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
+    for ( Field f : fields ) {
+      if ( f.isAnnotationPresent( ModelProperty.class ) ) {
+        ModelProperty mp = f.getAnnotation( ModelProperty.class );
+        if ( StringUtils.equals( mp.name(), name ) ) {
+          return f.getType();
+        }
+      }
+    }
+
+    return null;
+  }
+
   public List<String> getModelPropertyNames() {
 
     List<String> propertyNames = new ArrayList<String>();

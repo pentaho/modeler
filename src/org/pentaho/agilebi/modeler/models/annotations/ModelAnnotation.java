@@ -94,7 +94,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   public void setName( String name ) {
     this.name = name;
   }
-  
+
   public T getAnnotation() {
     return annotation;
   }
@@ -134,15 +134,15 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public boolean apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    if (getField () != null) {
+    if ( getField() != null ) {
       return annotation.apply( modelerWorkspace, getField() );
     } else {
       return annotation.apply( modelerWorkspace, getCube(), getHierarchy(), getName() );
     }
   }
-  
+
   public boolean apply( final Document schema ) throws ModelerException {
-    if (getField () != null) {
+    if ( getField() != null ) {
       return annotation.apply( schema, getField() );
     } else {
       return annotation.apply( schema, getCube(), getHierarchy(), getName() );
@@ -190,6 +190,15 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     public String description() {
       return description;
     }
+
+    public static String[] names() {
+      Type[] types = values();
+      String[] names = new String[types.length];
+      for ( int i = 0; i < types.length; i++ ) {
+        names[i] = types[i].name();
+      }
+      return names;
+    }
   }
 
   public static enum TimeType {
@@ -204,7 +213,16 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     TimeMinutes,
     TimeSeconds,
     TimeUndefined,
-    Null
+    Null;
+
+    public static String[] names() {
+      TimeType[] types = values();
+      String[] names = new String[types.length];
+      for ( int i = 0; i < types.length; i++ ) {
+        names[i] = types[i].name();
+      }
+      return names;
+    }
   }
 
   public static enum GeoType {
@@ -215,7 +233,16 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     County,
     Postal_Code,
     Continent,
-    Territory
+    Territory;
+
+    public static String[] names() {
+      GeoType[] types = values();
+      String[] names = new String[types.length];
+      for ( int i = 0; i < types.length; i++ ) {
+        names[i] = types[i].name();
+      }
+      return names;
+    }
   }
 
 }
