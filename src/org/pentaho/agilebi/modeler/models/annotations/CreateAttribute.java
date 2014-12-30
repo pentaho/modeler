@@ -63,8 +63,8 @@ public class CreateAttribute extends AnnotationType {
   protected static final String PARENT_ATTRIBUTE_ID = "parentAttribute";
   protected static final String PARENT_ATTRIBUTE_NAME = "Parent Attribute";
 
-  protected static final String DIMENSION_ID = "category";
-  protected static final String DIMENSION_NAME = "Category";
+  protected static final String DIMENSION_ID = "dimension";
+  protected static final String DIMENSION_NAME = "Dimension";
 
   protected static final String HIERARCHY_ID = "hierarchy";
   protected static final String HIERARCHY_NAME = "Hierarchy";
