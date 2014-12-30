@@ -94,7 +94,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   public void setName( String name ) {
     this.name = name;
   }
-  
+
   public T getAnnotation() {
     return annotation;
   }
@@ -134,15 +134,15 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public boolean apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    if (getField () != null) {
+    if ( getField() != null ) {
       return annotation.apply( modelerWorkspace, getField() );
     } else {
       return annotation.apply( modelerWorkspace, getCube(), getHierarchy(), getName() );
     }
   }
-  
+
   public boolean apply( final Document schema ) throws ModelerException {
-    if (getField () != null) {
+    if ( getField() != null ) {
       return annotation.apply( schema, getField() );
     } else {
       return annotation.apply( schema, getCube(), getHierarchy(), getName() );
