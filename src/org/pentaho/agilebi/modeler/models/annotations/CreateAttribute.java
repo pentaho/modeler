@@ -25,6 +25,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.w3c.dom.Document;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
@@ -324,5 +325,20 @@ public class CreateAttribute extends AnnotationType {
   @Override
   public ModelAnnotation.Type getType() {
     return ModelAnnotation.Type.CREATE_ATTRIBUTE;
+  }
+  
+  @Override
+  public boolean apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean apply( Document schema, String field ) throws ModelerException {
+    throw new UnsupportedOperationException();
   }
 }
