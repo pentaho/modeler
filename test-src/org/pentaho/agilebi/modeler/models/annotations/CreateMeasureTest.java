@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.util.XmiParser;
 
@@ -52,13 +53,15 @@ public class CreateMeasureTest {
     ModelerWorkspace model =
         new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 ).getLogicalColumns().get( 6 )
+      .setName( new LocalizedString( model.getWorkspaceHelper().getLocale(), "differentName" ) );
     model.getWorkspaceHelper().populateDomain( model );
 
-    createMeasure.apply( model, "QUANTITYINstock" );
+    createMeasure.apply( model, "differentName" );
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 4, measures.size() );
     MeasureMetaData measureMetaData = measures.get( 3 );
-    assertEquals( "QUANTITYINstock", measureMetaData.getColumnName() );
+    assertEquals( "QUANTITYINSTOCK", measureMetaData.getColumnName() );
     assertEquals( "Avg Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AVERAGE, measureMetaData.getDefaultAggregation() );
@@ -88,7 +91,7 @@ public class CreateMeasureTest {
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
     LogicalTable logicalTable = model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
     logicalTable.addLogicalColumn( (LogicalColumn) logicalTable.getLogicalColumns().get( 6 ).clone() );
-    createMeasure.apply( model, "QUANTITYINSTOCK" );
+    createMeasure.apply( model, "bc_QUANTITYINSTOCK" );
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 4, measures.size() );
     MeasureMetaData measureMetaData = measures.get( 3 );

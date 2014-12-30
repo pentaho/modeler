@@ -51,6 +51,7 @@ public class ModelAnnotationTest {
     // check
     assertEquals( md.getField(), "testColumn" );
     assertEquals( md.getType(), ModelAnnotation.Type.CREATE_MEASURE );
+    assertEquals( md.getType().description(), "Create Measure" );
   }
 
   @Test
@@ -66,6 +67,7 @@ public class ModelAnnotationTest {
     // check
     assertEquals( md.getField(), "testColumn" );
     assertEquals( md.getType(), ModelAnnotation.Type.CREATE_ATTRIBUTE );
+    assertEquals( md.getType().description(), "Create Attribute" );
   }
 
   @Test
@@ -85,9 +87,10 @@ public class ModelAnnotationTest {
     final ModelerWorkspace modelerWorkspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     AnnotationType annotationType = new AnnotationType() {
       @Override
-      public void apply( final ModelerWorkspace workspace, final String column ) {
+      public boolean apply( final ModelerWorkspace workspace, final String column ) {
         assertSame( workspace, modelerWorkspace );
         assertEquals( "amount", column );
+        return true;
       }
 
       @Override public ModelAnnotation.Type getType() {
@@ -95,22 +98,22 @@ public class ModelAnnotationTest {
       }
 
       @Override
-      public void apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+      public boolean apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
         // TODO Auto-generated method stub
-        
+        return false;
       }
 
       @Override
-      public void apply( ModelerWorkspace workspace, String cube, String hierarchy, String name )
+      public boolean apply( ModelerWorkspace workspace, String cube, String hierarchy, String name )
         throws ModelerException {
         // TODO Auto-generated method stub
-        
+        return false;
       }
 
       @Override
-      public void apply( Document schema, String field ) throws ModelerException {
+      public boolean apply( Document schema, String field ) throws ModelerException {
         // TODO Auto-generated method stub
-        
+        return false;
       }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();

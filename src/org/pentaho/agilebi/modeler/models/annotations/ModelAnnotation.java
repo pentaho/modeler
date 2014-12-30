@@ -41,7 +41,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final long serialVersionUID = 5742135911581602697L;
 
   private String field;
-  
+
   private String cube;
   private String hierarchy;
   private String name;
@@ -55,7 +55,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     setField( field );
     setAnnotation( annotation );
   }
-  
+
   public ModelAnnotation( final String cube, final String hierarchy, final String name, final T annotation ) {
     setCube( cube );
     setHierarchy( hierarchy );
@@ -178,8 +178,18 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public static enum Type {
-    CREATE_MEASURE,
-    CREATE_ATTRIBUTE
+    CREATE_MEASURE( "Create Measure" ),
+    CREATE_ATTRIBUTE( "Create Attribute" );
+
+    private final String description;
+
+    Type( String description ) {
+      this.description = description;
+    }
+
+    public String description() {
+      return description;
+    }
   }
 
   public static enum TimeType {

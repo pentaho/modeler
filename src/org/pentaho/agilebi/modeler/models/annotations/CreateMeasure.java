@@ -94,47 +94,41 @@ public class CreateMeasure extends AnnotationType {
   }
 
   @Override
-  public void apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
+  public boolean apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
     List<LogicalTable> logicalTables = workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables();
     for ( LogicalTable logicalTable : logicalTables ) {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
       for ( LogicalColumn logicalColumn : logicalColumns ) {
         if ( column
             .equalsIgnoreCase(
-              (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN ) ) ) {
+              logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) ) ) {
+          String targetColumn =
+              (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
-              new MeasureMetaData( column, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
+              new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
           measureMetaData.setLogicalColumn( logicalColumn );
           measureMetaData.setDefaultAggregation( getAggregateType() );
           measureMetaData.setName( getName() );
           workspace.addMeasure( measureMetaData );
           workspace.getWorkspaceHelper().populateDomain( workspace );
-          return;
+          return true;
         }
       }
 
     }
-    // TOOD: Throw exception if the logical column was not found and we were unable to create the measure
-  }
-  
-  @Override
-  public void apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
-    // TODO:
-    // 1.  Find hierarchy level or measure in the schema
-    // 2.  Validate that the level/measure is based on a physical column
-    // 3.  Create a new measure under the same cube using the physical column
-    throw new UnsupportedOperationException();
+    return true;
   }
 
   @Override
-  public void apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
+  public boolean apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
     // TODO Auto-generated method stub
     // Find the underlying physical table and column
     // Then directly call apply (workspace, field)
+    return false;
   }
 
   @Override
-  public void apply( Document doc, String field ) throws ModelerException {
+  public boolean apply( Document doc, String field ) throws ModelerException {
     // Surgically add the measure into the cube...
     try {      
       XPathFactory xPathFactory = XPathFactory.newInstance();
@@ -152,6 +146,7 @@ public class CreateMeasure extends AnnotationType {
     } catch (XPathExpressionException e) {
       throw new ModelerException (e);
     }
+    return true;
   }
   
   @Override
@@ -171,6 +166,12 @@ public class CreateMeasure extends AnnotationType {
   @Override
   public ModelAnnotation.Type getType() {
     return ModelAnnotation.Type.CREATE_MEASURE;
+  }
+
+  @Override
+  public boolean apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

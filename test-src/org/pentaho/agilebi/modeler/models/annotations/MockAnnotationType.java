@@ -65,7 +65,8 @@ public class MockAnnotationType extends AnnotationType {
   }
 
   @Override
-  public void apply( ModelerWorkspace workspace, String column ) {
+  public boolean apply( ModelerWorkspace workspace, String column ) {
+    return true;
   }
 
   @Override
@@ -74,20 +75,20 @@ public class MockAnnotationType extends AnnotationType {
   }
 
   @Override
-  public void apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
+  public boolean apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
     // TODO Auto-generated method stub
-    
+    return false;
   }
 
   @Override
-  public void apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
+  public boolean apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
     // TODO Auto-generated method stub
-    
+    return false;    
   }
 
   @Override
-  public void apply( Document schema, String field ) throws ModelerException {
+  public boolean apply( Document schema, String field ) throws ModelerException {
     // TODO Auto-generated method stub
-    
+    return false;
   }
 }
