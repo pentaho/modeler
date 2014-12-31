@@ -336,15 +336,6 @@ public abstract class AnnotationType implements Serializable {
   public abstract boolean apply( final ModelerWorkspace workspace, final String field ) throws ModelerException;
 
   /**
-   * Applies modeling changes on a Metadata model using an Olap element as the source.
-   * 
-   * @param workspace
-   * @param column
-   * @throws ModelerException
-   */
-  public abstract boolean apply( final ModelerWorkspace workspace, final String cube, final String hierarchy, final String name ) throws ModelerException;
-
-  /**
    * Applies modeling change on a Mondrian schema using a field as the source..
    * 
    * @param schema
@@ -352,17 +343,6 @@ public abstract class AnnotationType implements Serializable {
    * @throws ModelerException
    */
   public abstract boolean apply( final Document schema, final String field) throws ModelerException;
-
-  /**
-   * Applies modeling change on a Mondrian schema using an Olap elemnt as the source..
-   * 
-   * @param schema
-   * @param cube
-   * @param hierarchy
-   * @param name
-   * @throws ModelerException
-   */
-  public abstract boolean apply( final Document schema, final String cube, final String hierarchy, final String name) throws ModelerException;
 
   public abstract ModelAnnotation.Type getType();
 

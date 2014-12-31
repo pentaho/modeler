@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.util.XmiParser;
@@ -50,11 +51,10 @@ public class CreateMeasureTest {
     createMeasure.setName( "Avg Weight" );
     createMeasure.setFormatString( "##.##" );
 
-    ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
     model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 ).getLogicalColumns().get( 6 )
-      .setName( new LocalizedString( model.getWorkspaceHelper().getLocale(), "differentName" ) );
+        .setName( new LocalizedString( model.getWorkspaceHelper().getLocale(), "differentName" ) );
     model.getWorkspaceHelper().populateDomain( model );
 
     createMeasure.apply( model, "differentName" );
@@ -68,15 +68,13 @@ public class CreateMeasureTest {
 
     @SuppressWarnings( "unchecked" )
     OlapCube cube =
-        ( (List<OlapCube>) model.getDomain().getLogicalModels().get( 1 ).getProperty( PROPERTY_OLAP_CUBES ) )
-        .get( 0 );
+        ( (List<OlapCube>) model.getDomain().getLogicalModels().get( 1 ).getProperty( PROPERTY_OLAP_CUBES ) ).get( 0 );
 
-    //only fields in rowMeta should be present
+    // only fields in rowMeta should be present
     assertEquals( 4, cube.getOlapMeasures().size() );
     assertEquals( "Avg Weight", cube.getOlapMeasures().get( 3 ).getName() );
-    assertEquals(
-        "QUANTITYINSTOCK",
-        cube.getOlapMeasures().get( 3 ).getLogicalColumn().getPhysicalColumn().getProperty( TARGET_COLUMN ) );
+    assertEquals( "QUANTITYINSTOCK", cube.getOlapMeasures().get( 3 ).getLogicalColumn().getPhysicalColumn()
+        .getProperty( TARGET_COLUMN ) );
   }
 
   @Test
@@ -86,8 +84,7 @@ public class CreateMeasureTest {
     createMeasure.setName( "Min Weight" );
     createMeasure.setFormatString( "##.##" );
 
-    ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
     LogicalTable logicalTable = model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
     logicalTable.addLogicalColumn( (LogicalColumn) logicalTable.getLogicalColumns().get( 6 ).clone() );
@@ -99,5 +96,67 @@ public class CreateMeasureTest {
     assertEquals( "Min Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( MINIMUM, measureMetaData.getDefaultAggregation() );
+  }
+
+  /**
+   * Verifies that we can create a new measure using an existing measure as the source.
+   * This basically results in using the existing measure's physical column as the
+   * underlying column for the new measure.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testCreateMeasureByMeasure() throws Exception {
+    CreateMeasure createMeasure = new CreateMeasure();
+    createMeasure.setAggregateType( MINIMUM );
+    createMeasure.setName( "Min Buy Price" );
+    createMeasure.setFormatString( "##.##" );
+    ModelAnnotation annotation =
+        new ModelAnnotation<CreateMeasure>( ModelAnnotation.SourceType.Measure, "products_38GA",
+            "[Measures].[bc_BUYPRICE]", createMeasure );
+
+    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    LogicalTable logicalTable = model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
+    logicalTable.addLogicalColumn( (LogicalColumn) logicalTable.getLogicalColumns().get( 6 ).clone() );
+    annotation.apply( model );
+
+    MeasuresCollection measures = model.getModel().getMeasures();
+    assertEquals( 4, measures.size() );
+    MeasureMetaData measureMetaData = measures.get( 3 );
+    assertEquals( "BUYPRICE", measureMetaData.getColumnName() );
+    assertEquals( "Min Buy Price", measureMetaData.getName() );
+    assertEquals( "##.##", measureMetaData.getFormat() );
+    assertEquals( MINIMUM, measureMetaData.getDefaultAggregation() );
+  }
+  
+  /**
+   * Verified that we can create a new measure using an existing hierarchy as the source.
+   * 
+   * @throws Exception
+   */
+  @Test
+  public void testCreateMeasureByLevel() throws Exception {
+    CreateMeasure createMeasure = new CreateMeasure();
+    createMeasure.setAggregateType( AggregationType.COUNT_DISTINCT );
+    createMeasure.setName( "Product Count" );
+    createMeasure.setFormatString( "##.##" );
+    ModelAnnotation annotation =
+        new ModelAnnotation<CreateMeasure>( ModelAnnotation.SourceType.HierarchyLevel, "products_38GA",
+            "[PRODUCTNAME].[PRODUCTNAME]", createMeasure );
+
+    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    LogicalTable logicalTable = model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
+    logicalTable.addLogicalColumn( (LogicalColumn) logicalTable.getLogicalColumns().get( 6 ).clone() );
+    annotation.apply( model );
+
+    MeasuresCollection measures = model.getModel().getMeasures();
+    assertEquals( 4, measures.size() );
+    MeasureMetaData measureMetaData = measures.get( 3 );
+    assertEquals( "PRODUCTNAME", measureMetaData.getColumnName() );
+    assertEquals( "Product Count", measureMetaData.getName() );
+    assertEquals( "##.##", measureMetaData.getFormat() );
+    assertEquals( AggregationType.COUNT_DISTINCT, measureMetaData.getDefaultAggregation() );
   }
 }

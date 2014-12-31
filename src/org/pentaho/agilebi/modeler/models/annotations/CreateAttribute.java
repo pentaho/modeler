@@ -326,16 +326,6 @@ public class CreateAttribute extends AnnotationType {
   public ModelAnnotation.Type getType() {
     return ModelAnnotation.Type.CREATE_ATTRIBUTE;
   }
-  
-  @Override
-  public boolean apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public boolean apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
-    throw new UnsupportedOperationException();
-  }
 
   @Override
   public boolean apply( Document schema, String field ) throws ModelerException {

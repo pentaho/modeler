@@ -120,14 +120,6 @@ public class CreateMeasure extends AnnotationType {
   }
 
   @Override
-  public boolean apply( ModelerWorkspace workspace, String cube, String hierarchy, String name ) throws ModelerException {
-    // TODO Auto-generated method stub
-    // Find the underlying physical table and column
-    // Then directly call apply (workspace, field)
-    return false;
-  }
-
-  @Override
   public boolean apply( Document doc, String field ) throws ModelerException {
     // Surgically add the measure into the cube...
     try {      
@@ -166,12 +158,6 @@ public class CreateMeasure extends AnnotationType {
   @Override
   public ModelAnnotation.Type getType() {
     return ModelAnnotation.Type.CREATE_MEASURE;
-  }
-
-  @Override
-  public boolean apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
-    // TODO Auto-generated method stub
-    return false;
   }
 
 }
