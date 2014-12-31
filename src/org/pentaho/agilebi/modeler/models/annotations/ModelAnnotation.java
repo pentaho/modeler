@@ -50,7 +50,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
 
-  private SourceType sourceType;
+  private SourceType sourceType = SourceType.StreamField; 
   private String field;
 
   private String cube;
