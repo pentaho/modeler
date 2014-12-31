@@ -41,6 +41,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.pentaho.metadata.model.LogicalModel.PROPERTY_OLAP_CUBES;
 import static org.pentaho.metadata.model.SqlPhysicalColumn.TARGET_COLUMN;
 import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
+import static org.pentaho.metadata.model.concept.types.AggregationType.MAXIMUM;
 import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
 
 public class CreateMeasureTest {
@@ -129,7 +130,7 @@ public class CreateMeasureTest {
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( MINIMUM, measureMetaData.getDefaultAggregation() );
   }
-  
+
   /**
    * Verified that we can create a new measure using an existing hierarchy as the source.
    * 
@@ -158,5 +159,37 @@ public class CreateMeasureTest {
     assertEquals( "Product Count", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AggregationType.COUNT_DISTINCT, measureMetaData.getDefaultAggregation() );
+  }
+
+  @Test
+  public void testCanCreateMultipleMeasuresOnSameColumn() throws Exception {
+    CreateMeasure minWeight = new CreateMeasure();
+    minWeight.setAggregateType( MINIMUM );
+    minWeight.setName( "Min Weight" );
+    minWeight.setFormatString( "##.##" );
+
+    CreateMeasure maxWeight = new CreateMeasure();
+    maxWeight.setAggregateType( MAXIMUM );
+    maxWeight.setName( "Max Weight" );
+    maxWeight.setFormatString( "##.##" );
+
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    minWeight.apply( model, "bc_QUANTITYINSTOCK" );
+    maxWeight.apply( model, "bc_QUANTITYINSTOCK" );
+    MeasuresCollection measures = model.getModel().getMeasures();
+    assertEquals( 5, measures.size() );
+    MeasureMetaData minMeta = measures.get( 3 );
+    assertEquals( "QUANTITYINSTOCK", minMeta.getColumnName() );
+    assertEquals( "Min Weight", minMeta.getName() );
+    assertEquals( "##.##", minMeta.getFormat() );
+    assertEquals( MINIMUM, minMeta.getDefaultAggregation() );
+
+    MeasureMetaData maxMeta = measures.get( 4 );
+    assertEquals( "QUANTITYINSTOCK", maxMeta.getColumnName() );
+    assertEquals( "Max Weight", maxMeta.getName() );
+    assertEquals( "##.##", maxMeta.getFormat() );
+    assertEquals( MAXIMUM, maxMeta.getDefaultAggregation() );
   }
 }

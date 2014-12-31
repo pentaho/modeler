@@ -106,23 +106,23 @@ public class CreateMeasure extends AnnotationType {
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
               new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
-          measureMetaData.setLogicalColumn( logicalColumn );
-          measureMetaData.setDefaultAggregation( getAggregateType() );
           measureMetaData.setName( getName() );
-          workspace.addMeasure( measureMetaData );
+          measureMetaData.setLogicalColumn( (LogicalColumn) logicalColumn.clone() );
+          measureMetaData.setDefaultAggregation( getAggregateType() );
+          workspace.getModel().getMeasures().add( measureMetaData );
           workspace.getWorkspaceHelper().populateDomain( workspace );
           return true;
         }
       }
 
     }
-    return true;
+    throw new ModelerException( "Unable to apply Create Measure annotation: Column not found" );
   }
 
   @Override
   public boolean apply( Document doc, String field ) throws ModelerException {
     // Surgically add the measure into the cube...
-    try {      
+    try {
       XPathFactory xPathFactory = XPathFactory.newInstance();
       XPath xPath = xPathFactory.newXPath();
       StringBuffer xPathExpr = new StringBuffer();
@@ -134,13 +134,13 @@ public class CreateMeasure extends AnnotationType {
       cube.appendChild( measureElement ); // TODO: Measures need to come after calculated measures
       measureElement.setAttribute( "name", getName() );
       measureElement.setAttribute( "column", field );
-      measureElement.setAttribute( "aggregator", MondrianModelExporter.convertToMondrian( getAggregateType() ));
-    } catch (XPathExpressionException e) {
-      throw new ModelerException (e);
+      measureElement.setAttribute( "aggregator", MondrianModelExporter.convertToMondrian( getAggregateType() ) );
+    } catch ( XPathExpressionException e ) {
+      throw new ModelerException( e );
     }
     return true;
   }
-  
+
   @Override
   public void populate( final Map<String, Serializable> propertiesMap ) {
 
