@@ -50,7 +50,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
 
-  private SourceType sourceType;
+  private SourceType sourceType = SourceType.StreamField; 
   private String field;
 
   private String cube;
@@ -97,6 +97,14 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     this.annotation = annotation;
   }
 
+  public SourceType getSourceType() {
+    return sourceType;
+  }
+
+  public void setSourceType( SourceType sourceType ) {
+    this.sourceType = sourceType;
+  }
+  
   /**
    * **** Utility methods ******
    */
@@ -170,7 +178,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
             }
           }
           throw new ModelerException( "Unable to find measure: " + field );
-    } else {
+        } else {
           
           List usages = olapCube.getOlapDimensionUsages();
           for ( int u = 0; u < usages.size(); u++ ) {
@@ -332,9 +340,17 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     }
   }
 
+  /**
+   * Represents the source of the modeling action... 
+   * i.e. are we creating a measure off of a field, level or another measure?
+   * 
+   * @author Benny
+   *
+   */
   public static enum SourceType {
     StreamField,
     HierarchyLevel,
     Measure
   }
+
 }

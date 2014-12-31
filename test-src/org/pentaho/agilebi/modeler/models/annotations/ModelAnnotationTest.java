@@ -27,6 +27,7 @@ import static org.junit.Assert.assertSame;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.SourceType;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.w3c.dom.Document;
 
@@ -106,6 +107,7 @@ public class ModelAnnotationTest {
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
     modelAnnotation.setField( "amount" );
     modelAnnotation.setAnnotation( annotationType );
+    modelAnnotation.setSourceType( SourceType.StreamField );
     modelAnnotation.apply( modelerWorkspace );
   }
 }
