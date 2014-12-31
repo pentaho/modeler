@@ -98,19 +98,6 @@ public class ModelAnnotationTest {
       }
 
       @Override
-      public boolean apply( Document schema, String cube, String hierarchy, String name ) throws ModelerException {
-        // TODO Auto-generated method stub
-        return false;
-      }
-
-      @Override
-      public boolean apply( ModelerWorkspace workspace, String cube, String hierarchy, String name )
-        throws ModelerException {
-        // TODO Auto-generated method stub
-        return false;
-      }
-
-      @Override
       public boolean apply( Document schema, String field ) throws ModelerException {
         // TODO Auto-generated method stub
         return false;
