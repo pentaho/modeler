@@ -28,6 +28,7 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.olap.OlapCube;
+import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
@@ -37,6 +38,8 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 public class CreateAttributeTest {
   @SuppressWarnings( "unchecked" )
@@ -51,6 +54,7 @@ public class CreateAttributeTest {
     productLine.setName( "Product Line" );
     productLine.setDimension( "Products" );
     productLine.setHierarchy( "Products" );
+    productLine.setCaption( "PRODUCTLINE_OLAP" );
     productLine.apply( model,  "PRODUCTLINE_OLAP" );
 
     CreateAttribute productName = new CreateAttribute();
@@ -58,16 +62,50 @@ public class CreateAttributeTest {
     productName.setParentAttribute( "Product Line" );
     productName.setDimension( "Products" );
     productName.setHierarchy( "Products" );
+    productName.setOrdinalField( "PRODUCTCODE_OLAP" );
     productName.apply( model, "PRODUCTNAME_OLAP" );
+
+    CreateAttribute year = new CreateAttribute();
+    year.setName( "Year" );
+    year.setDimension( "Date" );
+    year.setHierarchy( "DateByMonth" );
+    year.setTimeType( ModelAnnotation.TimeType.TimeYears );
+    year.setTimeFormat( "yyyy" );
+    year.apply( model,  "PRODUCTCODE_OLAP" );
+
+    CreateAttribute month = new CreateAttribute();
+    month.setName( "Month" );
+    month.setParentAttribute( "Year" );
+    month.setDimension( "Date" );
+    month.setHierarchy( "DateByMonth" );
+    month.setTimeType( ModelAnnotation.TimeType.TimeMonths );
+    month.setTimeFormat( "mm" );
+    month.apply( model, "PRODUCTDESCRIPTION_OLAP" );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    assertEquals( 8, dimensionUsages.size() );
-    OlapDimensionUsage productsDim = dimensionUsages.get( 7 );
+    assertEquals( 7, dimensionUsages.size() );
+    OlapDimensionUsage productsDim = dimensionUsages.get( 5 );
+    assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
+    assertFalse( productsDim.getOlapDimension().isTimeDimension() );
     OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
     assertEquals( "Product Line", levels.get( 0 ).getName() );
+    assertEquals( "PRODUCTLINE_OLAP",
+        levels.get( 0 ).getReferenceCaptionColumn().getName( model.getWorkspaceHelper().getLocale() ) );
     assertEquals( "Product Name", levels.get( 1 ).getName() );
+    assertEquals( "PRODUCTCODE_OLAP",
+        levels.get( 1 ).getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+
+    OlapDimensionUsage dateDim = dimensionUsages.get( 6 );
+    assertEquals( OlapDimension.TYPE_TIME_DIMENSION, dateDim.getOlapDimension().getType() );
+    assertTrue( dateDim.getOlapDimension().isTimeDimension() );
+    OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> dateLevels = dateHierarchy.getHierarchyLevels();
+    assertEquals( "Year", dateLevels.get( 0 ).getName() );
+    assertEquals( "TimeYears", dateLevels.get( 0 ).getLevelType() );
+    assertEquals( "Month", dateLevels.get( 1 ).getName() );
+    assertEquals( "TimeMonths", dateLevels.get( 1 ).getLevelType() );
   }
 }

@@ -25,6 +25,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.nodes.TimeRole;
 import org.w3c.dom.Document;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
@@ -208,7 +209,8 @@ public class CreateAttribute extends AnnotationType {
       }
     }
     if ( hierarchyMetaData.getParent() == null ) {
-      DimensionMetaData dimensionMetaData = new DimensionMetaData( getDimension(), OlapDimension.TYPE_STANDARD_DIMENSION );
+      DimensionMetaData dimensionMetaData = new DimensionMetaData( getDimension(), dimensionType() );
+      dimensionMetaData.setTimeDimension( getTimeType() != null );
       workspace.getModel().getDimensions().add( dimensionMetaData );
       hierarchyMetaData.setParent( dimensionMetaData );
       dimensionMetaData.add( hierarchyMetaData );
@@ -219,6 +221,13 @@ public class CreateAttribute extends AnnotationType {
     removeAutoLevel( workspace, existingLevel );
     workspace.getWorkspaceHelper().populateDomain( workspace );
     return true;
+  }
+
+  private String dimensionType() {
+    if ( getTimeType() != null ) {
+      return OlapDimension.TYPE_TIME_DIMENSION;
+    }
+    return OlapDimension.TYPE_STANDARD_DIMENSION;
   }
 
   private void removeAutoLevel( final ModelerWorkspace workspace, final LevelMetaData levelMetaData ) {
@@ -240,19 +249,29 @@ public class CreateAttribute extends AnnotationType {
     LevelMetaData levelMetaData = new LevelMetaData( hierarchyMetaData, getName() );
     levelMetaData.setLogicalColumn( existingLevel.getLogicalColumn() );
     levelMetaData.setUniqueMembers( isUnique() );
-    LogicalColumn captionColumn = locateLogicalColumn( workspace );
+    if ( getTimeType() != null ) {
+      levelMetaData.setDataRole( TimeRole.fromMondrianAttributeValue( getTimeType().name() ) );
+    }
+    if ( getTimeFormat() != null ) {
+      levelMetaData.setTimeLevelFormat( getTimeFormat() );
+    }
+    LogicalColumn captionColumn = locateLogicalColumn( workspace, getCaption() );
     if ( captionColumn != null ) {
       levelMetaData.setLogicalCaptionColumn( captionColumn );
+    }
+    LogicalColumn ordinalColumn = locateLogicalColumn( workspace, getOrdinalField() );
+    if ( ordinalColumn != null ) {
+      levelMetaData.setLogicalOrdinalColumn( ordinalColumn );
     }
     return levelMetaData;
   }
 
-  private LogicalColumn locateLogicalColumn( final ModelerWorkspace workspace ) {
+  private LogicalColumn locateLogicalColumn( final ModelerWorkspace workspace, final String columnName ) {
     LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
     logicalModel.getLogicalTables();
     for ( LogicalTable logicalTable : logicalModel.getLogicalTables() ) {
       for ( LogicalColumn logicalColumn : logicalTable.getLogicalColumns() ) {
-        if ( logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ).equalsIgnoreCase( getCaption() ) ) {
+        if ( logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ).equalsIgnoreCase( columnName ) ) {
           return logicalColumn;
         }
       }
