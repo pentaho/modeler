@@ -106,8 +106,8 @@ public class CreateMeasure extends AnnotationType {
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
               new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
-          measureMetaData.setName( getName() );
           measureMetaData.setLogicalColumn( (LogicalColumn) logicalColumn.clone() );
+          measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
           workspace.getModel().getMeasures().add( measureMetaData );
           workspace.getWorkspaceHelper().populateDomain( workspace );
