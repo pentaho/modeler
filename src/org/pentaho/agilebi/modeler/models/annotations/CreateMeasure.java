@@ -35,6 +35,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
@@ -160,4 +161,7 @@ public class CreateMeasure extends AnnotationType {
     return ModelAnnotation.Type.CREATE_MEASURE;
   }
 
+  @Override public String getSummary() {
+    return BaseMessages.getString( PKG, "Modeler.CreateMeasure.Summary", getName(), getAggregateType().name() );
+  }
 }

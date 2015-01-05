@@ -26,6 +26,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
@@ -340,6 +341,11 @@ public class CreateAttribute extends AnnotationType {
   @Override
   public ModelAnnotation.Type getType() {
     return ModelAnnotation.Type.CREATE_ATTRIBUTE;
+  }
+
+  @Override public String getSummary() {
+    return BaseMessages
+        .getString( PKG, "Modeler.CreateAttribute.Summary", getName(), getHierarchy(), getParentAttribute() );
   }
 
   @Override

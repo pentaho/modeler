@@ -98,6 +98,10 @@ public class ModelAnnotationTest {
         return null;
       }
 
+      @Override public String getSummary() {
+        return "";
+      }
+
       @Override
       public boolean apply( Document schema, String field ) throws ModelerException {
         // TODO Auto-generated method stub
