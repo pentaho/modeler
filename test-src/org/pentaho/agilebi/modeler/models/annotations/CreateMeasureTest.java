@@ -196,11 +196,11 @@ public class CreateMeasureTest {
     CreateMeasure sumMeasure = new CreateMeasure();
     sumMeasure.setAggregateType( SUM );
     sumMeasure.setName( "Value" );
-    assertEquals( "Measure, Value, aggregated with SUM", sumMeasure.getSummary() );
+    assertEquals( "Value, aggregated with SUM", sumMeasure.getSummary() );
 
     CreateMeasure maxMeasure = new CreateMeasure();
     maxMeasure.setAggregateType( MAXIMUM );
     maxMeasure.setName( "Max Val" );
-    assertEquals( "Measure, Max Val, aggregated with MAXIMUM", maxMeasure.getSummary() );
+    assertEquals( "Max Val, aggregated with MAXIMUM", maxMeasure.getSummary() );
   }
 }

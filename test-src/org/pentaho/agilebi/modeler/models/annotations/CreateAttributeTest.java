@@ -116,7 +116,14 @@ public class CreateAttributeTest {
     createAttribute.setParentAttribute( "Product Category" );
     createAttribute.setHierarchy( "Product" );
     assertEquals(
-        "Level, Product Name participates in hierarchy Product with parent Product Category",
+        "Product Name participates in hierarchy Product with parent Product Category",
         createAttribute.getSummary() );
+
+    CreateAttribute topAttribute = new CreateAttribute();
+    topAttribute.setName( "Product Category" );
+    topAttribute.setHierarchy( "Product" );
+    assertEquals(
+        "Product Category is top level in hierarchy Product",
+        topAttribute.getSummary() );
   }
 }

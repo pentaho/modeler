@@ -345,7 +345,14 @@ public class CreateAttribute extends AnnotationType {
 
   @Override public String getSummary() {
     return BaseMessages
-        .getString( PKG, "Modeler.CreateAttribute.Summary", getName(), getHierarchy(), getParentAttribute() );
+        .getString( MSG_CLASS, summaryMsgKey(), getName(), getHierarchy(), getParentAttribute() );
+  }
+
+  private String summaryMsgKey() {
+    if ( getParentAttribute() == null ) {
+      return "Modeler.CreateAttribute.Summary.noparent";
+    }
+    return "Modeler.CreateAttribute.Summary";
   }
 
   @Override
