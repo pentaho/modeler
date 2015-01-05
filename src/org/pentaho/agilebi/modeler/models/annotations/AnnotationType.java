@@ -37,6 +37,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
@@ -58,7 +59,7 @@ public abstract class AnnotationType implements Serializable {
   public static final String HIDDEN_NAME = "Hidden";
   public static final String BUSINESS_GROUP_ID = "businessGroup";
   public static final String BUSINESS_GROUP_NAME = "Business Group";
-  protected static final String PKG = "org.pentaho.agilebi.modeler";
+  protected static final Class<?> MSG_CLASS = BaseModelerWorkspaceHelper.class;
   private static final long serialVersionUID = 3952409344571242884L;
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
   @ModelProperty( id = NAME_ID, name = NAME_NAME )
