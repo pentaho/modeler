@@ -40,9 +40,7 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static org.pentaho.metadata.model.LogicalModel.PROPERTY_OLAP_CUBES;
 import static org.pentaho.metadata.model.SqlPhysicalColumn.TARGET_COLUMN;
-import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
-import static org.pentaho.metadata.model.concept.types.AggregationType.MAXIMUM;
-import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
+import static org.pentaho.metadata.model.concept.types.AggregationType.*;
 
 public class CreateMeasureTest {
   @Test
@@ -191,5 +189,18 @@ public class CreateMeasureTest {
     assertEquals( "Max Weight", maxMeta.getName() );
     assertEquals( "##.##", maxMeta.getFormat() );
     assertEquals( MAXIMUM, maxMeta.getDefaultAggregation() );
+  }
+
+  @Test
+  public void testSummaryDescribesNameAndAggregator() throws Exception {
+    CreateMeasure sumMeasure = new CreateMeasure();
+    sumMeasure.setAggregateType( SUM );
+    sumMeasure.setName( "Value" );
+    assertEquals( "Measure, Value, aggregated with SUM", sumMeasure.getSummary() );
+
+    CreateMeasure maxMeasure = new CreateMeasure();
+    maxMeasure.setAggregateType( MAXIMUM );
+    maxMeasure.setName( "Max Val" );
+    assertEquals( "Measure, Max Val, aggregated with MAXIMUM", maxMeasure.getSummary() );
   }
 }

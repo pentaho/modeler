@@ -58,6 +58,7 @@ public abstract class AnnotationType implements Serializable {
   public static final String HIDDEN_NAME = "Hidden";
   public static final String BUSINESS_GROUP_ID = "businessGroup";
   public static final String BUSINESS_GROUP_NAME = "Business Group";
+  protected static final String PKG = "org.pentaho.agilebi.modeler";
   private static final long serialVersionUID = 3952409344571242884L;
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
   @ModelProperty( id = NAME_ID, name = NAME_NAME )
@@ -342,8 +343,10 @@ public abstract class AnnotationType implements Serializable {
    * @param field
    * @throws ModelerException
    */
-  public abstract boolean apply( final Document schema, final String field) throws ModelerException;
+  public abstract boolean apply( final Document schema, final String field ) throws ModelerException;
 
   public abstract ModelAnnotation.Type getType();
+
+  public abstract String getSummary();
 
 }

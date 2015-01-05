@@ -108,4 +108,15 @@ public class CreateAttributeTest {
     assertEquals( "Month", dateLevels.get( 1 ).getName() );
     assertEquals( "TimeMonths", dateLevels.get( 1 ).getLevelType() );
   }
+
+  @Test
+  public void testSummaryDescribesLevelInHierarchy() throws Exception {
+    CreateAttribute createAttribute = new CreateAttribute();
+    createAttribute.setName( "Product Name" );
+    createAttribute.setParentAttribute( "Product Category" );
+    createAttribute.setHierarchy( "Product" );
+    assertEquals(
+        "Level, Product Name participates in hierarchy Product with parent Product Category",
+        createAttribute.getSummary() );
+  }
 }
