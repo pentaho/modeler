@@ -70,10 +70,6 @@ public class CreateAttribute extends AnnotationType {
   public static final String HIERARCHY_ID = "hierarchy";
   public static final String HIERARCHY_NAME = "Hierarchy";
 
-  public static final String CAPTION_ID = "caption";
-  public static final String CAPTION_NAME = "Caption Column";
-
-
   @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME )
   private boolean unique;
 
