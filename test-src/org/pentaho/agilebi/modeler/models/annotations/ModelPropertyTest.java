@@ -40,7 +40,7 @@ public class ModelPropertyTest {
     CreateMeasure createMeasure = new CreateMeasure();
 
     List<String> propertyNames = createMeasure.getModelPropertyNames();
-    assertEquals( propertyNames.size(), 6 );
+    assertEquals( propertyNames.size(), 5 );
 
     createMeasure.setModelPropertyByName( "Measure Name", "A" );
     createMeasure.setModelPropertyByName( "Description", "B" );

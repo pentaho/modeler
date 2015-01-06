@@ -27,11 +27,10 @@ public class AnnotationTypeTest {
     createMeasure.setAggregateType( AggregationType.AVERAGE );
     createMeasure.setFormatString( "SSSS" );
     createMeasure.setName( "avg" );
-    createMeasure.setDescription( "description" );
-    createMeasure.setExpression( null );
+    createMeasure.setDescription( null );
 
     assertTrue( createMeasure.describe().containsKey( "name" ) );
-    assertFalse( createMeasure.describe().containsKey( "expression" ) ); // null
+    assertFalse( createMeasure.describe().containsKey( "description" ) ); // null
     assertEquals( createMeasure.describe().get( "aggregateType" ), AggregationType.AVERAGE );
   }
 

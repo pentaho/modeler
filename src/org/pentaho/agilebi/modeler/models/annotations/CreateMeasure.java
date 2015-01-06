@@ -65,17 +65,13 @@ public class CreateMeasure extends AnnotationType {
   public static final String FORMAT_STRING_NAME = "Format String";
   public static final int FORMAT_STRING_ORDER = 2;
 
-  public static final String EXPRESSION_ID = "expression";
-  public static final String EXPRESSION_NAME = "MDX Expression";
-  public static final int EXPRESSION_ORDER = 3;
-
   public static final String DESCRIPTION_ID = "description";
   public static final String DESCRIPTION_NAME = "Description";
-  public static final int DESCRIPTION_ORDER = 4;
+  public static final int DESCRIPTION_ORDER = 3;
 
   public static final String BUSINESS_GROUP_ID = "businessGroup";
   public static final String BUSINESS_GROUP_NAME = "Business Group";
-  public static final int BUSINESS_GROUP_ORDER = 5;
+  public static final int BUSINESS_GROUP_ORDER = 4;
 
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
@@ -85,9 +81,6 @@ public class CreateMeasure extends AnnotationType {
 
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
   private String formatString;
-
-  @ModelProperty( id = EXPRESSION_ID, name = EXPRESSION_NAME, order = EXPRESSION_ORDER )
-  private String expression;
 
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
   private String description;
@@ -117,14 +110,6 @@ public class CreateMeasure extends AnnotationType {
 
   public void setFormatString( String formatString ) {
     this.formatString = formatString;
-  }
-
-  public String getExpression() {
-    return expression;
-  }
-
-  public void setExpression( String expression ) {
-    this.expression = expression;
   }
 
   public String getDescription() {
