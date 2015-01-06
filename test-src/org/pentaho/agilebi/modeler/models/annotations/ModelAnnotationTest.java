@@ -112,6 +112,9 @@ public class ModelAnnotationTest {
       public String getName() {
         return "";
       }
+
+      @Override
+      public void validate() throws ModelerException {}
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
     modelAnnotation.setField( "amount" );

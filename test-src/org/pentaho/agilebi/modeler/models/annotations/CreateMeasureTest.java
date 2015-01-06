@@ -21,7 +21,9 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static junit.framework.Assert.assertNotNull;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
@@ -202,5 +204,14 @@ public class CreateMeasureTest {
     maxMeasure.setAggregateType( MAXIMUM );
     maxMeasure.setName( "Max Val" );
     assertEquals( "Max Val, aggregated with MAXIMUM", maxMeasure.getSummary() );
+  }
+
+  @Test
+  public void testValidate() throws Exception {
+    try {
+      ( new CreateMeasure() ).validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
   }
 }

@@ -87,4 +87,8 @@ public class MockAnnotationType extends AnnotationType {
   @Override public String getName() {
     return "";
   }
+
+  @Override
+  public void validate() throws ModelerException {
+  }
 }

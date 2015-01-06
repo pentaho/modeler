@@ -22,7 +22,9 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static junit.framework.Assert.assertNotNull;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
@@ -156,5 +158,29 @@ public class CreateAttributeTest {
     List<OlapHierarchyLevel> dateLevels = dateHierarchy.getHierarchyLevels();
     assertEquals( "Product Code", dateLevels.get( 0 ).getName() );
     assertEquals( "Product Description", dateLevels.get( 1 ).getName() );
+  }
+
+  @Test
+  public void testValidate() throws Exception {
+
+    CreateAttribute createAttribute = new CreateAttribute();
+    createAttribute.setName( "A" );
+    createAttribute.validate(); // no error
+
+    try {
+      createAttribute.setParentAttribute( "parent" );
+      createAttribute.validate(); // throws an error
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
+
+    createAttribute.setDimension( "dimension" );
+    createAttribute.validate(); // no error
+
+    try {
+      ( new CreateAttribute() ).validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
   }
 }

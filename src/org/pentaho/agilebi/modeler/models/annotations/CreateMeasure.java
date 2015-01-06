@@ -31,6 +31,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -211,5 +212,14 @@ public class CreateMeasure extends AnnotationType {
 
   @Override public String getSummary() {
     return BaseMessages.getString( MSG_CLASS, "Modeler.CreateMeasure.Summary", getName(), getAggregateType().name() );
+  }
+
+  @Override
+  public void validate() throws ModelerException {
+
+    if ( StringUtils.isBlank( getName() ) ) {
+      throw new ModelerException( BaseMessages
+          .getString( MSG_CLASS, "ModelAnnotation.CreateMeasure.validation.MEASURE_NAME_REQUIRED" ) );
+    }
   }
 }

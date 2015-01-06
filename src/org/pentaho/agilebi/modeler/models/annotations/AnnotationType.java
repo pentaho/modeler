@@ -300,6 +300,8 @@ public abstract class AnnotationType implements Serializable {
    */
   public abstract boolean apply( final Document schema, final String field ) throws ModelerException;
 
+  public abstract void validate() throws ModelerException;
+
   public abstract ModelAnnotation.Type getType();
 
   public abstract String getSummary();
