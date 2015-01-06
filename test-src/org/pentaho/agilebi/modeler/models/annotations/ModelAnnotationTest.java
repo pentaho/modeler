@@ -107,6 +107,11 @@ public class ModelAnnotationTest {
         // TODO Auto-generated method stub
         return false;
       }
+
+      @Override
+      public String getName() {
+        return "";
+      }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
     modelAnnotation.setField( "amount" );
