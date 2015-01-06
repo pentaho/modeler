@@ -83,4 +83,8 @@ public class MockAnnotationType extends AnnotationType {
     // TODO Auto-generated method stub
     return false;
   }
+
+  @Override public String getName() {
+    return "";
+  }
 }
