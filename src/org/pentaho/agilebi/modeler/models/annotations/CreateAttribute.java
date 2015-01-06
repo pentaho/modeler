@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -425,5 +426,19 @@ public class CreateAttribute extends AnnotationType {
   @Override
   public boolean apply( Document schema, String field ) throws ModelerException {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void validate() throws ModelerException {
+
+    if ( StringUtils.isBlank( getName() ) ){
+      throw new ModelerException( BaseMessages
+          .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.ATTRIBUTE_NAME_REQUIRED" ) );
+    }
+
+    if ( StringUtils.isNotBlank( getParentAttribute() ) && StringUtils.isBlank( getDimension() ) ) {
+      throw new ModelerException( BaseMessages
+          .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.PARENT_PROVIDED_MISSING_DIMENSION" ) );
+    }
   }
 }
