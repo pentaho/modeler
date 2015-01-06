@@ -61,7 +61,7 @@ public class CreateAttributeTest {
     productName.setParentAttribute( "Product Line" );
     productName.setDimension( "Products" );
     productName.setHierarchy( "Products" );
-    productName.setOrdinalField( "PRODUCTCODE_OLAP" );
+    productName.setOrdinalField( "PRODUCTSCALE_OLAP" );
     productName.apply( model, "PRODUCTNAME_OLAP" );
 
     CreateAttribute year = new CreateAttribute();
@@ -84,18 +84,18 @@ public class CreateAttributeTest {
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    assertEquals( 7, dimensionUsages.size() );
-    OlapDimensionUsage productsDim = dimensionUsages.get( 5 );
+    assertEquals( 6, dimensionUsages.size() );
+    OlapDimensionUsage productsDim = dimensionUsages.get( 4 );
     assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
     assertFalse( productsDim.getOlapDimension().isTimeDimension() );
     OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
     assertEquals( "Product Line", levels.get( 0 ).getName() );
     assertEquals( "Product Name", levels.get( 1 ).getName() );
-    assertEquals( "PRODUCTCODE_OLAP",
+    assertEquals( "PRODUCTSCALE_OLAP",
         levels.get( 1 ).getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
 
-    OlapDimensionUsage dateDim = dimensionUsages.get( 6 );
+    OlapDimensionUsage dateDim = dimensionUsages.get( 5 );
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, dateDim.getOlapDimension().getType() );
     assertTrue( dateDim.getOlapDimension().isTimeDimension() );
     OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );

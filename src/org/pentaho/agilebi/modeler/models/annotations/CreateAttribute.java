@@ -254,9 +254,11 @@ public class CreateAttribute extends AnnotationType {
       dimensionMetaData.add( hierarchyMetaData );
     }
     LevelMetaData existingLevel = locateLevel( workspace, column );
-    LevelMetaData levelMetaData = buildLevel( workspace, hierarchyMetaData, existingLevel );
+    LevelMetaData ordinalAutoLevel = locateLevel( workspace, getOrdinalField() );
+    LevelMetaData levelMetaData = buildLevel( workspace, hierarchyMetaData, locateLogicalColumn( workspace, column ) );
     hierarchyMetaData.add( levelMetaData );
     removeAutoLevel( workspace, existingLevel );
+    removeAutoLevel( workspace, ordinalAutoLevel );
     workspace.getWorkspaceHelper().populateDomain( workspace );
     return true;
   }
@@ -269,12 +271,15 @@ public class CreateAttribute extends AnnotationType {
   }
 
   private void removeAutoLevel( final ModelerWorkspace workspace, final LevelMetaData levelMetaData ) {
-    HierarchyMetaData hierachy = levelMetaData.getHierarchyMetaData();
-    DimensionMetaData dimension = hierachy.getDimensionMetaData();
-    if ( hierachy.getLevels().size() > 1 ) {
+    if ( levelMetaData == null ) {
       return;
     }
-    dimension.remove( hierachy );
+    HierarchyMetaData hierarchy = levelMetaData.getHierarchyMetaData();
+    DimensionMetaData dimension = hierarchy.getDimensionMetaData();
+    if ( hierarchy.getLevels().size() > 1 ) {
+      return;
+    }
+    dimension.remove( hierarchy );
     if ( dimension.size() > 0 ) {
       return;
     }
@@ -282,10 +287,10 @@ public class CreateAttribute extends AnnotationType {
   }
 
   private LevelMetaData buildLevel( final ModelerWorkspace workspace,
-                                    final HierarchyMetaData hierarchyMetaData, final LevelMetaData existingLevel )
+                                    final HierarchyMetaData hierarchyMetaData, final LogicalColumn logicalColumn )
     throws ModelerException {
     LevelMetaData levelMetaData = new LevelMetaData( hierarchyMetaData, getName() );
-    levelMetaData.setLogicalColumn( existingLevel.getLogicalColumn() );
+    levelMetaData.setLogicalColumn( logicalColumn );
     levelMetaData.setUniqueMembers( isUnique() );
     if ( getTimeType() != null ) {
       levelMetaData.setDataRole( TimeRole.fromMondrianAttributeValue( getTimeType().name() ) );
@@ -324,7 +329,7 @@ public class CreateAttribute extends AnnotationType {
         }
       }
     }
-    throw new ModelerException( "" );
+    return null;
   }
 
   private boolean attachLevel( final ModelerWorkspace workspace, final HierarchyMetaData existingHierarchy,
@@ -334,9 +339,11 @@ public class CreateAttribute extends AnnotationType {
       return false;
     } else {
       LevelMetaData existingLevel = locateLevel( workspace, column );
-      LevelMetaData levelMetaData = buildLevel( workspace, existingHierarchy, existingLevel );
+      LevelMetaData ordinalAutoLevel = locateLevel( workspace, getOrdinalField() );
+      LevelMetaData levelMetaData = buildLevel( workspace, existingHierarchy, locateLogicalColumn( workspace, column ) );
       existingHierarchy.add( parentIndex + 1, levelMetaData );
       removeAutoLevel( workspace, existingLevel );
+      removeAutoLevel( workspace, ordinalAutoLevel );
       workspace.getWorkspaceHelper().populateDomain( workspace );
       return true;
     }
