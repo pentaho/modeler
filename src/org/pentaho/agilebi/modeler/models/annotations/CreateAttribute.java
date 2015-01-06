@@ -49,57 +49,80 @@ public class CreateAttribute extends AnnotationType {
 
   public static final String NAME_ID = "name";
   public static final String NAME_NAME = "Attribute Name";
-
-  public static final String UNIQUE_ID = "unique";
-  public static final String UNIQUE_NAME = "Is Unique";
-
-  public static final String TIME_FORMAT_ID = "timeFormat";
-  public static final String TIME_FORMAT_NAME = "Time Source Format";
+  public static final int NAME_ORDER = 0;
 
   public static final String TIME_TYPE_ID = "timeType";
   public static final String TIME_TYPE_NAME = "Time Level Type";
+  public static final int TIME_TYPE_ORDER = 1;
+
+  public static final String TIME_FORMAT_ID = "timeFormat";
+  public static final String TIME_FORMAT_NAME = "Time Source Format";
+  public static final int TIME_FORMAT_ORDER = 2;
 
   public static final String GEO_TYPE_ID = "geoType";
   public static final String GEO_TYPE_NAME = "Geo Type";
+  public static final int GEO_TYPE_ORDER = 3;
 
   public static final String ORDINAL_FIELD_ID = "ordinalField";
   public static final String ORDINAL_FIELD_NAME = "Ordinal Field";
+  public static final int ORDINAL_FIELD_ORDER = 4;
+
+  public static final String DESCRIPTION_ID = "description";
+  public static final String DESCRIPTION_NAME = "Description";
+  public static final int DESCRIPTION_ORDER = 5;
+
+  public static final String BUSINESS_GROUP_ID = "businessGroup";
+  public static final String BUSINESS_GROUP_NAME = "Business Group";
+  public static final int BUSINESS_GROUP_ORDER = 6;
 
   public static final String PARENT_ATTRIBUTE_ID = "parentAttribute";
   public static final String PARENT_ATTRIBUTE_NAME = "Parent Attribute";
+  public static final int PARENT_ATTRIBUTE_ORDER = 7;
 
   public static final String DIMENSION_ID = "dimension";
   public static final String DIMENSION_NAME = "Dimension";
+  public static final int DIMENSION_ORDER = 8;
 
   public static final String HIERARCHY_ID = "hierarchy";
   public static final String HIERARCHY_NAME = "Hierarchy";
+  public static final int HIERARCHY_ORDER = 9;
 
-  @ModelProperty( id = NAME_ID, name = NAME_NAME )
+  public static final String UNIQUE_ID = "unique";
+  public static final String UNIQUE_NAME = "Is Unique";
+  public static final int UNIQUE_ORDER = 10;
+
+  @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
 
-  @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME )
+  @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME, order = UNIQUE_ORDER )
   private boolean unique;
 
-  @ModelProperty( id = TIME_FORMAT_ID, name = TIME_FORMAT_NAME )
+  @ModelProperty( id = TIME_FORMAT_ID, name = TIME_FORMAT_NAME, order = TIME_FORMAT_ORDER )
   private String timeFormat;
 
-  @ModelProperty( id = TIME_TYPE_ID, name = TIME_TYPE_NAME )
+  @ModelProperty( id = TIME_TYPE_ID, name = TIME_TYPE_NAME, order = TIME_TYPE_ORDER )
   private ModelAnnotation.TimeType timeType;
 
-  @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME )
+  @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
   private ModelAnnotation.GeoType geoType;
 
-  @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME )
+  @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME, order = ORDINAL_FIELD_ORDER )
   private String ordinalField;
 
-  @ModelProperty( id = PARENT_ATTRIBUTE_ID, name = PARENT_ATTRIBUTE_NAME )
+  @ModelProperty( id = PARENT_ATTRIBUTE_ID, name = PARENT_ATTRIBUTE_NAME, order = PARENT_ATTRIBUTE_ORDER )
   private String parentAttribute;
 
-  @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME )
+  @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
   private String dimension;
 
-  @ModelProperty( id = HIERARCHY_ID, name = HIERARCHY_NAME )
+  @ModelProperty( id = HIERARCHY_ID, name = HIERARCHY_NAME, order = HIERARCHY_ORDER )
   private String hierarchy;
+
+  @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
+  private String description;
+
+  @ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
+  private String businessGroup;
 
   public String getName() {
     return name;
@@ -170,6 +193,22 @@ public class CreateAttribute extends AnnotationType {
 
   public void setHierarchy( final String hierarchy ) {
     this.hierarchy = hierarchy;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription( String description ) {
+    this.description = description;
+  }
+
+  public String getBusinessGroup() {
+    return businessGroup;
+  }
+
+  public void setBusinessGroup( String businessGroup ) {
+    this.businessGroup = businessGroup;
   }
 
   @Override

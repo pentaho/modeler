@@ -26,6 +26,8 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,39 +51,9 @@ import org.w3c.dom.Document;
  */
 public abstract class AnnotationType implements Serializable {
 
-
-  public static final String DESCRIPTION_ID = "description";
-  public static final String DESCRIPTION_NAME = "Description";
-
-  public static final String BUSINESS_GROUP_ID = "businessGroup";
-  public static final String BUSINESS_GROUP_NAME = "Business Group";
-
   protected static final Class<?> MSG_CLASS = BaseModelerWorkspaceHelper.class;
   private static final long serialVersionUID = 3952409344571242884L;
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
-
-
-  @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME )
-  private String description;
-
-  @ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME )
-  private String businessGroup;
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription( String description ) {
-    this.description = description;
-  }
-
-  public String getBusinessGroup() {
-    return businessGroup;
-  }
-
-  public void setBusinessGroup( String businessGroup ) {
-    this.businessGroup = businessGroup;
-  }
 
   protected List<Field> findAllFields( List<Field> fields, Class<?> type ) {
 
@@ -168,14 +140,30 @@ public abstract class AnnotationType implements Serializable {
 
   public List<String> getModelPropertyNames() {
 
-    List<String> propertyNames = new ArrayList<String>();
+    final List<String> propertyNames = new ArrayList<String>();
+    final List<ModelProperty> properties = new ArrayList<ModelProperty>();
 
     List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
     for ( Field f : fields ) {
       if ( f.isAnnotationPresent( ModelProperty.class ) ) {
         ModelProperty mp = f.getAnnotation( ModelProperty.class );
-        propertyNames.add( mp.name() );
+        properties.add( mp );
       }
+    }
+
+    // Sort ModelProperty based on order
+    Collections.sort( properties, new Comparator<ModelProperty>() {
+      @Override
+      public int compare( ModelProperty m1, ModelProperty m2 ) {
+        if ( m1.order() <= m2.order() ) {
+          return -1;
+        }
+        return 1;
+      }
+    } );
+
+    for ( ModelProperty p : properties ) {
+      propertyNames.add( p.name() );
     }
 
     return propertyNames;
