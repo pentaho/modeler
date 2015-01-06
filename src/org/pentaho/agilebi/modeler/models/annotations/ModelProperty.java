@@ -36,4 +36,6 @@ public @interface ModelProperty {
   String id() default "";
 
   String name() default "";
+
+  int order() default Integer.MAX_VALUE;
 }

@@ -54,27 +54,45 @@ public class CreateMeasure extends AnnotationType {
 
   public static final String NAME_ID = "name";
   public static final String NAME_NAME = "Measure Name";
+  public static final int NAME_ORDER = 0;
 
   public static final String AGGREGATE_TYPE_ID = "aggregateType";
   public static final String AGGREGATE_TYPE_NAME = "Aggregation Type";
+  public static final int AGGREGATE_TYPE_ORDER = 1;
 
   public static final String FORMAT_STRING_ID = "formatString";
   public static final String FORMAT_STRING_NAME = "Format String";
+  public static final int FORMAT_STRING_ORDER = 2;
 
   public static final String EXPRESSION_ID = "expression";
   public static final String EXPRESSION_NAME = "MDX Expression";
+  public static final int EXPRESSION_ORDER = 3;
 
-  @ModelProperty( id = NAME_ID, name = NAME_NAME )
+  public static final String DESCRIPTION_ID = "description";
+  public static final String DESCRIPTION_NAME = "Description";
+  public static final int DESCRIPTION_ORDER = 4;
+
+  public static final String BUSINESS_GROUP_ID = "businessGroup";
+  public static final String BUSINESS_GROUP_NAME = "Business Group";
+  public static final int BUSINESS_GROUP_ORDER = 5;
+
+  @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
 
-  @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME )
+  @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME, order = AGGREGATE_TYPE_ORDER )
   private AggregationType aggregateType;
 
-  @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME )
+  @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
   private String formatString;
 
-  @ModelProperty( id = EXPRESSION_ID, name = EXPRESSION_NAME )
+  @ModelProperty( id = EXPRESSION_ID, name = EXPRESSION_NAME, order = EXPRESSION_ORDER )
   private String expression;
+
+  @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
+  private String description;
+
+  @ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
+  private String businessGroup;
 
   public String getName() {
     return name;
@@ -106,6 +124,22 @@ public class CreateMeasure extends AnnotationType {
 
   public void setExpression( String expression ) {
     this.expression = expression;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription( String description ) {
+    this.description = description;
+  }
+
+  public String getBusinessGroup() {
+    return businessGroup;
+  }
+
+  public void setBusinessGroup( String businessGroup ) {
+    this.businessGroup = businessGroup;
   }
 
   @Override
