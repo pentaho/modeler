@@ -127,4 +127,34 @@ public class CreateAttributeTest {
         "Product Category is top level in hierarchy Product",
         topAttribute.getSummary() );
   }
+
+  @Test
+  public void testEmptyHierarchyIsValid() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute year = new CreateAttribute();
+    year.setName( "Product Code" );
+    year.setDimension( "Product" );
+    year.apply( model,  "PRODUCTCODE_OLAP" );
+
+    CreateAttribute month = new CreateAttribute();
+    month.setName( "Product Description" );
+    month.setParentAttribute( "Product Code" );
+    month.setDimension( "Product" );
+    month.apply( model, "PRODUCTDESCRIPTION_OLAP" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    assertEquals( 8, dimensionUsages.size() );
+    OlapDimensionUsage dateDim = dimensionUsages.get( 7 );
+    assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, dateDim.getOlapDimension().getType() );
+    OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> dateLevels = dateHierarchy.getHierarchyLevels();
+    assertEquals( "Product Code", dateLevels.get( 0 ).getName() );
+    assertEquals( "Product Description", dateLevels.get( 1 ).getName() );
+  }
 }
