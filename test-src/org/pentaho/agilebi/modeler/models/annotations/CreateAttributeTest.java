@@ -54,7 +54,6 @@ public class CreateAttributeTest {
     productLine.setName( "Product Line" );
     productLine.setDimension( "Products" );
     productLine.setHierarchy( "Products" );
-    productLine.setCaption( "PRODUCTLINE_OLAP" );
     productLine.apply( model,  "PRODUCTLINE_OLAP" );
 
     CreateAttribute productName = new CreateAttribute();
@@ -92,8 +91,6 @@ public class CreateAttributeTest {
     OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
     assertEquals( "Product Line", levels.get( 0 ).getName() );
-    assertEquals( "PRODUCTLINE_OLAP",
-        levels.get( 0 ).getReferenceCaptionColumn().getName( model.getWorkspaceHelper().getLocale() ) );
     assertEquals( "Product Name", levels.get( 1 ).getName() );
     assertEquals( "PRODUCTCODE_OLAP",
         levels.get( 1 ).getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );

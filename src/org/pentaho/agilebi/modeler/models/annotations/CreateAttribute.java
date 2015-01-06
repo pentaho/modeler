@@ -47,14 +47,17 @@ public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
 
+  public static final String NAME_ID = "name";
+  public static final String NAME_NAME = "Attribute Name";
+
   public static final String UNIQUE_ID = "unique";
   public static final String UNIQUE_NAME = "Is Unique";
 
   public static final String TIME_FORMAT_ID = "timeFormat";
-  public static final String TIME_FORMAT_NAME = "Time Format";
+  public static final String TIME_FORMAT_NAME = "Time Source Format";
 
   public static final String TIME_TYPE_ID = "timeType";
-  public static final String TIME_TYPE_NAME = "Time Type";
+  public static final String TIME_TYPE_NAME = "Time Level Type";
 
   public static final String GEO_TYPE_ID = "geoType";
   public static final String GEO_TYPE_NAME = "Geo Type";
@@ -70,6 +73,9 @@ public class CreateAttribute extends AnnotationType {
 
   public static final String HIERARCHY_ID = "hierarchy";
   public static final String HIERARCHY_NAME = "Hierarchy";
+
+  @ModelProperty( id = NAME_ID, name = NAME_NAME )
+  private String name;
 
   @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME )
   private boolean unique;
@@ -95,8 +101,13 @@ public class CreateAttribute extends AnnotationType {
   @ModelProperty( id = HIERARCHY_ID, name = HIERARCHY_NAME )
   private String hierarchy;
 
-  @ModelProperty( id = CAPTION_ID, name = CAPTION_NAME )
-  private String caption;
+  public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
 
   public boolean isUnique() {
     return unique;
@@ -159,15 +170,6 @@ public class CreateAttribute extends AnnotationType {
 
   public void setHierarchy( final String hierarchy ) {
     this.hierarchy = hierarchy;
-  }
-
-
-  public String getCaption() {
-    return caption;
-  }
-
-  public void setCaption( final String caption ) {
-    this.caption = caption;
   }
 
   @Override
@@ -251,10 +253,6 @@ public class CreateAttribute extends AnnotationType {
     }
     if ( getTimeFormat() != null ) {
       levelMetaData.setTimeLevelFormat( getTimeFormat() );
-    }
-    LogicalColumn captionColumn = locateLogicalColumn( workspace, getCaption() );
-    if ( captionColumn != null ) {
-      levelMetaData.setLogicalCaptionColumn( captionColumn );
     }
     LogicalColumn ordinalColumn = locateLogicalColumn( workspace, getOrdinalField() );
     if ( ordinalColumn != null ) {

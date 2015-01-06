@@ -40,22 +40,18 @@ public class ModelPropertyTest {
     CreateMeasure createMeasure = new CreateMeasure();
 
     List<String> propertyNames = createMeasure.getModelPropertyNames();
-    assertEquals( propertyNames.size(), 8 );
+    assertEquals( propertyNames.size(), 6 );
 
-    createMeasure.setModelPropertyByName( "Display Name", "A" );
+    createMeasure.setModelPropertyByName( "Measure Name", "A" );
     createMeasure.setModelPropertyByName( "Description", "B" );
     createMeasure.setModelPropertyByName( "Unique Members", "true" ); // auto converted
-    createMeasure.setModelPropertyByName( "Caption", "C" );
     createMeasure.setModelPropertyByName( "Format String", "D" );
-    createMeasure.setModelPropertyByName( "Hidden", true );
     createMeasure.setModelPropertyByName( "Aggregation Type", AggregationType.COUNT );
     createMeasure.setModelPropertyByName( "XXX", "Does not exist" ); // should not fail
 
     assertEquals( createMeasure.getName(), "A" );
     assertEquals( createMeasure.getDescription(), "B" );
-    assertEquals( createMeasure.getLocalizedName(), "C" );
     assertEquals( createMeasure.getFormatString(), "D" );
-    assertEquals( createMeasure.isHidden(), true );
     assertEquals( createMeasure.getAggregateType(), AggregationType.COUNT );
 
     createMeasure.setModelPropertyByName( "Unique Members", true );
@@ -67,8 +63,8 @@ public class ModelPropertyTest {
     CreateAttribute createAttribute = new CreateAttribute();
     GeoRole geoRole = new GeoRole();
 
-    createAttribute.setModelPropertyByName( "Time Type", ModelAnnotation.TimeType.Regular );
-    createAttribute.setModelPropertyByName( "Time Format", "B" );
+    createAttribute.setModelPropertyByName( "Time Level Type", ModelAnnotation.TimeType.Regular );
+    createAttribute.setModelPropertyByName( "Time Source Format", "B" );
     createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.City );
 
     assertEquals( createAttribute.getTimeType(), ModelAnnotation.TimeType.Regular );

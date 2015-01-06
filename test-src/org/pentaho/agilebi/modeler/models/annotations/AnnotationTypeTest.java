@@ -28,11 +28,10 @@ public class AnnotationTypeTest {
     createMeasure.setFormatString( "SSSS" );
     createMeasure.setName( "avg" );
     createMeasure.setDescription( "description" );
-    createMeasure.setLocalizedName( null );
-    createMeasure.setHidden( false );
+    createMeasure.setExpression( null );
 
     assertTrue( createMeasure.describe().containsKey( "name" ) );
-    assertFalse( createMeasure.describe().containsKey( "localizedName" ) ); // null
+    assertFalse( createMeasure.describe().containsKey( "expression" ) ); // null
     assertEquals( createMeasure.describe().get( "aggregateType" ), AggregationType.AVERAGE );
   }
 
@@ -51,15 +50,9 @@ public class AnnotationTypeTest {
     createAttribute.populate( properties );
 
     assertEquals( createAttribute.getName(), "NameTest" );
-    assertNull( createAttribute.getLocalizedName() );
     assertNotNull( createAttribute.getGeoType() );
-    assertTrue( createAttribute.isHidden() );
     assertEquals( createAttribute.getTimeType(), ModelAnnotation.TimeType.TimeDays );
     assertEquals( createAttribute.getGeoType(), ModelAnnotation.GeoType.Continent );
-
-    properties.put( "hidden", "false" );
-    createAttribute.populate( properties );
-    assertFalse( createAttribute.isHidden() );
 
     // Test Measure
     properties = new HashMap<String, Serializable>();
@@ -112,8 +105,8 @@ public class AnnotationTypeTest {
       }
     } );
 
-    assertEquals( 4, keyList.size() );
-    assertEquals( 4, valueList.size() );
+    assertEquals( 3, keyList.size() );
+    assertEquals( 3, valueList.size() );
   }
 
   @Test
@@ -123,10 +116,10 @@ public class AnnotationTypeTest {
     createAttribute.setModelPropertyByName( "Time Forma...", "xxxxx" );
     assertNull( createAttribute.getModelPropertyValueByName( "Time Forma..." ) ); // doesn't exist
 
-    createAttribute.setModelPropertyByName( "Time Format", "xxxxx" );
+    createAttribute.setModelPropertyByName( "Time Source Format", "xxxxx" );
     assertTrue( createAttribute.getTimeFormat().equalsIgnoreCase( "xxxxx" ) );
 
-    createAttribute.setModelPropertyByName( "Time Type", ModelAnnotation.TimeType.Regular );
+    createAttribute.setModelPropertyByName( "Time Level Type", ModelAnnotation.TimeType.Regular );
     assertTrue( createAttribute.getTimeType().equals( ModelAnnotation.TimeType.Regular ) );
 
     createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.Continent.toString() );
@@ -138,9 +131,9 @@ public class AnnotationTypeTest {
 
     CreateAttribute createAttribute = new CreateAttribute();
 
-    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Forma.." ), null );
-    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Format" ), String.class );
-    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Type" ), ModelAnnotation.TimeType.class );
+    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Source Forma.." ), null );
+    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Source Format" ), String.class );
+    assertEquals( createAttribute.getModelPropertyNameClassType( "Time Level Type" ), ModelAnnotation.TimeType.class );
     assertEquals( createAttribute.getModelPropertyNameClassType( "Geo Type" ), ModelAnnotation.GeoType.class );
 
     CreateMeasure createMeasure = new CreateMeasure();
