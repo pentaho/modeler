@@ -49,49 +49,23 @@ import org.w3c.dom.Document;
  */
 public abstract class AnnotationType implements Serializable {
 
-  public static final String NAME_ID = "name";
-  public static final String NAME_NAME = "Display Name";
-  public static final String CAPTION_ID = "caption";
-  public static final String CAPTION_NAME = "Caption";
+
   public static final String DESCRIPTION_ID = "description";
   public static final String DESCRIPTION_NAME = "Description";
-  public static final String HIDDEN_ID = "hidden";
-  public static final String HIDDEN_NAME = "Hidden";
+
   public static final String BUSINESS_GROUP_ID = "businessGroup";
   public static final String BUSINESS_GROUP_NAME = "Business Group";
+
   protected static final Class<?> MSG_CLASS = BaseModelerWorkspaceHelper.class;
   private static final long serialVersionUID = 3952409344571242884L;
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
-  @ModelProperty( id = NAME_ID, name = NAME_NAME )
-  private String name;
 
-  @ModelProperty( id = CAPTION_ID, name = CAPTION_NAME )
-  private String localizedName;
 
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME )
   private String description;
 
-  @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME )
-  private boolean hidden;
-
   @ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME )
   private String businessGroup;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName( String name ) {
-    this.name = name;
-  }
-
-  public String getLocalizedName() {
-    return localizedName;
-  }
-
-  public void setLocalizedName( String localizedName ) {
-    this.localizedName = localizedName;
-  }
 
   public String getDescription() {
     return description;
@@ -99,14 +73,6 @@ public abstract class AnnotationType implements Serializable {
 
   public void setDescription( String description ) {
     this.description = description;
-  }
-
-  public boolean isHidden() {
-    return hidden;
-  }
-
-  public void setHidden( boolean hidden ) {
-    this.hidden = hidden;
   }
 
   public String getBusinessGroup() {
@@ -350,4 +316,5 @@ public abstract class AnnotationType implements Serializable {
 
   public abstract String getSummary();
 
+  public abstract String getName();
 }

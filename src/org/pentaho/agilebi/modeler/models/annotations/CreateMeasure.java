@@ -52,6 +52,9 @@ public class CreateMeasure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
+  public static final String NAME_ID = "name";
+  public static final String NAME_NAME = "Measure Name";
+
   public static final String AGGREGATE_TYPE_ID = "aggregateType";
   public static final String AGGREGATE_TYPE_NAME = "Aggregation Type";
 
@@ -61,6 +64,9 @@ public class CreateMeasure extends AnnotationType {
   public static final String EXPRESSION_ID = "expression";
   public static final String EXPRESSION_NAME = "MDX Expression";
 
+  @ModelProperty( id = NAME_ID, name = NAME_NAME )
+  private String name;
+
   @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME )
   private AggregationType aggregateType;
 
@@ -69,6 +75,14 @@ public class CreateMeasure extends AnnotationType {
 
   @ModelProperty( id = EXPRESSION_ID, name = EXPRESSION_NAME )
   private String expression;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
 
   public AggregationType getAggregateType() {
     return aggregateType;
