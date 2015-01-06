@@ -25,6 +25,8 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
@@ -258,9 +260,28 @@ public class CreateAttribute extends AnnotationType {
     LevelMetaData levelMetaData = buildLevel( workspace, hierarchyMetaData, locateLogicalColumn( workspace, column ) );
     hierarchyMetaData.add( levelMetaData );
     removeAutoLevel( workspace, existingLevel );
+    removeAutoMeasure( workspace, column );
     removeAutoLevel( workspace, ordinalAutoLevel );
+    removeAutoMeasure( workspace, getOrdinalField() );
     workspace.getWorkspaceHelper().populateDomain( workspace );
     return true;
+  }
+
+  private void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
+    MeasureMetaData measure = locateMeasure( workspace, column );
+    if ( measure != null ) {
+      workspace.getModel().getMeasures().remove( measure );
+    }
+  }
+
+  private MeasureMetaData locateMeasure( final ModelerWorkspace workspace, final String column ) {
+    MeasuresCollection measures = workspace.getModel().getMeasures();
+    for ( MeasureMetaData measure : measures ) {
+      if ( measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals( column ) ) {
+        return measure;
+      }
+    }
+    return null;
   }
 
   private String dimensionType() {
@@ -343,7 +364,9 @@ public class CreateAttribute extends AnnotationType {
       LevelMetaData levelMetaData = buildLevel( workspace, existingHierarchy, locateLogicalColumn( workspace, column ) );
       existingHierarchy.add( parentIndex + 1, levelMetaData );
       removeAutoLevel( workspace, existingLevel );
+      removeAutoMeasure( workspace, column );
       removeAutoLevel( workspace, ordinalAutoLevel );
+      removeAutoMeasure( workspace, getOrdinalField() );
       workspace.getWorkspaceHelper().populateDomain( workspace );
       return true;
     }

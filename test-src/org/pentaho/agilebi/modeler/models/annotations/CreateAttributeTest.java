@@ -77,6 +77,7 @@ public class CreateAttributeTest {
     month.setParentAttribute( "Year" );
     month.setDimension( "Date" );
     month.setHierarchy( "DateByMonth" );
+    month.setOrdinalField( "bc_MSRP" );
     month.setTimeType( ModelAnnotation.TimeType.TimeMonths );
     month.setTimeFormat( "mm" );
     month.apply( model, "PRODUCTDESCRIPTION_OLAP" );
@@ -84,8 +85,10 @@ public class CreateAttributeTest {
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    assertEquals( 6, dimensionUsages.size() );
-    OlapDimensionUsage productsDim = dimensionUsages.get( 4 );
+    assertEquals( 2, cube.getOlapMeasures().size() );
+
+    assertEquals( 5, dimensionUsages.size() );
+    OlapDimensionUsage productsDim = dimensionUsages.get( 3 );
     assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
     assertFalse( productsDim.getOlapDimension().isTimeDimension() );
     OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
@@ -95,7 +98,7 @@ public class CreateAttributeTest {
     assertEquals( "PRODUCTSCALE_OLAP",
         levels.get( 1 ).getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
 
-    OlapDimensionUsage dateDim = dimensionUsages.get( 5 );
+    OlapDimensionUsage dateDim = dimensionUsages.get( 4 );
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, dateDim.getOlapDimension().getType() );
     assertTrue( dateDim.getOlapDimension().isTimeDimension() );
     OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
@@ -104,6 +107,7 @@ public class CreateAttributeTest {
     assertEquals( "TimeYears", dateLevels.get( 0 ).getLevelType() );
     assertEquals( "Month", dateLevels.get( 1 ).getName() );
     assertEquals( "TimeMonths", dateLevels.get( 1 ).getLevelType() );
+
   }
 
   @Test
