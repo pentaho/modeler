@@ -145,6 +145,7 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
           workspace.getModel().getMeasures().add( measureMetaData );
+          removeAutoLevel( workspace, locateLevel( workspace, column ) );
           workspace.getWorkspaceHelper().populateDomain( workspace );
           return true;
         }

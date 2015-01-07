@@ -30,6 +30,7 @@ import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -159,6 +160,23 @@ public class CreateMeasureTest {
     assertEquals( "Product Count", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AggregationType.COUNT_DISTINCT, measureMetaData.getDefaultAggregation() );
+  }
+
+  @Test
+  public void testRemovesAnyLevelsWhichUseTheSameColumn() throws Exception {
+    CreateMeasure minWeight = new CreateMeasure();
+    minWeight.setAggregateType( MINIMUM );
+    minWeight.setName( "Min Weight" );
+    minWeight.setFormatString( "##.##" );
+
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    minWeight.apply( model, "PRODUCTCODE_OLAP" );
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    assertEquals( 8, cube.getOlapDimensionUsages().size() );
+
   }
 
   @Test

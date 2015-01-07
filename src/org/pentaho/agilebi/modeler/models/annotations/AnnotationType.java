@@ -43,6 +43,9 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
+import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
+import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.w3c.dom.Document;
 
@@ -239,6 +242,36 @@ public abstract class AnnotationType implements Serializable {
       }
     }
     return map;
+  }
+
+  protected void removeAutoLevel( final ModelerWorkspace workspace, final LevelMetaData levelMetaData ) {
+    if ( levelMetaData == null ) {
+      return;
+    }
+    HierarchyMetaData hierarchy = levelMetaData.getHierarchyMetaData();
+    DimensionMetaData dimension = hierarchy.getDimensionMetaData();
+    if ( hierarchy.getLevels().size() > 1 ) {
+      return;
+    }
+    dimension.remove( hierarchy );
+    if ( dimension.size() > 0 ) {
+      return;
+    }
+    workspace.getModel().getDimensions().remove( dimension );
+  }
+
+  protected LevelMetaData locateLevel( final ModelerWorkspace workspace, final String column ) throws ModelerException {
+    workspace.getModel().getDimensions();
+    for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
+      for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
+        for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
+          if ( levelMetaData.getLogicalColumn().getName(workspace.getWorkspaceHelper().getLocale() ).equals( column ) ) {
+            return levelMetaData;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   public void populate( final Map<String, Serializable> propertiesMap ) {
