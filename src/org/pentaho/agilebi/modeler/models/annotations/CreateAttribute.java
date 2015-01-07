@@ -26,9 +26,12 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
@@ -40,6 +43,8 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.olap.OlapDimension;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -324,7 +329,28 @@ public class CreateAttribute extends AnnotationType {
     if ( ordinalColumn != null ) {
       levelMetaData.setLogicalOrdinalColumn( ordinalColumn );
     }
+    if ( getGeoType() != null ) {
+      GeoRole geoRole = new GeoRole( getGeoType().name(), Collections.<String>emptyList() );
+      levelMetaData.getMemberAnnotations().put( "Data.Role", geoRole );
+      if ( !Const.isEmpty( getParentAttribute() ) ) {
+        geoRole.setRequiredParentRoles( locateParentGeoRole( workspace ) );
+      }
+    }
     return levelMetaData;
+  }
+
+  private List<GeoRole> locateParentGeoRole( final ModelerWorkspace workspace ) {
+    for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
+      for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
+        for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
+          if ( levelMetaData.getName().equals( getParentAttribute() ) ) {
+            Map<String, IMemberAnnotation> memberAnnotations = levelMetaData.getMemberAnnotations();
+            return Arrays.asList( (GeoRole) memberAnnotations.get( "Data.Role" ) );
+          }
+        }
+      }
+    }
+    return Collections.emptyList();
   }
 
   private LogicalColumn locateLogicalColumn( final ModelerWorkspace workspace, final String columnName ) {
@@ -431,7 +457,7 @@ public class CreateAttribute extends AnnotationType {
   @Override
   public void validate() throws ModelerException {
 
-    if ( StringUtils.isBlank( getName() ) ){
+    if ( StringUtils.isBlank( getName() ) ) {
       throw new ModelerException( BaseMessages
           .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.ATTRIBUTE_NAME_REQUIRED" ) );
     }
