@@ -139,16 +139,16 @@ public class CreateAttributeTest {
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
-    CreateAttribute year = new CreateAttribute();
-    year.setName( "Product Code" );
-    year.setDimension( "Product" );
-    year.apply( model,  "PRODUCTCODE_OLAP" );
+    CreateAttribute productCode = new CreateAttribute();
+    productCode.setName( "Product Code" );
+    productCode.setDimension( "Product" );
+    productCode.apply( model, "PRODUCTCODE_OLAP" );
 
-    CreateAttribute month = new CreateAttribute();
-    month.setName( "Product Description" );
-    month.setParentAttribute( "Product Code" );
-    month.setDimension( "Product" );
-    month.apply( model, "PRODUCTDESCRIPTION_OLAP" );
+    CreateAttribute productDescription = new CreateAttribute();
+    productDescription.setName( "Product Description" );
+    productDescription.setParentAttribute( "Product Code" );
+    productDescription.setDimension( "Product" );
+    productDescription.apply( model, "PRODUCTDESCRIPTION_OLAP" );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -160,6 +160,9 @@ public class CreateAttributeTest {
     List<OlapHierarchyLevel> dateLevels = dateHierarchy.getHierarchyLevels();
     assertEquals( "Product Code", dateLevels.get( 0 ).getName() );
     assertEquals( "Product Description", dateLevels.get( 1 ).getName() );
+
+    assertEquals( "Product Code is top level in hierarchy", productCode.getSummary() );
+    assertEquals( "Product Description participates in hierarchy with parent Product Code", productDescription.getSummary() );
   }
 
   @Test

@@ -31,7 +31,6 @@ import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
@@ -47,6 +46,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.pentaho.di.core.Const.isEmpty;
 
 /**
  * @author Rowell Belen
@@ -222,9 +223,9 @@ public class CreateAttribute extends AnnotationType {
   @Override
   public boolean apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
     HierarchyMetaData existingHierarchy = locateHierarchy( workspace );
-    if ( existingHierarchy == null && getParentAttribute() != null ) {
+    if ( existingHierarchy == null && !isEmpty( getParentAttribute() ) ) {
       return false;
-    } else if ( existingHierarchy != null && getParentAttribute() == null ) {
+    } else if ( existingHierarchy != null && isEmpty( getParentAttribute() ) ) {
       throw new ModelerException( "Cannot create an attribute at the top of an existing hierarchy" );
     } else if ( existingHierarchy == null ) {
       return createNewHierarchy( workspace, column );
@@ -237,7 +238,7 @@ public class CreateAttribute extends AnnotationType {
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) ) {
         for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
-          if ( hierarchyMetaData.getName().equals( getHierarchy() == null ? "" : getHierarchy() ) ) {
+          if ( hierarchyMetaData.getName().equals( isEmpty( getHierarchy() ) ? "" : getHierarchy() ) ) {
             return hierarchyMetaData;
           }
         }
@@ -247,7 +248,7 @@ public class CreateAttribute extends AnnotationType {
   }
 
   private boolean createNewHierarchy( final ModelerWorkspace workspace, final String column ) throws ModelerException {
-    HierarchyMetaData hierarchyMetaData = new HierarchyMetaData( getHierarchy() == null ? "" : getHierarchy()  );
+    HierarchyMetaData hierarchyMetaData = new HierarchyMetaData( isEmpty( getHierarchy() ) ? "" : getHierarchy()  );
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) ) {
         hierarchyMetaData.setParent( dimensionMetaData );
@@ -297,22 +298,6 @@ public class CreateAttribute extends AnnotationType {
     return OlapDimension.TYPE_STANDARD_DIMENSION;
   }
 
-  private void removeAutoLevel( final ModelerWorkspace workspace, final LevelMetaData levelMetaData ) {
-    if ( levelMetaData == null ) {
-      return;
-    }
-    HierarchyMetaData hierarchy = levelMetaData.getHierarchyMetaData();
-    DimensionMetaData dimension = hierarchy.getDimensionMetaData();
-    if ( hierarchy.getLevels().size() > 1 ) {
-      return;
-    }
-    dimension.remove( hierarchy );
-    if ( dimension.size() > 0 ) {
-      return;
-    }
-    workspace.getModel().getDimensions().remove( dimension );
-  }
-
   private LevelMetaData buildLevel( final ModelerWorkspace workspace,
                                     final HierarchyMetaData hierarchyMetaData, final LogicalColumn logicalColumn )
     throws ModelerException {
@@ -322,7 +307,7 @@ public class CreateAttribute extends AnnotationType {
     if ( getTimeType() != null ) {
       levelMetaData.setDataRole( TimeRole.fromMondrianAttributeValue( getTimeType().name() ) );
     }
-    if ( getTimeFormat() != null ) {
+    if ( !isEmpty( getTimeFormat() ) ) {
       levelMetaData.setTimeLevelFormat( getTimeFormat() );
     }
     LogicalColumn ordinalColumn = locateLogicalColumn( workspace, getOrdinalField() );
@@ -332,7 +317,7 @@ public class CreateAttribute extends AnnotationType {
     if ( getGeoType() != null ) {
       GeoRole geoRole = new GeoRole( getGeoType().name(), Collections.<String>emptyList() );
       levelMetaData.getMemberAnnotations().put( "Data.Role", geoRole );
-      if ( !Const.isEmpty( getParentAttribute() ) ) {
+      if ( !isEmpty( getParentAttribute() ) ) {
         geoRole.setRequiredParentRoles( locateParentGeoRole( workspace ) );
       }
     }
@@ -360,20 +345,6 @@ public class CreateAttribute extends AnnotationType {
       for ( LogicalColumn logicalColumn : logicalTable.getLogicalColumns() ) {
         if ( logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ).equalsIgnoreCase( columnName ) ) {
           return logicalColumn;
-        }
-      }
-    }
-    return null;
-  }
-
-  private LevelMetaData locateLevel( final ModelerWorkspace workspace, final String column ) throws ModelerException {
-    workspace.getModel().getDimensions();
-    for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
-      for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
-        for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
-          if ( levelMetaData.getLogicalColumn().getName(workspace.getWorkspaceHelper().getLocale() ).equals( column ) ) {
-            return levelMetaData;
-          }
         }
       }
     }
@@ -439,11 +410,12 @@ public class CreateAttribute extends AnnotationType {
 
   @Override public String getSummary() {
     return BaseMessages
-        .getString( MSG_CLASS, summaryMsgKey(), getName(), getHierarchy(), getParentAttribute() );
+        .getString( MSG_CLASS, summaryMsgKey(), getName(), isEmpty( getHierarchy() ) ? "" : " " + getHierarchy(),
+            getParentAttribute() );
   }
 
   private String summaryMsgKey() {
-    if ( getParentAttribute() == null ) {
+    if ( isEmpty( getParentAttribute() ) ) {
       return "Modeler.CreateAttribute.Summary.noparent";
     }
     return "Modeler.CreateAttribute.Summary";
