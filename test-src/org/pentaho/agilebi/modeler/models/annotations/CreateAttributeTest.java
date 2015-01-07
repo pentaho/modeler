@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.olap.OlapAnnotation;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
@@ -183,5 +184,49 @@ public class CreateAttributeTest {
     } catch ( ModelerException me ) {
       assertNotNull( me );
     }
+  }
+
+  @Test
+  public void testCanSetGeoType() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute country = new CreateAttribute();
+    country.setName( "Country" );
+    country.setDimension( "Geo" );
+    country.setGeoType( ModelAnnotation.GeoType.Country );
+    country.apply( model, "PRODUCTLINE_OLAP" );
+
+    CreateAttribute state = new CreateAttribute();
+    state.setName( "State" );
+    state.setParentAttribute( "Country" );
+    state.setDimension( "Geo" );
+    state.setGeoType( ModelAnnotation.GeoType.State );
+    state.apply( model, "PRODUCTNAME_OLAP" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    OlapDimensionUsage productsDim = dimensionUsages.get( 7 );
+    assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
+    assertFalse( productsDim.getOlapDimension().isTimeDimension() );
+    OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
+    OlapHierarchyLevel countryLevel = levels.get( 0 );
+    assertEquals( "Country", countryLevel.getName() );
+    assertAnnotation( countryLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
+    assertAnnotation( countryLevel.getAnnotations().get( 1 ), "Geo.Role", "Country" );
+    OlapHierarchyLevel stateLevel = levels.get( 1 );
+    assertEquals( "State", stateLevel.getName() );
+    assertAnnotation( stateLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
+    assertAnnotation( stateLevel.getAnnotations().get( 1 ), "Geo.Role", "State" );
+    assertAnnotation( stateLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "Country" );
+  }
+
+  private void assertAnnotation( final OlapAnnotation olapAnnotation, final String name, final String value ) {
+    assertEquals( name, olapAnnotation.getName() );
+    assertEquals( value, olapAnnotation.getValue() );
   }
 }
