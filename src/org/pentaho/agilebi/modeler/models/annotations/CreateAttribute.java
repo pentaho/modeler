@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.pentaho.di.core.Const.isEmpty;
 
@@ -55,6 +56,7 @@ import static org.pentaho.di.core.Const.isEmpty;
 public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
+  private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
 
   public static final String NAME_ID = "name";
   public static final String NAME_NAME = "Attribute Name";
@@ -386,20 +388,25 @@ public class CreateAttribute extends AnnotationType {
 
     super.populate( propertiesMap ); // let base class handle primitives, etc.
 
-    // correctly convert time type
-    if ( propertiesMap.containsKey( TIME_TYPE_ID ) ) {
-      Serializable value = propertiesMap.get( TIME_TYPE_ID );
-      if ( value != null ) {
-        setTimeType( ModelAnnotation.TimeType.valueOf( value.toString() ) );
+    try {
+      // correctly convert time type
+      if ( propertiesMap.containsKey( TIME_TYPE_ID ) ) {
+        Serializable value = propertiesMap.get( TIME_TYPE_ID );
+        if ( value != null ) {
+          setTimeType( ModelAnnotation.TimeType.valueOf( value.toString() ) );
+        }
       }
-    }
 
-    // correctly convert geo type
-    if ( propertiesMap.containsKey( GEO_TYPE_ID ) ) {
-      Serializable value = propertiesMap.get( GEO_TYPE_ID );
-      if ( value != null ) {
-        setGeoType( ModelAnnotation.GeoType.valueOf( value.toString() ) );
+      // correctly convert geo type
+      if ( propertiesMap.containsKey( GEO_TYPE_ID ) ) {
+        Serializable value = propertiesMap.get( GEO_TYPE_ID );
+        if ( value != null ) {
+          setGeoType( ModelAnnotation.GeoType.valueOf( value.toString() ) );
+        }
       }
+    } catch ( Exception e ) {
+      // ignore
+      logger.warning( e.getLocalizedMessage() );
     }
   }
 
