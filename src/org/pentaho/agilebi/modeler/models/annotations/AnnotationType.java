@@ -190,38 +190,44 @@ public abstract class AnnotationType implements Serializable {
     if ( ClassUtils.isAssignable( value.getClass(), field.getType(), true ) ) {
       PropertyUtils.setProperty( this, field.getName(), value );
     } else {
-      if ( ClassUtils.isAssignable( field.getType(), Boolean.class, true ) ) {
-        PropertyUtils.setProperty( this, field.getName(), BooleanUtils.toBoolean( value.toString() ) );
-        return;
-      }
 
-      if ( ClassUtils.isAssignable( field.getType(), AggregationType.class, true ) ) {
-        AggregationType type = AggregationType.valueOf( value.toString() );
-        if ( type != null ) {
-          PropertyUtils.setProperty( this, field.getName(), type );
+      try {
+        if ( ClassUtils.isAssignable( field.getType(), Boolean.class, true ) ) {
+          PropertyUtils.setProperty( this, field.getName(), BooleanUtils.toBoolean( value.toString() ) );
+          return;
         }
-        return;
-      }
 
-      if ( ClassUtils.isAssignable( field.getType(), ModelAnnotation.TimeType.class, true ) ) {
-        ModelAnnotation.TimeType type = ModelAnnotation.TimeType.valueOf( value.toString() );
-        if ( type != null ) {
-          PropertyUtils.setProperty( this, field.getName(), type );
+        if ( ClassUtils.isAssignable( field.getType(), AggregationType.class, true ) ) {
+          AggregationType type = AggregationType.valueOf( value.toString() );
+          if ( type != null ) {
+            PropertyUtils.setProperty( this, field.getName(), type );
+          }
+          return;
         }
-        return;
-      }
 
-      if ( ClassUtils.isAssignable( field.getType(), ModelAnnotation.GeoType.class, true ) ) {
-        ModelAnnotation.GeoType type = ModelAnnotation.GeoType.valueOf( value.toString() );
-        if ( type != null ) {
-          PropertyUtils.setProperty( this, field.getName(), type );
+        if ( ClassUtils.isAssignable( field.getType(), ModelAnnotation.TimeType.class, true ) ) {
+          ModelAnnotation.TimeType type = ModelAnnotation.TimeType.valueOf( value.toString() );
+          if ( type != null ) {
+            PropertyUtils.setProperty( this, field.getName(), type );
+          }
+          return;
         }
-        return;
-      }
 
-      if ( NumberUtils.isNumber( value.toString() ) ) {
-        Number number = NumberUtils.createNumber( value.toString() );
-        PropertyUtils.setProperty( this, field.getName(), number );
+        if ( ClassUtils.isAssignable( field.getType(), ModelAnnotation.GeoType.class, true ) ) {
+          ModelAnnotation.GeoType type = ModelAnnotation.GeoType.valueOf( value.toString() );
+          if ( type != null ) {
+            PropertyUtils.setProperty( this, field.getName(), type );
+          }
+          return;
+        }
+
+        if ( NumberUtils.isNumber( value.toString() ) ) {
+          Number number = NumberUtils.createNumber( value.toString() );
+          PropertyUtils.setProperty( this, field.getName(), number );
+        }
+      } catch ( Exception e ) {
+        // ignore
+        logger.warning( "Unable to convert " + value.toString() + " in to " + field.getType() );
       }
     }
   }
