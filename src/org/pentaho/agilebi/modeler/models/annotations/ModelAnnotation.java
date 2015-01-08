@@ -298,7 +298,6 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public static enum TimeType {
-    Regular,
     TimeYears,
     TimeHalfYears,
     TimeQuarters,
@@ -307,9 +306,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     TimeDays,
     TimeHours,
     TimeMinutes,
-    TimeSeconds,
-    TimeUndefined,
-    Null;
+    TimeSeconds;
 
     public static String[] names() {
       TimeType[] types = values();
