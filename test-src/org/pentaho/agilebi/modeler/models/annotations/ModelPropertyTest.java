@@ -63,11 +63,11 @@ public class ModelPropertyTest {
     CreateAttribute createAttribute = new CreateAttribute();
     GeoRole geoRole = new GeoRole();
 
-    createAttribute.setModelPropertyByName( "Time Level Type", ModelAnnotation.TimeType.Regular );
+    createAttribute.setModelPropertyByName( "Time Level Type", ModelAnnotation.TimeType.TimeHours );
     createAttribute.setModelPropertyByName( "Time Source Format", "B" );
     createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.City );
 
-    assertEquals( createAttribute.getTimeType(), ModelAnnotation.TimeType.Regular );
+    assertEquals( createAttribute.getTimeType(), ModelAnnotation.TimeType.TimeHours );
     assertEquals( createAttribute.getTimeFormat(), "B" );
     assertEquals( createAttribute.getGeoType(), ModelAnnotation.GeoType.City );
   }

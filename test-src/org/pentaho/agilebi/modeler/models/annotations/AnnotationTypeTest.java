@@ -118,8 +118,8 @@ public class AnnotationTypeTest {
     createAttribute.setModelPropertyByName( "Time Source Format", "xxxxx" );
     assertTrue( createAttribute.getTimeFormat().equalsIgnoreCase( "xxxxx" ) );
 
-    createAttribute.setModelPropertyByName( "Time Level Type", ModelAnnotation.TimeType.Regular );
-    assertTrue( createAttribute.getTimeType().equals( ModelAnnotation.TimeType.Regular ) );
+    createAttribute.setModelPropertyByName( "Time Level Type", ModelAnnotation.TimeType.TimeHalfYears );
+    assertTrue( createAttribute.getTimeType().equals( ModelAnnotation.TimeType.TimeHalfYears ) );
 
     createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.Continent.toString() );
     assertTrue( createAttribute.getGeoType().equals( ModelAnnotation.GeoType.Continent ) );
