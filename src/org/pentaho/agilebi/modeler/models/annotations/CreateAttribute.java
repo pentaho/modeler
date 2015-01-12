@@ -266,8 +266,10 @@ public class CreateAttribute extends AnnotationType {
     }
     LevelMetaData existingLevel = locateLevel( workspace, column );
     LevelMetaData ordinalAutoLevel = locateLevel( workspace, getOrdinalField() );
-    LevelMetaData levelMetaData = buildLevel( workspace, hierarchyMetaData, locateLogicalColumn( workspace, column ) );
+    LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
+    LevelMetaData levelMetaData = new LevelMetaData( hierarchyMetaData, getName() );
     hierarchyMetaData.add( levelMetaData );
+    fillLevelProperties( workspace, logicalColumn, levelMetaData );
     removeAutoLevel( workspace, existingLevel );
     removeAutoMeasure( workspace, column );
     removeAutoLevel( workspace, ordinalAutoLevel );
@@ -300,10 +302,8 @@ public class CreateAttribute extends AnnotationType {
     return OlapDimension.TYPE_STANDARD_DIMENSION;
   }
 
-  private LevelMetaData buildLevel( final ModelerWorkspace workspace,
-                                    final HierarchyMetaData hierarchyMetaData, final LogicalColumn logicalColumn )
-    throws ModelerException {
-    LevelMetaData levelMetaData = new LevelMetaData( hierarchyMetaData, getName() );
+  private void fillLevelProperties( final ModelerWorkspace workspace, final LogicalColumn logicalColumn,
+                                    final LevelMetaData levelMetaData ) {
     levelMetaData.setLogicalColumn( logicalColumn );
     levelMetaData.setUniqueMembers( isUnique() );
     if ( getTimeType() != null ) {
@@ -323,7 +323,6 @@ public class CreateAttribute extends AnnotationType {
         geoRole.setRequiredParentRoles( locateParentGeoRole( workspace ) );
       }
     }
-    return levelMetaData;
   }
 
   private List<GeoRole> locateParentGeoRole( final ModelerWorkspace workspace ) {
@@ -361,8 +360,10 @@ public class CreateAttribute extends AnnotationType {
     } else {
       LevelMetaData existingLevel = locateLevel( workspace, column );
       LevelMetaData ordinalAutoLevel = locateLevel( workspace, getOrdinalField() );
-      LevelMetaData levelMetaData = buildLevel( workspace, existingHierarchy, locateLogicalColumn( workspace, column ) );
+      LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
+      LevelMetaData levelMetaData = new LevelMetaData( existingHierarchy, getName() );
       existingHierarchy.add( parentIndex + 1, levelMetaData );
+      fillLevelProperties( workspace, logicalColumn, levelMetaData );
       removeAutoLevel( workspace, existingLevel );
       removeAutoMeasure( workspace, column );
       removeAutoLevel( workspace, ordinalAutoLevel );
