@@ -108,9 +108,10 @@ public class CreateAttributeTest {
     List<OlapHierarchyLevel> dateLevels = dateHierarchy.getHierarchyLevels();
     assertEquals( "Year", dateLevels.get( 0 ).getName() );
     assertEquals( "TimeYears", dateLevels.get( 0 ).getLevelType() );
+    assertEquals( "[yyyy]", dateLevels.get( 0 ).getAnnotations().get( 0 ).getValue() );
     assertEquals( "Month", dateLevels.get( 1 ).getName() );
     assertEquals( "TimeMonths", dateLevels.get( 1 ).getLevelType() );
-    assertEquals( "[yyyy]", dateLevels.get( 1 ).getAnnotations().get( 0 ).getValue() );
+    assertEquals( "[yyyy].[mm]", dateLevels.get( 1 ).getAnnotations().get( 0 ).getValue() );
 
   }
 
