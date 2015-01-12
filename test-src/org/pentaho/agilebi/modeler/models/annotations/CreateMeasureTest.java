@@ -222,6 +222,10 @@ public class CreateMeasureTest {
     maxMeasure.setAggregateType( MAXIMUM );
     maxMeasure.setName( "Max Val" );
     assertEquals( "Max Val, aggregated with MAXIMUM", maxMeasure.getSummary() );
+
+    CreateMeasure noAggregate = new CreateMeasure();
+    noAggregate.setName( "Test" );
+    assertEquals( "Test", noAggregate.getSummary() );
   }
 
   @Test

@@ -197,7 +197,11 @@ public class CreateMeasure extends AnnotationType {
   }
 
   @Override public String getSummary() {
-    return BaseMessages.getString( MSG_CLASS, "Modeler.CreateMeasure.Summary", getName(), getAggregateType().name() );
+    if ( getAggregateType() != null ) {
+      return BaseMessages.getString( MSG_CLASS, "Modeler.CreateMeasure.Summary", getName(), getAggregateType().name() );
+    } else {
+      return BaseMessages.getString( MSG_CLASS, "Modeler.CreateMeasure.NoAggregateSummary", getName() );
+    }
   }
 
   @Override
