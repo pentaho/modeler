@@ -233,4 +233,32 @@ public class CreateAttributeTest {
     assertEquals( name, olapAnnotation.getName() );
     assertEquals( value, olapAnnotation.getValue() );
   }
+
+  @Test
+  public void testNoExceptionWithOrdinalSameAsColumn() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute month = new CreateAttribute();
+    month.setName( "MonthDesc" );
+    month.setDimension( "DIM TIME" );
+    month.setHierarchy( "Time" );
+    month.setUnique( false );
+    month.setOrdinalField( "PRODUCTCODE_OLAP" );
+    month.setTimeType( ModelAnnotation.TimeType.TimeMonths );
+    month.setTimeFormat( "MMM" );
+    month.apply( model, "PRODUCTCODE_OLAP" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    OlapDimensionUsage timeDim = dimensionUsages.get( 8 );
+    assertEquals( OlapDimension.TYPE_TIME_DIMENSION, timeDim.getOlapDimension().getType() );
+    OlapHierarchy timeHierarchy = timeDim.getOlapDimension().getHierarchies().get( 0 );
+    OlapHierarchyLevel monthLevel = timeHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( "PRODUCTCODE_OLAP", monthLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+    assertEquals( "PRODUCTCODE_OLAP", monthLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+  }
 }

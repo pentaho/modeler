@@ -44,6 +44,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
+import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.metadata.model.concept.types.AggregationType;
@@ -259,11 +260,16 @@ public abstract class AnnotationType implements Serializable {
     if ( hierarchy.getLevels().size() > 1 ) {
       return;
     }
-    dimension.remove( hierarchy );
+    if ( dimension.contains( hierarchy ) ) {
+      dimension.remove( hierarchy );
+    }
     if ( dimension.size() > 0 ) {
       return;
     }
-    workspace.getModel().getDimensions().remove( dimension );
+    DimensionMetaDataCollection dimensions = workspace.getModel().getDimensions();
+    if ( dimensions.contains( dimension ) ) {
+      dimensions.remove( dimension );
+    }
   }
 
   protected LevelMetaData locateLevel( final ModelerWorkspace workspace, final String column ) throws ModelerException {
