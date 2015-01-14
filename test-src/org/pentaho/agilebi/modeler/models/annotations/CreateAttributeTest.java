@@ -261,4 +261,34 @@ public class CreateAttributeTest {
     assertEquals( "PRODUCTCODE_OLAP", monthLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
     assertEquals( "PRODUCTCODE_OLAP", monthLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
   }
+
+  @Test
+  public void testUsingHierarchyWithSameNameWillOverwrite() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute month = new CreateAttribute();
+    month.setName( "MonthDesc" );
+    month.setDimension( "DIM TIME" );
+    month.setHierarchy( "Time" );
+    month.apply( model, "PRODUCTCODE_OLAP" );
+
+    CreateAttribute productCode = new CreateAttribute();
+    productCode.setName( "Product Code" );
+    productCode.setDimension( "DIM TIME" );
+    productCode.setHierarchy( "Time" );
+    productCode.apply( model, "PRODUCTCODE_OLAP" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    OlapDimensionUsage timeDim = dimensionUsages.get( 8 );
+    OlapHierarchy timeHierarchy = timeDim.getOlapDimension().getHierarchies().get( 0 );
+    OlapHierarchyLevel codeLevel = timeHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( "Product Code", codeLevel.getName() );
+    assertEquals( "PRODUCTCODE_OLAP",
+        codeLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+  }
 }

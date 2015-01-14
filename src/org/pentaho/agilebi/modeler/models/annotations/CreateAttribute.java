@@ -228,11 +228,19 @@ public class CreateAttribute extends AnnotationType {
     if ( existingHierarchy == null && !isEmpty( getParentAttribute() ) ) {
       return false;
     } else if ( existingHierarchy != null && isEmpty( getParentAttribute() ) ) {
-      throw new ModelerException( "Cannot create an attribute at the top of an existing hierarchy" );
+      removeHierarchy( existingHierarchy );
+      return createNewHierarchy( workspace, column );
     } else if ( existingHierarchy == null ) {
       return createNewHierarchy( workspace, column );
     } else {
       return attachLevel( workspace, existingHierarchy, column );
+    }
+  }
+
+  private void removeHierarchy( final HierarchyMetaData hierarchy ) {
+    DimensionMetaData dimension = hierarchy.getDimensionMetaData();
+    if ( dimension.contains( hierarchy ) ) {
+      dimension.remove( hierarchy );
     }
   }
 
