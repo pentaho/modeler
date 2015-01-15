@@ -114,7 +114,8 @@ public class CreateAttribute extends AnnotationType {
   @ModelProperty( id = TIME_TYPE_ID, name = TIME_TYPE_NAME, order = TIME_TYPE_ORDER )
   private ModelAnnotation.TimeType timeType;
 
-  @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
+  // Do not expose business group in the UI (for now)
+  //@ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
   private ModelAnnotation.GeoType geoType;
 
   @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME, order = ORDINAL_FIELD_ORDER )
@@ -132,7 +133,8 @@ public class CreateAttribute extends AnnotationType {
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
   private String description;
 
-  @ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
+  // Do not expose business group in the UI (for now)
+  //@ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
   private String businessGroup;
 
   public String getName() {
