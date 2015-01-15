@@ -85,7 +85,8 @@ public class CreateMeasure extends AnnotationType {
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
   private String description;
 
-  @ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
+  // Do not expose business group in the UI (for now)
+  //@ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
   private String businessGroup;
 
   public String getName() {
