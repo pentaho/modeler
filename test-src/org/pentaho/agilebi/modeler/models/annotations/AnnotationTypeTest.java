@@ -104,8 +104,9 @@ public class AnnotationTypeTest {
       }
     } );
 
-    assertEquals( 3, keyList.size() );
-    assertEquals( 3, valueList.size() );
+    // found hidden and name
+    assertEquals( 2, keyList.size() );
+    assertEquals( 2, valueList.size() );
   }
 
   @Test
@@ -122,7 +123,7 @@ public class AnnotationTypeTest {
     assertTrue( createAttribute.getTimeType().equals( ModelAnnotation.TimeType.TimeHalfYears ) );
 
     createAttribute.setModelPropertyByName( "Geo Type", ModelAnnotation.GeoType.Continent.toString() );
-    assertTrue( createAttribute.getGeoType().equals( ModelAnnotation.GeoType.Continent ) );
+    // assertTrue( createAttribute.getGeoType().equals( ModelAnnotation.GeoType.Continent ) );
   }
 
   @Test
@@ -133,7 +134,7 @@ public class AnnotationTypeTest {
     assertEquals( createAttribute.getModelPropertyNameClassType( "Time Source Forma.." ), null );
     assertEquals( createAttribute.getModelPropertyNameClassType( "Time Source Format" ), String.class );
     assertEquals( createAttribute.getModelPropertyNameClassType( "Time Level Type" ), ModelAnnotation.TimeType.class );
-    assertEquals( createAttribute.getModelPropertyNameClassType( "Geo Type" ), ModelAnnotation.GeoType.class );
+    // assertEquals( createAttribute.getModelPropertyNameClassType( "Geo Type" ), ModelAnnotation.GeoType.class );
 
     CreateMeasure createMeasure = new CreateMeasure();
     assertEquals( createMeasure.getModelPropertyNameClassType( "Aggregation Type" ), AggregationType.class );
