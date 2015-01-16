@@ -22,6 +22,7 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import static junit.framework.Assert.assertNotNull;
+
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
@@ -35,6 +36,7 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.OlapCube;
+import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.metadata.util.XmiParser;
 
 import java.io.FileInputStream;
@@ -235,5 +237,36 @@ public class CreateMeasureTest {
     } catch ( ModelerException me ) {
       assertNotNull( me );
     }
+  }
+
+  @Test
+  public void testCreateMeasureRemovesAutoMeasure() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getModel().getMeasures().get( 0 ).getLogicalColumn().setName( new LocalizedString( "en_US", "BUYPRICE" ) );
+
+    CreateMeasure sumBuyPrice = new CreateMeasure();
+    sumBuyPrice.setAggregateType( SUM );
+    sumBuyPrice.setName( "Sum Buy Price" );
+    sumBuyPrice.apply( model, "BUYPRICE" );
+
+    CreateMeasure avgBuyPrice = new CreateMeasure();
+    avgBuyPrice.setAggregateType( AVERAGE );
+    avgBuyPrice.setName( "BUYPRICE" );
+    avgBuyPrice.apply( model, "BUYPRICE" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
+    assertEquals( 4, olapMeasures.size() );
+    assertEquals( SUM, olapMeasures.get( 0 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "MSRP", olapMeasures.get( 0 ).getName() );
+    assertEquals( SUM, olapMeasures.get( 1 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "QUANTITYINSTOCK", olapMeasures.get( 1 ).getName() );
+    assertEquals( SUM, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "Sum Buy Price", olapMeasures.get( 2 ).getName() );
+    assertEquals( AVERAGE, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "BUYPRICE", olapMeasures.get( 3 ).getName() );
   }
 }
