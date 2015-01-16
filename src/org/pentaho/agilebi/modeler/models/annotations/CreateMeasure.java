@@ -145,6 +145,7 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setLogicalColumn( (LogicalColumn) logicalColumn.clone() );
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
+          removeAutoMeasure( workspace, column );
           workspace.getModel().getMeasures().add( measureMetaData );
           removeAutoLevel( workspace, locateLevel( workspace, column ) );
           workspace.getWorkspaceHelper().populateDomain( workspace );
@@ -154,6 +155,20 @@ public class CreateMeasure extends AnnotationType {
 
     }
     throw new ModelerException( "Unable to apply Create Measure annotation: Column not found" );
+  }
+
+  private void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
+    LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
+    String locale = workspace.getWorkspaceHelper().getLocale();
+    for ( MeasureMetaData measure : workspace.getModel().getMeasures() ) {
+      if ( measure.getName().equals( column )
+          && measure.getLogicalColumn().getPhysicalColumn().getName( locale ).equals(
+          logicalColumn.getPhysicalColumn().getName( locale ) )
+          && measure.getDefaultAggregation().equals( AggregationType.SUM ) ) {
+        workspace.getModel().getMeasures().remove( measure );
+        break;
+      }
+    }
   }
 
   @Override

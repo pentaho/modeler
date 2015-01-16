@@ -41,12 +41,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.w3c.dom.Document;
 
@@ -280,6 +284,19 @@ public abstract class AnnotationType implements Serializable {
           if ( levelMetaData.getLogicalColumn().getName(workspace.getWorkspaceHelper().getLocale() ).equals( column ) ) {
             return levelMetaData;
           }
+        }
+      }
+    }
+    return null;
+  }
+
+  protected LogicalColumn locateLogicalColumn( final ModelerWorkspace workspace, final String columnName ) {
+    LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
+    logicalModel.getLogicalTables();
+    for ( LogicalTable logicalTable : logicalModel.getLogicalTables() ) {
+      for ( LogicalColumn logicalColumn : logicalTable.getLogicalColumns() ) {
+        if ( logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ).equalsIgnoreCase( columnName ) ) {
+          return logicalColumn;
         }
       }
     }

@@ -24,7 +24,6 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
@@ -37,8 +36,6 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.olap.OlapDimension;
 
 import java.io.Serializable;
@@ -347,19 +344,6 @@ public class CreateAttribute extends AnnotationType {
       }
     }
     return Collections.emptyList();
-  }
-
-  private LogicalColumn locateLogicalColumn( final ModelerWorkspace workspace, final String columnName ) {
-    LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
-    logicalModel.getLogicalTables();
-    for ( LogicalTable logicalTable : logicalModel.getLogicalTables() ) {
-      for ( LogicalColumn logicalColumn : logicalTable.getLogicalColumns() ) {
-        if ( logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ).equalsIgnoreCase( columnName ) ) {
-          return logicalColumn;
-        }
-      }
-    }
-    return null;
   }
 
   private boolean attachLevel( final ModelerWorkspace workspace, final HierarchyMetaData existingHierarchy,
