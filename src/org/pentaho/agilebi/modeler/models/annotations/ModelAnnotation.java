@@ -37,6 +37,8 @@ import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -99,18 +101,19 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    */
 
   public static List<ModelAnnotation<CreateMeasure>> getMeasures(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateMeasure.class );
   }
 
   public static List<ModelAnnotation<CreateAttribute>> getAttributes(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateAttribute.class );
   }
 
-  private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>> filter(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
-      Class<S> cls ) {
+  private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>>
+  filter(
+    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
+    Class<S> cls ) {
 
     List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
     if ( cls != null && annotations != null && annotations.size() > 0 ) {
@@ -162,8 +165,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   /**
-   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel
-   * and Measure, we need to consult the existing model to find the underlying physical source.
+   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel and
+   * Measure, we need to consult the existing model to find the underlying physical source.
    *
    * @param modelerWorkspace
    * @return
@@ -171,7 +174,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    */
   private String resolveField( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
 
-    switch ( sourceType ) {
+    switch( sourceType ) {
       case StreamField: {
         return field;
       }
@@ -212,7 +215,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
               buffer.append( usage.getName() );
               OlapHierarchy olapHierarchy = (OlapHierarchy) olapHierarchies.get( h );
               if ( StringUtils.isNotEmpty( olapHierarchy.getName() )
-                  && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
+                && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
                 buffer.append( "." ).append( olapHierarchy.getName() );
               }
               buffer.append( "].[" );
@@ -235,22 +238,56 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   /**
-   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel
-   * and Measure, we need to consult the existing model to find the underlying physical source.
+   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel and
+   * Measure, we need to consult the existing model to find the underlying physical source.
    *
-   * @param modelerWorkspace
+   * @param schema
    * @return
    * @throws ModelerException
    */
   private String resolveField( final Document schema ) throws ModelerException {
 
-    switch ( sourceType ) {
+    switch( sourceType ) {
       case StreamField: {
         return field;
       }
       case Measure: {
-        // TODO
+        if ( schema == null ) {
+          throw new ModelerException( "Unable to find measure: " + field );
+        }
+
+        // find Measure nodes
+        NodeList measures = schema.getElementsByTagName( "Measure" );
+        if ( ( measures == null ) || ( measures.getLength() <= 0 ) ) {
+          throw new ModelerException( "Unable to find measure: " + field );
+        }
+
+        for ( int x = 0; x <= measures.getLength(); x++ ) {
+          Node measureNode = measures.item( x );
+          if ( measureNode != null ) {
+
+            // get measure name
+            Node nameNode = measureNode.getAttributes().getNamedItem( "name" );
+
+            if ( nameNode != null ) {
+              // match measure name to field
+              if ( nameNode.getNodeValue().equals(
+                field.substring( field.lastIndexOf( "[" ) + 1 ).replace( "]", "" )
+              ) ) {
+                // get the column
+                Node columnNode = measureNode.getAttributes().getNamedItem( "column" );
+
+                if ( columnNode != null ) {
+                  return (String) columnNode.getNodeValue();
+                }
+              }
+            }
+          }
+        }
+
+        // not found
         throw new ModelerException( "Unable to find measure: " + field );
+
       }
       case HierarchyLevel: {
         // TODO
@@ -306,9 +343,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       Type[] types = values();
-      String[] names = new String[types.length];
+      String[] names = new String[ types.length ];
       for ( int i = 0; i < types.length; i++ ) {
-        names[i] = types[i].name();
+        names[ i ] = types[ i ].name();
       }
       return names;
     }
@@ -331,9 +368,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       TimeType[] types = values();
-      String[] names = new String[types.length];
+      String[] names = new String[ types.length ];
       for ( int i = 0; i < types.length; i++ ) {
-        names[i] = types[i].name();
+        names[ i ] = types[ i ].name();
       }
       return names;
     }
@@ -351,17 +388,17 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       GeoType[] types = values();
-      String[] names = new String[types.length];
+      String[] names = new String[ types.length ];
       for ( int i = 0; i < types.length; i++ ) {
-        names[i] = types[i].name();
+        names[ i ] = types[ i ].name();
       }
       return names;
     }
   }
 
   /**
-   * Represents the source of the modeling action...
-   * i.e. are we creating a measure off of a field, level or another measure?
+   * Represents the source of the modeling action... i.e. are we creating a measure off of a field, level or another
+   * measure?
    *
    * @author Benny
    */
