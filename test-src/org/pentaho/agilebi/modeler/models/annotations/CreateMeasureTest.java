@@ -266,7 +266,9 @@ public class CreateMeasureTest {
     assertEquals( "QUANTITYINSTOCK", olapMeasures.get( 1 ).getName() );
     assertEquals( SUM, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
     assertEquals( "Sum Buy Price", olapMeasures.get( 2 ).getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_2", olapMeasures.get( 2 ).getLogicalColumn().getId() );
     assertEquals( AVERAGE, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
     assertEquals( "BUYPRICE", olapMeasures.get( 3 ).getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", olapMeasures.get( 3 ).getLogicalColumn().getId() );
   }
 }

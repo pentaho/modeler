@@ -32,6 +32,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -142,7 +143,10 @@ public class CreateMeasure extends AnnotationType {
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
               new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
-          measureMetaData.setLogicalColumn( (LogicalColumn) logicalColumn.clone() );
+
+          LogicalColumn columnClone = (LogicalColumn) logicalColumn.clone();
+          columnClone.setId( BaseModelerWorkspaceHelper.uniquify( columnClone.getId(), logicalColumns ) );
+          measureMetaData.setLogicalColumn( columnClone );
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
           removeAutoMeasure( workspace, column );
