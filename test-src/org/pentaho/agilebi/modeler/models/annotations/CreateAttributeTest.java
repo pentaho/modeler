@@ -171,9 +171,11 @@ public class CreateAttributeTest {
 
     CreateAttribute createAttribute = new CreateAttribute();
     createAttribute.setName( "A" );
+    createAttribute.setDimension( "ADim" );
     createAttribute.validate(); // no error
 
     try {
+      createAttribute.setDimension( "" );
       createAttribute.setParentAttribute( "parent" );
       createAttribute.validate(); // throws an error
     } catch ( ModelerException me ) {

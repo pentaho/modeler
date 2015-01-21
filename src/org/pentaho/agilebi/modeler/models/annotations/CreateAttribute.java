@@ -436,6 +436,11 @@ public class CreateAttribute extends AnnotationType {
           .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.ATTRIBUTE_NAME_REQUIRED" ) );
     }
 
+    if ( StringUtils.isBlank( getDimension() ) ) {
+      throw new ModelerException( BaseMessages
+          .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.PARENT_PROVIDED_MISSING_DIMENSION" ) );
+    }
+
     if ( StringUtils.isNotBlank( getParentAttribute() ) && StringUtils.isBlank( getDimension() ) ) {
       throw new ModelerException( BaseMessages
           .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.PARENT_PROVIDED_MISSING_DIMENSION" ) );
