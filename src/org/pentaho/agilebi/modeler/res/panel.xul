@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
 <window id="label-test" title="Flow Test"
         xmlns="http://www.pentaho.org/there.is.only.xul"
         height="600"
