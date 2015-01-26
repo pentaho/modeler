@@ -111,8 +111,7 @@ public class CreateAttribute extends AnnotationType {
   @ModelProperty( id = TIME_TYPE_ID, name = TIME_TYPE_NAME, order = TIME_TYPE_ORDER )
   private ModelAnnotation.TimeType timeType;
 
-  // Do not expose business group in the UI (for now)
-  //@ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
+  @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
   private ModelAnnotation.GeoType geoType;
 
   @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME, order = ORDINAL_FIELD_ORDER )
@@ -324,11 +323,8 @@ public class CreateAttribute extends AnnotationType {
       levelMetaData.setLogicalOrdinalColumn( ordinalColumn );
     }
     if ( getGeoType() != null ) {
-      GeoRole geoRole = new GeoRole( getGeoType().name(), Collections.<String>emptyList() );
+      GeoRole geoRole = workspace.getGeoContext().getGeoRoleByName( getGeoType().name() );
       levelMetaData.getMemberAnnotations().put( "Data.Role", geoRole );
-      if ( !isEmpty( getParentAttribute() ) ) {
-        geoRole.setRequiredParentRoles( locateParentGeoRole( workspace ) );
-      }
     }
   }
 

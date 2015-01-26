@@ -27,6 +27,10 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
+import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
+import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
@@ -37,8 +41,12 @@ import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.util.XmiParser;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.List;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -194,8 +202,14 @@ public class CreateAttributeTest {
 
   @Test
   public void testCanSetGeoType() throws Exception {
+    Reader propsReader = new FileReader( new File( "test-res/geoRoles.properties" ) );
+    Properties props = new Properties();
+    props.load( propsReader );
+    GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
+    GeoContext geo = GeoContextFactory.create( config );
+
     ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ), geo );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -212,23 +226,39 @@ public class CreateAttributeTest {
     state.setGeoType( ModelAnnotation.GeoType.State );
     state.apply( model, "PRODUCTNAME_OLAP" );
 
+    CreateAttribute city = new CreateAttribute();
+    city.setName( "City" );
+    city.setParentAttribute( "State" );
+    city.setDimension( "Geo" );
+    city.setGeoType( ModelAnnotation.GeoType.City );
+    city.apply( model, "PRODUCTLINE_OLAP" );
+
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage productsDim = dimensionUsages.get( 7 );
     assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
     assertFalse( productsDim.getOlapDimension().isTimeDimension() );
+
     OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
+
     OlapHierarchyLevel countryLevel = levels.get( 0 );
     assertEquals( "Country", countryLevel.getName() );
     assertAnnotation( countryLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
-    assertAnnotation( countryLevel.getAnnotations().get( 1 ), "Geo.Role", "Country" );
+    assertAnnotation( countryLevel.getAnnotations().get( 1 ), "Geo.Role", "country" );
+
     OlapHierarchyLevel stateLevel = levels.get( 1 );
     assertEquals( "State", stateLevel.getName() );
     assertAnnotation( stateLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
-    assertAnnotation( stateLevel.getAnnotations().get( 1 ), "Geo.Role", "State" );
-    assertAnnotation( stateLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "Country" );
+    assertAnnotation( stateLevel.getAnnotations().get( 1 ), "Geo.Role", "state" );
+    assertAnnotation( stateLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country" );
+
+    OlapHierarchyLevel cityLevel = levels.get( 2 );
+    assertEquals( "City", cityLevel.getName() );
+    assertAnnotation( cityLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
+    assertAnnotation( cityLevel.getAnnotations().get( 1 ), "Geo.Role", "city" );
+    assertAnnotation( cityLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country,state" );
   }
 
   private void assertAnnotation( final OlapAnnotation olapAnnotation, final String name, final String value ) {
