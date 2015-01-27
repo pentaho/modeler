@@ -31,6 +31,8 @@ import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
@@ -50,6 +52,7 @@ import static org.pentaho.di.core.Const.isEmpty;
 /**
  * @author Rowell Belen
  */
+@MetaStoreElementType( name = "CreateAttribute", description = "CreateAttribute Annotation" )
 public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
@@ -99,36 +102,47 @@ public class CreateAttribute extends AnnotationType {
   public static final String UNIQUE_NAME = "Is Unique";
   public static final int UNIQUE_ORDER = 10;
 
+  @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
 
+  @MetaStoreAttribute
   @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME, order = UNIQUE_ORDER )
   private boolean unique;
 
+  @MetaStoreAttribute
   @ModelProperty( id = TIME_FORMAT_ID, name = TIME_FORMAT_NAME, order = TIME_FORMAT_ORDER )
   private String timeFormat;
 
+  @MetaStoreAttribute
   @ModelProperty( id = TIME_TYPE_ID, name = TIME_TYPE_NAME, order = TIME_TYPE_ORDER )
   private ModelAnnotation.TimeType timeType;
 
+  @MetaStoreAttribute
   @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
   private ModelAnnotation.GeoType geoType;
 
+  @MetaStoreAttribute
   @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME, order = ORDINAL_FIELD_ORDER )
   private String ordinalField;
 
+  @MetaStoreAttribute
   @ModelProperty( id = PARENT_ATTRIBUTE_ID, name = PARENT_ATTRIBUTE_NAME, order = PARENT_ATTRIBUTE_ORDER )
   private String parentAttribute;
 
+  @MetaStoreAttribute
   @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
   private String dimension;
 
+  @MetaStoreAttribute
   @ModelProperty( id = HIERARCHY_ID, name = HIERARCHY_NAME, order = HIERARCHY_ORDER )
   private String hierarchy;
 
+  @MetaStoreAttribute
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
   private String description;
 
+  @MetaStoreAttribute
   // Do not expose business group in the UI (for now)
   //@ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
   private String businessGroup;

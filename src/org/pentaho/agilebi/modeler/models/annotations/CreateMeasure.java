@@ -43,6 +43,8 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.util.MondrianModelExporter;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,6 +52,7 @@ import org.w3c.dom.Node;
 /**
  * @author Rowell Belen
  */
+@MetaStoreElementType( name = "CreateMeasure", description = "CreateMeasure Annotation" )
 public class CreateMeasure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
@@ -74,18 +77,23 @@ public class CreateMeasure extends AnnotationType {
   public static final String BUSINESS_GROUP_NAME = "Business Group";
   public static final int BUSINESS_GROUP_ORDER = 4;
 
+  @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
 
+  @MetaStoreAttribute
   @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME, order = AGGREGATE_TYPE_ORDER )
   private AggregationType aggregateType;
 
+  @MetaStoreAttribute
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
   private String formatString;
 
+  @MetaStoreAttribute
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
   private String description;
 
+  @MetaStoreAttribute
   // Do not expose business group in the UI (for now)
   //@ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
   private String businessGroup;

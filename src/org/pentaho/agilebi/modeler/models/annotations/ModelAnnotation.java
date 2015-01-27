@@ -34,6 +34,8 @@ import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
 
 import java.io.Serializable;
@@ -42,22 +44,41 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Rowell Belen
  */
+@MetaStoreElementType( name = "ModelAnnotation", description = "ModelAnnotation" )
 public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
 
   private SourceType sourceType = SourceType.StreamField;
+
+  @MetaStoreAttribute
+  private String name = UUID.randomUUID().toString(); // default random identifier
+
+  @MetaStoreAttribute
   private String field;
 
+  @MetaStoreAttribute
   private String cube;
 
+  @MetaStoreAttribute
   private T annotation;
 
   public ModelAnnotation() {
+  }
+
+  // Required by the MetaStore
+  public String getName() {
+    return name;
+  }
+
+  // Required by MetaStore
+  public void setName( String name ) {
+    this.name = name;
   }
 
   public ModelAnnotation( final String field, final T annotation ) {
