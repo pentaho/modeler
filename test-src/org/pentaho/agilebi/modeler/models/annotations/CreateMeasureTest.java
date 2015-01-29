@@ -21,17 +21,22 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static junit.framework.Assert.assertNotNull;
+
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.OlapCube;
+import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.metadata.util.XmiParser;
 
 import java.io.FileInputStream;
@@ -40,9 +45,7 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static org.pentaho.metadata.model.LogicalModel.PROPERTY_OLAP_CUBES;
 import static org.pentaho.metadata.model.SqlPhysicalColumn.TARGET_COLUMN;
-import static org.pentaho.metadata.model.concept.types.AggregationType.AVERAGE;
-import static org.pentaho.metadata.model.concept.types.AggregationType.MAXIMUM;
-import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
+import static org.pentaho.metadata.model.concept.types.AggregationType.*;
 
 public class CreateMeasureTest {
   @Test
@@ -162,6 +165,23 @@ public class CreateMeasureTest {
   }
 
   @Test
+  public void testRemovesAnyLevelsWhichUseTheSameColumn() throws Exception {
+    CreateMeasure minWeight = new CreateMeasure();
+    minWeight.setAggregateType( MINIMUM );
+    minWeight.setName( "Min Weight" );
+    minWeight.setFormatString( "##.##" );
+
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    minWeight.apply( model, "PRODUCTCODE_OLAP" );
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    assertEquals( 8, cube.getOlapDimensionUsages().size() );
+
+  }
+
+  @Test
   public void testCanCreateMultipleMeasuresOnSameColumn() throws Exception {
     CreateMeasure minWeight = new CreateMeasure();
     minWeight.setAggregateType( MINIMUM );
@@ -191,5 +211,64 @@ public class CreateMeasureTest {
     assertEquals( "Max Weight", maxMeta.getName() );
     assertEquals( "##.##", maxMeta.getFormat() );
     assertEquals( MAXIMUM, maxMeta.getDefaultAggregation() );
+  }
+
+  @Test
+  public void testSummaryDescribesNameAndAggregator() throws Exception {
+    CreateMeasure sumMeasure = new CreateMeasure();
+    sumMeasure.setAggregateType( SUM );
+    sumMeasure.setName( "Value" );
+    assertEquals( "Value, aggregated with SUM", sumMeasure.getSummary() );
+
+    CreateMeasure maxMeasure = new CreateMeasure();
+    maxMeasure.setAggregateType( MAXIMUM );
+    maxMeasure.setName( "Max Val" );
+    assertEquals( "Max Val, aggregated with MAXIMUM", maxMeasure.getSummary() );
+
+    CreateMeasure noAggregate = new CreateMeasure();
+    noAggregate.setName( "Test" );
+    assertEquals( "Test", noAggregate.getSummary() );
+  }
+
+  @Test
+  public void testValidate() throws Exception {
+    try {
+      ( new CreateMeasure() ).validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
+  }
+
+  @Test
+  public void testCreateMeasureRemovesAutoMeasure() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getModel().getMeasures().get( 0 ).getLogicalColumn().setName( new LocalizedString( "en_US", "BUYPRICE" ) );
+
+    CreateMeasure sumBuyPrice = new CreateMeasure();
+    sumBuyPrice.setAggregateType( SUM );
+    sumBuyPrice.setName( "Sum Buy Price" );
+    sumBuyPrice.apply( model, "BUYPRICE" );
+
+    CreateMeasure avgBuyPrice = new CreateMeasure();
+    avgBuyPrice.setAggregateType( AVERAGE );
+    avgBuyPrice.setName( "BUYPRICE" );
+    avgBuyPrice.apply( model, "BUYPRICE" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
+    assertEquals( 4, olapMeasures.size() );
+    assertEquals( SUM, olapMeasures.get( 0 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "MSRP", olapMeasures.get( 0 ).getName() );
+    assertEquals( SUM, olapMeasures.get( 1 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "QUANTITYINSTOCK", olapMeasures.get( 1 ).getName() );
+    assertEquals( SUM, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "Sum Buy Price", olapMeasures.get( 2 ).getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_2", olapMeasures.get( 2 ).getLogicalColumn().getId() );
+    assertEquals( AVERAGE, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "BUYPRICE", olapMeasures.get( 3 ).getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", olapMeasures.get( 3 ).getLogicalColumn().getId() );
   }
 }

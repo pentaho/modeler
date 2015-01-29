@@ -22,13 +22,6 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
@@ -41,29 +34,57 @@ import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Rowell Belen
  */
+@MetaStoreElementType( name = "ModelAnnotation", description = "ModelAnnotation" )
 public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
 
-  private SourceType sourceType = SourceType.StreamField; 
+  private SourceType sourceType = SourceType.StreamField;
+
+  @MetaStoreAttribute
+  private String name = UUID.randomUUID().toString(); // default random identifier
+
+  @MetaStoreAttribute
   private String field;
 
+  @MetaStoreAttribute
   private String cube;
 
+  @MetaStoreAttribute
   private T annotation;
 
   public ModelAnnotation() {
   }
 
+  // Required by the MetaStore
+  public String getName() {
+    return name;
+  }
+
+  // Required by MetaStore
+  public void setName( String name ) {
+    this.name = name;
+  }
+
   public ModelAnnotation( final String field, final T annotation ) {
     setField( field );
     setAnnotation( annotation );
-    this.sourceType = SourceType.StreamField; 
+    this.sourceType = SourceType.StreamField;
   }
 
   public ModelAnnotation( final SourceType sourceType, final String cube, final String field, final T annotation ) {
@@ -71,6 +92,37 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     setField( field );
     this.sourceType = sourceType;
     setAnnotation( annotation );
+  }
+
+  /**
+   * **** Utility methods ******
+   */
+
+  public static List<ModelAnnotation<CreateMeasure>> getMeasures(
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    return filter( annotations, CreateMeasure.class );
+  }
+
+  public static List<ModelAnnotation<CreateAttribute>> getAttributes(
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    return filter( annotations, CreateAttribute.class );
+  }
+
+  private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>> filter(
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
+      Class<S> cls ) {
+
+    List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
+    if ( cls != null && annotations != null && annotations.size() > 0 ) {
+      annotations.removeAll( Collections.singleton( null ) ); // remove nulls
+      for ( ModelAnnotation<?> annotation : annotations ) {
+        if ( annotation.getAnnotation() != null && cls.equals( annotation.getAnnotation().getClass() ) ) {
+          list.add( (ModelAnnotation<S>) annotation );
+        }
+      }
+    }
+
+    return list;
   }
 
   public String getField() {
@@ -104,58 +156,27 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   public void setSourceType( SourceType sourceType ) {
     this.sourceType = sourceType;
   }
-  
-  /**
-   * **** Utility methods ******
-   */
-
-  public static List<ModelAnnotation<CreateMeasure>> getMeasures(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
-    return filter( annotations, CreateMeasure.class );
-  }
-
-  public static List<ModelAnnotation<CreateAttribute>> getAttributes(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
-    return filter( annotations, CreateAttribute.class );
-  }
-
-  private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>> filter(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations, Class<S> cls ) {
-
-    List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
-    if ( cls != null && annotations != null && annotations.size() > 0 ) {
-      annotations.removeAll( Collections.singleton( null ) ); // remove nulls
-      for ( ModelAnnotation<?> annotation : annotations ) {
-        if ( annotation.getAnnotation() != null && cls.equals( annotation.getAnnotation().getClass() ) ) {
-          list.add( (ModelAnnotation<S>) annotation );
-        }
-      }
-    }
-
-    return list;
-  }
 
   public boolean apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    return annotation.apply( modelerWorkspace, resolveField(modelerWorkspace) );
+    return annotation.apply( modelerWorkspace, resolveField( modelerWorkspace ) );
   }
-  
-  
+
   /**
-   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel 
+   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel
    * and Measure, we need to consult the existing model to find the underlying physical source.
-   * 
+   *
    * @param modelerWorkspace
    * @return
    * @throws ModelerException
    */
   private String resolveField( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    
-    switch (sourceType) {
-      case StreamField : {
+
+    switch ( sourceType ) {
+      case StreamField: {
         return field;
       }
-      case Measure :
-      case HierarchyLevel : {
+      case Measure:
+      case HierarchyLevel: {
         String locale = Locale.getDefault().toString();
         LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
         List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( "olap_cubes" );
@@ -169,17 +190,17 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         if ( olapCube == null ) {
           throw new ModelerException( "Unable to find cube: " + cube );
         }
-        if (sourceType == SourceType.Measure) {
+        if ( sourceType == SourceType.Measure ) {
           List measures = olapCube.getOlapMeasures();
           for ( int m = 0; m < measures.size(); m++ ) {
             OlapMeasure measure = (OlapMeasure) measures.get( m );
-            if ( field.equals( "[Measures].[" + measure.getLogicalColumn().getName(locale) + "]" ) ) {
+            if ( field.equals( "[Measures].[" + measure.getLogicalColumn().getName( locale ) + "]" ) ) {
               return (String) measure.getLogicalColumn().getName( locale );
             }
           }
           throw new ModelerException( "Unable to find measure: " + field );
         } else {
-          
+
           List usages = olapCube.getOlapDimensionUsages();
           for ( int u = 0; u < usages.size(); u++ ) {
             OlapDimensionUsage usage = (OlapDimensionUsage) usages.get( u );
@@ -192,13 +213,13 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
               OlapHierarchy olapHierarchy = (OlapHierarchy) olapHierarchies.get( h );
               if ( StringUtils.isNotEmpty( olapHierarchy.getName() )
                   && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
-                buffer.append(".").append( olapHierarchy.getName() );
+                buffer.append( "." ).append( olapHierarchy.getName() );
               }
               buffer.append( "].[" );
               List hierarchyLevels = olapHierarchy.getHierarchyLevels();
               for ( int hl = 0; hl < hierarchyLevels.size(); hl++ ) {
                 OlapHierarchyLevel olapHierarchyLevel = (OlapHierarchyLevel) hierarchyLevels.get( hl );
-                if (field.equals( buffer.toString() + olapHierarchyLevel.getName() + "]" )) {
+                if ( field.equals( buffer.toString() + olapHierarchyLevel.getName() + "]" ) ) {
                   return (String) olapHierarchyLevel.getReferenceColumn().getName( locale );
                 }
               }
@@ -206,31 +227,32 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
           }
           throw new ModelerException( "Unable to find level: " + field );
         }
-      } default: {
+      }
+      default: {
         throw new IllegalStateException();
       }
     }
   }
-  
+
   /**
-   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel 
+   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel
    * and Measure, we need to consult the existing model to find the underlying physical source.
-   * 
+   *
    * @param modelerWorkspace
    * @return
    * @throws ModelerException
    */
   private String resolveField( final Document schema ) throws ModelerException {
-    
-    switch (sourceType) {
-      case StreamField : {
+
+    switch ( sourceType ) {
+      case StreamField: {
         return field;
       }
-      case Measure : {
+      case Measure: {
         // TODO
         throw new ModelerException( "Unable to find measure: " + field );
       }
-      case HierarchyLevel : {
+      case HierarchyLevel: {
         // TODO
         throw new ModelerException( "Unable to find level: " + field );
       }
@@ -239,10 +261,10 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       }
     }
   }
-  
+
   public boolean apply( final Document schema ) throws ModelerException {
-    return annotation.apply( schema, resolveField(schema) );
-    }
+    return annotation.apply( schema, resolveField( schema ) );
+  }
 
   public org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.Type getType() {
     if ( annotation != null ) {
@@ -282,10 +304,6 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       this.description = description;
     }
 
-    public String description() {
-      return description;
-    }
-
     public static String[] names() {
       Type[] types = values();
       String[] names = new String[types.length];
@@ -293,11 +311,14 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         names[i] = types[i].name();
       }
       return names;
-  }
+    }
+
+    public String description() {
+      return description;
+    }
   }
 
   public static enum TimeType {
-    Regular,
     TimeYears,
     TimeHalfYears,
     TimeQuarters,
@@ -306,9 +327,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     TimeDays,
     TimeHours,
     TimeMinutes,
-    TimeSeconds,
-    TimeUndefined,
-    Null;
+    TimeSeconds;
 
     public static String[] names() {
       TimeType[] types = values();
@@ -341,11 +360,10 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   /**
-   * Represents the source of the modeling action... 
+   * Represents the source of the modeling action...
    * i.e. are we creating a measure off of a field, level or another measure?
-   * 
-   * @author Benny
    *
+   * @author Benny
    */
   public static enum SourceType {
     StreamField,

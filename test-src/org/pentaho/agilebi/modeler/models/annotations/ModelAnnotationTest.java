@@ -98,11 +98,23 @@ public class ModelAnnotationTest {
         return null;
       }
 
+      @Override public String getSummary() {
+        return "";
+      }
+
       @Override
       public boolean apply( Document schema, String field ) throws ModelerException {
         // TODO Auto-generated method stub
         return false;
       }
+
+      @Override
+      public String getName() {
+        return "";
+      }
+
+      @Override
+      public void validate() throws ModelerException {}
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
     modelAnnotation.setField( "amount" );

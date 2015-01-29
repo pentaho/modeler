@@ -258,6 +258,7 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
     if ( annotation == null && timeLevelFormat != null ) {
       annotation =
           (AnalyzerDateFormatAnnotation) AnalyzerDateFormatAnnotationFactory.instance.create( (LevelMetaData) this );
+      annotation.setValue( timeLevelFormat );
       annotations.put( key, annotation );
     } else if ( annotation != null && timeLevelFormat == null ) {
       annotations.remove( key );

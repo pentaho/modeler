@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="file://E:/workspaces/sprint_workspace/pentaho-xul/test/resource/documents/xul.css" type="text/css"?>
 <dialog width="300" height="400" id="resolveColumnsDialog" title="Resolve Missing Columns"
         ondialogaccept="colResolver.done()" ondialogcancel="colResolver.cancel()"
         onload="colResolver.init()"

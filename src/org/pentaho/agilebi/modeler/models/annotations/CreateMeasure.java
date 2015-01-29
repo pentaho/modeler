@@ -31,15 +31,20 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.util.MondrianModelExporter;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -47,27 +52,59 @@ import org.w3c.dom.Node;
 /**
  * @author Rowell Belen
  */
+@MetaStoreElementType( name = "CreateMeasure", description = "CreateMeasure Annotation" )
 public class CreateMeasure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
 
+  public static final String NAME_ID = "name";
+  public static final String NAME_NAME = "Measure Name";
+  public static final int NAME_ORDER = 0;
+
   public static final String AGGREGATE_TYPE_ID = "aggregateType";
   public static final String AGGREGATE_TYPE_NAME = "Aggregation Type";
+  public static final int AGGREGATE_TYPE_ORDER = 1;
 
   public static final String FORMAT_STRING_ID = "formatString";
   public static final String FORMAT_STRING_NAME = "Format String";
+  public static final int FORMAT_STRING_ORDER = 2;
 
-  public static final String EXPRESSION_ID = "expression";
-  public static final String EXPRESSION_NAME = "MDX Expression";
+  public static final String DESCRIPTION_ID = "description";
+  public static final String DESCRIPTION_NAME = "Description";
+  public static final int DESCRIPTION_ORDER = 3;
 
-  @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME )
+  public static final String BUSINESS_GROUP_ID = "businessGroup";
+  public static final String BUSINESS_GROUP_NAME = "Business Group";
+  public static final int BUSINESS_GROUP_ORDER = 4;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
+  private String name;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME, order = AGGREGATE_TYPE_ORDER )
   private AggregationType aggregateType;
 
-  @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME )
+  @MetaStoreAttribute
+  @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
   private String formatString;
 
-  @ModelProperty( id = EXPRESSION_ID, name = EXPRESSION_NAME )
-  private String expression;
+  @MetaStoreAttribute
+  @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
+  private String description;
+
+  @MetaStoreAttribute
+  // Do not expose business group in the UI (for now)
+  //@ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
+  private String businessGroup;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
 
   public AggregationType getAggregateType() {
     return aggregateType;
@@ -85,12 +122,20 @@ public class CreateMeasure extends AnnotationType {
     this.formatString = formatString;
   }
 
-  public String getExpression() {
-    return expression;
+  public String getDescription() {
+    return description;
   }
 
-  public void setExpression( String expression ) {
-    this.expression = expression;
+  public void setDescription( String description ) {
+    this.description = description;
+  }
+
+  public String getBusinessGroup() {
+    return businessGroup;
+  }
+
+  public void setBusinessGroup( String businessGroup ) {
+    this.businessGroup = businessGroup;
   }
 
   @Override
@@ -106,10 +151,15 @@ public class CreateMeasure extends AnnotationType {
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
               new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
-          measureMetaData.setLogicalColumn( (LogicalColumn) logicalColumn.clone() );
+
+          LogicalColumn columnClone = (LogicalColumn) logicalColumn.clone();
+          columnClone.setId( BaseModelerWorkspaceHelper.uniquify( columnClone.getId(), logicalColumns ) );
+          measureMetaData.setLogicalColumn( columnClone );
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
+          removeAutoMeasure( workspace, column );
           workspace.getModel().getMeasures().add( measureMetaData );
+          removeAutoLevel( workspace, locateLevel( workspace, column ) );
           workspace.getWorkspaceHelper().populateDomain( workspace );
           return true;
         }
@@ -117,6 +167,20 @@ public class CreateMeasure extends AnnotationType {
 
     }
     throw new ModelerException( "Unable to apply Create Measure annotation: Column not found" );
+  }
+
+  private void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
+    LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
+    String locale = workspace.getWorkspaceHelper().getLocale();
+    for ( MeasureMetaData measure : workspace.getModel().getMeasures() ) {
+      if ( measure.getName().equals( column )
+          && measure.getLogicalColumn().getPhysicalColumn().getName( locale ).equals(
+          logicalColumn.getPhysicalColumn().getName( locale ) )
+          && measure.getDefaultAggregation().equals( AggregationType.SUM ) ) {
+        workspace.getModel().getMeasures().remove( measure );
+        break;
+      }
+    }
   }
 
   @Override
@@ -160,4 +224,20 @@ public class CreateMeasure extends AnnotationType {
     return ModelAnnotation.Type.CREATE_MEASURE;
   }
 
+  @Override public String getSummary() {
+    if ( getAggregateType() != null ) {
+      return BaseMessages.getString( MSG_CLASS, "Modeler.CreateMeasure.Summary", getName(), getAggregateType().name() );
+    } else {
+      return BaseMessages.getString( MSG_CLASS, "Modeler.CreateMeasure.NoAggregateSummary", getName() );
+    }
+  }
+
+  @Override
+  public void validate() throws ModelerException {
+
+    if ( StringUtils.isBlank( getName() ) ) {
+      throw new ModelerException( BaseMessages
+          .getString( MSG_CLASS, "ModelAnnotation.CreateMeasure.validation.MEASURE_NAME_REQUIRED" ) );
+    }
+  }
 }
