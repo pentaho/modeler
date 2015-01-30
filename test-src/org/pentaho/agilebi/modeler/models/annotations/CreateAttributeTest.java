@@ -23,6 +23,8 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import static junit.framework.Assert.assertNotNull;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
@@ -32,6 +34,14 @@ import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.util.TableModelerSource;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
 import org.pentaho.metadata.model.olap.OlapCube;
@@ -200,47 +210,58 @@ public class CreateAttributeTest {
     }
   }
 
+  @BeforeClass
+  public static void setUpBeforeClass() throws Exception {
+    KettleClientEnvironment.init();
+    PluginRegistry.addPluginType( StepPluginType.getInstance() );
+    PluginRegistry.init();
+    Props.init( 0 );
+  }
+
   @Test
-  public void testCanSetGeoType() throws Exception {
+  public void testCreateGeoDimensionAndRemovesAutoGeo() throws Exception {
+    DatabaseMeta dbMeta = createGeoTable();
+    TableModelerSource source = new TableModelerSource( dbMeta, "geodata", "" );
+    Domain domain = source.generateDomain();
+
     Reader propsReader = new FileReader( new File( "test-res/geoRoles.properties" ) );
     Properties props = new Properties();
     props.load( propsReader );
     GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
-    GeoContext geo = GeoContextFactory.create( config );
+    GeoContext geoContext = GeoContextFactory.create( config );
 
-    ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ), geo );
-    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ), geoContext );
+    model.setModelSource( source );
+    model.setDomain( domain );
+    model.setModelName( "someModel" );
+    model.getWorkspaceHelper().autoModelFlat( model );
     model.getWorkspaceHelper().populateDomain( model );
 
     CreateAttribute country = new CreateAttribute();
     country.setName( "Country" );
     country.setDimension( "Geo" );
     country.setGeoType( ModelAnnotation.GeoType.Country );
-    country.apply( model, "PRODUCTLINE_OLAP" );
+    country.apply( model, "Country" );
 
     CreateAttribute state = new CreateAttribute();
     state.setName( "State" );
     state.setParentAttribute( "Country" );
     state.setDimension( "Geo" );
     state.setGeoType( ModelAnnotation.GeoType.State );
-    state.apply( model, "PRODUCTNAME_OLAP" );
+    state.apply( model, "STATE" );
 
     CreateAttribute city = new CreateAttribute();
     city.setName( "City" );
     city.setParentAttribute( "State" );
     city.setDimension( "Geo" );
     city.setGeoType( ModelAnnotation.GeoType.City );
-    city.apply( model, "PRODUCTLINE_OLAP" );
+    city.apply( model, "CITY" );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    OlapDimensionUsage productsDim = dimensionUsages.get( 7 );
-    assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
-    assertFalse( productsDim.getOlapDimension().isTimeDimension() );
-
-    OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
+    OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
+    OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
 
     OlapHierarchyLevel countryLevel = levels.get( 0 );
@@ -259,6 +280,104 @@ public class CreateAttributeTest {
     assertAnnotation( cityLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( cityLevel.getAnnotations().get( 1 ), "Geo.Role", "city" );
     assertAnnotation( cityLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country,state" );
+
+  }
+
+  @Test
+  public void testCreateMultipleGeoDimensions() throws Exception {
+    DatabaseMeta dbMeta = createGeoTable();
+    TableModelerSource source = new TableModelerSource( dbMeta, "geodata", "" );
+    Domain domain = source.generateDomain();
+
+    Reader propsReader = new FileReader( new File( "test-res/geoRoles.properties" ) );
+    Properties props = new Properties();
+    props.load( propsReader );
+    GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
+    GeoContext geoContext = GeoContextFactory.create( config );
+
+    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ), geoContext );
+    model.setModelSource( source );
+    model.setDomain( domain );
+    model.setModelName( "someModel" );
+    model.getWorkspaceHelper().autoModelFlat( model );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute country = new CreateAttribute();
+    country.setName( "Country" );
+    country.setDimension( "Geo" );
+    country.setGeoType( ModelAnnotation.GeoType.Country );
+    country.apply( model, "Country" );
+
+    CreateAttribute state = new CreateAttribute();
+    state.setName( "State" );
+    state.setDimension( "Geo2" );
+    state.setGeoType( ModelAnnotation.GeoType.State );
+    state.apply( model, "STATE" );
+
+    CreateAttribute city = new CreateAttribute();
+    city.setName( "City" );
+    city.setParentAttribute( "State" );
+    city.setDimension( "Geo2" );
+    city.setGeoType( ModelAnnotation.GeoType.City );
+    city.apply( model, "CITY" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
+    OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
+
+    OlapHierarchyLevel countryLevel = levels.get( 0 );
+    assertEquals( "Country", countryLevel.getName() );
+    assertAnnotation( countryLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
+    assertAnnotation( countryLevel.getAnnotations().get( 1 ), "Geo.Role", "country" );
+
+    OlapDimensionUsage geoDim2 = dimensionUsages.get( 3 );
+    OlapHierarchy hierarchy2 = geoDim2.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> levels2 = hierarchy2.getHierarchyLevels();
+    OlapHierarchyLevel stateLevel = levels2.get( 0 );
+    assertEquals( "State", stateLevel.getName() );
+    assertAnnotation( stateLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
+    assertAnnotation( stateLevel.getAnnotations().get( 1 ), "Geo.Role", "state" );
+    assertAnnotation( stateLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country" );
+
+    OlapHierarchyLevel cityLevel = levels2.get( 1 );
+    assertEquals( "City", cityLevel.getName() );
+    assertAnnotation( cityLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
+    assertAnnotation( cityLevel.getAnnotations().get( 1 ), "Geo.Role", "city" );
+    assertAnnotation( cityLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country,state" );
+
+  }
+
+  private DatabaseMeta createGeoTable() throws Exception {
+    DatabaseMeta dbMeta = newH2Db();
+    Database db = new Database( null, dbMeta );
+    db.connect();
+    db.execStatement( "DROP TABLE if exists geodata;" );
+    db.execStatement( "CREATE TABLE geodata\n"
+        + "(\n"
+        + "  state_fips bigint\n"
+        + ", state varchar(25)\n"
+        + ", state_abbr varchar(4)\n"
+        + ", zipcode varchar(10)\n"
+        + ", country varchar(45)\n"
+        + ", city varchar(45)\n"
+        + ");\n" );
+    db.disconnect();
+    return dbMeta;
+
+  }
+
+  private DatabaseMeta newH2Db() {
+    // DB Setup
+    String dbDir = "bin/test/DswModelerTest-H2-DB";
+    File file = new File( dbDir + ".h2.db" );
+    if ( file.exists() ) {
+      file.delete();
+    }
+    DatabaseMeta dbMeta = new DatabaseMeta( "myh2", "HYPERSONIC", "Native", null, dbDir, null, "sa", null );
+    return dbMeta;
   }
 
   private void assertAnnotation( final OlapAnnotation olapAnnotation, final String name, final String value ) {
