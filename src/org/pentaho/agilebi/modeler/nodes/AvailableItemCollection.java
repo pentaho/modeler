@@ -17,19 +17,21 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
-
-import java.io.Serializable;
-import java.util.*;
 
 /**
  * Created: 4/11/11
  *
  * @author rfellows
  */
-public class AvailableItemCollection extends AbstractModelList<IAvailableItem> implements Serializable {
+public class AvailableItemCollection extends AbstractModelList<IAvailableItem> {
   public static final String IMAGE_FILE = "";
   private static final long serialVersionUID = -3640424842982505015L;
 

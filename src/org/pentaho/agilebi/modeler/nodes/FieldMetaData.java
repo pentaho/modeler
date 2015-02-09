@@ -18,15 +18,14 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
 
   private static final String IMAGE = "images/fields.png";
   private static final long serialVersionUID = -7091129923372909756L;
-  private CategoryMetaData parent;
 
   public FieldMetaData( String locale ) {
     super(locale);
   }
 
-  public FieldMetaData(CategoryMetaData parent, String fieldName, String format, String displayName, String locale ) {
-    super(fieldName, format, displayName, locale);
-    this.parent = parent;
+  public FieldMetaData( CategoryMetaData parent, String fieldName, String format, String displayName, String locale ) {
+    super( fieldName, format, displayName, locale );
+    setParent( parent );
   }
 
   @Override
@@ -44,14 +43,6 @@ public class FieldMetaData extends BaseAggregationMetaDataNode {
   @Override
   public List<AggregationType> getTextAggregationTypes() {
     return Arrays.asList(AggregationType.NONE, AggregationType.COUNT, AggregationType.COUNT_DISTINCT);
-  }
-
-  public CategoryMetaData getParent() {
-    return parent;
-  }
-
-  public void setParent( CategoryMetaData md ) {
-    this.parent = md;
   }
 
   @Override

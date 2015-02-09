@@ -18,7 +18,6 @@ package org.pentaho.agilebi.modeler.nodes;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,7 +32,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelNode> extends AbstractModelNode<T>
-    implements Serializable, IDropTarget {
+    implements IDropTarget {
 
   private static final long serialVersionUID = 1547202580713108254L;
 

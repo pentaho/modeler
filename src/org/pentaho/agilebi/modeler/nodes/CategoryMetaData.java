@@ -1,12 +1,10 @@
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.CategoryPropertiesForm;
-import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 /**
@@ -14,7 +12,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
  *
  * @author rfellows
  */
-public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> implements Serializable {
+public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> {
 
   private static final String IMAGE = "images/sm_folder_icon.png";
   private static final String CLASSNAME = "pentaho-smallcategorybutton";
@@ -99,7 +97,7 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> i
   }
 
   @Override
-  public Class<? extends ModelerNodePropertiesForm> getPropertiesForm() {
+  public Class<CategoryPropertiesForm> getPropertiesForm() {
     return CategoryPropertiesForm.class;
   }
 
