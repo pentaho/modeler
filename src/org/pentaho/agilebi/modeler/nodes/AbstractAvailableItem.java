@@ -17,8 +17,6 @@
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import java.io.Serializable;
-
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
@@ -28,7 +26,8 @@ import org.pentaho.ui.xul.util.AbstractModelNode;
  *
  * @author rfellows
  */
-public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractModelNode<T> implements XulEventSource, Serializable, IAvailableItem {
+public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractModelNode<T> implements XulEventSource,
+    IAvailableItem {
 
   private static final long serialVersionUID = 2938604837324271097L;
   private boolean expanded = true;
