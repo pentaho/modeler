@@ -271,4 +271,23 @@ public class CreateMeasureTest {
     assertEquals( "BUYPRICE", olapMeasures.get( 3 ).getName() );
     assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", olapMeasures.get( 3 ).getLogicalColumn().getId() );
   }
+
+  @Test
+  public void testFindsColumnFromBeautifiedName() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getModel().getMeasures().get( 0 ).getLogicalColumn().setName( new LocalizedString( "en_US", "Buy price" ) );
+
+    CreateMeasure sumBuyPrice = new CreateMeasure();
+    sumBuyPrice.setAggregateType( SUM );
+    sumBuyPrice.setName( "Sum Buy Price" );
+    sumBuyPrice.apply( model, "buy_price" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
+    assertEquals( SUM, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "Sum Buy Price", olapMeasures.get( 3 ).getName() );
+  }
 }
