@@ -38,6 +38,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
@@ -144,9 +145,9 @@ public class CreateMeasure extends AnnotationType {
     for ( LogicalTable logicalTable : logicalTables ) {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
       for ( LogicalColumn logicalColumn : logicalColumns ) {
-        if ( column
-            .equalsIgnoreCase(
-              logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) ) ) {
+        if ( columnMatches( workspace, column, logicalColumn )
+            || columnMatches( workspace, PhysicalTableImporter.beautifyName( column ), logicalColumn ) )
+        {
           String targetColumn =
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
@@ -167,6 +168,12 @@ public class CreateMeasure extends AnnotationType {
 
     }
     throw new ModelerException( "Unable to apply Create Measure annotation: Column not found" );
+  }
+
+  private boolean columnMatches( final ModelerWorkspace workspace, final String column,
+                                 final LogicalColumn logicalColumn ) {
+    return column.equalsIgnoreCase(
+        logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) );
   }
 
   private void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
