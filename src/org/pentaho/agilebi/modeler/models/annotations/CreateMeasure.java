@@ -159,6 +159,7 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
           removeAutoMeasure( workspace, column );
+          removeMeasure( workspace, getName() );
           workspace.getModel().getMeasures().add( measureMetaData );
           removeAutoLevel( workspace, locateLevel( workspace, column ) );
           workspace.getWorkspaceHelper().populateDomain( workspace );
@@ -184,6 +185,15 @@ public class CreateMeasure extends AnnotationType {
           && measure.getLogicalColumn().getPhysicalColumn().getName( locale ).equals(
           logicalColumn.getPhysicalColumn().getName( locale ) )
           && measure.getDefaultAggregation().equals( AggregationType.SUM ) ) {
+        workspace.getModel().getMeasures().remove( measure );
+        break;
+      }
+    }
+  }
+
+  private void removeMeasure( final ModelerWorkspace workspace, final String measureName ) {
+    for ( MeasureMetaData measure : workspace.getModel().getMeasures() ) {
+      if ( measure.getName().equals( measureName ) ) {
         workspace.getModel().getMeasures().remove( measure );
         break;
       }

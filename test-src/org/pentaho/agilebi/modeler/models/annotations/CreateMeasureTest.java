@@ -290,4 +290,29 @@ public class CreateMeasureTest {
     assertEquals( SUM, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
     assertEquals( "Sum Buy Price", olapMeasures.get( 3 ).getName() );
   }
+
+  @Test
+  public void testRemovesMeasuresOfTheSameName() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
+    model.getModel().getMeasures().get( 0 ).getLogicalColumn().setName( new LocalizedString( "en_US", "BUYPRICE" ) );
+
+    CreateMeasure sumBuyPrice = new CreateMeasure();
+    sumBuyPrice.setAggregateType( SUM );
+    sumBuyPrice.setName( "Buy Price" );
+    sumBuyPrice.apply( model, "BUYPRICE" );
+
+    CreateMeasure avgBuyPrice = new CreateMeasure();
+    avgBuyPrice.setAggregateType( AVERAGE );
+    avgBuyPrice.setName( "Buy Price" );
+    avgBuyPrice.apply( model, "BUYPRICE" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
+    assertEquals( 3, olapMeasures.size() );
+    assertEquals( AVERAGE, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
+    assertEquals( "Buy Price", olapMeasures.get( 2 ).getName() );
+  }
 }
