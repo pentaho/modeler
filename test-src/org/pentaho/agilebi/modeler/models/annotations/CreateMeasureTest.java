@@ -227,6 +227,7 @@ public class CreateMeasureTest {
 
     CreateMeasure noAggregate = new CreateMeasure();
     noAggregate.setName( "Test" );
+    noAggregate.setAggregateType( null );
     assertEquals( "Test", noAggregate.getSummary() );
   }
 
@@ -314,5 +315,11 @@ public class CreateMeasureTest {
     assertEquals( 3, olapMeasures.size() );
     assertEquals( AVERAGE, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
     assertEquals( "Buy Price", olapMeasures.get( 2 ).getName() );
+  }
+
+  @Test
+  public void testDefaultAggregationTypIsSum() throws Exception {
+    CreateMeasure createMeasure = new CreateMeasure();
+    assertEquals( AggregationType.SUM, createMeasure.getAggregateType() );
   }
 }
