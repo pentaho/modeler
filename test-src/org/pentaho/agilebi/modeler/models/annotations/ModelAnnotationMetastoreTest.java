@@ -108,6 +108,8 @@ public class ModelAnnotationMetastoreTest {
   public void testSaveAndLoadModelAnnotationGroup() throws Exception {
 
     ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.setName( "My Category" );
+
     for ( int i = 0; i < 100; i++ ) {
       if ( i % 2 == 0 ) {
         CreateMeasure createMeasure = new CreateMeasure();
@@ -121,12 +123,19 @@ public class ModelAnnotationMetastoreTest {
     }
 
     // create metastore
-    MetaStoreFactory<ModelAnnotation> factory = new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
-    for ( ModelAnnotation m : group ) {
-      factory.saveElement( m );
-    }
+    MetaStoreFactory<ModelAnnotationGroup>
+        factory =
+        new MetaStoreFactory( ModelAnnotationGroup.class, metaStore, "pentaho" );
+    factory.saveElement( group );
 
-    assertEquals( 100, factory.getElements().size() );
-    assertNotNull( factory.loadElement( group.get( 0 ).getName() ) );
+    // load element
+    assertEquals( 1, factory.getElements().size() );
+    assertEquals( group.size(), factory.loadElement( group.getName() ).size() );
+
+    group.setModelAnnotations( null );
+    assertEquals( 0, group.size() );
+
+    group.setModelAnnotations( new ModelAnnotationGroup(  ) );
+    assertEquals( 0, group.size() );
   }
 }
