@@ -23,6 +23,8 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -292,6 +294,16 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     if ( annotation != null ) {
       annotation.iterateProperties( closure );
     }
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    return EqualsBuilder.reflectionEquals( this, obj );
+  }
+
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.reflectionHashCode( this );
   }
 
   public static enum Type {

@@ -21,6 +21,7 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -72,6 +73,32 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
     removeRange( 0, this.size() ); // remove all
     if ( modelAnnotations != null ) {
       addAll( modelAnnotations );
+    }
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+
+    try {
+      if ( !EqualsBuilder.reflectionEquals( this, obj ) ) {
+        return false;
+      }
+
+      // manually check annotations
+      ModelAnnotationGroup objGroup = (ModelAnnotationGroup) obj;
+      if ( this.size() != objGroup.size() ) {
+        return false;
+      }
+
+      for ( int i = 0; i < this.size(); i++ ) {
+        if ( !this.get( i ).equals( objGroup.get( i ) ) ) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch ( Exception e ) {
+      return false;
     }
   }
 }
