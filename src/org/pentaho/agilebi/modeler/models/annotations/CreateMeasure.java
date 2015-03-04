@@ -25,17 +25,13 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import mondrian.olap.MondrianDef;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.automodel.PhysicalTableImporter;
@@ -47,8 +43,7 @@ import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+
 
 /**
  * @author Rowell Belen
@@ -203,22 +198,17 @@ public class CreateMeasure extends AnnotationType {
   @Override
   public boolean apply( Document doc, String field ) throws ModelerException {
     // Surgically add the measure into the cube...
-    try {
-      XPathFactory xPathFactory = XPathFactory.newInstance();
-      XPath xPath = xPathFactory.newXPath();
-      StringBuffer xPathExpr = new StringBuffer();
-      xPathExpr.append( "/Schema/Cube" ); // TODO: Handle multiple cubes...
-      XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      Node cube = (Node) xPathExpression.evaluate( doc, XPathConstants.NODE );
-      Element measureElement = null;
-      measureElement = doc.createElement( "Measure" );
-      cube.appendChild( measureElement ); // TODO: Measures need to come after calculated measures
-      measureElement.setAttribute( "name", getName() );
-      measureElement.setAttribute( "column", field );
-      measureElement.setAttribute( "aggregator", MondrianModelExporter.convertToMondrian( getAggregateType() ) );
-    } catch ( XPathExpressionException e ) {
-      throw new ModelerException( e );
-    }
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( doc );
+
+    MondrianDef.Measure measure = new MondrianDef.Measure();
+    measure.aggregator = MondrianModelExporter.convertToMondrian( getAggregateType() );
+    measure.name = this.getName();
+    measure.column = field;
+
+    measure.formatString = this.formatString;
+
+    mondrianSchemaHandler.addMeasure( null, measure );
+
     return true;
   }
 
