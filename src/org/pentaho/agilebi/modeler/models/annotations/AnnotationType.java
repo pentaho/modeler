@@ -38,6 +38,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -342,6 +344,16 @@ public abstract class AnnotationType implements Serializable {
 
   private boolean isSerializable( Class<?> classToCheck ) {
     return Serializable.class.isAssignableFrom( classToCheck );
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    return EqualsBuilder.reflectionEquals( this, obj );
+  }
+
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.reflectionHashCode( this );
   }
 
   /**

@@ -22,8 +22,11 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 
 public class ModelAnnotationGroupTest {
 
@@ -38,5 +41,45 @@ public class ModelAnnotationGroupTest {
     assertSame( measure, annotationGroup.get( 0 ) );
     assertSame( attribute, annotationGroup.get( 1 ) );
     assertEquals( "cleverIdentifier", annotationGroup.getId() );
+  }
+
+  @Test
+  public void testEquals() throws Exception {
+
+    // test list objects
+    ModelAnnotationGroup modelAnnotationGroup = getSampleModelAnnotationGroup();
+    ModelAnnotationGroup modelAnnotationGroupCopy = getSampleModelAnnotationGroup();
+
+    modelAnnotationGroupCopy.get( 0 ).getAnnotation().setModelPropertyValueById( "name", "modified" );
+    assertFalse( modelAnnotationGroup.equals( modelAnnotationGroupCopy ) );
+
+    modelAnnotationGroup.get( 0 ).getAnnotation().setModelPropertyValueById( "name", "modified" );
+    assertTrue( modelAnnotationGroup.equals( modelAnnotationGroupCopy ) );
+
+    assertFalse( modelAnnotationGroup.equals( null ) );
+    assertFalse( modelAnnotationGroup.equals( new ModelAnnotationGroup(  ) ) );
+  }
+
+  private ModelAnnotationGroup getSampleModelAnnotationGroup() {
+
+    ModelAnnotationGroup modelAnnotationGroup = new ModelAnnotationGroup();
+    modelAnnotationGroup.setName( "sample" );
+
+    CreateMeasure cm = new CreateMeasure();
+    cm.setAggregateType( AggregationType.SUM );
+
+    CreateAttribute ca = new CreateAttribute();
+    ca.setTimeType( ModelAnnotation.TimeType.TimeDays );
+
+    ModelAnnotation ma1 = new ModelAnnotation( "f1", cm );
+    ma1.setName( "ma1" );
+
+    ModelAnnotation ma2 = new ModelAnnotation( "f2", ca );
+    ma2.setName( "ma2" );
+
+    modelAnnotationGroup.add( ma1 );
+    modelAnnotationGroup.add( ma2 );
+
+    return modelAnnotationGroup;
   }
 }
