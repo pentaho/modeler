@@ -109,6 +109,7 @@ public class ModelAnnotationMetastoreTest {
 
     ModelAnnotationGroup group = new ModelAnnotationGroup();
     group.setName( "My Category" );
+    group.setDescription( "Test Description" );
 
     for ( int i = 0; i < 100; i++ ) {
       if ( i % 2 == 0 ) {
@@ -132,7 +133,9 @@ public class ModelAnnotationMetastoreTest {
     assertEquals( 1, factory.getElements().size() );
     assertEquals( group.size(), factory.loadElement( group.getName() ).size() );
 
-    group.setModelAnnotations( null );
+    assertEquals( "Test Description", factory.loadElement( group.getName() ).getDescription() );
+
+        group.setModelAnnotations( null );
     assertEquals( 0, group.size() );
 
     group.setModelAnnotations( new ModelAnnotationGroup(  ) );
