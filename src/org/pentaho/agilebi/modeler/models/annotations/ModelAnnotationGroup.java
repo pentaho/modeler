@@ -39,6 +39,9 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
   private String name;
 
   @MetaStoreAttribute
+  private String description;
+
+  @MetaStoreAttribute
   private List<ModelAnnotation> modelAnnotations; // indicate to metastore to persist items (calls the getter/setter)
 
   public ModelAnnotationGroup() {
@@ -67,6 +70,14 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
 
   public List<ModelAnnotation> getModelAnnotations() {
     return this;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription( String description ) {
+    this.description = description;
   }
 
   public void setModelAnnotations( List<ModelAnnotation> modelAnnotations ) {
