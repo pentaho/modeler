@@ -2,8 +2,10 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.metadata.model.concept.types.AggregationType;
@@ -140,5 +142,32 @@ public class ModelAnnotationMetastoreTest {
 
     group.setModelAnnotations( new ModelAnnotationGroup(  ) );
     assertEquals( 0, group.size() );
+  }
+
+  @Test
+  public void testSaveAndLoadCreateDimensionKey() throws Exception {
+    CreateDimensionKey createDimKey = new CreateDimensionKey();
+    createDimKey.setName( "f1" );
+    createDimKey.setDimension( "1dim" );
+    ModelAnnotation<CreateDimensionKey> annotation =
+        new ModelAnnotation<CreateDimensionKey>( "f1", createDimKey );
+
+    MetaStoreFactory<ModelAnnotation<?>> factory = getModelAnnotationFactory();
+    factory.saveElement( annotation );
+    assertNotNull( createDimKey.getName() );
+    assertNotNull( createDimKey.getDimension() );
+
+    assertEquals( 1, factory.getElements().size() );
+    @SuppressWarnings( "unchecked" )
+    ModelAnnotation<CreateDimensionKey> roundtripAnnotation =
+        (ModelAnnotation<CreateDimensionKey>) factory.getElements().get( 0 );
+
+    CreateDimensionKey roundtripCreateDimKey = roundtripAnnotation.getAnnotation();
+    assertEquals( createDimKey.getName(), roundtripCreateDimKey.getName() );
+    assertEquals( createDimKey.getDimension(), roundtripCreateDimKey.getDimension() );
+  }
+
+  private MetaStoreFactory<ModelAnnotation<?>> getModelAnnotationFactory() {
+    return new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
   }
 }
