@@ -308,7 +308,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   public static enum Type {
     CREATE_MEASURE( "Create Measure" ),
-    CREATE_ATTRIBUTE( "Create Attribute" );
+    CREATE_ATTRIBUTE( "Create Attribute" ),
+    CREATE_DIMENSION_KEY( "Create Dimension Key" );
 
     private final String description;
 

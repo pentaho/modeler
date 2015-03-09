@@ -151,6 +151,15 @@ public abstract class AnnotationType implements Serializable {
   public List<String> getModelPropertyNames() {
 
     final List<String> propertyNames = new ArrayList<String>();
+
+    for ( ModelProperty p : getModelProperties() ) {
+      propertyNames.add( p.name() );
+    }
+
+    return propertyNames;
+  }
+
+  public List<ModelProperty> getModelProperties() {
     final List<ModelProperty> properties = new ArrayList<ModelProperty>();
 
     List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
@@ -171,13 +180,9 @@ public abstract class AnnotationType implements Serializable {
         return 1;
       }
     } );
-
-    for ( ModelProperty p : properties ) {
-      propertyNames.add( p.name() );
-    }
-
-    return propertyNames;
+    return properties;
   }
+
 
   public void setModelPropertyByName( String modelPropertyName, Object value ) throws Exception {
 
