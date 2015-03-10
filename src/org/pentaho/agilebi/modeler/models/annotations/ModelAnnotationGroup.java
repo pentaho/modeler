@@ -21,11 +21,28 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+@MetaStoreElementType( name = "ModelAnnotationGroup", description = "ModelAnnotationGroup" )
 public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
+
+  @MetaStoreAttribute
   private String id;
+
+  @MetaStoreAttribute
+  private String name;
+
+  @MetaStoreAttribute
+  private String description;
+
+  @MetaStoreAttribute
+  private List<ModelAnnotation> modelAnnotations; // indicate to metastore to persist items (calls the getter/setter)
 
   public ModelAnnotationGroup() {
     super();
@@ -43,4 +60,56 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
     this.id = id;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
+
+  public List<ModelAnnotation> getModelAnnotations() {
+    return this;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription( String description ) {
+    this.description = description;
+  }
+
+  public void setModelAnnotations( List<ModelAnnotation> modelAnnotations ) {
+    removeRange( 0, this.size() ); // remove all
+    if ( modelAnnotations != null ) {
+      addAll( modelAnnotations );
+    }
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+
+    try {
+      if ( !EqualsBuilder.reflectionEquals( this, obj ) ) {
+        return false;
+      }
+
+      // manually check annotations
+      ModelAnnotationGroup objGroup = (ModelAnnotationGroup) obj;
+      if ( this.size() != objGroup.size() ) {
+        return false;
+      }
+
+      for ( int i = 0; i < this.size(); i++ ) {
+        if ( !this.get( i ).equals( objGroup.get( i ) ) ) {
+          return false;
+        }
+      }
+
+      return true;
+    } catch ( Exception e ) {
+      return false;
+    }
+  }
 }

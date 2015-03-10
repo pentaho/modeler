@@ -38,4 +38,6 @@ public @interface ModelProperty {
   String name() default "";
 
   int order() default Integer.MAX_VALUE;
+
+  boolean hideUI() default false;
 }

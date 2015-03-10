@@ -84,7 +84,7 @@ public class CreateMeasure extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME, order = AGGREGATE_TYPE_ORDER )
-  private AggregationType aggregateType;
+  private AggregationType aggregateType = AggregationType.SUM;
 
   @MetaStoreAttribute
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )

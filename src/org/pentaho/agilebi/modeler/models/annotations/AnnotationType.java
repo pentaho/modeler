@@ -38,6 +38,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -149,6 +151,15 @@ public abstract class AnnotationType implements Serializable {
   public List<String> getModelPropertyNames() {
 
     final List<String> propertyNames = new ArrayList<String>();
+
+    for ( ModelProperty p : getModelProperties() ) {
+      propertyNames.add( p.name() );
+    }
+
+    return propertyNames;
+  }
+
+  public List<ModelProperty> getModelProperties() {
     final List<ModelProperty> properties = new ArrayList<ModelProperty>();
 
     List<Field> fields = findAllFields( new ArrayList<Field>(), this.getClass() );
@@ -169,13 +180,9 @@ public abstract class AnnotationType implements Serializable {
         return 1;
       }
     } );
-
-    for ( ModelProperty p : properties ) {
-      propertyNames.add( p.name() );
-    }
-
-    return propertyNames;
+    return properties;
   }
+
 
   public void setModelPropertyByName( String modelPropertyName, Object value ) throws Exception {
 
@@ -342,6 +349,16 @@ public abstract class AnnotationType implements Serializable {
 
   private boolean isSerializable( Class<?> classToCheck ) {
     return Serializable.class.isAssignableFrom( classToCheck );
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    return EqualsBuilder.reflectionEquals( this, obj );
+  }
+
+  @Override
+  public int hashCode() {
+    return HashCodeBuilder.reflectionHashCode( this );
   }
 
   /**
