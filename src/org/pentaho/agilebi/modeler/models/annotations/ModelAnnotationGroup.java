@@ -22,6 +22,7 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -40,6 +41,12 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
 
   @MetaStoreAttribute
   private String description;
+
+  @MetaStoreAttribute
+  private boolean sharedDimension;
+
+  @MetaStoreAttribute
+  private List<DataProvider> dataProviders = new ArrayList<DataProvider>(  );
 
   @MetaStoreAttribute
   private List<ModelAnnotation> modelAnnotations; // indicate to metastore to persist items (calls the getter/setter)
@@ -78,6 +85,22 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
 
   public void setDescription( String description ) {
     this.description = description;
+  }
+
+  public boolean isSharedDimension() {
+    return sharedDimension;
+  }
+
+  public void setSharedDimension( boolean sharedDimension ) {
+    this.sharedDimension = sharedDimension;
+  }
+
+  public List<DataProvider> getDataProviders() {
+    return dataProviders;
+  }
+
+  public void setDataProviders( List<DataProvider> dataProviders ) {
+    this.dataProviders = dataProviders;
   }
 
   public void setModelAnnotations( List<ModelAnnotation> modelAnnotations ) {

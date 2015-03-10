@@ -20,24 +20,40 @@
  * explicitly covering such access.
  */
 
-package org.pentaho.agilebi.modeler.models.annotations;
+package org.pentaho.agilebi.modeler.models.annotations.data;
 
-import org.pentaho.database.model.DatabaseConnection;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
 
 import java.io.Serializable;
 
 /**
  * @author Rowell Belen
  */
-public class Provider implements Serializable {
+@MetaStoreElementType( name = "DataProvider", description = "DataProvider" )
+public class DataProvider implements Serializable {
 
   private static final long serialVersionUID = -2098838998948067999L;
 
+  @MetaStoreAttribute
+  private String name;
+
+  @MetaStoreAttribute
   private String schemaName;
 
+  @MetaStoreAttribute
   private String tableName;
 
-  private DatabaseConnection databaseConnection;
+  @MetaStoreAttribute
+  private DataProviderConnection dataProviderConnection;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
 
   public String getSchemaName() {
     return schemaName;
@@ -55,11 +71,11 @@ public class Provider implements Serializable {
     this.tableName = tableName;
   }
 
-  public DatabaseConnection getDatabaseConnection() {
-    return databaseConnection;
+  public DataProviderConnection getDataProviderConnection() {
+    return dataProviderConnection;
   }
 
-  public void setDatabaseConnection( DatabaseConnection databaseConnection ) {
-    this.databaseConnection = databaseConnection;
+  public void setDataProviderConnection( DataProviderConnection dataProviderConnection ) {
+    this.dataProviderConnection = dataProviderConnection;
   }
 }
