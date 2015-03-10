@@ -2,12 +2,13 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
+import org.pentaho.agilebi.modeler.models.annotations.data.DataProviderConnection;
+import org.pentaho.agilebi.modeler.models.annotations.data.NameValueProperty;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
@@ -16,6 +17,7 @@ import org.pentaho.metastore.stores.xml.XmlMetaStore;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -125,6 +127,18 @@ public class ModelAnnotationMetastoreTest {
       }
     }
 
+    DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dataProvider1" );
+    dataProvider.setSchemaName( "schemaName" );
+    dataProvider.setTableName( "tableName" );
+    dataProvider.setDataProviderConnection( getTestDataProviderConnection() );
+
+    List<DataProvider> dataProviders = new ArrayList<DataProvider>();
+    dataProviders.add( dataProvider );
+
+    group.setDataProviders( dataProviders );
+    group.setSharedDimension( true );
+
     // create metastore
     MetaStoreFactory<ModelAnnotationGroup>
         factory =
@@ -133,14 +147,21 @@ public class ModelAnnotationMetastoreTest {
 
     // load element
     assertEquals( 1, factory.getElements().size() );
-    assertEquals( group.size(), factory.loadElement( group.getName() ).size() );
 
-    assertEquals( "Test Description", factory.loadElement( group.getName() ).getDescription() );
+    ModelAnnotationGroup loadedGroup = factory.loadElement( group.getName() );
 
-        group.setModelAnnotations( null );
+    assertEquals( group.size(), loadedGroup.size() );
+
+    assertEquals( "Test Description", loadedGroup.getDescription() );
+
+    assertEquals( true, loadedGroup.isSharedDimension() );
+    assertEquals( 1, loadedGroup.getDataProviders().size() );
+    assertEquals( 2, loadedGroup.getDataProviders().get( 0 ).getDataProviderConnection().getAttributeList().size() );
+
+    group.setModelAnnotations( null );
     assertEquals( 0, group.size() );
 
-    group.setModelAnnotations( new ModelAnnotationGroup(  ) );
+    group.setModelAnnotations( new ModelAnnotationGroup() );
     assertEquals( 0, group.size() );
   }
 
@@ -169,5 +190,18 @@ public class ModelAnnotationMetastoreTest {
 
   private MetaStoreFactory<ModelAnnotation<?>> getModelAnnotationFactory() {
     return new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
+  }
+
+  private DataProviderConnection getTestDataProviderConnection() {
+
+    DataProviderConnection dataProviderConnection = new DataProviderConnection();
+    dataProviderConnection.setName( "STAGING" );
+
+    List<NameValueProperty> attributeList = new ArrayList<NameValueProperty>();
+    attributeList.add( new NameValueProperty( "prop1", "propVal1" ) );
+    attributeList.add( new NameValueProperty( "prop2", "propVal2" ) );
+    dataProviderConnection.setAttributeList( attributeList );
+
+    return dataProviderConnection;
   }
 }
