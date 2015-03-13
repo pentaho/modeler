@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler.models.annotations.data;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.metastore.api.IMetaStore;
@@ -202,5 +203,36 @@ public class DataProviderConnection implements Serializable {
     }
 
     return null;
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+
+    try {
+      if ( !EqualsBuilder.reflectionEquals( this, obj ) ) {
+        return false;
+      }
+
+      // manually check columnMappings
+      DataProviderConnection toCompare = (DataProviderConnection) obj;
+      List<NameValueProperty> thisAttributeList = this.getAttributeList();
+      List<NameValueProperty> toCompareAttributeList = toCompare.getAttributeList();
+
+      if ( thisAttributeList != null && toCompareAttributeList != null ) {
+        if ( thisAttributeList.size() != toCompareAttributeList.size() ) {
+          return false;
+        }
+
+        for ( int i = 0; i < thisAttributeList.size(); i++ ) {
+          if ( !thisAttributeList.get( i ).equals( toCompareAttributeList.get( i ) ) ) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    } catch ( Exception e ) {
+      return false;
+    }
   }
 }

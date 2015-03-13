@@ -22,10 +22,12 @@
 
 package org.pentaho.agilebi.modeler.models.annotations.data;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Rowell Belen
@@ -46,6 +48,8 @@ public class DataProvider implements Serializable {
 
   @MetaStoreAttribute
   private String databaseMetaNameRef;
+
+  private List<ColumnMapping> columnMappings;
 
   public String getName() {
     return name;
@@ -77,5 +81,44 @@ public class DataProvider implements Serializable {
 
   public void setDatabaseMetaNameRef( String databaseMetaNameRef ) {
     this.databaseMetaNameRef = databaseMetaNameRef;
+  }
+
+  public List<ColumnMapping> getColumnMappings() {
+    return columnMappings;
+  }
+
+  public void setColumnMappings( List<ColumnMapping> columnMappings ) {
+    this.columnMappings = columnMappings;
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+
+    try {
+      if ( !EqualsBuilder.reflectionEquals( this, obj ) ) {
+        return false;
+      }
+
+      // manually check columnMappings
+      DataProvider toCompare = (DataProvider) obj;
+      List<ColumnMapping> thisMap = this.getColumnMappings();
+      List<ColumnMapping> toCompareMap = toCompare.getColumnMappings();
+
+      if(thisMap != null && toCompareMap != null){
+        if ( thisMap.size() != toCompareMap.size() ) {
+          return false;
+        }
+
+        for ( int i = 0; i < thisMap.size(); i++ ) {
+          if ( !thisMap.get( i ).equals( toCompareMap.get( i ) ) ) {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    } catch ( Exception e ) {
+      return false;
+    }
   }
 }
