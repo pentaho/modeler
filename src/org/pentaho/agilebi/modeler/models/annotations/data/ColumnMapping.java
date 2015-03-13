@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.models.annotations.data;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
@@ -43,5 +44,10 @@ public class ColumnMapping implements Serializable {
 
   public void setColumnDataType( DataType columnDataType ) {
     this.columnDataType = columnDataType;
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    return EqualsBuilder.reflectionEquals( this, obj );
   }
 }

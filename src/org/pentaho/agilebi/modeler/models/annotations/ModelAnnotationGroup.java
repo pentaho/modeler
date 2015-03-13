@@ -46,7 +46,7 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
   private boolean sharedDimension;
 
   @MetaStoreAttribute
-  private List<DataProvider> dataProviders = new ArrayList<DataProvider>(  );
+  private List<DataProvider> dataProviders = new ArrayList<DataProvider>();
 
   @MetaStoreAttribute
   private List<ModelAnnotation> modelAnnotations; // indicate to metastore to persist items (calls the getter/setter)
@@ -79,6 +79,13 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
     return this;
   }
 
+  public void setModelAnnotations( List<ModelAnnotation> modelAnnotations ) {
+    removeRange( 0, this.size() ); // remove all
+    if ( modelAnnotations != null ) {
+      addAll( modelAnnotations );
+    }
+  }
+
   public String getDescription() {
     return description;
   }
@@ -101,13 +108,6 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
 
   public void setDataProviders( List<DataProvider> dataProviders ) {
     this.dataProviders = dataProviders;
-  }
-
-  public void setModelAnnotations( List<ModelAnnotation> modelAnnotations ) {
-    removeRange( 0, this.size() ); // remove all
-    if ( modelAnnotations != null ) {
-      addAll( modelAnnotations );
-    }
   }
 
   @Override

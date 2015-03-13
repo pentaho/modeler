@@ -1,5 +1,6 @@
 package org.pentaho.agilebi.modeler.models.annotations.data;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -39,5 +40,10 @@ public class NameValueProperty implements Serializable {
 
   public void setValue( String value ) {
     this.value = value;
+  }
+
+  @Override
+  public boolean equals( Object obj ) {
+    return EqualsBuilder.reflectionEquals( this, obj );
   }
 }

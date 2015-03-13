@@ -26,7 +26,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
+import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.concept.types.DataType;
+
+import java.util.Arrays;
 
 public class ModelAnnotationGroupTest {
 
@@ -56,8 +61,21 @@ public class ModelAnnotationGroupTest {
     modelAnnotationGroup.get( 0 ).getAnnotation().setModelPropertyValueById( "name", "modified" );
     assertTrue( modelAnnotationGroup.equals( modelAnnotationGroupCopy ) );
 
+    modelAnnotationGroupCopy.getDataProviders().get( 0 ).setDatabaseMetaNameRef( "newRef" );
+    assertFalse( modelAnnotationGroup.equals( modelAnnotationGroupCopy ) );
+
+    modelAnnotationGroup.getDataProviders().get( 0 ).setDatabaseMetaNameRef( "newRef" );
+    assertTrue( modelAnnotationGroup.equals( modelAnnotationGroupCopy ) );
+
+    modelAnnotationGroupCopy.getDataProviders().get( 0 ).getColumnMappings().get( 0 )
+        .setColumnDataType( DataType.BINARY );
+    assertFalse( modelAnnotationGroup.equals( modelAnnotationGroupCopy ) );
+
+    modelAnnotationGroup.getDataProviders().get( 0 ).getColumnMappings().get( 0 ).setColumnDataType( DataType.BINARY );
+    assertTrue( modelAnnotationGroup.equals( modelAnnotationGroupCopy ) );
+
     assertFalse( modelAnnotationGroup.equals( null ) );
-    assertFalse( modelAnnotationGroup.equals( new ModelAnnotationGroup(  ) ) );
+    assertFalse( modelAnnotationGroup.equals( new ModelAnnotationGroup() ) );
   }
 
   private ModelAnnotationGroup getSampleModelAnnotationGroup() {
@@ -79,6 +97,20 @@ public class ModelAnnotationGroupTest {
 
     modelAnnotationGroup.add( ma1 );
     modelAnnotationGroup.add( ma2 );
+
+    DataProvider dataProvider1 = new DataProvider();
+    dataProvider1.setName( "dbp1" );
+    dataProvider1.setDatabaseMetaNameRef( "ref1" );
+    dataProvider1.setColumnMappings( Arrays.asList( new ColumnMapping[] { new ColumnMapping() } ) );
+
+    DataProvider dataProvider2 = new DataProvider();
+    dataProvider2.setName( "dbp2" );
+    dataProvider2.setDatabaseMetaNameRef( "ref2" );
+    dataProvider2.setColumnMappings( Arrays.asList( new ColumnMapping[] { new ColumnMapping() } ) );
+
+    modelAnnotationGroup.setDataProviders( Arrays.asList( new DataProvider[] { dataProvider1, dataProvider2 } ) );
+
+    modelAnnotationGroup.setSharedDimension( true );
 
     return modelAnnotationGroup;
   }
