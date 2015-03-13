@@ -45,7 +45,7 @@ public class DataProvider implements Serializable {
   private String tableName;
 
   @MetaStoreAttribute
-  private DataProviderConnection dataProviderConnection;
+  private String databaseMetaNameRef;
 
   public String getName() {
     return name;
@@ -71,11 +71,11 @@ public class DataProvider implements Serializable {
     this.tableName = tableName;
   }
 
-  public DataProviderConnection getDataProviderConnection() {
-    return dataProviderConnection;
+  public String getDatabaseMetaNameRef() {
+    return databaseMetaNameRef;
   }
 
-  public void setDataProviderConnection( DataProviderConnection dataProviderConnection ) {
-    this.dataProviderConnection = dataProviderConnection;
+  public void setDatabaseMetaNameRef( String databaseMetaNameRef ) {
+    this.databaseMetaNameRef = databaseMetaNameRef;
   }
 }

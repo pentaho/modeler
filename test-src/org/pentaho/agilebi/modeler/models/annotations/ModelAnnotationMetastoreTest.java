@@ -131,7 +131,7 @@ public class ModelAnnotationMetastoreTest {
     dataProvider.setName( "dataProvider1" );
     dataProvider.setSchemaName( "schemaName" );
     dataProvider.setTableName( "tableName" );
-    dataProvider.setDataProviderConnection( getTestDataProviderConnection() );
+    dataProvider.setDatabaseMetaNameRef( "dbMeta1" );
 
     List<DataProvider> dataProviders = new ArrayList<DataProvider>();
     dataProviders.add( dataProvider );
@@ -156,7 +156,7 @@ public class ModelAnnotationMetastoreTest {
 
     assertEquals( true, loadedGroup.isSharedDimension() );
     assertEquals( 1, loadedGroup.getDataProviders().size() );
-    assertEquals( 2, loadedGroup.getDataProviders().get( 0 ).getDataProviderConnection().getAttributeList().size() );
+    assertEquals( "dbMeta1", loadedGroup.getDataProviders().get( 0 ).getDatabaseMetaNameRef() );
 
     group.setModelAnnotations( null );
     assertEquals( 0, group.size() );

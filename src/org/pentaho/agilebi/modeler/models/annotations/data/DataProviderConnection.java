@@ -1,7 +1,10 @@
 package org.pentaho.agilebi.modeler.models.annotations.data;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -13,7 +16,7 @@ import java.util.Properties;
 
 /**
  * @author Rowell Belen
- *         Metastore-compatible wrapper
+ *         Metastore-compatible wrapper for DatabaseMeta
  */
 @MetaStoreElementType( name = "DataProviderConnection", description = "DataProviderConnection" )
 public class DataProviderConnection implements Serializable {
@@ -119,7 +122,29 @@ public class DataProviderConnection implements Serializable {
     this.attributeList = attributeList;
   }
 
-  public void populate( DatabaseMeta databaseMeta ) {
+  public DatabaseMeta createDatabaseMeta() {
+
+    try {
+      DatabaseMeta databaseMeta = new DatabaseMeta();
+      BeanUtils.copyProperties( databaseMeta, this );
+
+      if ( this.getAttributeList() != null && !this.getAttributeList().isEmpty() ) {
+        Properties properties = new Properties();
+        for ( NameValueProperty nameValueProperty : this.getAttributeList() ) {
+          properties.setProperty( nameValueProperty.getName(), nameValueProperty.getValue() );
+        }
+        databaseMeta.setAttributes( properties );
+      }
+
+      return databaseMeta;
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  public void populateFrom( DatabaseMeta databaseMeta ) {
     try {
       BeanUtils.copyProperties( this, databaseMeta );
 
@@ -140,5 +165,42 @@ public class DataProviderConnection implements Serializable {
     } catch ( Exception e ) {
       e.printStackTrace();
     }
+  }
+
+  public void persistDatabaseMeta( IMetaStore metaStore, DatabaseMeta databaseMeta ) {
+
+    if ( metaStore == null ) {
+      return;
+    }
+
+    try {
+      DatabaseMetaStoreUtil.createDatabaseElement( metaStore, databaseMeta );
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+  }
+
+  public DatabaseMeta load( final IMetaStore metaStore ) {
+
+    try {
+
+      if ( metaStore == null ) {
+        return null;
+      }
+
+      List<DatabaseMeta> databaseMetaList = DatabaseMetaStoreUtil.getDatabaseElements( metaStore );
+      for ( DatabaseMeta databaseMeta : databaseMetaList ) {
+        if ( databaseMeta.getName() != null && StringUtils.isNotBlank( databaseMeta.getName() ) &&
+            StringUtils.equals( databaseMeta.getName(), getName() ) ) {
+          populateFrom( databaseMeta );
+          return databaseMeta;
+        }
+      }
+
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 }
