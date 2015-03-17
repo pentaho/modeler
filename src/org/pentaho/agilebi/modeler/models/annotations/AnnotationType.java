@@ -50,6 +50,7 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
@@ -284,11 +285,13 @@ public abstract class AnnotationType implements Serializable {
   }
 
   protected LevelMetaData locateLevel( final ModelerWorkspace workspace, final String column ) throws ModelerException {
+    String locale = workspace.getWorkspaceHelper().getLocale();
     workspace.getModel().getDimensions();
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
         for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
-          if ( levelMetaData.getLogicalColumn().getName(workspace.getWorkspaceHelper().getLocale() ).equals( column ) ) {
+          if ( levelMetaData.getLogicalColumn().getName( locale ).equals( column )
+              || levelMetaData.getLogicalColumn().getName( locale ).equals( beautify( column ) ) ) {
             return levelMetaData;
           }
         }
@@ -298,16 +301,22 @@ public abstract class AnnotationType implements Serializable {
   }
 
   protected LogicalColumn locateLogicalColumn( final ModelerWorkspace workspace, final String columnName ) {
+    String locale = workspace.getWorkspaceHelper().getLocale();
     LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
     logicalModel.getLogicalTables();
     for ( LogicalTable logicalTable : logicalModel.getLogicalTables() ) {
       for ( LogicalColumn logicalColumn : logicalTable.getLogicalColumns() ) {
-        if ( logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ).equalsIgnoreCase( columnName ) ) {
+        if ( logicalColumn.getName( locale ).equalsIgnoreCase( columnName )
+            || logicalColumn.getName( locale ).equalsIgnoreCase( beautify( columnName ) ) ) {
           return logicalColumn;
         }
       }
     }
     return null;
+  }
+
+  protected String beautify( final String column ) {
+    return column == null ? null : PhysicalTableImporter.beautifyName( column );
   }
 
   public void populate( final Map<String, Serializable> propertiesMap ) {

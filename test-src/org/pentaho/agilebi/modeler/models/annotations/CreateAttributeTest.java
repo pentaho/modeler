@@ -220,22 +220,7 @@ public class CreateAttributeTest {
 
   @Test
   public void testCreateGeoDimensionAndRemovesAutoGeo() throws Exception {
-    DatabaseMeta dbMeta = createGeoTable();
-    TableModelerSource source = new TableModelerSource( dbMeta, "geodata", "" );
-    Domain domain = source.generateDomain();
-
-    Reader propsReader = new FileReader( new File( "test-res/geoRoles.properties" ) );
-    Properties props = new Properties();
-    props.load( propsReader );
-    GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
-    GeoContext geoContext = GeoContextFactory.create( config );
-
-    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ), geoContext );
-    model.setModelSource( source );
-    model.setDomain( domain );
-    model.setModelName( "someModel" );
-    model.getWorkspaceHelper().autoModelFlat( model );
-    model.getWorkspaceHelper().populateDomain( model );
+    ModelerWorkspace model = prepareGeoModel();
 
     CreateAttribute country = new CreateAttribute();
     country.setName( "Country" );
@@ -283,8 +268,7 @@ public class CreateAttributeTest {
 
   }
 
-  @Test
-  public void testCreateMultipleGeoDimensions() throws Exception {
+  private ModelerWorkspace prepareGeoModel() throws Exception {
     DatabaseMeta dbMeta = createGeoTable();
     TableModelerSource source = new TableModelerSource( dbMeta, "geodata", "" );
     Domain domain = source.generateDomain();
@@ -301,6 +285,12 @@ public class CreateAttributeTest {
     model.setModelName( "someModel" );
     model.getWorkspaceHelper().autoModelFlat( model );
     model.getWorkspaceHelper().populateDomain( model );
+    return model;
+  }
+
+  @Test
+  public void testCreateMultipleGeoDimensions() throws Exception {
+    ModelerWorkspace model = prepareGeoModel();
 
     CreateAttribute country = new CreateAttribute();
     country.setName( "Country" );
@@ -441,5 +431,23 @@ public class CreateAttributeTest {
     assertEquals( "Product Code", codeLevel.getName() );
     assertEquals( "PRODUCTCODE_OLAP",
         codeLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+  }
+
+  @Test
+  public void testBeautifiedNamesAreHandled() throws Exception {
+    ModelerWorkspace model = prepareGeoModel();
+
+    CreateAttribute abbr = new CreateAttribute();
+    abbr.setName( "State Abbr" );
+    abbr.setDimension( "dim" );
+    abbr.apply( model, "STATE_ABBR" );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    OlapDimensionUsage stateDim = dimensionUsages.get( 2 );
+    OlapHierarchy hierarchy = stateDim.getOlapDimension().getHierarchies().get( 0 );
+    OlapHierarchyLevel level = hierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( "State Abbr", level.getName() );
   }
 }

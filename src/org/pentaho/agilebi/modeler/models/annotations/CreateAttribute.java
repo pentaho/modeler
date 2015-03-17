@@ -307,7 +307,9 @@ public class CreateAttribute extends AnnotationType {
   private MeasureMetaData locateMeasure( final ModelerWorkspace workspace, final String column ) {
     MeasuresCollection measures = workspace.getModel().getMeasures();
     for ( MeasureMetaData measure : measures ) {
-      if ( measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals( column ) ) {
+      if ( measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals( column )
+          || measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals(
+          beautify( column ) ) ) {
         return measure;
       }
     }
