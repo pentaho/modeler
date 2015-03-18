@@ -6,10 +6,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProviderConnection;
 import org.pentaho.agilebi.modeler.models.annotations.data.NameValueProperty;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
@@ -132,6 +134,7 @@ public class ModelAnnotationMetastoreTest {
     dataProvider.setSchemaName( "schemaName" );
     dataProvider.setTableName( "tableName" );
     dataProvider.setDatabaseMetaNameRef( "dbMeta1" );
+    dataProvider.setColumnMappings( getTestColumnMappings() );
 
     List<DataProvider> dataProviders = new ArrayList<DataProvider>();
     dataProviders.add( dataProvider );
@@ -140,8 +143,7 @@ public class ModelAnnotationMetastoreTest {
     group.setSharedDimension( true );
 
     // create metastore
-    MetaStoreFactory<ModelAnnotationGroup>
-        factory =
+    MetaStoreFactory<ModelAnnotationGroup> factory =
         new MetaStoreFactory( ModelAnnotationGroup.class, metaStore, "pentaho" );
     factory.saveElement( group );
 
@@ -157,6 +159,7 @@ public class ModelAnnotationMetastoreTest {
     assertEquals( true, loadedGroup.isSharedDimension() );
     assertEquals( 1, loadedGroup.getDataProviders().size() );
     assertEquals( "dbMeta1", loadedGroup.getDataProviders().get( 0 ).getDatabaseMetaNameRef() );
+    assertEquals( 2, loadedGroup.getDataProviders().get(0).getColumnMappings().size() );
 
     group.setModelAnnotations( null );
     assertEquals( 0, group.size() );
@@ -204,4 +207,24 @@ public class ModelAnnotationMetastoreTest {
 
     return dataProviderConnection;
   }
+
+  private List<ColumnMapping> getTestColumnMappings(){
+
+    List<ColumnMapping>  columnMappings = new ArrayList<ColumnMapping>(  );
+
+    ColumnMapping cm = new ColumnMapping();
+    cm.setName( "cm-name" );
+    cm.setColumnName( "cm-column-name" );
+    cm.setColumnDataType( DataType.BINARY );
+    columnMappings.add( cm );
+
+    ColumnMapping cm1 = new ColumnMapping();
+    cm1.setName( "cm1-name" );
+    cm1.setColumnName( "cm1-column-name" );
+    cm1.setColumnDataType( DataType.DATE );
+    columnMappings.add( cm );
+
+    return columnMappings;
+  }
+
 }

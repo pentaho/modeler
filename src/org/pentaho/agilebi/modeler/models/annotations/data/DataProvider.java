@@ -27,6 +27,7 @@ import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,7 +50,8 @@ public class DataProvider implements Serializable {
   @MetaStoreAttribute
   private String databaseMetaNameRef;
 
-  private List<ColumnMapping> columnMappings;
+  @MetaStoreAttribute
+  private List<ColumnMapping> columnMappings = new ArrayList<ColumnMapping>(  );
 
   public String getName() {
     return name;
