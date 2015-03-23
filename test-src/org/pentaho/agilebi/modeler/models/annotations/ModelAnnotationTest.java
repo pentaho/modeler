@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.SourceType
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
@@ -174,5 +175,14 @@ public class ModelAnnotationTest {
     assertFalse(
         ModelAnnotation.Type.CREATE_MEASURE
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+
+
+    modelAnnotations.setDataProviders( new ArrayList<DataProvider>(  ) ); // clear data providers
+    assertTrue(
+        ModelAnnotation.Type.CREATE_MEASURE
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+    assertTrue(
+        ModelAnnotation.Type.CREATE_MEASURE
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
   }
 }
