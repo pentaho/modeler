@@ -22,17 +22,20 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.SourceType;
+import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Rowell Belen
@@ -114,12 +117,62 @@ public class ModelAnnotationTest {
       }
 
       @Override
-      public void validate() throws ModelerException {}
+      public void validate() throws ModelerException { }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
     modelAnnotation.setField( "amount" );
     modelAnnotation.setAnnotation( annotationType );
     modelAnnotation.setSourceType( SourceType.StreamField );
     modelAnnotation.apply( modelerWorkspace );
+  }
+
+  @Test
+  public void testDimensionKeyOnlyAppliesToSharedDimensions() throws Exception {
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
+    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    assertTrue(
+        ModelAnnotation.Type.CREATE_DIMENSION_KEY
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+    assertFalse(
+        ModelAnnotation.Type.CREATE_DIMENSION_KEY
+            .isApplicable( new ModelAnnotationGroup(), new ModelAnnotation(), new ValueMetaInteger() ) );
+  }
+
+  @Test
+  public void testDimensionKeyOnlyAppliesOncePerGroup() throws Exception {
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
+    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    assertTrue(
+        ModelAnnotation.Type.CREATE_DIMENSION_KEY
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+    modelAnnotations.add( new ModelAnnotation<CreateDimensionKey>( "fieldA", new CreateDimensionKey() ) );
+    assertFalse(
+        ModelAnnotation.Type.CREATE_DIMENSION_KEY
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+  }
+
+  @Test
+  public void testAttributeAlwaysApplicable() throws Exception {
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
+    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    assertTrue(
+        ModelAnnotation.Type.CREATE_ATTRIBUTE
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+    modelAnnotations.add( new ModelAnnotation<CreateDimensionKey>( "fieldA", new CreateDimensionKey() ) );
+    assertTrue(
+        ModelAnnotation.Type.CREATE_ATTRIBUTE
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+  }
+
+  @Test
+  public void testMeasureNotApplicableToSharedDimension() throws Exception {
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
+    assertTrue(
+        ModelAnnotation.Type.CREATE_MEASURE
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    assertFalse(
+        ModelAnnotation.Type.CREATE_MEASURE
+            .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
   }
 }

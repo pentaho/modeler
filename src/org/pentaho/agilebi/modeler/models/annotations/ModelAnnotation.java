@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapDimension;
@@ -307,9 +308,43 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public static enum Type {
-    CREATE_MEASURE( "Create Measure" ),
-    CREATE_ATTRIBUTE( "Create Attribute" ),
-    CREATE_DIMENSION_KEY( "Create Dimension Key" );
+    CREATE_MEASURE( "Create Measure" ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return valueMeta.isNumeric() && modelAnnotations.getDataProviders().isEmpty();
+      }
+    },
+    CREATE_ATTRIBUTE( "Create Attribute" ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return true;
+      }
+    },
+    CREATE_DIMENSION_KEY( "Create Dimension Key" ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.getDataProviders().isEmpty()
+            && ( isDimensionKey( modelAnnotation ) || !hasDimensionKey( modelAnnotations ) );
+      }
+
+      private boolean isDimensionKey( final ModelAnnotation modelAnnotation ) {
+        return CREATE_DIMENSION_KEY.equals( modelAnnotation.getType() );
+      }
+
+      private boolean hasDimensionKey( final ModelAnnotationGroup modelAnnotations ) {
+        for ( ModelAnnotation modelAnnotation : modelAnnotations ) {
+          if ( isDimensionKey( modelAnnotation ) ) {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
 
     private final String description;
 
@@ -329,6 +364,11 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     public String description() {
       return description;
     }
+
+    public abstract boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta );
   }
 
   public static enum TimeType {
