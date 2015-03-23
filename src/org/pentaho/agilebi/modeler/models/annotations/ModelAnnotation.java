@@ -313,7 +313,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
           final ModelAnnotationGroup modelAnnotations,
           final ModelAnnotation modelAnnotation,
           final ValueMetaInterface valueMeta ) {
-        return valueMeta.isNumeric() && modelAnnotations.getDataProviders().isEmpty();
+        return modelAnnotations.getDataProviders() == null || modelAnnotations.getDataProviders().isEmpty();
       }
     },
     CREATE_ATTRIBUTE( "Create Attribute" ) {
