@@ -75,7 +75,7 @@
 
     <dependency org="mysql" name="mysql-connector-java" rev="5.1.10"  conf="test->default"/>
     <dependency org="hsqldb" name="hsqldb" rev="1.8.0.7"  conf="test->default"/>
-    <dependency org="simple-jndi" name="simple-jndi" rev="0.11.3" conf="test->default" transitive="false" />
+    <dependency org="pentaho" name="simple-jndi" rev="${dependency.pentaho-simple-jndi.revision}" conf="test->default" transitive="false" />
 
     <dependency org="pentaho" name="pentaho-platform-core" rev="${dependency.pentaho-platform.revision}" changing="true" transitive="false" conf="test->default"/>
 
