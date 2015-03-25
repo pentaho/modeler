@@ -344,6 +344,13 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         }
         return false;
       }
+    },
+    LINK_DIMENSION( "Link Dimension" ) {
+      @Override
+      public boolean isApplicable( final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
+                                   final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.isSharedDimension();
+      }
     };
 
     private final String description;
