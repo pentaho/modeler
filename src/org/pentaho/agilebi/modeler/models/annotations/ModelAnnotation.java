@@ -313,7 +313,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
           final ModelAnnotationGroup modelAnnotations,
           final ModelAnnotation modelAnnotation,
           final ValueMetaInterface valueMeta ) {
-        return modelAnnotations.getDataProviders() == null || modelAnnotations.getDataProviders().isEmpty();
+        return !modelAnnotations.isSharedDimension();
       }
     },
     CREATE_ATTRIBUTE( "Create Attribute" ) {
@@ -328,7 +328,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       @Override public boolean isApplicable(
           final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
           final ValueMetaInterface valueMeta ) {
-        return !modelAnnotations.getDataProviders().isEmpty()
+        return modelAnnotations.isSharedDimension()
             && ( isDimensionKey( modelAnnotation ) || !hasDimensionKey( modelAnnotations ) );
       }
 

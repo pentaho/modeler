@@ -130,7 +130,7 @@ public class ModelAnnotationTest {
   @Test
   public void testDimensionKeyOnlyAppliesToSharedDimensions() throws Exception {
     ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
-    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    modelAnnotations.setSharedDimension( true );
     assertTrue(
         ModelAnnotation.Type.CREATE_DIMENSION_KEY
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
@@ -142,7 +142,7 @@ public class ModelAnnotationTest {
   @Test
   public void testDimensionKeyOnlyAppliesOncePerGroup() throws Exception {
     ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
-    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    modelAnnotations.setSharedDimension( true );
     assertTrue(
         ModelAnnotation.Type.CREATE_DIMENSION_KEY
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
@@ -171,13 +171,13 @@ public class ModelAnnotationTest {
     assertTrue(
         ModelAnnotation.Type.CREATE_MEASURE
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
-    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    modelAnnotations.setSharedDimension( true );
     assertFalse(
         ModelAnnotation.Type.CREATE_MEASURE
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
 
 
-    modelAnnotations.setDataProviders( new ArrayList<DataProvider>(  ) ); // clear data providers
+    modelAnnotations.setSharedDimension( false );
     assertTrue(
         ModelAnnotation.Type.CREATE_MEASURE
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
