@@ -185,4 +185,14 @@ public class ModelAnnotationTest {
         ModelAnnotation.Type.CREATE_MEASURE
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
   }
+
+  @Test
+  public void testLinkDimensionNotApplicableToSharedDimension() throws Exception {
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
+    assertTrue( ModelAnnotation.Type.LINK_DIMENSION
+        .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+    modelAnnotations.setSharedDimension( true );
+    assertFalse( ModelAnnotation.Type.LINK_DIMENSION
+        .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
+  }
 }
