@@ -3,6 +3,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
@@ -159,7 +160,7 @@ public class ModelAnnotationMetastoreTest {
     assertEquals( true, loadedGroup.isSharedDimension() );
     assertEquals( 1, loadedGroup.getDataProviders().size() );
     assertEquals( "dbMeta1", loadedGroup.getDataProviders().get( 0 ).getDatabaseMetaNameRef() );
-    assertEquals( 2, loadedGroup.getDataProviders().get(0).getColumnMappings().size() );
+    assertEquals( 2, loadedGroup.getDataProviders().get( 0 ).getColumnMappings().size() );
 
     group.setModelAnnotations( null );
     assertEquals( 0, group.size() );
@@ -191,6 +192,32 @@ public class ModelAnnotationMetastoreTest {
     assertEquals( createDimKey.getDimension(), roundtripCreateDimKey.getDimension() );
   }
 
+  @Test
+  public void testSaveAndLoadLinkDimension() throws Exception {
+
+    LinkDimension linkDimension = new LinkDimension();
+    linkDimension.setName( "ldName" );
+    linkDimension.setSharedDimension( "ldsd" );
+
+    ModelAnnotation<LinkDimension> linkDimensionModelAnnotation =
+        new ModelAnnotation<LinkDimension>( "f1", linkDimension );
+    MetaStoreFactory<ModelAnnotation<?>> factory = getModelAnnotationFactory();
+    factory.saveElement( linkDimensionModelAnnotation );
+    assertNotNull( linkDimension.getName() );
+    assertNotNull( linkDimension.getSharedDimension() );
+
+    assertEquals( 1, factory.getElements().size() );
+    ModelAnnotation<LinkDimension> loadedAnnotation =
+        (ModelAnnotation<LinkDimension>) factory.getElements().get( 0 );
+    LinkDimension loadedLinkDimension = loadedAnnotation.getAnnotation();
+    assertEquals( linkDimension.getName(), loadedLinkDimension.getName() );
+    assertEquals( linkDimension.getSharedDimension(), loadedLinkDimension.getSharedDimension() );
+
+    assertEquals( linkDimension, loadedLinkDimension );
+    assertFalse( linkDimension.equals( new LinkDimension() ) );
+    assertFalse( loadedLinkDimension.equals( new LinkDimension() ) );
+  }
+
   private MetaStoreFactory<ModelAnnotation<?>> getModelAnnotationFactory() {
     return new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
   }
@@ -208,9 +235,9 @@ public class ModelAnnotationMetastoreTest {
     return dataProviderConnection;
   }
 
-  private List<ColumnMapping> getTestColumnMappings(){
+  private List<ColumnMapping> getTestColumnMappings() {
 
-    List<ColumnMapping>  columnMappings = new ArrayList<ColumnMapping>(  );
+    List<ColumnMapping> columnMappings = new ArrayList<ColumnMapping>();
 
     ColumnMapping cm = new ColumnMapping();
     cm.setName( "cm-name" );
