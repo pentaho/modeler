@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -30,6 +31,8 @@ import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.w3c.dom.Document;
 
 import java.util.ArrayList;
@@ -42,6 +45,13 @@ import static org.junit.Assert.*;
  * @author Rowell Belen
  */
 public class ModelAnnotationTest {
+
+  private IMetaStore metaStore;
+
+  @Before
+  public void setUp() throws Exception {
+    metaStore = new MemoryMetaStore();
+  }
 
   @Test
   public void testMeasure() {
@@ -92,7 +102,7 @@ public class ModelAnnotationTest {
     final ModelerWorkspace modelerWorkspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     AnnotationType annotationType = new AnnotationType() {
       @Override
-      public boolean apply( final ModelerWorkspace workspace, final String column ) {
+      public boolean apply( final ModelerWorkspace workspace, final String column, final IMetaStore metaStore ) {
         assertSame( workspace, modelerWorkspace );
         assertEquals( "amount", column );
         return true;
@@ -124,7 +134,7 @@ public class ModelAnnotationTest {
     modelAnnotation.setField( "amount" );
     modelAnnotation.setAnnotation( annotationType );
     modelAnnotation.setSourceType( SourceType.StreamField );
-    modelAnnotation.apply( modelerWorkspace );
+    modelAnnotation.apply( modelerWorkspace, metaStore );
   }
 
   @Test
