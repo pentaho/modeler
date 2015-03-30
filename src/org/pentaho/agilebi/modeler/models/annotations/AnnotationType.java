@@ -55,6 +55,7 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 
 /**
@@ -375,9 +376,11 @@ public abstract class AnnotationType implements Serializable {
    * 
    * @param workspace
    * @param field
+   * @param metaStore
    * @throws ModelerException
    */
-  public abstract boolean apply( final ModelerWorkspace workspace, final String field ) throws ModelerException;
+  public abstract boolean apply(
+      final ModelerWorkspace workspace, final String field, final IMetaStore metaStore ) throws ModelerException;
 
   /**
    * Applies modeling change on a Mondrian schema using a field as the source..

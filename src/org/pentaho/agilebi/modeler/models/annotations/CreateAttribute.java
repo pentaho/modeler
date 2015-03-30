@@ -32,6 +32,7 @@ import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
@@ -234,7 +235,8 @@ public class CreateAttribute extends AnnotationType {
   }
 
   @Override
-  public boolean apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
+  public boolean apply(
+      final ModelerWorkspace workspace, final String column, final IMetaStore metaStore ) throws ModelerException {
     HierarchyMetaData existingHierarchy = locateHierarchy( workspace );
     if ( existingHierarchy == null && !isEmpty( getParentAttribute() ) ) {
       return false;

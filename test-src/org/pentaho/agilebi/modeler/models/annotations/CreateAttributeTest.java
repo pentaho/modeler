@@ -24,6 +24,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 import static junit.framework.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -50,6 +51,8 @@ import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.util.XmiParser;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -63,6 +66,13 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class CreateAttributeTest {
+  private IMetaStore metaStore;
+
+  @Before
+  public void setUp() throws Exception {
+    metaStore = new MemoryMetaStore();
+  }
+
   @SuppressWarnings( "unchecked" )
   @Test
   public void testCanCreateHierarchyWithMultipleLevels() throws Exception {
@@ -75,7 +85,7 @@ public class CreateAttributeTest {
     productLine.setName( "Product Line" );
     productLine.setDimension( "Products" );
     productLine.setHierarchy( "Products" );
-    productLine.apply( model,  "PRODUCTLINE_OLAP" );
+    productLine.apply( model,  "PRODUCTLINE_OLAP", metaStore );
 
     CreateAttribute productName = new CreateAttribute();
     productName.setName( "Product Name" );
@@ -83,7 +93,7 @@ public class CreateAttributeTest {
     productName.setDimension( "Products" );
     productName.setHierarchy( "Products" );
     productName.setOrdinalField( "PRODUCTSCALE_OLAP" );
-    productName.apply( model, "PRODUCTNAME_OLAP" );
+    productName.apply( model, "PRODUCTNAME_OLAP", metaStore );
 
     CreateAttribute year = new CreateAttribute();
     year.setName( "Year" );
@@ -91,7 +101,7 @@ public class CreateAttributeTest {
     year.setHierarchy( "DateByMonth" );
     year.setTimeType( ModelAnnotation.TimeType.TimeYears );
     year.setTimeFormat( "yyyy" );
-    year.apply( model,  "PRODUCTCODE_OLAP" );
+    year.apply( model,  "PRODUCTCODE_OLAP", metaStore );
 
     CreateAttribute month = new CreateAttribute();
     month.setName( "Month" );
@@ -101,7 +111,7 @@ public class CreateAttributeTest {
     month.setOrdinalField( "bc_MSRP" );
     month.setTimeType( ModelAnnotation.TimeType.TimeMonths );
     month.setTimeFormat( "mm" );
-    month.apply( model, "PRODUCTDESCRIPTION_OLAP" );
+    month.apply( model, "PRODUCTDESCRIPTION_OLAP", metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -161,13 +171,13 @@ public class CreateAttributeTest {
     CreateAttribute productCode = new CreateAttribute();
     productCode.setName( "Product Code" );
     productCode.setDimension( "Product" );
-    productCode.apply( model, "PRODUCTCODE_OLAP" );
+    productCode.apply( model, "PRODUCTCODE_OLAP", metaStore );
 
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setName( "Product Description" );
     productDescription.setParentAttribute( "Product Code" );
     productDescription.setDimension( "Product" );
-    productDescription.apply( model, "PRODUCTDESCRIPTION_OLAP" );
+    productDescription.apply( model, "PRODUCTDESCRIPTION_OLAP", metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -226,21 +236,21 @@ public class CreateAttributeTest {
     country.setName( "Country" );
     country.setDimension( "Geo" );
     country.setGeoType( ModelAnnotation.GeoType.Country );
-    country.apply( model, "Country" );
+    country.apply( model, "Country", metaStore );
 
     CreateAttribute state = new CreateAttribute();
     state.setName( "State" );
     state.setParentAttribute( "Country" );
     state.setDimension( "Geo" );
     state.setGeoType( ModelAnnotation.GeoType.State );
-    state.apply( model, "STATE" );
+    state.apply( model, "STATE", metaStore );
 
     CreateAttribute city = new CreateAttribute();
     city.setName( "City" );
     city.setParentAttribute( "State" );
     city.setDimension( "Geo" );
     city.setGeoType( ModelAnnotation.GeoType.City );
-    city.apply( model, "CITY" );
+    city.apply( model, "CITY", metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -296,20 +306,20 @@ public class CreateAttributeTest {
     country.setName( "Country" );
     country.setDimension( "Geo" );
     country.setGeoType( ModelAnnotation.GeoType.Country );
-    country.apply( model, "Country" );
+    country.apply( model, "Country", metaStore );
 
     CreateAttribute state = new CreateAttribute();
     state.setName( "State" );
     state.setDimension( "Geo2" );
     state.setGeoType( ModelAnnotation.GeoType.State );
-    state.apply( model, "STATE" );
+    state.apply( model, "STATE", metaStore );
 
     CreateAttribute city = new CreateAttribute();
     city.setName( "City" );
     city.setParentAttribute( "State" );
     city.setDimension( "Geo2" );
     city.setGeoType( ModelAnnotation.GeoType.City );
-    city.apply( model, "CITY" );
+    city.apply( model, "CITY", metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -390,7 +400,7 @@ public class CreateAttributeTest {
     month.setOrdinalField( "PRODUCTCODE_OLAP" );
     month.setTimeType( ModelAnnotation.TimeType.TimeMonths );
     month.setTimeFormat( "MMM" );
-    month.apply( model, "PRODUCTCODE_OLAP" );
+    month.apply( model, "PRODUCTCODE_OLAP", metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -414,13 +424,13 @@ public class CreateAttributeTest {
     month.setName( "MonthDesc" );
     month.setDimension( "DIM TIME" );
     month.setHierarchy( "Time" );
-    month.apply( model, "PRODUCTCODE_OLAP" );
+    month.apply( model, "PRODUCTCODE_OLAP", metaStore );
 
     CreateAttribute productCode = new CreateAttribute();
     productCode.setName( "Product Code" );
     productCode.setDimension( "DIM TIME" );
     productCode.setHierarchy( "Time" );
-    productCode.apply( model, "PRODUCTCODE_OLAP" );
+    productCode.apply( model, "PRODUCTCODE_OLAP", metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -440,7 +450,7 @@ public class CreateAttributeTest {
     CreateAttribute abbr = new CreateAttribute();
     abbr.setName( "State Abbr" );
     abbr.setDimension( "dim" );
-    abbr.apply( model, "STATE_ABBR" );
+    abbr.apply( model, "STATE_ABBR", metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );

@@ -26,6 +26,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
 
@@ -46,7 +47,8 @@ public class LinkDimension extends AnnotationType {
   @ModelProperty( id = SHARED_DIMENSION_ID, name = SHARED_DIMENSION_NAME, order = SHARED_DIMENSION_ORDER )
   private String sharedDimension;
 
-  @Override public boolean apply( final ModelerWorkspace workspace, final String field ) throws ModelerException {
+  @Override public boolean apply(
+      final ModelerWorkspace workspace, final String field, final IMetaStore metaStore ) throws ModelerException {
     return false;
   }
 

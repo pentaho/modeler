@@ -37,6 +37,7 @@ import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
@@ -160,8 +161,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     this.sourceType = sourceType;
   }
 
-  public boolean apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    return annotation.apply( modelerWorkspace, resolveField( modelerWorkspace ) );
+  public boolean apply( final ModelerWorkspace modelerWorkspace, final IMetaStore metaStore ) throws ModelerException {
+    return annotation.apply( modelerWorkspace, resolveField( modelerWorkspace ), metaStore );
   }
 
   /**
