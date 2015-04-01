@@ -179,7 +179,8 @@ public class CreateMeasure extends AnnotationType {
         logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) );
   }
 
-  private void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
+  @Override
+  protected void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
     LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
     String locale = workspace.getWorkspaceHelper().getLocale();
     for ( MeasureMetaData measure : workspace.getModel().getMeasures() ) {

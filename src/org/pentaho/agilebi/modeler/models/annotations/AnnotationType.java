@@ -50,6 +50,8 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
@@ -311,6 +313,25 @@ public abstract class AnnotationType implements Serializable {
             || logicalColumn.getName( locale ).equalsIgnoreCase( beautify( columnName ) ) ) {
           return logicalColumn;
         }
+      }
+    }
+    return null;
+  }
+
+  protected void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
+    MeasureMetaData measure = locateMeasure( workspace, column );
+    if ( measure != null ) {
+      workspace.getModel().getMeasures().remove( measure );
+    }
+  }
+
+  private MeasureMetaData locateMeasure( final ModelerWorkspace workspace, final String column ) {
+    MeasuresCollection measures = workspace.getModel().getMeasures();
+    for ( MeasureMetaData measure : measures ) {
+      if ( measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals( column )
+          || measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals(
+          beautify( column ) ) ) {
+        return measure;
       }
     }
     return null;
