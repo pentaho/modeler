@@ -24,11 +24,28 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
+import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
+import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
+import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.pentaho.agilebi.modeler.util.TableModelerSource;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.LogicalRelationship;
+import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.SqlPhysicalTable;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
+
+import java.util.List;
 
 public class LinkDimension extends AnnotationType {
   public static final String NAME_ID = "name";
@@ -48,8 +65,93 @@ public class LinkDimension extends AnnotationType {
   private String sharedDimension;
 
   @Override public boolean apply(
-      final ModelerWorkspace workspace, final String field, final IMetaStore metaStore ) throws ModelerException {
-    return false;
+      final ModelerWorkspace factWorkspace, final String field, final IMetaStore metaStore ) throws ModelerException {
+    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager();
+    try {
+      if ( !modelAnnotationManager.containsGroup( getSharedDimension(), metaStore ) ) {
+        return false;
+      }
+      assignFactTable( factWorkspace );
+      ModelAnnotationGroup sharedAnnotations = modelAnnotationManager.readGroup( getSharedDimension(), metaStore );
+      DataProvider dataProvider = sharedAnnotations.getDataProviders().get( 0 );
+      ModelerWorkspace dimensionWorkspace =
+          autoModelSharedDimension( factWorkspace, metaStore, modelAnnotationManager, dataProvider );
+      sharedAnnotations.applyAnnotations( dimensionWorkspace, metaStore );
+      String dimKey = locateDimensionKey( sharedAnnotations );
+      if ( Const.isEmpty( dimKey ) ) {
+        return false;
+      }
+      moveDimensionToModel( dimensionWorkspace, factWorkspace, field, dimKey );
+      removeAutoLevel( factWorkspace, locateLevel( factWorkspace, field ) );
+      removeAutoMeasure( factWorkspace, field );
+      factWorkspace.getWorkspaceHelper().populateDomain( factWorkspace );
+      return true;
+    } catch ( KettlePluginException e ) {
+      throw new ModelerException( e );
+    } catch ( MetaStoreException e ) {
+      throw new ModelerException( e );
+    }
+  }
+
+  private void assignFactTable( final ModelerWorkspace workspace ) {
+    List<LogicalTable> logicalTables = workspace.getLogicalModel().getLogicalTables();
+    if ( logicalTables.size() == 1 ) {
+      logicalTables.get( 0 ).getPhysicalTable().setProperty( "FACT_TABLE", true );
+    }
+  }
+
+  private String locateDimensionKey( final ModelAnnotationGroup modelAnnotations ) {
+    for ( ModelAnnotation modelAnnotation : modelAnnotations ) {
+      if ( modelAnnotation.getType().equals( ModelAnnotation.Type.CREATE_DIMENSION_KEY ) ) {
+        return modelAnnotation.getField();
+      }
+    }
+    return null;
+  }
+
+  private void moveDimensionToModel(
+      final ModelerWorkspace dimensionWorkspace, final ModelerWorkspace factWorkspace,
+      final String factKey, final String dimKey ) {
+    DimensionMetaData dimension = locateDimension( dimensionWorkspace );
+    factWorkspace.addDimension( dimension );
+    LogicalTable dimTable =
+        dimensionWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
+    LogicalTable factTable =
+        factWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
+    LogicalModel logicalModel = factWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
+    logicalModel.addLogicalTable( dimTable );
+    @SuppressWarnings( "unchecked" ) List<SqlPhysicalTable> physicalTables =
+        (List<SqlPhysicalTable>) factWorkspace.getDomain().getPhysicalModels().get( 0 ).getPhysicalTables();
+    physicalTables.add( (SqlPhysicalTable) dimTable.getPhysicalTable() );
+    logicalModel.addLogicalRelationship(
+        new LogicalRelationship(
+            logicalModel, factTable, dimTable,
+            locateLogicalColumn( factWorkspace, factKey ), locateLogicalColumn( dimensionWorkspace, dimKey ) ) );
+  }
+
+  private DimensionMetaData locateDimension( final ModelerWorkspace dimensionWorkspace ) {
+    DimensionMetaDataCollection dimensions = dimensionWorkspace.getModel().getDimensions();
+    return dimensions.get( dimensions.size() - 1 );
+  }
+
+  private ModelerWorkspace autoModelSharedDimension(
+      final ModelerWorkspace workspace, final IMetaStore metaStore,
+      final ModelAnnotationManager modelAnnotationManager,
+      final DataProvider dataProvider )
+      throws MetaStoreException, KettlePluginException, ModelerException {
+
+    String databaseMetaNameRef = dataProvider.getDatabaseMetaNameRef();
+    DatabaseMeta dbMeta = modelAnnotationManager.loadDatabaseMeta( databaseMetaNameRef, metaStore );
+    TableModelerSource source =
+        new TableModelerSource( dbMeta, dataProvider.getTableName(), dataProvider.getSchemaName() );
+    Domain domain = source.generateDomain();
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( workspace.getWorkspaceHelper().getLocale() ) );
+    model.setModelSource( source );
+    model.setDomain( domain );
+    model.getWorkspaceHelper().autoModelFlat( model );
+
+    return model;
   }
 
   @Override public boolean apply( final Document schema, final String field ) throws ModelerException {
