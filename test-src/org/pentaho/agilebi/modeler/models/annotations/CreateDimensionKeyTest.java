@@ -74,4 +74,8 @@ public class CreateDimensionKeyTest {
     assertEquals( "field1 is key for dimension dim1", summary );
   }
 
+  @Test
+  public void testApplyIsAlwaysTrue() throws Exception {
+    assertEquals( true, new CreateDimensionKey().apply( null, null, null ) );
+  }
 }

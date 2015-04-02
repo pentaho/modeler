@@ -94,10 +94,8 @@ public class LinkDimension extends AnnotationType {
   }
 
   private void assignFactTable( final ModelerWorkspace workspace ) {
-    List<LogicalTable> logicalTables = workspace.getLogicalModel().getLogicalTables();
-    if ( logicalTables.size() == 1 ) {
-      logicalTables.get( 0 ).getPhysicalTable().setProperty( "FACT_TABLE", true );
-    }
+    List<LogicalTable> logicalTables = workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables();
+    logicalTables.get( 0 ).getPhysicalTable().setProperty( "FACT_TABLE", true );
   }
 
   private String locateDimensionKey( final ModelAnnotationGroup modelAnnotations ) {

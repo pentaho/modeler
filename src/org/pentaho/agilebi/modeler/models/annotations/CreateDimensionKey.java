@@ -61,8 +61,8 @@ public class CreateDimensionKey extends AnnotationType {
 
   @Override
   public boolean apply( ModelerWorkspace workspace, String field, final IMetaStore metaStore ) throws ModelerException {
-    // TODO will only be factored in when modeling star schema
-    return false;
+    // nothing to do at apply time.  Will be used when a corresponding LinkDimension is specified
+    return true;
   }
 
   @Override
