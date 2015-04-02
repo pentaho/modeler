@@ -147,6 +147,86 @@ public class LinkDimensionTest {
     manager.createGroup( modelAnnotationGroup, metaStore );
   }
 
+  @Test
+  public void testLinksMultipleDimensionsToModel() throws Exception {
+    ModelerWorkspace model = prepareOrderModel();
+    saveTwoSharedDimensionToMetastore();
+    LinkDimension linkProduct = new LinkDimension();
+    linkProduct.setName( "Product" );
+    linkProduct.setSharedDimension( "shared product group" );
+    assertTrue( linkProduct.apply( model, "PRODUCT_ID", metaStore ) );
+
+    LinkDimension linkDescription = new LinkDimension();
+    linkDescription.setName( "Description" );
+    linkDescription.setSharedDimension( "shared description group" );
+    assertTrue( linkDescription.apply( model, "PRODUCT_ID", metaStore ) );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    assertEquals( 4, dimensionUsages.size() );
+    OlapDimensionUsage productDim = dimensionUsages.get( 2 );
+    OlapHierarchy productHierarchy = productDim.getOlapDimension().getHierarchies().get( 0 );
+    assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
+
+    OlapHierarchyLevel nameLevel = productHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( "Product", nameLevel.getName() );
+    assertEquals( "PRODUCT NAME",
+        nameLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+
+    OlapDimensionUsage descriptionDim = dimensionUsages.get( 3 );
+    OlapHierarchy descriptionHierarchy = descriptionDim.getOlapDimension().getHierarchies().get( 0 );
+    assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
+    OlapHierarchyLevel descriptionLevel = descriptionHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( "Description", descriptionLevel.getName() );
+    assertEquals( "PRODUCT DESCRIPTION",
+        descriptionLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+
+    assertEquals( 2, cube.getOlapMeasures().size() );
+  }
+
+  private void saveTwoSharedDimensionToMetastore() throws Exception {
+    CreateAttribute productName = new CreateAttribute();
+    productName.setDimension( "Product Dim" );
+    productName.setName( "Product" );
+
+    CreateAttribute productDescription = new CreateAttribute();
+    productDescription.setDimension( "Description Dim" );
+    productDescription.setName( "Description" );
+
+    CreateDimensionKey productId = new CreateDimensionKey();
+    productId.setDimension( "Product Dim" );
+    productId.setName( "id" );
+
+    CreateDimensionKey descriptionId = new CreateDimensionKey();
+    descriptionId.setDimension( "Description Dim" );
+    descriptionId.setName( "id" );
+
+    final ModelAnnotationGroup productGroup = new ModelAnnotationGroup();
+    productGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_NAME", productName ) );
+    productGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", productId ) );
+    productGroup.setSharedDimension( true );
+    productGroup.setName( "shared product group" );
+
+    final ModelAnnotationGroup descriptionGroup = new ModelAnnotationGroup();
+    descriptionGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_DESCRIPTION", productDescription ) );
+    descriptionGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", descriptionId ) );
+    descriptionGroup.setSharedDimension( true );
+    descriptionGroup.setName( "shared description group" );
+    ModelAnnotationManager manager = new ModelAnnotationManager();
+    String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
+    final DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dp" );
+    dataProvider.setTableName( "product" );
+    dataProvider.setDatabaseMetaNameRef( metaRef );
+
+    productGroup.setDataProviders( Collections.singletonList( dataProvider ) );
+    descriptionGroup.setDataProviders( Collections.singletonList( dataProvider ) );
+    manager.createGroup( productGroup, metaStore );
+    manager.createGroup( descriptionGroup, metaStore );
+  }
+
+
   private ModelerWorkspace prepareOrderModel() throws Exception {
     createOrderfactDB();
     TableModelerSource source = new TableModelerSource( dbMeta, "orderfact", "" );
