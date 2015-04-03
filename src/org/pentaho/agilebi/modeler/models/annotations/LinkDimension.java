@@ -144,7 +144,8 @@ public class LinkDimension extends AnnotationType {
         new TableModelerSource( dbMeta, dataProvider.getTableName(), dataProvider.getSchemaName() );
     Domain domain = source.generateDomain();
     ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( workspace.getWorkspaceHelper().getLocale() ) );
+        new ModelerWorkspace(
+            new ModelerWorkspaceHelper( workspace.getWorkspaceHelper().getLocale() ), workspace.getGeoContext() );
     model.setModelSource( source );
     model.setDomain( domain );
     model.getWorkspaceHelper().autoModelFlat( model );

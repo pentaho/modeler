@@ -26,6 +26,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.GeoContext;
+import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
+import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
+import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
@@ -45,8 +49,11 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -193,6 +200,7 @@ public class LinkDimensionTest {
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setDimension( "Description Dim" );
     productDescription.setName( "Description" );
+    productDescription.setGeoType( ModelAnnotation.GeoType.State );
 
     CreateDimensionKey productId = new CreateDimensionKey();
     productId.setDimension( "Product Dim" );
@@ -232,7 +240,13 @@ public class LinkDimensionTest {
     TableModelerSource source = new TableModelerSource( dbMeta, "orderfact", "" );
     Domain domain = source.generateDomain();
 
-    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    Reader propsReader = new FileReader( new File( "test-res/geoRoles.properties" ) );
+    Properties props = new Properties();
+    props.load( propsReader );
+    GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
+    GeoContext geoContext = GeoContextFactory.create( config );
+
+    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ), geoContext );
     model.setModelSource( source );
     model.setDomain( domain );
     model.setModelName( "someModel" );
