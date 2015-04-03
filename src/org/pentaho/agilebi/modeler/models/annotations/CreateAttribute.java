@@ -27,25 +27,24 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
+import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
+import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
+import static org.pentaho.di.core.Const.isEmpty;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
-import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
-import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
-import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
-import org.pentaho.metadata.model.LogicalColumn;
-import org.pentaho.metadata.model.olap.OlapDimension;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import static org.pentaho.di.core.Const.isEmpty;
 
 /**
  * @author Rowell Belen
@@ -55,6 +54,7 @@ public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
+  private static final String DEFAULT_AUTO_GEO_DIMENSION_NAME = "Geography";
 
   public static final String NAME_ID = "name";
   public static final String NAME_NAME = "Attribute Name";
@@ -200,6 +200,7 @@ public class CreateAttribute extends AnnotationType {
   public void setParentAttribute( final String parentAttribute ) {
     this.parentAttribute = parentAttribute;
   }
+
   public String getDimension() {
     return dimension;
   }
@@ -235,7 +236,7 @@ public class CreateAttribute extends AnnotationType {
   @Override
   public boolean apply(
       final ModelerWorkspace workspace, final String column, final IMetaStore metaStore ) throws ModelerException {
-    HierarchyMetaData existingHierarchy = locateHierarchy( workspace );
+    HierarchyMetaData existingHierarchy = locateHierarchy( workspace, getHierarchy() );
     if ( existingHierarchy == null && !isEmpty( getParentAttribute() ) ) {
       return false;
     } else if ( existingHierarchy != null && isEmpty( getParentAttribute() ) ) {
@@ -255,11 +256,11 @@ public class CreateAttribute extends AnnotationType {
     }
   }
 
-  private HierarchyMetaData locateHierarchy( final ModelerWorkspace workspace ) {
+  private HierarchyMetaData locateHierarchy( final ModelerWorkspace workspace, final String name ) {
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) ) {
         for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
-          if ( hierarchyMetaData.getName().equals( isEmpty( getHierarchy() ) ? "" : getHierarchy() ) ) {
+          if ( hierarchyMetaData.getName().equals( isEmpty( name ) ? "" : name ) ) {
             return hierarchyMetaData;
           }
         }
@@ -268,10 +269,22 @@ public class CreateAttribute extends AnnotationType {
     return null;
   }
 
+  private boolean isAutoModeled( final ModelerWorkspace workspace, String column ) {
+    try {
+      if ( ( getGeoType() != null ) && StringUtils
+          .equals( workspace.getGeoContext().getDimensionName(), getDimension() ) ) {
+        return true;
+      }
+      return ( locateHierarchy( workspace, getDimension() ) != null );
+    } catch ( Exception e ) {
+      return false;
+    }
+  }
+
   private boolean createNewHierarchy( final ModelerWorkspace workspace, final String column ) throws ModelerException {
-    HierarchyMetaData hierarchyMetaData = new HierarchyMetaData( isEmpty( getHierarchy() ) ? "" : getHierarchy()  );
+    HierarchyMetaData hierarchyMetaData = new HierarchyMetaData( isEmpty( getHierarchy() ) ? "" : getHierarchy() );
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
-      if ( dimensionMetaData.getName().equals( getDimension() ) ) {
+      if ( dimensionMetaData.getName().equals( getDimension() ) && !isAutoModeled( workspace, column ) ) {
         hierarchyMetaData.setParent( dimensionMetaData );
         dimensionMetaData.add( hierarchyMetaData );
       }
@@ -305,7 +318,7 @@ public class CreateAttribute extends AnnotationType {
   }
 
   private void fillLevelProperties( final ModelerWorkspace workspace, final LogicalColumn logicalColumn,
-                                    final LevelMetaData levelMetaData ) {
+      final LevelMetaData levelMetaData ) {
     levelMetaData.setLogicalColumn( logicalColumn );
     levelMetaData.setUniqueMembers( isUnique() );
     if ( getTimeType() != null ) {
@@ -351,7 +364,7 @@ public class CreateAttribute extends AnnotationType {
   }
 
   private boolean attachLevel( final ModelerWorkspace workspace, final HierarchyMetaData existingHierarchy,
-                               final String column ) throws ModelerException {
+      final String column ) throws ModelerException {
     int parentIndex = parentIndex( existingHierarchy );
     if ( parentIndex < 0 ) {
       return false;

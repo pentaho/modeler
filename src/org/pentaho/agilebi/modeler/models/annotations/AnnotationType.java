@@ -293,7 +293,7 @@ public abstract class AnnotationType implements Serializable {
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
         for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
-          if ( levelMetaData.getLogicalColumn().getName( locale ).equals( column )
+          if ( levelMetaData.getLogicalColumn().getName( locale ).equalsIgnoreCase( column )
               || levelMetaData.getLogicalColumn().getName( locale ).equals( beautify( column ) ) ) {
             return levelMetaData;
           }
