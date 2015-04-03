@@ -73,7 +73,8 @@ public class LinkDimension extends AnnotationType {
       }
       assignFactTable( factWorkspace );
       ModelAnnotationGroup sharedAnnotations = modelAnnotationManager.readGroup( getSharedDimension(), metaStore );
-      DataProvider dataProvider = sharedAnnotations.getDataProviders().get( 0 );
+      List<DataProvider> dataProviders = sharedAnnotations.getDataProviders();
+      DataProvider dataProvider = dataProviders.get( dataProviders.size() - 1 );
       ModelerWorkspace dimensionWorkspace =
           autoModelSharedDimension( factWorkspace, metaStore, modelAnnotationManager, dataProvider );
       sharedAnnotations.applyAnnotations( dimensionWorkspace, metaStore );
