@@ -51,6 +51,7 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -228,7 +229,7 @@ public class LinkDimensionTest {
     dataProvider.setTableName( "product" );
     dataProvider.setDatabaseMetaNameRef( metaRef );
 
-    productGroup.setDataProviders( Collections.singletonList( dataProvider ) );
+    productGroup.setDataProviders( Arrays.asList( new DataProvider(), dataProvider ) );
     descriptionGroup.setDataProviders( Collections.singletonList( dataProvider ) );
     manager.createGroup( productGroup, metaStore );
     manager.createGroup( descriptionGroup, metaStore );
