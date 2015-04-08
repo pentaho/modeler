@@ -111,8 +111,9 @@ public class LinkDimension extends AnnotationType {
   private void moveDimensionToModel(
       final ModelerWorkspace dimensionWorkspace, final ModelerWorkspace factWorkspace,
       final String factKey, final String dimKey ) throws ModelerException {
-    DimensionMetaData dimension = locateDimension( dimensionWorkspace );
-    removeAutoLevel( factWorkspace, locateLevel( factWorkspace, dimKey ) );
+    DimensionMetaData dimension = getLastDimension( dimensionWorkspace );
+    dimension.setName( getName() );
+    removeExistingDimension( factWorkspace );
     factWorkspace.addDimension( dimension );
     LogicalTable dimTable =
         dimensionWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
@@ -129,7 +130,18 @@ public class LinkDimension extends AnnotationType {
             locateLogicalColumn( factWorkspace, factKey ), locateLogicalColumn( dimensionWorkspace, dimKey ) ) );
   }
 
-  private DimensionMetaData locateDimension( final ModelerWorkspace dimensionWorkspace ) {
+  private void removeExistingDimension( final ModelerWorkspace factWorkspace ) {
+    DimensionMetaDataCollection dimensions = factWorkspace.getModel().getDimensions();
+    for ( int i = 0; i < dimensions.size(); i++ ) {
+      final DimensionMetaData dimension = dimensions.get( i );
+      if ( dimension.getName().equalsIgnoreCase( getName() ) ) {
+        dimensions.remove( i );
+        return;
+      }
+    }
+  }
+
+  private DimensionMetaData getLastDimension( final ModelerWorkspace dimensionWorkspace ) {
     DimensionMetaDataCollection dimensions = dimensionWorkspace.getModel().getDimensions();
     return dimensions.get( dimensions.size() - 1 );
   }

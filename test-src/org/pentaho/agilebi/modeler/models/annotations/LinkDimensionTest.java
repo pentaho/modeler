@@ -243,6 +243,7 @@ public class LinkDimensionTest {
     linkDate.setName( "Date" );
     linkDate.setSharedDimension( "shared date group" );
     assertTrue( linkDate.apply( model, "DATE", metaStore ) );
+    assertTrue( linkDate.apply( model, "DATE", metaStore ) );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
