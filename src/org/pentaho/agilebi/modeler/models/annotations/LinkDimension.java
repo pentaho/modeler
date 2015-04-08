@@ -110,8 +110,9 @@ public class LinkDimension extends AnnotationType {
 
   private void moveDimensionToModel(
       final ModelerWorkspace dimensionWorkspace, final ModelerWorkspace factWorkspace,
-      final String factKey, final String dimKey ) {
+      final String factKey, final String dimKey ) throws ModelerException {
     DimensionMetaData dimension = locateDimension( dimensionWorkspace );
+    removeAutoLevel( factWorkspace, locateLevel( factWorkspace, dimKey ) );
     factWorkspace.addDimension( dimension );
     LogicalTable dimTable =
         dimensionWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
