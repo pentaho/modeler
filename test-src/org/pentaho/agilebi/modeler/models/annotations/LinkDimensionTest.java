@@ -96,7 +96,7 @@ public class LinkDimensionTest {
   @Test
   public void testLinksDimensionToModel() throws Exception {
     ModelerWorkspace model = prepareOrderModel();
-    saveSharedDimensionToMetastore();
+    saveProductToMetastore();
     LinkDimension linkDimension = new LinkDimension();
     linkDimension.setName( "Product Dim" );
     linkDimension.setSharedDimension( "shared product group" );
@@ -105,8 +105,8 @@ public class LinkDimensionTest {
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    assertEquals( 3, dimensionUsages.size() );
-    OlapDimensionUsage productDim = dimensionUsages.get( 2 );
+    assertEquals( 4, dimensionUsages.size() );
+    OlapDimensionUsage productDim = dimensionUsages.get( 3 );
     OlapHierarchy productHierarchy = productDim.getOlapDimension().getHierarchies().get( 0 );
     assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
 
@@ -123,7 +123,7 @@ public class LinkDimensionTest {
     assertEquals( 2, cube.getOlapMeasures().size() );
   }
 
-  private void saveSharedDimensionToMetastore() throws Exception {
+  private void saveProductToMetastore() throws Exception {
     CreateAttribute productName = new CreateAttribute();
     String sharedDimName = "Shared Product dim";
     productName.setDimension( sharedDimName );
@@ -158,7 +158,7 @@ public class LinkDimensionTest {
   @Test
   public void testLinksMultipleDimensionsToModel() throws Exception {
     ModelerWorkspace model = prepareOrderModel();
-    saveTwoSharedDimensionToMetastore();
+    saveProductAsTwoDimensionsToMetastore();
     LinkDimension linkProduct = new LinkDimension();
     linkProduct.setName( "Product" );
     linkProduct.setSharedDimension( "shared product group" );
@@ -172,8 +172,8 @@ public class LinkDimensionTest {
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    assertEquals( 4, dimensionUsages.size() );
-    OlapDimensionUsage productDim = dimensionUsages.get( 2 );
+    assertEquals( 5, dimensionUsages.size() );
+    OlapDimensionUsage productDim = dimensionUsages.get( 3 );
     OlapHierarchy productHierarchy = productDim.getOlapDimension().getHierarchies().get( 0 );
     assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
 
@@ -182,7 +182,7 @@ public class LinkDimensionTest {
     assertEquals( "PRODUCT NAME",
         nameLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
 
-    OlapDimensionUsage descriptionDim = dimensionUsages.get( 3 );
+    OlapDimensionUsage descriptionDim = dimensionUsages.get( 4 );
     OlapHierarchy descriptionHierarchy = descriptionDim.getOlapDimension().getHierarchies().get( 0 );
     assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
     OlapHierarchyLevel descriptionLevel = descriptionHierarchy.getHierarchyLevels().get( 0 );
@@ -193,7 +193,7 @@ public class LinkDimensionTest {
     assertEquals( 2, cube.getOlapMeasures().size() );
   }
 
-  private void saveTwoSharedDimensionToMetastore() throws Exception {
+  private void saveProductAsTwoDimensionsToMetastore() throws Exception {
     CreateAttribute productName = new CreateAttribute();
     productName.setDimension( "Product Dim" );
     productName.setName( "Product" );
@@ -235,6 +235,82 @@ public class LinkDimensionTest {
     manager.createGroup( descriptionGroup, metaStore );
   }
 
+  @Test
+  public void testAutoLevelRemovedWithLinkingFieldToASharedDimension() throws Exception {
+    ModelerWorkspace model = prepareOrderModel();
+    saveDateToMetastore();
+    LinkDimension linkDate = new LinkDimension();
+    linkDate.setName( "Date" );
+    linkDate.setSharedDimension( "shared date group" );
+    assertTrue( linkDate.apply( model, "DATE", metaStore ) );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    assertEquals( 4, dimensionUsages.size() );
+    OlapDimensionUsage dateDim = dimensionUsages.get( 3 );
+
+    assertEquals( 1, dateDim.getOlapDimension().getHierarchies().size() );
+    OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
+    assertEquals( "MYDATE", dateHierarchy.getLogicalTable().getName( "en_us" ) );
+    assertEquals( "Date", dateHierarchy.getName() );
+
+    OlapHierarchyLevel yearLevel = dateHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( "Year", yearLevel.getName() );
+    assertEquals( "YEAR",
+        yearLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+
+    OlapHierarchyLevel monthLevel = dateHierarchy.getHierarchyLevels().get( 1 );
+    assertEquals( "Month", monthLevel.getName() );
+    assertEquals( "MONTH",
+        monthLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+
+    OlapHierarchyLevel dateLevel = dateHierarchy.getHierarchyLevels().get( 2 );
+    assertEquals( "Date", dateLevel.getName() );
+    assertEquals( "DATE",
+        dateLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+  }
+
+  private void saveDateToMetastore() throws Exception {
+    CreateAttribute year = new CreateAttribute();
+    year.setDimension( "DATE" );
+    year.setName( "Year" );
+    year.setHierarchy( "Date" );
+
+    CreateAttribute month = new CreateAttribute();
+    month.setDimension( "DATE" );
+    month.setName( "Month" );
+    month.setParentAttribute( "Year" );
+    month.setHierarchy( "Date" );
+
+    CreateAttribute day = new CreateAttribute();
+    day.setDimension( "DATE" );
+    day.setName( "Date" );
+    day.setParentAttribute( "Month" );
+    day.setHierarchy( "Date" );
+
+    CreateDimensionKey dateKey = new CreateDimensionKey();
+    dateKey.setDimension( "DATE" );
+    dateKey.setName( "date" );
+
+    final ModelAnnotationGroup dateGroup = new ModelAnnotationGroup();
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( "YEAR", year ) );
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( "MONTH", month ) );
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( "DATE", day ) );
+    dateGroup.add( new ModelAnnotation<CreateDimensionKey>( "DATE", dateKey ) );
+    dateGroup.setSharedDimension( true );
+    dateGroup.setName( "shared date group" );
+
+    ModelAnnotationManager manager = new ModelAnnotationManager();
+    String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
+    final DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dp" );
+    dataProvider.setTableName( "mydate" );
+    dataProvider.setDatabaseMetaNameRef( metaRef );
+    dateGroup.setDataProviders( Collections.singletonList( dataProvider ) );
+    manager.createGroup( dateGroup, metaStore );
+  }
+
 
   private ModelerWorkspace prepareOrderModel() throws Exception {
     createOrderfactDB();
@@ -262,17 +338,25 @@ public class LinkDimensionTest {
     db.connect();
     db.execStatement( "DROP TABLE IF EXISTS orderfact;" );
     db.execStatement( "DROP TABLE IF EXISTS product;" );
+    db.execStatement( "DROP TABLE IF EXISTS mydate;" );
     db.execStatement( "CREATE TABLE orderfact\n"
         + "(\n"
         + "   ordernumber int,\n"
         + "   product_id int,\n"
-        + "   quantityordered int\n"
+        + "   quantityordered int\n,"
+        + "   date Date"
         + ");\n" );
     db.execStatement( "CREATE TABLE product\n"
         + "(\n"
         + "   product_id int,\n"
         + "   product_name varchar(50),\n"
         + "   product_description varchar(50)\n"
+        + ");\n" );
+    db.execStatement( "CREATE TABLE mydate\n"
+        + "(\n"
+        + "   date Date,\n"
+        + "   year varchar(50),\n"
+        + "   month varchar(50)\n"
         + ");\n" );
     db.disconnect();
   }
