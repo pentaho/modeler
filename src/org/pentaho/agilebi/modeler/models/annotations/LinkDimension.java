@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
+import org.pentaho.agilebi.modeler.util.ISpoonModelerSource;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.Const;
@@ -75,8 +76,7 @@ public class LinkDimension extends AnnotationType {
       ModelAnnotationGroup sharedAnnotations = modelAnnotationManager.readGroup( getSharedDimension(), metaStore );
       List<DataProvider> dataProviders = sharedAnnotations.getDataProviders();
       DataProvider dataProvider = dataProviders.get( dataProviders.size() - 1 );
-      ModelerWorkspace dimensionWorkspace =
-          autoModelSharedDimension( factWorkspace, metaStore, modelAnnotationManager, dataProvider );
+      ModelerWorkspace dimensionWorkspace = autoModelSharedDimension( factWorkspace, dataProvider );
       sharedAnnotations.applyAnnotations( dimensionWorkspace, metaStore );
       String dimKey = locateDimensionKey( sharedAnnotations );
       if ( Const.isEmpty( dimKey ) ) {
@@ -146,14 +146,10 @@ public class LinkDimension extends AnnotationType {
     return dimensions.get( dimensions.size() - 1 );
   }
 
-  private ModelerWorkspace autoModelSharedDimension(
-      final ModelerWorkspace workspace, final IMetaStore metaStore,
-      final ModelAnnotationManager modelAnnotationManager,
-      final DataProvider dataProvider )
+  private ModelerWorkspace autoModelSharedDimension( final ModelerWorkspace workspace, final DataProvider dataProvider )
       throws MetaStoreException, KettlePluginException, ModelerException {
 
-    String databaseMetaNameRef = dataProvider.getDatabaseMetaNameRef();
-    DatabaseMeta dbMeta = modelAnnotationManager.loadDatabaseMeta( databaseMetaNameRef, metaStore );
+    DatabaseMeta dbMeta = ( (ISpoonModelerSource) workspace.getModelSource() ).getDatabaseMeta();
     TableModelerSource source =
         new TableModelerSource( dbMeta, dataProvider.getTableName(), dataProvider.getSchemaName() );
     Domain domain = source.generateDomain();
