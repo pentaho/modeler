@@ -59,6 +59,7 @@ import java.util.Properties;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@SuppressWarnings( "unchecked" )
 public class LinkDimensionTest {
   private IMetaStore metaStore;
   private DatabaseMeta dbMeta;
@@ -304,6 +305,58 @@ public class LinkDimensionTest {
 
     ModelAnnotationManager manager = new ModelAnnotationManager();
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
+    final DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dp" );
+    dataProvider.setTableName( "mydate" );
+    dataProvider.setDatabaseMetaNameRef( metaRef );
+    dateGroup.setDataProviders( Collections.singletonList( dataProvider ) );
+    manager.createGroup( dateGroup, metaStore );
+  }
+
+  @Test
+  public void testSharedDimensionsModeldOnFactDbMeta() throws Exception {
+    ModelerWorkspace model = prepareOrderModel();
+    saveVariableDbMeta();
+    LinkDimension linkDate = new LinkDimension();
+    linkDate.setName( "Date" );
+    linkDate.setSharedDimension( "shared date group" );
+    assertTrue( linkDate.apply( model, "DATE", metaStore ) );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    assertEquals( 4, dimensionUsages.size() );
+    OlapDimensionUsage dateDim = dimensionUsages.get( 3 );
+
+    assertEquals( 1, dateDim.getOlapDimension().getHierarchies().size() );
+    OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
+    assertEquals( "MYDATE", dateHierarchy.getLogicalTable().getName( "en_us" ) );
+    assertEquals( "Date", dateHierarchy.getName() );
+
+    OlapHierarchyLevel yearLevel = dateHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( "Year", yearLevel.getName() );
+    assertEquals( "YEAR",
+        yearLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+  }
+
+  private void saveVariableDbMeta() throws Exception {
+    CreateAttribute year = new CreateAttribute();
+    year.setDimension( "Date" );
+    year.setName( "Year" );
+    year.setHierarchy( "Date" );
+
+    CreateDimensionKey dateKey = new CreateDimensionKey();
+    dateKey.setDimension( "Date" );
+    dateKey.setName( "date" );
+
+    final ModelAnnotationGroup dateGroup = new ModelAnnotationGroup();
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( "YEAR", year ) );
+    dateGroup.add( new ModelAnnotation<CreateDimensionKey>( "DATE", dateKey ) );
+    dateGroup.setSharedDimension( true );
+    dateGroup.setName( "shared date group" );
+
+    ModelAnnotationManager manager = new ModelAnnotationManager();
+    String metaRef = manager.storeDatabaseMeta( new DatabaseMeta(), metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
     dataProvider.setTableName( "mydate" );
