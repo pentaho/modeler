@@ -81,7 +81,7 @@ public class ModelsDnDTest extends AbstractModelerTest {
 
     assertFalse( firstLevel.acceptsDrop( new MemberPropertyMetaData( firstLevel, "test" ) ) );
     assertTrue( firstLevel.acceptsDrop( workspace.createMemberPropertyForParentWithNode( firstLevel, workspace
-      .createColumnBackedNode( firstField, ModelerPerspective.ANALYSIS ) ) ) );
+        .createColumnBackedNode( firstField, ModelerPerspective.ANALYSIS ) ) ) );
     assertTrue( firstLevel.acceptsDrop( firstField ) );
   }
 

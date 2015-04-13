@@ -106,7 +106,7 @@ public class DataProvider implements Serializable {
       List<ColumnMapping> thisMap = this.getColumnMappings();
       List<ColumnMapping> toCompareMap = toCompare.getColumnMappings();
 
-      if(thisMap != null && toCompareMap != null){
+      if ( thisMap != null && toCompareMap != null ) {
         if ( thisMap.size() != toCompareMap.size() ) {
           return false;
         }

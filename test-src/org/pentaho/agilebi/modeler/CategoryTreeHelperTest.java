@@ -102,7 +102,7 @@ public class CategoryTreeHelperTest {
     helper.clearTreeModel();
     assertEquals( 0, cat.size() );
     IPhysicalColumn physicalColumn =
-      workspace.getDomain().getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ).getPhysicalColumns().get( 0 );
+        workspace.getDomain().getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ).getPhysicalColumns().get( 0 );
     List<AvailableField> fieldsToAdd = new ArrayList<AvailableField>();
     AvailableField field = new AvailableField();
     field.setPhysicalColumn( physicalColumn );
@@ -125,7 +125,7 @@ public class CategoryTreeHelperTest {
     helper.clearTreeModel();
     assertEquals( 0, cat.size() );
     IPhysicalColumn physicalColumn =
-      workspace.getDomain().getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ).getPhysicalColumns().get( 0 );
+        workspace.getDomain().getPhysicalModels().get( 0 ).getPhysicalTables().get( 0 ).getPhysicalColumns().get( 0 );
     List<AvailableField> fieldsToAdd = new ArrayList<AvailableField>();
 
     AvailableField field = new AvailableField();
@@ -148,7 +148,7 @@ public class CategoryTreeHelperTest {
 
     // make sure they got unique column id's
     String expectedColId =
-      "LC_" + ModelerWorkspace.toId( physicalColumn.getPhysicalTable().getName( "en-US" ) ) + "_"
+        "LC_" + ModelerWorkspace.toId( physicalColumn.getPhysicalTable().getName( "en-US" ) ) + "_"
         + ModelerWorkspace.toId( physicalColumn.getName( "en-US" ) );
     assertEquals( expectedColId, one.getLogicalColumn().getId() );
     assertEquals( expectedColId + "_2", two.getLogicalColumn().getId() );

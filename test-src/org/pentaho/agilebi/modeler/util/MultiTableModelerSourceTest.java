@@ -63,8 +63,8 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
   public void testStarSchema() throws Exception {
 
     MultiTableModelerSource multiTable =
-      new MultiTableModelerSource( this.getDatabase(), getSchemaModel1( true ), this.getDatabase().getName(), Arrays
-        .asList( "CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE" ) );
+        new MultiTableModelerSource( this.getDatabase(), getSchemaModel1( true ), this.getDatabase().getName(),
+            Arrays.asList( "CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE" ) );
     Domain domain = multiTable.generateDomain( true );
 
     assertNotNull( domain );
@@ -86,8 +86,8 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
   public void testReportingSchema() throws Exception {
 
     MultiTableModelerSource multiTable =
-      new MultiTableModelerSource( this.getDatabase(), getSchemaModel1( false ), this.getDatabase().getName(), Arrays
-        .asList( "CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE" ) );
+        new MultiTableModelerSource( this.getDatabase(), getSchemaModel1( false ), this.getDatabase().getName(),
+            Arrays.asList( "CUSTOMERS", "PRODUCTS", "CUSTOMERNAME", "PRODUCTCODE" ) );
     Domain domain = multiTable.generateDomain( false );
     // Ensure domain was created.
     assertNotNull( domain );
@@ -96,9 +96,9 @@ public class MultiTableModelerSourceTest extends AbstractModelerTest {
     // Ensure all joins DO NOT use Olap tables.
     for ( LogicalRelationship logicalRelationship : domain.getLogicalModels().get( 0 ).getLogicalRelationships() ) {
       assertEquals( true,
-        !logicalRelationship.getToTable().getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX ) );
+          !logicalRelationship.getToTable().getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX ) );
       assertEquals( true,
-        !logicalRelationship.getFromTable().getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX ) );
+          !logicalRelationship.getFromTable().getId().endsWith( BaseModelerWorkspaceHelper.OLAP_SUFFIX ) );
     }
   }
 
