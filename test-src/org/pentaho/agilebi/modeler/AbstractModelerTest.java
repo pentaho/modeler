@@ -90,7 +90,7 @@ public class AbstractModelerTest {
     SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1( true );
 
     MultiTableModelerSource modelerSource =
-      new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
+        new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
         "CUSTOMERNAME", "PRODUCTCODE" ) );
 
     Domain d = modelerSource.generateDomain( true );
@@ -101,7 +101,7 @@ public class AbstractModelerTest {
     SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1( false );
 
     MultiTableModelerSource modelerSource =
-      new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
+        new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
         "CUSTOMERNAME", "PRODUCTCODE" ) );
 
     Domain d = modelerSource.generateDomain( false );

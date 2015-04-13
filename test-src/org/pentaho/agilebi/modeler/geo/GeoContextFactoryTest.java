@@ -54,7 +54,7 @@ public class GeoContextFactoryTest {
     Properties myprops = (Properties) props.clone();
     myprops.setProperty( "geo.country.aliases", "country, ctry" );
     config = new GeoContextPropertiesProvider( myprops );
-    
+
     GeoContext geo = GeoContextFactory.create( config );
 
     assertEquals( 6, geo.size() );

@@ -79,7 +79,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     assertEquals( firstField.getSelectedAggregations(), lCol.getAggregationList() );
 
     List<OlapCube> cubes =
-      (List<OlapCube>) workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "olap_cubes" );
+        (List<OlapCube>) workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "olap_cubes" );
     OlapMeasure measure = cubes.get( 0 ).getOlapMeasures().get( 0 );
     assertEquals( AggregationType.SUM, measure.getLogicalColumn().getAggregationType() );
 

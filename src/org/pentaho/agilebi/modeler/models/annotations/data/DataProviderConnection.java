@@ -191,8 +191,8 @@ public class DataProviderConnection implements Serializable {
 
       List<DatabaseMeta> databaseMetaList = DatabaseMetaStoreUtil.getDatabaseElements( metaStore );
       for ( DatabaseMeta databaseMeta : databaseMetaList ) {
-        if ( databaseMeta.getName() != null && StringUtils.isNotBlank( databaseMeta.getName() ) &&
-            StringUtils.equals( databaseMeta.getName(), getName() ) ) {
+        if ( databaseMeta.getName() != null && StringUtils.isNotBlank( databaseMeta.getName() )
+            && StringUtils.equals( databaseMeta.getName(), getName() ) ) {
           populateFrom( databaseMeta );
           return databaseMeta;
         }

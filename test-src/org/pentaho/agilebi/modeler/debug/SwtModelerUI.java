@@ -277,8 +277,8 @@ public class SwtModelerUI {
       if ( fname != null ) {
         System.out.println( "Save mondrian xml..." );
         try {
-          ModelerWorkspaceUtil.saveWorkspaceAsMondrianSchema( controller.getModel(), fname, controller
-            .getWorkspaceHelper().getLocale() );
+          ModelerWorkspaceUtil.saveWorkspaceAsMondrianSchema(
+              controller.getModel(), fname, controller .getWorkspaceHelper().getLocale() );
         } catch ( Exception e ) {
           e.printStackTrace();
         }
