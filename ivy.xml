@@ -65,6 +65,10 @@
 
     <dependency org="log4j" name="log4j" rev="1.2.14"/>
 
+    <dependency org="javax.xml.bind" name="jaxb-api" rev="2.1" conf="test->default"/>
+    <dependency org="com.sun.xml.bind" name="jaxb-impl" rev="2.1.2" conf="test->default"/>
+    <dependency org="com.sun.xml.bind" name="jaxb-xjc" rev="2.1.2" conf="test->default"/>
+
     <dependency org="org.eclipse.core" name="commands" rev="3.3.0-I20070605-0010" transitive="false" conf="test->default"/>
     <dependency org="org.eclipse.equinox" name="common" rev="3.3.0-v20070426" transitive="false" conf="test->default"/>
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="test->default"/>
@@ -86,10 +90,14 @@
     <dependency org="org.eclipse.core" name="runtime" rev="3.3.100-v20070530" transitive="false" conf="test->default"/>
     <dependency org="org.eclipse.swt.win32.win32" name="x86" rev="3.3.0-v3346" transitive="false" conf="test->default"/>
 
+    <dependency org="xalan" name="xalan" rev="2.7.2" transitive="false" conf="test->default"/>
+    <dependency org="pentaho" name="pentaho-bi-platform-data-access" rev="${project.revision}" transitive="false" conf="default->default"/>
+
+    <dependency org="pentaho" name="mondrian" rev="${dependency.mondrian.revision}" transitive="false" conf="default->default"/>
+
     <exclude org="xerces" module="xerces" conf="default->default"/>
     <exclude org="xml-apis" module="xml-apis" conf="default->default"/>
     <exclude org="org.olap4j" module="olap4j" conf="default->default"/>
-
 
   </dependencies>
 </ivy-module>

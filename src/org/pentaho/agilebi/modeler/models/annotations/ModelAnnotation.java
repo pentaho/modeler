@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapDimension;
@@ -57,6 +58,18 @@ import java.util.UUID;
 public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
+  private static final String OLAP_CUBES_PROPERTY = "olap_cubes";
+  private static final String MEASURES_DIMENSION = "Measures";
+  private static final String MEASURE_ELEMENT_NAME = "Measure";
+  private static final String NAME_ATTRIBUTE = "name";
+  private static final String COLUMN_ATTRIBUTE = "column";
+  private static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
+
+  private static final String CREATE_MEASURE_ENUM_VALUE = "Create Measure";
+  private static final String CREATE_ATTRIBUTE_ENUM_VALUE = "Create Attribute";
+  private static final String CREATE_DIMENSION_ENUM_VALUE = "Create Dimension Key";
+  private static final String CREATE_CALCULATED_MEMBER_ENUM_VALUE = "Create Calculated Member";
+  private static final String REMOVE_MEASURE_ENUM_VALUE = "Remove Measure";
 
   private SourceType sourceType = SourceType.StreamField;
 
@@ -184,7 +197,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       case HierarchyLevel: {
         String locale = Locale.getDefault().toString();
         LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
-        List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( "olap_cubes" );
+        List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( OLAP_CUBES_PROPERTY );
         OlapCube olapCube = null;
         for ( int c = 0; c < olapCubes.size(); c++ ) {
           if ( ( (OlapCube) olapCubes.get( c ) ).getName().equals( cube ) ) {
@@ -193,17 +206,21 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
           }
         }
         if ( olapCube == null ) {
-          throw new ModelerException( "Unable to find cube: " + cube );
+          throw new ModelerException( 
+            BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CUBE", cube ) 
+          );
         }
         if ( sourceType == SourceType.Measure ) {
           List measures = olapCube.getOlapMeasures();
           for ( int m = 0; m < measures.size(); m++ ) {
             OlapMeasure measure = (OlapMeasure) measures.get( m );
-            if ( field.equals( "[Measures].[" + measure.getLogicalColumn().getName( locale ) + "]" ) ) {
+            if ( field.equals( "[" + MEASURES_DIMENSION + "].[" + measure.getLogicalColumn().getName( locale ) + "]" ) ) {
               return (String) measure.getLogicalColumn().getName( locale );
             }
           }
-          throw new ModelerException( "Unable to find measure: " + field );
+          throw new ModelerException( 
+            BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", field ) 
+          );
         } else {
 
           List usages = olapCube.getOlapDimensionUsages();
@@ -230,7 +247,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
               }
             }
           }
-          throw new ModelerException( "Unable to find level: " + field );
+          throw new ModelerException( 
+            BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_LEVEL", field ) 
+          );
         }
       }
       default: {
@@ -255,13 +274,17 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       }
       case Measure: {
         if ( schema == null ) {
-          throw new ModelerException( "Unable to find measure: " + field );
+          throw new ModelerException( 
+            BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", field ) 
+          );
         }
 
         // find Measure nodes
-        NodeList measures = schema.getElementsByTagName( "Measure" );
+        NodeList measures = schema.getElementsByTagName( MEASURE_ELEMENT_NAME );
         if ( ( measures == null ) || ( measures.getLength() <= 0 ) ) {
-          throw new ModelerException( "Unable to find measure: " + field );
+          throw new ModelerException(
+            BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", field )
+          );
         }
 
         for ( int x = 0; x <= measures.getLength(); x++ ) {
@@ -269,7 +292,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
           if ( measureNode != null ) {
 
             // get measure name
-            Node nameNode = measureNode.getAttributes().getNamedItem( "name" );
+            Node nameNode = measureNode.getAttributes().getNamedItem( NAME_ATTRIBUTE );
 
             if ( nameNode != null ) {
               // match measure name to field
@@ -277,7 +300,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
                 field.substring( field.lastIndexOf( "[" ) + 1 ).replace( "]", "" )
               ) ) {
                 // get the column
-                Node columnNode = measureNode.getAttributes().getNamedItem( "column" );
+                Node columnNode = measureNode.getAttributes().getNamedItem( COLUMN_ATTRIBUTE );
 
                 if ( columnNode != null ) {
                   return (String) columnNode.getNodeValue();
@@ -288,13 +311,57 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         }
 
         // not found
-        throw new ModelerException( "Unable to find measure: " + field );
+        throw new ModelerException(
+          BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", field )
+        );
 
       }
       case HierarchyLevel: {
         // TODO
-        throw new ModelerException( "Unable to find level: " + field );
+        throw new ModelerException(
+          BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_LEVEL", field )
+        );
       }
+
+      case CalculatedMember: {
+        if ( schema == null ) {
+          throw new ModelerException(
+            BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CALCULATEDMEMBER", field )
+          );
+        }
+
+        // find Measure nodes
+        NodeList calculatedMembers = schema.getElementsByTagName( CALCULATED_MEMBER_ELEMENT_NAME );
+        if ( ( calculatedMembers == null ) || ( calculatedMembers.getLength() <= 0 ) ) {
+          throw new ModelerException(
+            BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CALCULATEDMEMBER", field )
+          );
+        }
+
+        for ( int x = 0; x <= calculatedMembers.getLength(); x++ ) {
+          Node calculatedMember = calculatedMembers.item( x );
+          if ( calculatedMember != null ) {
+
+            // get measure name
+            Node nameNode = calculatedMember.getAttributes().getNamedItem( NAME_ATTRIBUTE );
+
+            if ( nameNode != null ) {
+              // match measure name to field
+              if ( nameNode.getNodeValue().equals(
+                field.substring( field.lastIndexOf( "[" ) + 1 ).replace( "]", "" )
+              ) ) {
+                return nameNode.getNodeValue();
+              }
+            }
+          }
+        }
+
+        // not found
+        throw new ModelerException(
+          BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CALCULATEDMEMBER", field )
+        );
+      }
+
       default: {
         throw new IllegalStateException();
       }
@@ -344,9 +411,11 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public static enum Type {
-    CREATE_MEASURE( "Create Measure" ),
-    CREATE_ATTRIBUTE( "Create Attribute" ),
-    CREATE_DIMENSION_KEY( "Create Dimension Key" );
+    CREATE_MEASURE( CREATE_MEASURE_ENUM_VALUE ),
+    CREATE_ATTRIBUTE( CREATE_ATTRIBUTE_ENUM_VALUE ),
+    CREATE_DIMENSION_KEY( CREATE_DIMENSION_ENUM_VALUE ),
+    CREATE_CALCULATED_MEMBER( CREATE_CALCULATED_MEMBER_ENUM_VALUE ),
+    REMOVE_MEASURE( REMOVE_MEASURE_ENUM_VALUE );
 
     private final String description;
 
@@ -418,7 +487,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   public static enum SourceType {
     StreamField,
     HierarchyLevel,
-    Measure
+    Measure,
+    CalculatedMember
   }
 
 }
