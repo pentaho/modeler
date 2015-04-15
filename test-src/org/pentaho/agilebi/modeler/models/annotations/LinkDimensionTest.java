@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings( "unchecked" )
@@ -225,12 +226,20 @@ public class LinkDimensionTest {
     descriptionGroup.setName( "shared description group" );
     ModelAnnotationManager manager = new ModelAnnotationManager();
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
+    DatabaseMeta decoyMeta = (DatabaseMeta) dbMeta.clone();
+    decoyMeta.setName( "other" );
+    String decoyRef = manager.storeDatabaseMeta( decoyMeta, metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
     dataProvider.setTableName( "product" );
     dataProvider.setDatabaseMetaNameRef( metaRef );
 
-    productGroup.setDataProviders( Arrays.asList( new DataProvider(), dataProvider ) );
+    DataProvider decoyProvider = new DataProvider();
+    decoyProvider.setName( "dp2" );
+    decoyProvider.setTableName( "faketable" );
+    decoyProvider.setDatabaseMetaNameRef( decoyRef );
+
+    productGroup.setDataProviders( Arrays.asList( new DataProvider(), dataProvider, decoyProvider ) );
     descriptionGroup.setDataProviders( Collections.singletonList( dataProvider ) );
     manager.createGroup( productGroup, metaStore );
     manager.createGroup( descriptionGroup, metaStore );
@@ -314,32 +323,16 @@ public class LinkDimensionTest {
   }
 
   @Test
-  public void testSharedDimensionsModeldOnFactDbMeta() throws Exception {
+  public void testNoProviderMatchFailsToApply() throws Exception {
     ModelerWorkspace model = prepareOrderModel();
-    saveVariableDbMeta();
+    saveBadDbMeta();
     LinkDimension linkDate = new LinkDimension();
     linkDate.setName( "Date" );
     linkDate.setSharedDimension( "shared date group" );
-    assertTrue( linkDate.apply( model, "DATE", metaStore ) );
-
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
-    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    assertEquals( 4, dimensionUsages.size() );
-    OlapDimensionUsage dateDim = dimensionUsages.get( 3 );
-
-    assertEquals( 1, dateDim.getOlapDimension().getHierarchies().size() );
-    OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
-    assertEquals( "MYDATE", dateHierarchy.getLogicalTable().getName( "en_us" ) );
-    assertEquals( "Date", dateHierarchy.getName() );
-
-    OlapHierarchyLevel yearLevel = dateHierarchy.getHierarchyLevels().get( 0 );
-    assertEquals( "Year", yearLevel.getName() );
-    assertEquals( "YEAR",
-        yearLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+    assertFalse( linkDate.apply( model, "DATE", metaStore ) );
   }
 
-  private void saveVariableDbMeta() throws Exception {
+  private void saveBadDbMeta() throws Exception {
     CreateAttribute year = new CreateAttribute();
     year.setDimension( "Date" );
     year.setName( "Year" );

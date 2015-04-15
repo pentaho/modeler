@@ -75,7 +75,10 @@ public class LinkDimension extends AnnotationType {
       assignFactTable( factWorkspace );
       ModelAnnotationGroup sharedAnnotations = modelAnnotationManager.readGroup( getSharedDimension(), metaStore );
       List<DataProvider> dataProviders = sharedAnnotations.getDataProviders();
-      DataProvider dataProvider = dataProviders.get( dataProviders.size() - 1 );
+      DataProvider dataProvider = locateDataProvider( dataProviders, factWorkspace, metaStore );
+      if ( dataProvider == null ) {
+        return false;
+      }
       ModelerWorkspace dimensionWorkspace = autoModelSharedDimension( factWorkspace, dataProvider );
       sharedAnnotations.applyAnnotations( dimensionWorkspace, metaStore );
       String dimKey = locateDimensionKey( sharedAnnotations );
@@ -92,6 +95,39 @@ public class LinkDimension extends AnnotationType {
     } catch ( MetaStoreException e ) {
       throw new ModelerException( e );
     }
+  }
+
+  private DataProvider locateDataProvider(
+      final List<DataProvider> dataProviders, final ModelerWorkspace workspace, final IMetaStore metaStore )
+      throws MetaStoreException, KettlePluginException, ModelerException {
+    ModelAnnotationManager manager = new ModelAnnotationManager();
+    DatabaseMeta factDbMeta = ( (ISpoonModelerSource) workspace.getModelSource() ).getDatabaseMeta();
+    for ( DataProvider dataProvider : dataProviders ) {
+      DatabaseMeta sharedDbMeta = manager.loadDatabaseMeta( dataProvider.getDatabaseMetaNameRef(), metaStore );
+      if ( sharedDbMeta != null && dbMetaEquals( factDbMeta, sharedDbMeta ) ) {
+        return dataProvider;
+      }
+    }
+    return null;
+  }
+
+  private boolean dbMetaEquals( final DatabaseMeta factDbMeta, final DatabaseMeta sharedDbMeta ) {
+    return factDbMeta.getName() != null && factDbMeta.getName().equals( sharedDbMeta.getName() )
+        && hostNameEquals( factDbMeta, sharedDbMeta )
+        && dbNameEquals( factDbMeta, sharedDbMeta )
+        && factDbMeta.getDriverClass() != null && factDbMeta.getDriverClass().equals( sharedDbMeta.getDriverClass() );
+  }
+
+  private boolean hostNameEquals( final DatabaseMeta factDbMeta, final DatabaseMeta sharedDbMeta ) {
+    return ( factDbMeta.getHostname() != null
+        && factDbMeta.environmentSubstitute( factDbMeta.getHostname() ).equals( sharedDbMeta.getHostname() ) )
+        || ( factDbMeta.getHostname() == null && sharedDbMeta.getHostname() == null );
+  }
+
+  private boolean dbNameEquals( final DatabaseMeta factDbMeta, final DatabaseMeta sharedDbMeta ) {
+    return ( factDbMeta.getDatabaseName() != null
+        && factDbMeta.environmentSubstitute( factDbMeta.getDatabaseName() ).equals( sharedDbMeta.getDatabaseName() ) )
+        || ( factDbMeta.getDatabaseName() == null && sharedDbMeta.getDatabaseName() == null );
   }
 
   private void assignFactTable( final ModelerWorkspace workspace ) {
