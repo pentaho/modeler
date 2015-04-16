@@ -146,7 +146,7 @@ public class LinkDimensionTest {
     modelAnnotationGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", productId ) );
     modelAnnotationGroup.setSharedDimension( true );
     modelAnnotationGroup.setName( "shared product group" );
-    ModelAnnotationManager manager = new ModelAnnotationManager();
+    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
@@ -224,7 +224,7 @@ public class LinkDimensionTest {
     descriptionGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", descriptionId ) );
     descriptionGroup.setSharedDimension( true );
     descriptionGroup.setName( "shared description group" );
-    ModelAnnotationManager manager = new ModelAnnotationManager();
+    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     DatabaseMeta decoyMeta = (DatabaseMeta) dbMeta.clone();
     decoyMeta.setName( "other" );
@@ -312,7 +312,7 @@ public class LinkDimensionTest {
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 
-    ModelAnnotationManager manager = new ModelAnnotationManager();
+    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
@@ -348,7 +348,7 @@ public class LinkDimensionTest {
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 
-    ModelAnnotationManager manager = new ModelAnnotationManager();
+    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
     String metaRef = manager.storeDatabaseMeta( new DatabaseMeta(), metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );

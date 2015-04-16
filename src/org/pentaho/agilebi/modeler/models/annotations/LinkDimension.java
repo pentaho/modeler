@@ -22,7 +22,6 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -67,7 +66,8 @@ public class LinkDimension extends AnnotationType {
 
   @Override public boolean apply(
       final ModelerWorkspace factWorkspace, final String field, final IMetaStore metaStore ) throws ModelerException {
-    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager();
+    ModelAnnotationManager modelAnnotationManager =
+        new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
     try {
       if ( !modelAnnotationManager.containsGroup( getSharedDimension(), metaStore ) ) {
         return false;
@@ -100,7 +100,7 @@ public class LinkDimension extends AnnotationType {
   private DataProvider locateDataProvider(
       final List<DataProvider> dataProviders, final ModelerWorkspace workspace, final IMetaStore metaStore )
       throws MetaStoreException, KettlePluginException, ModelerException {
-    ModelAnnotationManager manager = new ModelAnnotationManager();
+    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
     DatabaseMeta factDbMeta = ( (ISpoonModelerSource) workspace.getModelSource() ).getDatabaseMeta();
     for ( DataProvider dataProvider : dataProviders ) {
       DatabaseMeta sharedDbMeta = manager.loadDatabaseMeta( dataProvider.getDatabaseMetaNameRef(), metaStore );
