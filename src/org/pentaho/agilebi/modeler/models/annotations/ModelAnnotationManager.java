@@ -40,6 +40,9 @@ import java.util.List;
  */
 public class ModelAnnotationManager {
 
+  public static final String DEFAULT_NAMESPACE = "pentaho";
+  public static final String SHARED_DIMENSIONS_NAMESPACE = "pentaho.shared.dimensions";
+
   private String nameSpace;
   private ModelAnnotationObjectFactory modelAnnotationObjectFactory = new ModelAnnotationObjectFactory();
 
@@ -50,7 +53,7 @@ public class ModelAnnotationManager {
   public ModelAnnotationManager( String namespace ) {
     this.nameSpace = namespace;
     if ( StringUtils.isBlank( this.nameSpace ) ) {
-      this.nameSpace = "pentaho";
+      this.nameSpace = DEFAULT_NAMESPACE;
     }
   }
 
@@ -190,10 +193,9 @@ public class ModelAnnotationManager {
   }
 
   /**
-   * 
    * @param dbMeta
    * @return DatabaseMetaRefName
-   * @throws MetaStoreException 
+   * @throws MetaStoreException
    */
   public String storeDatabaseMeta( DatabaseMeta dbMeta, IMetaStore mstore ) throws MetaStoreException {
     // TODO: what to do about shared objects, variables?
