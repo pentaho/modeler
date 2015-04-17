@@ -2,6 +2,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 
 /**
@@ -65,7 +66,7 @@ public class MockAnnotationType extends AnnotationType {
   }
 
   @Override
-  public boolean apply( ModelerWorkspace workspace, String column ) {
+  public boolean apply( ModelerWorkspace workspace, String column, final IMetaStore metaStore ) {
     return true;
   }
 

@@ -37,6 +37,7 @@ import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
@@ -70,6 +71,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final String CREATE_DIMENSION_ENUM_VALUE = "Create Dimension Key";
   private static final String CREATE_CALCULATED_MEMBER_ENUM_VALUE = "Create Calculated Member";
   private static final String REMOVE_MEASURE_ENUM_VALUE = "Remove Measure";
+  private static final String LINK_DIMENSION_ENUM_VALUE = "Link Dimension";
 
   private SourceType sourceType = SourceType.StreamField;
 
@@ -116,19 +118,19 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    */
 
   public static List<ModelAnnotation<CreateMeasure>> getMeasures(
-    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateMeasure.class );
   }
 
   public static List<ModelAnnotation<CreateAttribute>> getAttributes(
-    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateAttribute.class );
   }
 
   private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>>
   filter(
-    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
-    Class<S> cls ) {
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
+      Class<S> cls ) {
 
     List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
     if ( cls != null && annotations != null && annotations.size() > 0 ) {
@@ -175,8 +177,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     this.sourceType = sourceType;
   }
 
-  public boolean apply( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-    return annotation.apply( modelerWorkspace, resolveField( modelerWorkspace ) );
+  public boolean apply( final ModelerWorkspace modelerWorkspace, final IMetaStore metaStore ) throws ModelerException {
+    return annotation.apply( modelerWorkspace, resolveField( modelerWorkspace ), metaStore );
   }
 
   /**
@@ -189,7 +191,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    */
   private String resolveField( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
 
-    switch( sourceType ) {
+    switch ( sourceType ) {
       case StreamField: {
         return field;
       }
@@ -234,7 +236,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
               buffer.append( usage.getName() );
               OlapHierarchy olapHierarchy = (OlapHierarchy) olapHierarchies.get( h );
               if ( StringUtils.isNotEmpty( olapHierarchy.getName() )
-                && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
+                  && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
                 buffer.append( "." ).append( olapHierarchy.getName() );
               }
               buffer.append( "].[" );
@@ -268,7 +270,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    */
   private String resolveField( final Document schema ) throws ModelerException {
 
-    switch( sourceType ) {
+    switch ( sourceType ) {
       case StreamField: {
         return field;
       }
@@ -411,11 +413,66 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public static enum Type {
-    CREATE_MEASURE( CREATE_MEASURE_ENUM_VALUE ),
-    CREATE_ATTRIBUTE( CREATE_ATTRIBUTE_ENUM_VALUE ),
-    CREATE_DIMENSION_KEY( CREATE_DIMENSION_ENUM_VALUE ),
-    CREATE_CALCULATED_MEMBER( CREATE_CALCULATED_MEMBER_ENUM_VALUE ),
-    REMOVE_MEASURE( REMOVE_MEASURE_ENUM_VALUE );
+    CREATE_MEASURE( CREATE_MEASURE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.isSharedDimension();
+      }
+    },
+    CREATE_ATTRIBUTE( CREATE_ATTRIBUTE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return true;
+      }
+    },
+    CREATE_DIMENSION_KEY( CREATE_DIMENSION_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return modelAnnotations.isSharedDimension()
+            && ( isDimensionKey( modelAnnotation ) || !hasDimensionKey( modelAnnotations ) );
+      }
+
+      private boolean isDimensionKey( final ModelAnnotation modelAnnotation ) {
+        return CREATE_DIMENSION_KEY.equals( modelAnnotation.getType() );
+      }
+
+      private boolean hasDimensionKey( final ModelAnnotationGroup modelAnnotations ) {
+        for ( ModelAnnotation modelAnnotation : modelAnnotations ) {
+          if ( isDimensionKey( modelAnnotation ) ) {
+            return true;
+          }
+        }
+        return false;
+      }
+    },
+    LINK_DIMENSION( LINK_DIMENSION_ENUM_VALUE ) {
+      @Override
+      public boolean isApplicable( final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
+                                   final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.isSharedDimension();
+      }
+    },
+	CREATE_CALCULATED_MEMBER( CREATE_CALCULATED_MEMBER_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.isSharedDimension();
+      }
+    },
+	REMOVE_MEASURE( REMOVE_MEASURE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.isSharedDimension();
+      }
+    };
 
     private final String description;
 
@@ -425,9 +482,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       Type[] types = values();
-      String[] names = new String[ types.length ];
+      String[] names = new String[types.length];
       for ( int i = 0; i < types.length; i++ ) {
-        names[ i ] = types[ i ].name();
+        names[i] = types[i].name();
       }
       return names;
     }
@@ -435,6 +492,11 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     public String description() {
       return description;
     }
+
+    public abstract boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta );
   }
 
   public static enum TimeType {
@@ -450,9 +512,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       TimeType[] types = values();
-      String[] names = new String[ types.length ];
+      String[] names = new String[types.length];
       for ( int i = 0; i < types.length; i++ ) {
-        names[ i ] = types[ i ].name();
+        names[i] = types[i].name();
       }
       return names;
     }
@@ -470,9 +532,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       GeoType[] types = values();
-      String[] names = new String[ types.length ];
+      String[] names = new String[types.length];
       for ( int i = 0; i < types.length; i++ ) {
-        names[ i ] = types[ i ].name();
+        names[i] = types[i].name();
       }
       return names;
     }

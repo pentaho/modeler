@@ -90,7 +90,7 @@ public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
         // this is the fact table
         for ( AvailableField field : table.getAvailableFields() ) {
           if ( field.getPhysicalColumn().getDataType() == DataType.NUMERIC
-            && !numericFactColumns.contains( field.getName() ) ) {
+              && !numericFactColumns.contains( field.getName() ) ) {
             numericFactColumns.add( field.getName() );
           }
         }
@@ -143,7 +143,7 @@ public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
         // this is the fact table
         for ( AvailableField field : table.getAvailableFields() ) {
           if ( field.getPhysicalColumn().getDataType() == DataType.NUMERIC
-            && !numericFactColumns.contains( field.getName() ) ) {
+              && !numericFactColumns.contains( field.getName() ) ) {
             numericFactColumns.add( field.getName() );
           }
         }
@@ -154,7 +154,7 @@ public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
     int actualGeoLevels = 0;
     for ( DimensionMetaData dim : workspace.getModel().getDimensions() ) {
       IDataRoleAnnotation dataRole =
-        (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+          (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
       if ( dataRole instanceof GeoRole ) {
         actualGeoDims++;
         assertEquals( 1, dim.size() ); // only one hierarchy per geo dim

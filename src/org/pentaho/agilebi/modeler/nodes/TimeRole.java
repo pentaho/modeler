@@ -111,8 +111,8 @@ public class TimeRole implements DataRole {
   public static final TimeRole MINUTES = new TimeRole( "Minutes", new String[] { "m", "mm" } );
   public static final TimeRole SECONDS = new TimeRole( "Seconds", new String[] { "s", "ss" } );
 
-  public static final TimeRole[] ALL_ROLES = new TimeRole[] { DUMMY, YEARS, HALFYEARS, QUARTERS, MONTHS, WEEKS, DAYS,
-    HOURS, MINUTES, SECONDS };
+  public static final TimeRole[] ALL_ROLES =
+      new TimeRole[] { DUMMY, YEARS, HALFYEARS, QUARTERS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS };
 
   public static TimeRole findRoleByName( String name ) {
     for ( TimeRole role : ALL_ROLES ) {

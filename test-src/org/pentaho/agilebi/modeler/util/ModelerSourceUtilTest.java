@@ -99,8 +99,8 @@ public class ModelerSourceUtilTest extends AbstractModelerTest {
   public void testAcceptsAStrategyForImportingTable() throws Exception {
     String schemaName = "";
     String tableName = "CUSTOMERS";
-    Domain d = ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, tableName, false,
-      importStrategy() );
+    Domain d =
+        ModelerSourceUtil.generateDomain( databaseMeta, schemaName, tableName, tableName, false, importStrategy() );
     assertNotNull( d );
 
     int physicalTables = d.getPhysicalModels().get( 0 ).getPhysicalTables().size();

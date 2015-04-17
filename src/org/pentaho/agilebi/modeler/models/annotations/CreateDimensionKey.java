@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
 
@@ -59,9 +60,9 @@ public class CreateDimensionKey extends AnnotationType {
   }
 
   @Override
-  public boolean apply( ModelerWorkspace workspace, String field ) throws ModelerException {
-    // TODO will only be factored in when modeling star schema
-    return false;
+  public boolean apply( ModelerWorkspace workspace, String field, final IMetaStore metaStore ) throws ModelerException {
+    // nothing to do at apply time.  Will be used when a corresponding LinkDimension is specified
+    return true;
   }
 
   @Override
