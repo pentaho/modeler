@@ -74,9 +74,9 @@ public class MemberPropertyMetaData extends BaseColumnBackedMetaData<MemberPrope
   @Override
   public IPhysicalTable getTableRestriction() {
     // restrict to the table of the parent Level
-    if ( ( ( LevelMetaData ) getParent() ).getLogicalColumn() != null ) {
-      return ( ( LevelMetaData ) getParent() ).getLogicalColumn().getPhysicalColumn().getPhysicalTable();
+    if ( ( (LevelMetaData) getParent() ).getLogicalColumn() != null ) {
+      return ( (LevelMetaData) getParent() ).getLogicalColumn().getPhysicalColumn().getPhysicalTable();
     }
-    return ( ( LevelMetaData ) getParent() ).getTableRestriction();
+    return ( (LevelMetaData) getParent() ).getTableRestriction();
   }
 }

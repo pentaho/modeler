@@ -40,6 +40,7 @@ import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.util.MondrianModelExporter;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
@@ -135,7 +136,8 @@ public class CreateMeasure extends AnnotationType {
   }
 
   @Override
-  public boolean apply( final ModelerWorkspace workspace, final String column ) throws ModelerException {
+  public boolean apply(
+      final ModelerWorkspace workspace, final String column, final IMetaStore metaStore ) throws ModelerException {
     List<LogicalTable> logicalTables = workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables();
     for ( LogicalTable logicalTable : logicalTables ) {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
@@ -172,7 +174,8 @@ public class CreateMeasure extends AnnotationType {
         logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) );
   }
 
-  private void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
+  @Override
+  protected void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
     LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
     String locale = workspace.getWorkspaceHelper().getLocale();
     for ( MeasureMetaData measure : workspace.getModel().getMeasures() ) {

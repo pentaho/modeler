@@ -50,10 +50,14 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
+import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 
 /**
@@ -284,11 +288,13 @@ public abstract class AnnotationType implements Serializable {
   }
 
   protected LevelMetaData locateLevel( final ModelerWorkspace workspace, final String column ) throws ModelerException {
+    String locale = workspace.getWorkspaceHelper().getLocale();
     workspace.getModel().getDimensions();
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
         for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
-          if ( levelMetaData.getLogicalColumn().getName(workspace.getWorkspaceHelper().getLocale() ).equals( column ) ) {
+          if ( levelMetaData.getLogicalColumn().getName( locale ).equalsIgnoreCase( column )
+              || levelMetaData.getLogicalColumn().getName( locale ).equals( beautify( column ) ) ) {
             return levelMetaData;
           }
         }
@@ -298,16 +304,41 @@ public abstract class AnnotationType implements Serializable {
   }
 
   protected LogicalColumn locateLogicalColumn( final ModelerWorkspace workspace, final String columnName ) {
+    String locale = workspace.getWorkspaceHelper().getLocale();
     LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
     logicalModel.getLogicalTables();
     for ( LogicalTable logicalTable : logicalModel.getLogicalTables() ) {
       for ( LogicalColumn logicalColumn : logicalTable.getLogicalColumns() ) {
-        if ( logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ).equalsIgnoreCase( columnName ) ) {
+        if ( logicalColumn.getName( locale ).equalsIgnoreCase( columnName )
+            || logicalColumn.getName( locale ).equalsIgnoreCase( beautify( columnName ) ) ) {
           return logicalColumn;
         }
       }
     }
     return null;
+  }
+
+  protected void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
+    MeasureMetaData measure = locateMeasure( workspace, column );
+    if ( measure != null ) {
+      workspace.getModel().getMeasures().remove( measure );
+    }
+  }
+
+  private MeasureMetaData locateMeasure( final ModelerWorkspace workspace, final String column ) {
+    MeasuresCollection measures = workspace.getModel().getMeasures();
+    for ( MeasureMetaData measure : measures ) {
+      if ( measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals( column )
+          || measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals(
+          beautify( column ) ) ) {
+        return measure;
+      }
+    }
+    return null;
+  }
+
+  protected String beautify( final String column ) {
+    return column == null ? null : PhysicalTableImporter.beautifyName( column );
   }
 
   public void populate( final Map<String, Serializable> propertiesMap ) {
@@ -366,9 +397,11 @@ public abstract class AnnotationType implements Serializable {
    * 
    * @param workspace
    * @param field
+   * @param metaStore
    * @throws ModelerException
    */
-  public abstract boolean apply( final ModelerWorkspace workspace, final String field ) throws ModelerException;
+  public abstract boolean apply(
+      final ModelerWorkspace workspace, final String field, final IMetaStore metaStore ) throws ModelerException;
 
   /**
    * Applies modeling change on a Mondrian schema using a field as the source..

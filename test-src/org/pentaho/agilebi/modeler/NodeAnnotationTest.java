@@ -38,12 +38,12 @@ public class NodeAnnotationTest extends AbstractModelerTest {
 
     LevelMetaData level = workspace.getModel().getDimensions().get( 0 ).get( 0 ).get( 0 );
     level.getMemberAnnotations().put( GeoContext.ANNOTATION_GEO_ROLE,
-      workspace.getGeoContext().getGeoRoleByName( "location" ) );
+        workspace.getGeoContext().getGeoRoleByName( "location" ) );
     level.getMemberAnnotations().put( GeoContext.ANNOTATION_DATA_ROLE,
-      workspace.getGeoContext().getGeoRoleByName( "location" ) );
+        workspace.getGeoContext().getGeoRoleByName( "location" ) );
 
     assertEquals( workspace.getGeoContext().getGeoRoleByName( "location" ), level.getMemberAnnotations().get(
-      GeoContext.ANNOTATION_GEO_ROLE ) );
+        GeoContext.ANNOTATION_GEO_ROLE ) );
     assertEquals( level.getMemberAnnotations().get( GeoContext.ANNOTATION_GEO_ROLE ).getName(), "location" );
     assertEquals( level.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ).getName(), "location" );
 

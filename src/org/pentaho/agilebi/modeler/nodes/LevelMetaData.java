@@ -58,7 +58,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
   }
 
   public HierarchyMetaData getHierarchyMetaData() {
-    return ( HierarchyMetaData ) getParent();
+    return (HierarchyMetaData) getParent();
   }
 
   public boolean isTimeLevel() {

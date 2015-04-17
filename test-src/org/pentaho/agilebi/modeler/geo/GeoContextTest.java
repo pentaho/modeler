@@ -154,7 +154,7 @@ public class GeoContextTest extends AbstractModelerTest {
     assertNotNull( dim );
 
     IDataRoleAnnotation dataRole =
-      (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+        (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
     assertTrue( dataRole instanceof GeoRole );
 
     dataRole = (IDataRoleAnnotation) dim.get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
@@ -200,7 +200,7 @@ public class GeoContextTest extends AbstractModelerTest {
     assertNotNull( dim );
 
     IDataRoleAnnotation dataRole =
-      (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+        (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
 
     assertTrue( dataRole instanceof GeoRole );
     dataRole = (IDataRoleAnnotation) dim.get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
@@ -314,7 +314,7 @@ public class GeoContextTest extends AbstractModelerTest {
     // since there was more than one geo dimension created, dim names should be prefixed with table name (example:
     // table_geography)
     String expectedDimName =
-      mockTable1.getName( LOCALE ) + geo.getGeoRole( 0 ).getMatchSeparator() + geo.getDimensionName();
+        mockTable1.getName( LOCALE ) + geo.getGeoRole( 0 ).getMatchSeparator() + geo.getDimensionName();
     assertEquals( expectedDimName, custGeoDim.getName() );
     assertEquals( 1, custGeoDim.get( 0 ).size() );
 
@@ -433,21 +433,21 @@ public class GeoContextTest extends AbstractModelerTest {
                 assertNotNull( existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) );
 
                 IDataRoleAnnotation dataRole =
-                  (IDataRoleAnnotation) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+                    (IDataRoleAnnotation) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
                 assertTrue( dataRole instanceof LocationRole );
 
                 assertEquals( 2, existingLevel.size() );
 
                 LocationRole lr =
-                  (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_GEO_ROLE );
+                    (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_GEO_ROLE );
 
                 assertNotNull( existingLevel.getLatitudeField() );
                 assertNotNull( existingLevel.getLongitudeField() );
 
                 // make sure the lat & long fields are available as logical columns in the model
                 LogicalColumn lc =
-                  workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
-                    .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
+                    workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
+                        .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
                 assertNotNull( lc );
                 assertEquals( "latitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
@@ -569,8 +569,8 @@ public class GeoContextTest extends AbstractModelerTest {
 
         // make sure the lat & long fields are available as logical columns in the model
         LogicalColumn lc =
-          workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn().getPhysicalColumn(),
-            ModelerPerspective.ANALYSIS );
+            workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn().getPhysicalColumn(),
+                ModelerPerspective.ANALYSIS );
         assertNotNull( lc );
         assertEquals( "latitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
@@ -692,16 +692,16 @@ public class GeoContextTest extends AbstractModelerTest {
               if ( existingLevel.getName().equalsIgnoreCase( "customername" ) ) {
                 assertNotNull( existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) );
                 assertTrue(
-                  existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) instanceof LocationRole );
+                    existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) instanceof LocationRole );
                 LocationRole lr =
-                  (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+                    (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
                 assertNotNull( existingLevel.getLatitudeField() );
                 assertNotNull( existingLevel.getLongitudeField() );
 
                 // make sure the lat & long fields are available as logical columns in the model
                 LogicalColumn lc =
-                  workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
-                    .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
+                    workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
+                        .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
                 assertNotNull( lc );
                 assertEquals( "latitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
@@ -829,7 +829,7 @@ public class GeoContextTest extends AbstractModelerTest {
     locationRole.getLongitudeRole().eval( "customer_longitude", "longitude" );
 
     AvailableField field =
-      geo.determineLocationField( table, locationRole, 2, 3, workspace.getWorkspaceHelper().getLocale() );
+        geo.determineLocationField( table, locationRole, 2, 3, workspace.getWorkspaceHelper().getLocale() );
     assertEquals( "Customer", field.getName() );
 
   }
@@ -911,7 +911,7 @@ public class GeoContextTest extends AbstractModelerTest {
 
     GeoContext geo = GeoContextFactory.create( config );
     AvailableField field =
-      geo.determineLocationField( table, geo.getLocationRole(), 2, 3, workspace.getWorkspaceHelper().getLocale() );
+        geo.determineLocationField( table, geo.getLocationRole(), 2, 3, workspace.getWorkspaceHelper().getLocale() );
     assertEquals( "State", field.getName() );
   }
 
@@ -1035,7 +1035,7 @@ public class GeoContextTest extends AbstractModelerTest {
 
     GeoContext geo = GeoContextFactory.create( config );
     AvailableField field =
-      geo.determineLocationField( table, geo.getLocationRole(), 2, 3, workspace.getWorkspaceHelper().getLocale() );
+        geo.determineLocationField( table, geo.getLocationRole(), 2, 3, workspace.getWorkspaceHelper().getLocale() );
     assertEquals( "Customer", field.getName() );
 
   }
@@ -1161,11 +1161,11 @@ public class GeoContextTest extends AbstractModelerTest {
     assertEquals( 3, custGeoDim.get( 0 ).size() );
 
     assertEquals( "location", custGeoDim.get( 0 ).get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-      .getName() ); // due to order of fields, this should be the location role
+        .getName() ); // due to order of fields, this should be the location role
     assertEquals( "state", custGeoDim.get( 0 ).get( 1 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-      .getName() );
+        .getName() );
     assertEquals( "city", custGeoDim.get( 0 ).get( 2 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-      .getName() );
+        .getName() );
 
     verify( mockTable1 );
     verify( mockCityCol );
@@ -1308,11 +1308,11 @@ public class GeoContextTest extends AbstractModelerTest {
     assertEquals( 3, custGeoDim.get( 0 ).size() );
 
     assertEquals( "location", custGeoDim.get( 0 ).get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-      .getName() ); // due to order of fields, this should be the location role
+        .getName() ); // due to order of fields, this should be the location role
     assertEquals( "state", custGeoDim.get( 0 ).get( 1 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-      .getName() );
+        .getName() );
     assertEquals( "city", custGeoDim.get( 0 ).get( 2 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-      .getName() );
+        .getName() );
 
     verify( mockTable1 );
     verify( mockCityCol );
