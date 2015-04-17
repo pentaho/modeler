@@ -25,6 +25,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
@@ -63,7 +64,8 @@ public class RemoveMeasure extends AnnotationType {
   @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
   private String cube;
 
-  @Override public boolean apply( ModelerWorkspace workspace, String field ) throws ModelerException {
+  @Override public boolean apply( ModelerWorkspace workspace, String field, IMetaStore metaStore )
+    throws ModelerException {
     return false;
   }
 
