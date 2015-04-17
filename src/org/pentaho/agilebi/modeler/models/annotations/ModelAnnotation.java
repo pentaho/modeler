@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.olap.OlapCube;

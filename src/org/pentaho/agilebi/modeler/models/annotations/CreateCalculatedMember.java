@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalColumn;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
@@ -145,7 +146,7 @@ public class CreateCalculatedMember extends AnnotationType {
    * @return
    * @throws org.pentaho.agilebi.modeler.ModelerException
    */
-  @Override public boolean apply( ModelerWorkspace workspace, String column ) throws ModelerException {
+  @Override public boolean apply( ModelerWorkspace workspace, String column, IMetaStore metaStore ) throws ModelerException {
     throw new UnsupportedOperationException();
   }
 
