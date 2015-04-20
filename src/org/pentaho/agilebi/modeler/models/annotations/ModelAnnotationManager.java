@@ -57,18 +57,20 @@ public class ModelAnnotationManager {
     }
   }
 
-  private MetaStoreFactory<ModelAnnotation> getMetaStoreFactory( IMetaStore metastore ) {
-    MetaStoreFactory<ModelAnnotation>
-        factory =
-        new MetaStoreFactory( ModelAnnotation.class, metastore, this.nameSpace );
-    factory.setObjectFactory( this.modelAnnotationObjectFactory );
-    return factory;
+  private MetaStoreFactory<ModelAnnotation> getMetaStoreFactory( IMetaStore metastore ) throws MetaStoreException {
+    return getMetaStoreFactory( metastore, ModelAnnotation.class );
   }
 
-  private MetaStoreFactory<ModelAnnotationGroup> getGroupMetaStoreFactory( IMetaStore metastore ) {
-    MetaStoreFactory<ModelAnnotationGroup>
-        factory =
-        new MetaStoreFactory( ModelAnnotationGroup.class, metastore, this.nameSpace );
+  private MetaStoreFactory<ModelAnnotationGroup> getGroupMetaStoreFactory( IMetaStore metastore )
+      throws MetaStoreException {
+    return getMetaStoreFactory( metastore, ModelAnnotationGroup.class );
+  }
+
+  private <T> MetaStoreFactory<T> getMetaStoreFactory( IMetaStore metastore, Class<T> clazz ) throws MetaStoreException {
+    if ( !metastore.namespaceExists( this.nameSpace ) ) {
+      metastore.createNamespace( this.nameSpace );
+    }
+    MetaStoreFactory<T> factory = new MetaStoreFactory<T>( clazz, metastore, this.nameSpace );
     factory.setObjectFactory( this.modelAnnotationObjectFactory );
     return factory;
   }
@@ -133,7 +135,7 @@ public class ModelAnnotationManager {
     return modelAnnotationGroup;
   }
 
-  public List<ModelAnnotationGroup> listGroups( final IMetaStore metastore ) throws Exception {
+  public List<ModelAnnotationGroup> listGroups( final IMetaStore metastore ) throws MetaStoreException {
     MetaStoreFactory factory = getGroupMetaStoreFactory( metastore );
     return factory.getElements();
   }
@@ -199,25 +201,18 @@ public class ModelAnnotationManager {
    */
   public String storeDatabaseMeta( DatabaseMeta dbMeta, IMetaStore mstore ) throws MetaStoreException {
     // TODO: what to do about shared objects, variables?
-    // check if exists
-    boolean exists = false;
-    for ( DatabaseMeta stored : DatabaseMetaStoreUtil.getDatabaseElements( mstore ) ) {
-      if ( stored.equals( dbMeta ) ) {
-        exists = true;
-        break;
-      }
-    }
+
+    // get the type that's actually stored, the one that comes in the element is new from populate
+    IMetaStoreElementType properType = getDatabaseMetaType( mstore );
+    IMetaStoreElement dbMetaElement = DatabaseMetaStoreUtil.populateDatabaseElement( mstore, dbMeta );
+    IMetaStoreElement dbMetaExisting =
+        mstore.getElementByName( properType.getNamespace(), properType, dbMeta.getName() );
     // update if exists, create if doesn't
-    if ( exists ) {
-      IMetaStoreElement dbMetaElement = DatabaseMetaStoreUtil.populateDatabaseElement( mstore, dbMeta );
-      // get the type that's actually stored, the one that comes in the element is new from populate
-      IMetaStoreElementType properType = getDatabaseMetaType( mstore );
-      mstore.updateElement( properType.getNamespace(), properType, dbMetaElement.getId(), dbMetaElement );
+    if ( dbMetaExisting != null ) {
+      mstore.updateElement( properType.getNamespace(), properType, dbMetaExisting.getId(), dbMetaElement );
     } else {
-      // creates type if not there, throws if element exists
-      DatabaseMetaStoreUtil.createDatabaseElement( mstore, dbMeta );
+      mstore.createElement( properType.getNamespace(), properType, dbMetaElement );
     }
-    // id == name
     return dbMeta.getName();
   }
 
@@ -232,6 +227,9 @@ public class ModelAnnotationManager {
   }
 
   private static IMetaStoreElementType getDatabaseMetaType( IMetaStore metaStore ) throws MetaStoreException {
+    if ( !metaStore.namespaceExists( PentahoDefaults.NAMESPACE ) ) {
+      metaStore.createNamespace( PentahoDefaults.NAMESPACE );
+    }
     IMetaStoreElementType elementType =
         metaStore.getElementTypeByName( PentahoDefaults.NAMESPACE,
             PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
