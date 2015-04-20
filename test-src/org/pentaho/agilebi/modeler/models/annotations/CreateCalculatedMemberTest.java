@@ -98,7 +98,7 @@ public class CreateCalculatedMemberTest {
   public void testApplyDSW() throws Exception {
     ModelerWorkspace modelerWorkspace = createMock( ModelerWorkspace.class );
     try {
-      createCalculatedMember.apply( modelerWorkspace, null );
+      createCalculatedMember.apply( modelerWorkspace, null, null );
     } catch ( Exception e ) {
       assert ( e.getClass().isAssignableFrom( UnsupportedOperationException.class ) );
     }
