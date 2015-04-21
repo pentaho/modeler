@@ -22,6 +22,8 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -204,7 +206,14 @@ public class LinkDimension extends AnnotationType {
   }
 
   @Override public void validate() throws ModelerException {
-
+    if ( StringUtils.isBlank( getName() ) ) {
+      throw new ModelerException(
+          BaseMessages.getString( MSG_CLASS, "Modeler.LinkDimension.validation.DIMENSION_NAME_REQUIRED" ) );
+    }
+    if ( StringUtils.isBlank( getSharedDimension() ) ) {
+      throw new ModelerException( BaseMessages.getString( MSG_CLASS,
+          "Modeler.LinkDimension.validation.SHARED_DIMENSION_REQUIRED" ) );
+    }
   }
 
   @Override public ModelAnnotation.Type getType() {
