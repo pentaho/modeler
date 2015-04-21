@@ -24,6 +24,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
@@ -59,6 +60,7 @@ import java.util.Properties;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings( "unchecked" )
 public class LinkDimensionTest {
@@ -76,6 +78,30 @@ public class LinkDimensionTest {
     PluginRegistry.addPluginType( StepPluginType.getInstance() );
     PluginRegistry.init();
     Props.init( 0 );
+  }
+
+  @Test
+  public void testDimensionAndSharedDimensionRequired() throws Exception {
+    LinkDimension linkDimension = new LinkDimension();
+    try {
+      linkDimension.validate();
+      fail( "expected Exception" );
+    } catch ( ModelerException e ) {
+      assertEquals( "Dimension Name is required.", e.getMessage() );
+    }
+    linkDimension.setName( "anything" );
+    try {
+      linkDimension.validate();
+      fail( "expected Exception" );
+    } catch ( ModelerException e ) {
+      assertEquals( "Shared Dimension is required.", e.getMessage() );
+    }
+    linkDimension.setSharedDimension( "aShared Dim" );
+    try {
+      linkDimension.validate();
+    } catch ( ModelerException e ) {
+      fail( "should have been valid" );
+    }
   }
 
   @Test
