@@ -254,4 +254,59 @@ public class ModelAnnotationMetastoreTest {
     return columnMappings;
   }
 
+  @Test
+  public void testSaveAndLoadSharedDimensionGroup() throws Exception {
+
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.setName( "My Category" );
+    group.setDescription( "Test Description" );
+
+    for ( int i = 0; i < 100; i++ ) {
+      if ( i % 2 == 0 ) {
+        CreateMeasure createMeasure = new CreateMeasure();
+        createMeasure.setName( "measure" + 1 );
+        group.add( new ModelAnnotation( "f" + i, createMeasure ) );
+      } else {
+        CreateAttribute createAttribute = new CreateAttribute();
+        createAttribute.setName( "attribute" + 1 );
+        group.add( new ModelAnnotation( "f", createAttribute ) );
+      }
+    }
+
+    DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dataProvider1" );
+    dataProvider.setSchemaName( "schemaName" );
+    dataProvider.setTableName( "tableName" );
+    dataProvider.setDatabaseMetaNameRef( "dbMeta1" );
+    dataProvider.setColumnMappings( getTestColumnMappings() );
+
+    List<DataProvider> dataProviders = new ArrayList<DataProvider>();
+    dataProviders.add( dataProvider );
+
+    group.setDataProviders( dataProviders );
+    group.setSharedDimension( true ); // flag to indicate this is a shared dimension
+
+    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    manager.createGroup( group, metaStore );
+
+    // load element
+    assertEquals( 1, manager.listGroups( metaStore ).size() );
+
+    ModelAnnotationGroup loadedGroup = manager.readGroup( group.getName(), metaStore );
+
+    assertEquals( group.size(), loadedGroup.size() );
+
+    assertEquals( "Test Description", loadedGroup.getDescription() );
+
+    assertEquals( true, loadedGroup.isSharedDimension() );
+    assertEquals( 1, loadedGroup.getDataProviders().size() );
+    assertEquals( "dbMeta1", loadedGroup.getDataProviders().get( 0 ).getDatabaseMetaNameRef() );
+    assertEquals( 2, loadedGroup.getDataProviders().get( 0 ).getColumnMappings().size() );
+
+    group.setModelAnnotations( null );
+    assertEquals( 0, group.size() );
+
+    group.setModelAnnotations( new ModelAnnotationGroup() );
+    assertEquals( 0, group.size() );
+  }
 }
