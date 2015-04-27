@@ -3,14 +3,12 @@ package org.pentaho.agilebi.modeler.models.annotations.data;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
-import org.pentaho.metastore.persist.MetaStoreElementType;
 
 import java.io.Serializable;
 
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "ColumnMapping", description = "ColumnMapping" )
 public class ColumnMapping implements Serializable {
 
   @MetaStoreAttribute
