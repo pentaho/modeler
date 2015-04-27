@@ -67,6 +67,8 @@ public class LinkDimensionTest {
   private IMetaStore metaStore;
   private DatabaseMeta dbMeta;
 
+  private static final String GEO_ROLE_PROPERTIES = "test-res/geoRoles.properties";
+
   @Before
   public void setUp() throws Exception {
     metaStore = new MemoryMetaStore();
@@ -390,7 +392,7 @@ public class LinkDimensionTest {
     TableModelerSource source = new TableModelerSource( dbMeta, "orderfact", "" );
     Domain domain = source.generateDomain();
 
-    Reader propsReader = new FileReader( new File( "test-res/geoRoles.properties" ) );
+    Reader propsReader = new FileReader( new File( GEO_ROLE_PROPERTIES ) );
     Properties props = new Properties();
     props.load( propsReader );
     GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );

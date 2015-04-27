@@ -17,6 +17,7 @@ import org.pentaho.agilebi.modeler.models.annotations.CreateMeasure;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationManager;
+import org.pentaho.agilebi.modeler.models.annotations.SharedDimensionGroup;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,6 +38,7 @@ public class ModelAnnotationManagerTest {
   private String tempDir = null;
   private IMetaStore metaStore = null;
   private ModelAnnotationManager modelAnnotationManager = null;
+  private ModelAnnotationManager sharedDimensionManager = null;
 
   @Before
   public void before() throws IOException, MetaStoreException, KettleException {
@@ -46,26 +48,12 @@ public class ModelAnnotationManagerTest {
     tempDir = f.getParent();
     metaStore = new XmlMetaStore( tempDir );
     modelAnnotationManager = new ModelAnnotationManager();
+    sharedDimensionManager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
   }
 
   @After
   public void after() throws IOException {
     FileUtils.deleteDirectory( new File( ( (XmlMetaStore) metaStore ).getRootFolder() ) );
-  }
-
-  @Test
-  public void testCreateModelAnnotation() throws Exception {
-
-    CreateMeasure cm = new CreateMeasure();
-    cm.setAggregateType( AggregationType.COUNT_DISTINCT );
-
-    ModelAnnotation<CreateMeasure> m = new ModelAnnotation<CreateMeasure>( "f1", cm );
-    modelAnnotationManager.create( m, this.metaStore );
-
-    ModelAnnotation loaded = modelAnnotationManager.read( m.getName(), this.metaStore );
-
-    assertNotNull( loaded );
-    assertTrue( loaded.getAnnotation().getType().equals( ModelAnnotation.Type.CREATE_MEASURE ) );
   }
 
   @Test
@@ -84,54 +72,17 @@ public class ModelAnnotationManagerTest {
     assertNotNull( modelAnnotationManager.readGroup( group.getName(), this.metaStore ) );
     assertNotNull(
         modelAnnotationManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
-  }
 
-  @Test
-  public void testList() throws Exception {
 
-    CreateMeasure cm = new CreateMeasure();
-    cm.setAggregateType( AggregationType.COUNT_DISTINCT );
+    group.setSharedDimension( true ); // make this a shared dimension
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    sharedDimensionManager.createGroup( group, this.metaStore ); // able to save even with the same group name
 
-    CreateAttribute ca = new CreateAttribute();
-    ca.setGeoType( ModelAnnotation.GeoType.Country );
+    assertTrue( sharedDimensionManager.readGroup( group.getName(), this.metaStore ) instanceof SharedDimensionGroup );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
-
-    // add annotations
-    modelAnnotationManager.create( mcm, this.metaStore );
-    modelAnnotationManager.create( mca, this.metaStore );
-
-    List<String> names = modelAnnotationManager.listNames( this.metaStore );
-
-    assertTrue( CollectionUtils.exists( names, new Predicate() {
-      @Override public boolean evaluate( Object o ) {
-
-        String name = (String) o;
-        if ( name.equals( mcm.getName() ) ) { // check mcm object
-          return true;
-        }
-
-        return false;
-      }
-    } ) );
-
-    assertTrue( CollectionUtils.exists( names, new Predicate() {
-      @Override public boolean evaluate( Object o ) {
-
-        String name = (String) o;
-        if ( name.equals( mca.getName() ) ) { // check mca object
-          return true;
-        }
-
-        return false;
-      }
-    } ) );
-
-    ModelAnnotationGroup loadedGroup =
-        modelAnnotationManager.list( this.metaStore );
-    assertEquals( 2, loadedGroup.size() );
+    assertNotNull( sharedDimensionManager.readGroup( group.getName(), this.metaStore ) );
+    assertNotNull(
+        sharedDimensionManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
   }
 
   @Test
@@ -175,28 +126,6 @@ public class ModelAnnotationManagerTest {
   }
 
   @Test
-  public void testContains() throws Exception {
-
-    CreateMeasure cm = new CreateMeasure();
-    cm.setAggregateType( AggregationType.COUNT_DISTINCT );
-
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
-
-    CreateAttribute ca = new CreateAttribute();
-    ca.setGeoType( ModelAnnotation.GeoType.Country );
-
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
-
-    // add annotations
-    modelAnnotationManager.create( mcm, this.metaStore );
-    modelAnnotationManager.create( mca, this.metaStore );
-
-    assertTrue( modelAnnotationManager.contains( mcm.getName(), this.metaStore ) );
-    assertTrue( modelAnnotationManager.contains( mca.getName(), this.metaStore ) );
-    assertFalse( modelAnnotationManager.contains( "null", this.metaStore ) );
-  }
-
-  @Test
   public void testContainsGroup() throws Exception {
 
     ModelAnnotationGroup group = new ModelAnnotationGroup();
@@ -217,41 +146,10 @@ public class ModelAnnotationManagerTest {
     // add annotations
     modelAnnotationManager.createGroup( group, this.metaStore );
 
-    assertFalse( modelAnnotationManager.contains( mcm.getName(), this.metaStore ) ); // not found, stored in group
-    assertFalse( modelAnnotationManager.contains( mca.getName(), this.metaStore ) ); // not found, stored in group
-    assertFalse( modelAnnotationManager.contains( "null", this.metaStore ) );
+    assertFalse( modelAnnotationManager.containsGroup( "null", this.metaStore ) );
     assertTrue( modelAnnotationManager.containsGroup( group.getName(), this.metaStore ) );
-  }
 
-  @Test
-  public void testDelete() throws Exception {
-
-    CreateMeasure cm = new CreateMeasure();
-    cm.setAggregateType( AggregationType.COUNT_DISTINCT );
-
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
-
-    CreateAttribute ca = new CreateAttribute();
-    ca.setGeoType( ModelAnnotation.GeoType.Country );
-
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
-
-    // add annotations
-    modelAnnotationManager.create( mcm, this.metaStore );
-    modelAnnotationManager.create( mca, this.metaStore );
-    assertEquals( 2, modelAnnotationManager.listNames( this.metaStore ).size() );
-
-    modelAnnotationManager.delete( mca.getName(), this.metaStore );
-    assertEquals( 1, modelAnnotationManager.listNames( this.metaStore ).size() );
-
-    // add more
-    for ( ModelAnnotation modelAnnotation : createTestGroup() ) {
-      modelAnnotationManager.create( modelAnnotation, this.metaStore );
-    }
-    assertEquals( 3, modelAnnotationManager.listNames( this.metaStore ).size() );
-
-    modelAnnotationManager.deleteAll( this.metaStore );
-    assertEquals( 0, modelAnnotationManager.listNames( this.metaStore ).size() );
+    assertFalse( sharedDimensionManager.containsGroup( group.getName(), this.metaStore ) );
   }
 
   @Test
@@ -286,6 +184,24 @@ public class ModelAnnotationManagerTest {
 
     modelAnnotationManager.deleteAllGroups( this.metaStore );
     assertEquals( 0, modelAnnotationManager.listGroupNames( this.metaStore ).size() );
+
+    // Make this a shared dimension group
+    group.setSharedDimension( true );
+
+    // add annotations
+    sharedDimensionManager.createGroup( group, this.metaStore );
+    assertEquals( 1, sharedDimensionManager.listGroupNames( this.metaStore ).size() );
+
+    sharedDimensionManager.deleteGroup( group.getName(), this.metaStore );
+    assertEquals( 0, sharedDimensionManager.listGroupNames( this.metaStore ).size() );
+
+    // add more
+    group.addAll( createTestGroup() );
+    sharedDimensionManager.createGroup( group, this.metaStore );
+    assertEquals( 1, sharedDimensionManager.listGroupNames( this.metaStore ).size() );
+
+    sharedDimensionManager.deleteAllGroups( this.metaStore );
+    assertEquals( 0, sharedDimensionManager.listGroupNames( this.metaStore ).size() );
   }
 
   private ModelAnnotationGroup createTestGroup() {
@@ -316,6 +232,10 @@ public class ModelAnnotationManagerTest {
     modelAnnotationManager.createGroup( group, this.metaStore );
 
     assertEquals( 0, modelAnnotationManager.readGroup( group.getName(), this.metaStore ).size() );
+
+    sharedDimensionManager.createGroup( group, this.metaStore );
+
+    assertEquals( 0, sharedDimensionManager.readGroup( group.getName(), this.metaStore ).size() );
   }
 
   @Test
