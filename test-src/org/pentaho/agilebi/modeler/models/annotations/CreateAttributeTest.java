@@ -26,6 +26,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +37,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.TimeType;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -450,6 +452,17 @@ public class CreateAttributeTest {
     return dbMeta;
   }
 
+  private DatabaseMeta newH2Db( String ... statements ) throws Exception {
+    DatabaseMeta dbMeta = newH2Db();
+    Database db = new Database( null, dbMeta );
+    db.connect();
+    for ( String stmt : statements ) {
+      db.execStatement( stmt );
+    }
+    db.disconnect();
+    return dbMeta;
+  }
+
   private void assertAnnotation( final OlapAnnotation olapAnnotation, final String name, final String value ) {
     assertEquals( name, olapAnnotation.getName() );
     assertEquals( value, olapAnnotation.getValue() );
@@ -532,4 +545,39 @@ public class CreateAttributeTest {
     OlapHierarchyLevel level = hierarchy.getHierarchyLevels().get( 0 );
     assertEquals( "State Abbr", level.getName() );
   }
+
+  /**
+   * Time dimension with same name as a field not getting marked as time dimension.
+   */
+  @Test
+  public void testTimeDimensionSetAfterAutoModel() throws Exception {
+    ModelerWorkspace wspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    DatabaseMeta dbMeta = newH2Db( "DROP TABLE if exists datetable;",
+        "CREATE TABLE datetable\n"
+            + "(\n"
+            + "\"date\" TIMESTAMP\n"
+            + ");\n" );
+    TableModelerSource source = new TableModelerSource( dbMeta, "datetable", "" );
+    Domain domain = source.generateDomain();
+    wspace.setModelSource( source );
+    wspace.setDomain( domain );
+    wspace.setModelName( "DateModel" );
+    wspace.getWorkspaceHelper().autoModelFlat( wspace );
+    wspace.getWorkspaceHelper().populateDomain( wspace );
+
+    CreateAttribute createAttr = new CreateAttribute();
+    createAttr.setName( "Date" );
+    createAttr.setTimeType( TimeType.TimeDays );
+    createAttr.setDimension( "Date" );
+    createAttr.setHierarchy( "Date" );
+    createAttr.apply( wspace, "date", new MemoryMetaStore() );
+
+    @SuppressWarnings( "unchecked" )
+    OlapDimension dateDim =
+        ( (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
+            LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 ).getOlapDimensionUsages().get( 0 ).getOlapDimension();
+    assertEquals( "Date", dateDim.getName() );
+    assertTrue( "time dimension not set", dateDim.isTimeDimension() );
+  }
+
 }
