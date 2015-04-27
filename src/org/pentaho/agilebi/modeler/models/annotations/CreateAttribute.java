@@ -286,6 +286,9 @@ public class CreateAttribute extends AnnotationType {
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) && !isAutoModeled( workspace, column ) ) {
         hierarchyMetaData.setParent( dimensionMetaData );
+        if ( dimensionMetaData.isEmpty() ) {
+          dimensionMetaData.setDimensionType( dimensionType() );
+        }
         dimensionMetaData.add( hierarchyMetaData );
       }
     }
