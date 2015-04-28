@@ -49,7 +49,6 @@ import java.util.logging.Logger;
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "CreateAttribute", description = "CreateAttribute Annotation" )
 public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;

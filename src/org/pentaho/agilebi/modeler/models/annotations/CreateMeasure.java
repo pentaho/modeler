@@ -54,7 +54,6 @@ import org.w3c.dom.Node;
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "CreateMeasure", description = "CreateMeasure Annotation" )
 public class CreateMeasure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
