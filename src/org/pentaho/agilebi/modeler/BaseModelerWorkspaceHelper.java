@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
@@ -53,6 +54,7 @@ import org.pentaho.metadata.model.concept.IConcept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.olap.OlapAnnotation;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
@@ -228,7 +230,12 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
               level.getLogicalColumns().add( lc );
             }
           }
-
+          if ( StringUtils.isNotBlank( lvl.getDescription() ) ) {
+            OlapAnnotation description = new OlapAnnotation();
+            description.setName( "description." + getLocale() );
+            description.setValue( lvl.getDescription() );
+            level.getAnnotations().add( description );
+          }
           level.setHavingUniqueMembers( lvl.isUniqueMembers() );
           levels.add( level );
         }
@@ -264,6 +271,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     Map<String, LogicalColumn> backingColumns = new HashMap<String, LogicalColumn>();
     for ( MeasureMetaData f : model.getModel().getMeasures() ) {
       LogicalColumn lCol = f.getLogicalColumn();
+      if ( StringUtils.isNotBlank( f.getDescription() ) ) {
+        lCol.setDescription( new LocalizedString( getLocale(), f.getDescription() ) );
+      }
       LogicalTable lTable = lCol.getLogicalTable();
       OlapMeasure measure = new OlapMeasure();
 

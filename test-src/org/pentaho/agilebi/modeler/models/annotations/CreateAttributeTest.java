@@ -182,8 +182,7 @@ public class CreateAttributeTest {
     productDescription.setDimension( "Product" );
     productDescription.apply( model, "PRODUCTDESCRIPTION_OLAP", metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     assertEquals( 8, dimensionUsages.size() );
     OlapDimensionUsage dateDim = dimensionUsages.get( 7 );
@@ -256,8 +255,7 @@ public class CreateAttributeTest {
     city.setGeoType( ModelAnnotation.GeoType.City );
     city.apply( model, "CITY", metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
@@ -322,8 +320,7 @@ public class CreateAttributeTest {
     state.setHierarchy( "MyGeo" );
     state.apply( model, "STATE", metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
@@ -393,8 +390,7 @@ public class CreateAttributeTest {
     city.setGeoType( ModelAnnotation.GeoType.City );
     city.apply( model, "CITY", metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
@@ -485,8 +481,7 @@ public class CreateAttributeTest {
     month.setTimeFormat( "MMM" );
     month.apply( model, "PRODUCTCODE_OLAP", metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage timeDim = dimensionUsages.get( 8 );
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, timeDim.getOlapDimension().getType() );
@@ -517,8 +512,7 @@ public class CreateAttributeTest {
     productCode.setHierarchy( "Time" );
     productCode.apply( model, "PRODUCTCODE_OLAP", metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage timeDim = dimensionUsages.get( 8 );
     OlapHierarchy timeHierarchy = timeDim.getOlapDimension().getHierarchies().get( 0 );
@@ -537,8 +531,7 @@ public class CreateAttributeTest {
     abbr.setDimension( "dim" );
     abbr.apply( model, "STATE_ABBR", metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage stateDim = dimensionUsages.get( 2 );
     OlapHierarchy hierarchy = stateDim.getOlapDimension().getHierarchies().get( 0 );
@@ -572,12 +565,47 @@ public class CreateAttributeTest {
     createAttr.setHierarchy( "Date" );
     createAttr.apply( wspace, "date", new MemoryMetaStore() );
 
-    @SuppressWarnings( "unchecked" )
     OlapDimension dateDim =
-        ( (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
-            LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 ).getOlapDimensionUsages().get( 0 ).getOlapDimension();
+        getCubes( wspace ).get( 0 ).getOlapDimensionUsages().get( 0 ).getOlapDimension();
     assertEquals( "Date", dateDim.getName() );
     assertTrue( "time dimension not set", dateDim.isTimeDimension() );
   }
 
+  @Test
+  public void testAttributeDescription() throws Exception {
+    ModelerWorkspace wspace =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    wspace.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    wspace.getWorkspaceHelper().populateDomain( wspace );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setDescription( "a line of products" );
+    productLine.apply( wspace, "PRODUCTLINE_OLAP", metaStore );
+
+    boolean foundDim = false;
+    for ( OlapDimensionUsage dimUse : getCubes( wspace ).get( 0 ).getOlapDimensionUsages() ) {
+      if ( dimUse.getName().equals( productLine.getDimension() ) ) {
+        foundDim = true;
+        OlapHierarchyLevel prodLineLvl =
+            dimUse.getOlapDimension().getHierarchies().get( 0 ).getHierarchyLevels().get( 0 );
+        assertEquals( 1, prodLineLvl.getAnnotations().size() );
+        OlapAnnotation desc = prodLineLvl.getAnnotations().get( 0 );
+        assertEquals( "description.en_US", desc.getName() );
+        assertEquals( productLine.getDescription(), desc.getValue() );
+        break;
+      }
+    }
+    assertTrue( foundDim );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private List<OlapCube> getCubes( ModelerWorkspace wspace ) {
+    return (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
+        LogicalModel.PROPERTY_OLAP_CUBES );
+  }
+
 }
+

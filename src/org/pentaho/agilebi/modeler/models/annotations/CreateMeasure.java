@@ -159,6 +159,9 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setLogicalColumn( columnClone );
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
+          if ( getDescription() != null ) {
+            measureMetaData.setDescription( getDescription() );
+          }
           removeAutoMeasure( workspace, column );
           removeMeasure( workspace, getName() );
           workspace.getModel().getMeasures().add( measureMetaData );
