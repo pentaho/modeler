@@ -340,6 +340,9 @@ public class CreateAttribute extends AnnotationType {
       GeoRole geoRole = workspace.getGeoContext().getGeoRoleByName( getGeoType().name() );
       levelMetaData.getMemberAnnotations().put( "Data.Role", geoRole );
     }
+    if ( getDescription() != null ) {
+      levelMetaData.setDescription( getDescription() );
+    }
   }
 
   private void removeAutoGeo( final ModelerWorkspace workspace ) {
