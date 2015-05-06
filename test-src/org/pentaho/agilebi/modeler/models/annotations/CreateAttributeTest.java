@@ -601,6 +601,23 @@ public class CreateAttributeTest {
     assertTrue( foundDim );
   }
 
+  /**
+   * <a href="http://jira.pentaho.com/browse/BACKLOG-3219">BACKLOG-3219</a>
+   */
+  @Test
+  public void testGeoAttributeTriggersStackOverflow() throws Exception {
+    ModelerWorkspace model = prepareGeoModel();
+
+    CreateAttribute state = new CreateAttribute();
+    state.setName( "STATE" );
+    state.setDimension( "Geography" );
+    state.setHierarchy( "Geography" );
+    state.setParentAttribute( "CITY" );
+    state.setGeoType( ModelAnnotation.GeoType.State );
+    // threw StackOverflowError from validation loop
+    state.apply( model, "STATE", metaStore );
+  }
+
   @SuppressWarnings( "unchecked" )
   private List<OlapCube> getCubes( ModelerWorkspace wspace ) {
     return (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
