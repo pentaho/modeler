@@ -73,6 +73,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final String CREATE_CALCULATED_MEMBER_ENUM_VALUE = "Create Calculated Member";
   private static final String REMOVE_MEASURE_ENUM_VALUE = "Remove Measure";
   private static final String LINK_DIMENSION_ENUM_VALUE = "Link Dimension";
+  private static final String REMOVE_ATTRIBUTE_ENUM_VALUE = "Remove Attribute";
 
   private SourceType sourceType = SourceType.StreamField;
 
@@ -198,6 +199,11 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       }
       case Measure:
       case HierarchyLevel: {
+        // Need to know about the entire attribute structure for Removing the attribute
+        if ( annotation instanceof RemoveAttribute ) {
+          return field;
+        }
+
         String locale = Locale.getDefault().toString();
         LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
         List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( OLAP_CUBES_PROPERTY );
@@ -458,7 +464,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         return !modelAnnotations.isSharedDimension();
       }
     },
-	CREATE_CALCULATED_MEMBER( CREATE_CALCULATED_MEMBER_ENUM_VALUE ) {
+    CREATE_CALCULATED_MEMBER( CREATE_CALCULATED_MEMBER_ENUM_VALUE ) {
       @Override public boolean isApplicable(
           final ModelAnnotationGroup modelAnnotations,
           final ModelAnnotation modelAnnotation,
@@ -466,12 +472,20 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         return !modelAnnotations.isSharedDimension();
       }
     },
-	REMOVE_MEASURE( REMOVE_MEASURE_ENUM_VALUE ) {
+    REMOVE_MEASURE( REMOVE_MEASURE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
           final ModelAnnotationGroup modelAnnotations,
           final ModelAnnotation modelAnnotation,
           final ValueMetaInterface valueMeta ) {
         return !modelAnnotations.isSharedDimension();
+      }
+    },
+    REMOVE_ATTRIBUTE( REMOVE_ATTRIBUTE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
+        return true;
       }
     };
 
