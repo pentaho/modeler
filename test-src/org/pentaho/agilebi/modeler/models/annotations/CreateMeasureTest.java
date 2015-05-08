@@ -258,17 +258,19 @@ public class CreateMeasureTest {
     ModelerWorkspace model =
         new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
-    model.getModel().getMeasures().get( 0 ).getLogicalColumn().setName( new LocalizedString( "en_US", "BUYPRICE" ) );
+    model.getModel().getMeasures().get( 0 ).setName( "Buy Price" );
+    model.getModel().getMeasures().get( 0 ).getLogicalColumn().getPhysicalColumn()
+      .setName( new LocalizedString( "en_US", "BUY_PRICE" ) );
 
     CreateMeasure sumBuyPrice = new CreateMeasure();
     sumBuyPrice.setAggregateType( SUM );
     sumBuyPrice.setName( "Sum Buy Price" );
-    sumBuyPrice.apply( model, "BUYPRICE", metaStore );
+    sumBuyPrice.apply( model, "BUY_PRICE", metaStore );
 
     CreateMeasure avgBuyPrice = new CreateMeasure();
     avgBuyPrice.setAggregateType( AVERAGE );
-    avgBuyPrice.setName( "BUYPRICE" );
-    avgBuyPrice.apply( model, "BUYPRICE", metaStore );
+    avgBuyPrice.setName( "buyprice" );
+    avgBuyPrice.apply( model, "BUY_PRICE", metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
@@ -281,7 +283,7 @@ public class CreateMeasureTest {
     assertEquals( "Sum Buy Price", olapMeasures.get( 2 ).getName() );
     assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_2", olapMeasures.get( 2 ).getLogicalColumn().getId() );
     assertEquals( AVERAGE, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "BUYPRICE", olapMeasures.get( 3 ).getName() );
+    assertEquals( "buyprice", olapMeasures.get( 3 ).getName() );
     assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", olapMeasures.get( 3 ).getLogicalColumn().getId() );
   }
 
