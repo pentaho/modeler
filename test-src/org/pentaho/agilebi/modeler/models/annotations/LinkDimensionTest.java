@@ -42,6 +42,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
@@ -386,6 +387,55 @@ public class LinkDimensionTest {
     manager.createGroup( dateGroup, metaStore );
   }
 
+  @Test
+  public void testLinkDimRemovingSelf() throws Exception {
+
+    ModelerWorkspace model = prepareOrderModel();
+    CreateDimensionKey key = new CreateDimensionKey();
+    key.setDimension( "Shared" );
+    CreateAttribute attr = new CreateAttribute();
+    attr.setName( "Product ID" );
+    attr.setDimension( "Shared" );
+    attr.setHierarchy( "some hierarchy" );
+    ModelAnnotationGroup sharedDim = new ModelAnnotationGroup(
+        new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", key ),
+        new ModelAnnotation<CreateAttribute>( "PRODUCT_ID", attr ) );
+    sharedDim.setName( "SharedDim" );
+    sharedDim.setSharedDimension( true );
+    IMetaStore mstore = new MemoryMetaStore();
+    ModelAnnotationManager mgr = new ModelAnnotationManager( true );
+    String metaRef = mgr.storeDatabaseMeta( dbMeta, mstore );
+    final DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dp" );
+    dataProvider.setTableName( "orderfact" );
+    dataProvider.setDatabaseMetaNameRef( metaRef );
+    sharedDim.setDataProviders( Collections.singletonList( dataProvider ) );
+    mgr.createGroup( sharedDim, mstore );
+
+    CreateMeasure prodIdMeasure = new CreateMeasure();
+    prodIdMeasure.setName( "Product IDs" );
+    prodIdMeasure.setAggregateType( AggregationType.COUNT );
+
+    LinkDimension linkDimension = new LinkDimension();
+    linkDimension.setName( "Product Dim" );
+    linkDimension.setSharedDimension( "SharedDim" );
+
+    assertTrue( prodIdMeasure.apply( model, "PRODUCT_ID", mstore ) );
+    assertTrue( linkDimension.apply( model, "PRODUCT_ID", mstore ) );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    assertEquals( 4, dimensionUsages.size() );
+    OlapDimensionUsage productDim = dimensionUsages.get( 3 );
+    OlapHierarchy productHierarchy = productDim.getOlapDimension().getHierarchies().get( 0 );
+    assertEquals( attr.getHierarchy(), productHierarchy.getName() );
+
+    OlapHierarchyLevel idLevel = productHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( attr.getName(), idLevel.getName() );
+
+    assertEquals( 3, cube.getOlapMeasures().size() );
+  }
 
   private ModelerWorkspace prepareOrderModel() throws Exception {
     createOrderfactDB();

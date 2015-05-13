@@ -87,9 +87,9 @@ public class LinkDimension extends AnnotationType {
       if ( Const.isEmpty( dimKey ) ) {
         return false;
       }
-      moveDimensionToModel( dimensionWorkspace, factWorkspace, field, dimKey );
       removeAutoLevel( factWorkspace, locateLevel( factWorkspace, field ) );
       removeAutoMeasure( factWorkspace, field );
+      moveDimensionToModel( dimensionWorkspace, factWorkspace, field, dimKey );
       factWorkspace.getWorkspaceHelper().populateDomain( factWorkspace );
       return true;
     } catch ( KettlePluginException e ) {
