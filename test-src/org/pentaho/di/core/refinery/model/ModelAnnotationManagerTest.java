@@ -59,7 +59,7 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    ModelAnnotation<CreateMeasure> m = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    ModelAnnotation<CreateMeasure> m = new ModelAnnotation<CreateMeasure>( cm );
     modelAnnotationManager.create( m, this.metaStore );
 
     ModelAnnotation loaded = modelAnnotationManager.read( m.getName(), this.metaStore );
@@ -74,7 +74,7 @@ public class ModelAnnotationManagerTest {
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    ModelAnnotation<CreateAttribute> m = new ModelAnnotation<CreateAttribute>( "f1", ca );
+    ModelAnnotation<CreateAttribute> m = new ModelAnnotation<CreateAttribute>( ca );
     ModelAnnotationGroup group = new ModelAnnotationGroup();
     group.setName( "My Category" );
     group.add( m );
@@ -92,12 +92,12 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
 
     // add annotations
     modelAnnotationManager.create( mcm, this.metaStore );
@@ -143,13 +143,13 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
     group.add( mcm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
     group.add( mca );
 
     // add annotations
@@ -180,12 +180,12 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
 
     // add annotations
     modelAnnotationManager.create( mcm, this.metaStore );
@@ -205,13 +205,13 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
     group.add( mcm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
     group.add( mca );
 
     // add annotations
@@ -229,12 +229,12 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
 
     // add annotations
     modelAnnotationManager.create( mcm, this.metaStore );
@@ -263,13 +263,13 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
     group.add( mcm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
     group.add( mca );
 
     // add annotations
@@ -296,13 +296,13 @@ public class ModelAnnotationManagerTest {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( "f1", cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
     group.add( mcm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( "f2", ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
     group.add( mca );
 
     return group;

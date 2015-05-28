@@ -53,7 +53,7 @@ public class ModelAnnotationMetastoreTest {
     createMeasure.setDescription( "description" );
     createMeasure.setBusinessGroup( "myBizGrp" );
     createMeasure.setAggregateType( AggregationType.AVERAGE );
-    ModelAnnotation modelAnnotation = new ModelAnnotation( "f1", createMeasure );
+    ModelAnnotation modelAnnotation = new ModelAnnotation( createMeasure );
 
     // Save in the metastore
     MetaStoreFactory<ModelAnnotation> factory = new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
@@ -85,7 +85,7 @@ public class ModelAnnotationMetastoreTest {
     createAttribute.setBusinessGroup( "myBizGrp" );
     createAttribute.setGeoType( ModelAnnotation.GeoType.City );
     createAttribute.setTimeType( ModelAnnotation.TimeType.TimeHalfYears );
-    ModelAnnotation modelAnnotation = new ModelAnnotation( "f1", createAttribute );
+    ModelAnnotation modelAnnotation = new ModelAnnotation( createAttribute );
 
     // Save in the metastore
     MetaStoreFactory<ModelAnnotation> factory = new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
@@ -122,11 +122,13 @@ public class ModelAnnotationMetastoreTest {
       if ( i % 2 == 0 ) {
         CreateMeasure createMeasure = new CreateMeasure();
         createMeasure.setName( "measure" + 1 );
-        group.add( new ModelAnnotation( "f" + i, createMeasure ) );
+        createMeasure.setField( "f" + i );
+        group.add( new ModelAnnotation( createMeasure ) );
       } else {
         CreateAttribute createAttribute = new CreateAttribute();
         createAttribute.setName( "attribute" + 1 );
-        group.add( new ModelAnnotation( "f", createAttribute ) );
+        createAttribute.setField( "f" );
+        group.add( new ModelAnnotation( createAttribute ) );
       }
     }
 
@@ -175,7 +177,7 @@ public class ModelAnnotationMetastoreTest {
     createDimKey.setName( "f1" );
     createDimKey.setDimension( "1dim" );
     ModelAnnotation<CreateDimensionKey> annotation =
-        new ModelAnnotation<CreateDimensionKey>( "f1", createDimKey );
+        new ModelAnnotation<CreateDimensionKey>( createDimKey );
 
     MetaStoreFactory<ModelAnnotation<?>> factory = getModelAnnotationFactory();
     factory.saveElement( annotation );
@@ -198,9 +200,10 @@ public class ModelAnnotationMetastoreTest {
     LinkDimension linkDimension = new LinkDimension();
     linkDimension.setName( "ldName" );
     linkDimension.setSharedDimension( "ldsd" );
+    linkDimension.setField( "f1" );
 
     ModelAnnotation<LinkDimension> linkDimensionModelAnnotation =
-        new ModelAnnotation<LinkDimension>( "f1", linkDimension );
+        new ModelAnnotation<LinkDimension>( linkDimension );
     MetaStoreFactory<ModelAnnotation<?>> factory = getModelAnnotationFactory();
     factory.saveElement( linkDimensionModelAnnotation );
     assertNotNull( linkDimension.getName() );

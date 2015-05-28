@@ -26,9 +26,12 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.fail;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
@@ -86,12 +89,13 @@ public class RemoveAttributeTest {
 
     RemoveAttribute removeProductLine = new RemoveAttribute();
     removeProductLine.setName( AUTOMODEL_PRODUCT_NAME );
-    removeProductLine.apply( model, INIT_PRODUCT_LINE_FORMULA, metaStore );
+    removeProductLine.setLevel( INIT_PRODUCT_LINE_FORMULA );
+    removeProductLine.apply( model, metaStore );
 
     LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    assertNull( getDimensionUsage( AUTOMODEL_PRODUCT_NAME, dimensionUsages ) );
+    assertNull( AnnotationUtil.getOlapDimensionUsage( AUTOMODEL_PRODUCT_NAME, dimensionUsages ) );
   }
 
   @SuppressWarnings( "unchecked" )
@@ -106,7 +110,9 @@ public class RemoveAttributeTest {
     productLine.setName( PRODUCT_LINE );
     productLine.setDimension( DIMENSION_NAME );
     productLine.setHierarchy( HIERARCHY_NAME );
-    productLine.apply( model, PRODUCT_LINE_OLAP, metaStore );
+    productLine.setField( PRODUCT_ORDINAL_OLAP );
+    productLine.setCube( "products_38GA" );
+    productLine.apply( model, metaStore );
 
     CreateAttribute productName = new CreateAttribute();
     productName.setName( PRODUCT_NAME );
@@ -114,32 +120,35 @@ public class RemoveAttributeTest {
     productName.setDimension( DIMENSION_NAME );
     productName.setHierarchy( HIERARCHY_NAME );
     productName.setOrdinalField( PRODUCT_ORDINAL_OLAP );
-    productName.apply( model, PRODUCT_NAME_OLAP, metaStore );
+    productName.setField( PRODUCT_NAME_OLAP );
+    productName.setCube( "products_38GA" );
+    productName.apply( model, metaStore );
 
     LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     int startDimSize = dimensionUsages.size();
 
-    OlapDimensionUsage productsDim = getDimensionUsage( DIMENSION_NAME, dimensionUsages );
+    OlapDimensionUsage productsDim = AnnotationUtil.getOlapDimensionUsage( DIMENSION_NAME, dimensionUsages );
     assertNotNull( productsDim );
 
     OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
-    OlapHierarchyLevel productLineLevel = getLevel( PRODUCT_LINE, levels );
-    OlapHierarchyLevel productNameLevel = getLevel( PRODUCT_NAME, levels );
+    OlapHierarchyLevel productLineLevel = AnnotationUtil.getOlapHierarchyLevel( PRODUCT_LINE, levels );
+    OlapHierarchyLevel productNameLevel = AnnotationUtil.getOlapHierarchyLevel( PRODUCT_NAME, levels );
 
     assertNotNull( productLineLevel );
     assertNotNull( productNameLevel );
 
     RemoveAttribute removeProductName = new RemoveAttribute();
     removeProductName.setName( PRODUCT_NAME );
-    removeProductName.apply( model, PRODUCT_NAME_FORMULA, metaStore );
+    removeProductName.setLevel( PRODUCT_NAME_FORMULA );
+    removeProductName.apply( model, metaStore );
 
     anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     dimensionUsages = cube.getOlapDimensionUsages();
-    productsDim = getDimensionUsage( DIMENSION_NAME, dimensionUsages );
+    productsDim = AnnotationUtil.getOlapDimensionUsage( DIMENSION_NAME, dimensionUsages );
     assertNotNull( productsDim );
 
     hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
@@ -150,66 +159,53 @@ public class RemoveAttributeTest {
 
     RemoveAttribute removeProductLine = new RemoveAttribute();
     removeProductLine.setName( PRODUCT_LINE );
-    removeProductLine.apply( model, PRODUCT_LINE_FORMULA, metaStore );
+    removeProductLine.setLevel( PRODUCT_LINE_FORMULA );
+    removeProductLine.apply( model, metaStore );
 
     anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     dimensionUsages = cube.getOlapDimensionUsages();
 
-    productsDim = getDimensionUsage( DIMENSION_NAME, dimensionUsages );
+    productsDim = AnnotationUtil.getOlapDimensionUsage( DIMENSION_NAME, dimensionUsages );
     assertNull( productsDim );
 
     assertEquals( startDimSize - 1, dimensionUsages.size() );
   }
 
-  /**
-   * Get {@link OlapHierarchyLevel} based on the name
-   *
-   * @param levelName Name of the dimension to find
-   * @param hierarchyLevels list of dimensions
-   * @return Found dimension otherwise null
-   */
-  private OlapHierarchyLevel getLevel( final String levelName,
-                                       final List<OlapHierarchyLevel> hierarchyLevels ) {
-    if ( levelName == null || hierarchyLevels == null ) {
-      return null;
+  @Test
+  public void testValidate() throws Exception {
+
+    RemoveAttribute removeAttribute = new RemoveAttribute();
+    removeAttribute.setName( "A" );
+    removeAttribute.setLevel( "[Dimension].[Level]" );
+
+    try {
+      removeAttribute.validate(); // no error
+    } catch ( ModelerException me ) {
+      fail( "Exception" );
     }
 
-    OlapHierarchyLevel hierarchyLevel = null;
-
-    for ( OlapHierarchyLevel level : hierarchyLevels ) {
-      if ( levelName.equals( level.getName() ) ) {
-        hierarchyLevel = level;
-        break;
-      }
+    try {
+      removeAttribute.setLevel( "" );
+      removeAttribute.validate(); // throws an error
+      fail( "no exception" );
+    } catch ( ModelerException me ) {
     }
 
-    return hierarchyLevel;
-  }
-
-  /**
-   * Get {@link OlapDimensionUsage} based on the name
-   *
-   * @param dimensionName Name of the dimension to find
-   * @param dimensionUsages list of dimensions
-   * @return Found dimension otherwise null
-   */
-  private OlapDimensionUsage getDimensionUsage( final String dimensionName,
-                                                final List<OlapDimensionUsage> dimensionUsages ) {
-    if ( dimensionName == null || dimensionUsages == null ) {
-      return null;
+    try {
+      removeAttribute.setLevel( "[Dimension].[Level]" );
+      removeAttribute.setName( "" );
+      removeAttribute.validate();
+    } catch ( ModelerException me ) {
+      // Name is not needed on a remove
+      fail( "Exception" );
     }
 
-    OlapDimensionUsage foundDimensionUsage = null;
-
-    for ( OlapDimensionUsage dimensionUsage : dimensionUsages ) {
-      if ( dimensionName.equals( dimensionUsage.getName() ) ) {
-        foundDimensionUsage = dimensionUsage;
-        break;
-      }
+    try {
+      ( new RemoveAttribute() ).validate();
+      fail( "no exception" );
+    } catch ( ModelerException me ) {
     }
-
-    return foundDimensionUsage;
   }
 
   @BeforeClass

@@ -64,12 +64,12 @@ public class RemoveMeasure extends AnnotationType {
   @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
   private String cube;
 
-  @Override public boolean apply( ModelerWorkspace workspace, String field, IMetaStore metaStore )
+  @Override public boolean apply( ModelerWorkspace workspace, IMetaStore metaStore )
     throws ModelerException {
     return false;
   }
 
-  @Override public boolean apply( Document schema, String field ) throws ModelerException {
+  @Override public boolean apply( Document schema ) throws ModelerException {
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schema );
     mondrianSchemaHandler.removeMeasure( null, this.getName(), this.getDimension(), this.getCube() );
     return true;

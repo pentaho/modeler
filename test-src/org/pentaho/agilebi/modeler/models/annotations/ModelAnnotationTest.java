@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.SourceType;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
@@ -59,12 +58,11 @@ public class ModelAnnotationTest {
     CreateMeasure createMeasure = new CreateMeasure();
 
     List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<CreateMeasure>( "testColumn", createMeasure ) );
+    list.add( new ModelAnnotation<CreateMeasure>( createMeasure ) );
 
     ModelAnnotation<?> md = list.get( 0 ); // don't know the type
 
     // check
-    assertEquals( md.getField(), "testColumn" );
     assertEquals( md.getType(), ModelAnnotation.Type.CREATE_MEASURE );
     assertEquals( md.getType().description(), "Create Measure" );
   }
@@ -75,12 +73,11 @@ public class ModelAnnotationTest {
     CreateAttribute createAttribute = new CreateAttribute();
 
     List<ModelAnnotation<?>> list = new ArrayList<ModelAnnotation<?>>();
-    list.add( new ModelAnnotation<CreateAttribute>( "testColumn", createAttribute ) );
+    list.add( new ModelAnnotation<CreateAttribute>( createAttribute ) );
 
     ModelAnnotation<?> md = list.get( 0 ); // don't know the type
 
     // check
-    assertEquals( md.getField(), "testColumn" );
     assertEquals( md.getType(), ModelAnnotation.Type.CREATE_ATTRIBUTE );
     assertEquals( md.getType().description(), "Create Attribute" );
   }
@@ -89,9 +86,9 @@ public class ModelAnnotationTest {
   public void testGetAndFilter() {
 
     List<ModelAnnotation<?>> annotations = new ArrayList<ModelAnnotation<?>>();
-    annotations.add( new ModelAnnotation<CreateMeasure>( "A", new CreateMeasure() ) );
-    annotations.add( new ModelAnnotation<CreateAttribute>( "B", new CreateAttribute() ) );
-    annotations.add( new ModelAnnotation<CreateMeasure>( "E", new CreateMeasure() ) );
+    annotations.add( new ModelAnnotation<CreateMeasure>( new CreateMeasure() ) );
+    annotations.add( new ModelAnnotation<CreateAttribute>( new CreateAttribute() ) );
+    annotations.add( new ModelAnnotation<CreateMeasure>( new CreateMeasure() ) );
 
     assertEquals( ModelAnnotation.getMeasures( annotations ).size(), 2 );
     assertEquals( ModelAnnotation.getAttributes( annotations ).size(), 1 );
@@ -102,9 +99,8 @@ public class ModelAnnotationTest {
     final ModelerWorkspace modelerWorkspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     AnnotationType annotationType = new AnnotationType() {
       @Override
-      public boolean apply( final ModelerWorkspace workspace, final String column, final IMetaStore metaStore ) {
+      public boolean apply( final ModelerWorkspace workspace, final IMetaStore metaStore ) {
         assertSame( workspace, modelerWorkspace );
-        assertEquals( "amount", column );
         return true;
       }
 
@@ -117,7 +113,7 @@ public class ModelAnnotationTest {
       }
 
       @Override
-      public boolean apply( Document schema, String field ) throws ModelerException {
+      public boolean apply( Document schema ) throws ModelerException {
         // TODO Auto-generated method stub
         return false;
       }
@@ -131,9 +127,7 @@ public class ModelAnnotationTest {
       public void validate() throws ModelerException { }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
-    modelAnnotation.setField( "amount" );
     modelAnnotation.setAnnotation( annotationType );
-    modelAnnotation.setSourceType( SourceType.StreamField );
     modelAnnotation.apply( modelerWorkspace, metaStore );
   }
 
@@ -156,7 +150,7 @@ public class ModelAnnotationTest {
     assertTrue(
         ModelAnnotation.Type.CREATE_DIMENSION_KEY
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
-    modelAnnotations.add( new ModelAnnotation<CreateDimensionKey>( "fieldA", new CreateDimensionKey() ) );
+    modelAnnotations.add( new ModelAnnotation<CreateDimensionKey>( new CreateDimensionKey() ) );
     assertFalse(
         ModelAnnotation.Type.CREATE_DIMENSION_KEY
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
@@ -169,7 +163,7 @@ public class ModelAnnotationTest {
     assertTrue(
         ModelAnnotation.Type.CREATE_ATTRIBUTE
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
-    modelAnnotations.add( new ModelAnnotation<CreateDimensionKey>( "fieldA", new CreateDimensionKey() ) );
+    modelAnnotations.add( new ModelAnnotation<CreateDimensionKey>( new CreateDimensionKey() ) );
     assertTrue(
         ModelAnnotation.Type.CREATE_ATTRIBUTE
             .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );

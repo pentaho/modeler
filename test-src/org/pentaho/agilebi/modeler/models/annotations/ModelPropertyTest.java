@@ -40,13 +40,17 @@ public class ModelPropertyTest {
     CreateMeasure createMeasure = new CreateMeasure();
 
     List<String> propertyNames = createMeasure.getModelPropertyNames();
-    assertEquals( propertyNames.size(), 4 );
+    assertEquals( propertyNames.size(), 8 );
 
     createMeasure.setModelPropertyByName( "Measure Name", "A" );
     createMeasure.setModelPropertyByName( "Description", "B" );
     createMeasure.setModelPropertyByName( "Unique Members", "true" ); // auto converted
     createMeasure.setModelPropertyByName( "Format String", "D" );
     createMeasure.setModelPropertyByName( "Aggregation Type", AggregationType.COUNT );
+    createMeasure.setModelPropertyByName( "Field Name", "F" );
+    createMeasure.setModelPropertyByName( "Level Name", "G" );
+    createMeasure.setModelPropertyByName( "Measure", "H" );
+    createMeasure.setModelPropertyByName( "Cube Name", "I" );
     createMeasure.setModelPropertyByName( "XXX", "Does not exist" ); // should not fail
 
     assertEquals( createMeasure.getName(), "A" );
@@ -55,6 +59,11 @@ public class ModelPropertyTest {
     assertEquals( createMeasure.getAggregateType(), AggregationType.COUNT );
 
     createMeasure.setModelPropertyByName( "Unique Members", true );
+
+    assertEquals( createMeasure.getField(), "F" );
+    assertEquals( createMeasure.getLevel(), "G" );
+    assertEquals( createMeasure.getMeasure(), "H" );
+    assertEquals( createMeasure.getCube(), "I" );
   }
 
   @Test

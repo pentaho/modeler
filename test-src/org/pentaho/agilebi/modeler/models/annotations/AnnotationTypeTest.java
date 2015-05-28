@@ -5,10 +5,18 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
-import org.pentaho.metadata.model.concept.types.AggregationType;
+import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
 
+import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
+import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
+import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.util.XmiParser;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+
+import java.io.FileInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +27,7 @@ import java.util.Map;
  * @author Rowell Belen
  */
 public class AnnotationTypeTest {
+  private static String PRODUCT_XMI_FILE = "test-res/products.xmi";
 
   @Test
   public void testDescribe() {
@@ -139,4 +148,41 @@ public class AnnotationTypeTest {
     CreateMeasure createMeasure = new CreateMeasure();
     assertEquals( createMeasure.getModelPropertyNameClassType( "Aggregation Type" ), AggregationType.class );
   }
+
+  @Test
+  public void testResolveFieldFromLevel() throws Exception {
+    IMetaStore metaStore = new MemoryMetaStore();
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setLevel( "[PRODUCTLINE].[PRODUCTLINE]" );
+    productLine.setCube( "products_38GA" );
+    productLine.apply( model, metaStore );
+    assertEquals( "PRODUCTLINE_OLAP", productLine.getField() );
+  }
+
+  @Test
+  public void testResolveFieldFromMeasure() throws Exception {
+    IMetaStore metaStore = new MemoryMetaStore();
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateMeasure createMeasure = new CreateMeasure();
+    createMeasure.setAggregateType( MINIMUM );
+    createMeasure.setName( "Min Buy Price" );
+    createMeasure.setFormatString( "##.##" );
+    createMeasure.setMeasure( "[Measures].[bc_BUYPRICE]" );
+    createMeasure.setCube( "products_38GA" );
+    createMeasure.apply( model, metaStore );
+    assertEquals( "bc_BUYPRICE", createMeasure.getField() );
+  }
+
 }

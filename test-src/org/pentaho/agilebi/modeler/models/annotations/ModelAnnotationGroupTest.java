@@ -110,10 +110,10 @@ public class ModelAnnotationGroupTest {
     CreateAttribute ca = new CreateAttribute();
     ca.setTimeType( ModelAnnotation.TimeType.TimeDays );
 
-    ModelAnnotation ma1 = new ModelAnnotation( "f1", cm );
+    ModelAnnotation ma1 = new ModelAnnotation( cm );
     ma1.setName( "ma1" );
 
-    ModelAnnotation ma2 = new ModelAnnotation( "f2", ca );
+    ModelAnnotation ma2 = new ModelAnnotation( ca );
     ma2.setName( "ma2" );
 
     modelAnnotationGroup.add( ma1 );
@@ -148,7 +148,6 @@ public class ModelAnnotationGroupTest {
   public void testNullAnnotationsAreIgnored() throws Exception {
     ModelerWorkspace model = prepareOrderModel();
     ModelAnnotation modelAnnotation = new ModelAnnotation();
-    modelAnnotation.setField( "aField" );
     ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup( modelAnnotation );
 
     Map<ApplyStatus, List<ModelAnnotation>> statusMap = modelAnnotations.applyAnnotations( model, null );
