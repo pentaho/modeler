@@ -42,7 +42,6 @@ public class CreateCalculatedMemberTest {
   private static final String TEST_CALCULATED_MEMBER_DIMENSION = "Test Dimension";
   private static final String TEST_CALCULATED_MEMBER_FORMAT_STRING = "$#,##0.00";
   private static final String MONDRIAN_TEST_FILE_PATH = "test-res/products.mondrian.xml";
-  private static final String TEST_FIELD = "test field";
   private static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
   private static final String CAPTION_ATTRIB = "caption";
   private static final String DESCRIPTION_ATTRIB = "description";
@@ -76,7 +75,7 @@ public class CreateCalculatedMemberTest {
         .newDocumentBuilder()
         .parse( mondrianSchemaXmlFile );
 
-    createCalculatedMember.apply( mondrianSchemaXmlDoc, TEST_FIELD );
+    createCalculatedMember.apply( mondrianSchemaXmlDoc );
 
     assert ( mondrianSchemaXmlDoc != null );
     assert ( mondrianSchemaXmlDoc.getElementsByTagName( CALCULATED_MEMBER_ELEMENT_NAME ).getLength() > 0 );
@@ -98,7 +97,7 @@ public class CreateCalculatedMemberTest {
   public void testApplyDSW() throws Exception {
     ModelerWorkspace modelerWorkspace = createMock( ModelerWorkspace.class );
     try {
-      createCalculatedMember.apply( modelerWorkspace, null, null );
+      createCalculatedMember.apply( modelerWorkspace, null );
     } catch ( Exception e ) {
       assert ( e.getClass().isAssignableFrom( UnsupportedOperationException.class ) );
     }

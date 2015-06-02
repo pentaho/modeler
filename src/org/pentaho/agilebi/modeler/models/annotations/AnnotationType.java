@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -52,18 +53,34 @@ import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.types.AggregationType;
+import org.pentaho.metadata.model.olap.OlapCube;
+import org.pentaho.metadata.model.olap.OlapDimension;
+import org.pentaho.metadata.model.olap.OlapDimensionUsage;
+import org.pentaho.metadata.model.olap.OlapHierarchy;
+import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
+import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 /**
  * @author Rowell Belen
  */
 public abstract class AnnotationType implements Serializable {
+
+  protected static final String OLAP_CUBES_PROPERTY = "olap_cubes";
+  protected static final String MEASURES_DIMENSION = "Measures";
+  protected static final String MEASURE_ELEMENT_NAME = "Measure";
+  protected static final String NAME_ATTRIBUTE = "name";
+  protected static final String COLUMN_ATTRIBUTE = "column";
+  protected static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
 
   protected static final Class<?> MSG_CLASS = BaseModelerWorkspaceHelper.class;
   private static final long serialVersionUID = 3952409344571242884L;
@@ -329,8 +346,8 @@ public abstract class AnnotationType implements Serializable {
     MeasuresCollection measures = workspace.getModel().getMeasures();
     for ( MeasureMetaData measure : measures ) {
       if ( measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals( column )
-          || measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals(
-          beautify( column ) ) ) {
+           || measure.getLogicalColumn().getName( workspace.getWorkspaceHelper().getLocale() ).equals(
+             beautify( column ) ) ) {
         return measure;
       }
     }
@@ -347,7 +364,6 @@ public abstract class AnnotationType implements Serializable {
 
       Iterator<String> itr = propertiesMap.keySet().iterator();
       while ( itr.hasNext() ) {
-
         String id = itr.next();
         try {
           setModelPropertyValueById( id, propertiesMap.get( id ) );
@@ -356,6 +372,173 @@ public abstract class AnnotationType implements Serializable {
           logger.warning( "Unable to set value for id: " + id );
         }
       }
+    }
+  }
+
+  /**
+   * Retrieves the olap cube from the workspace based on the cube name
+   * @param modelerWorkspace workspace to search for the cube
+   * @param cubeName cube name
+   * @return OlapCube otherwise null
+   */
+  private OlapCube getOlapCube( final ModelerWorkspace modelerWorkspace, final String cubeName ) {
+    LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
+    List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( OLAP_CUBES_PROPERTY );
+    OlapCube olapCube = null;
+    for ( int c = 0; c < olapCubes.size(); c++ ) {
+      if ( ( (OlapCube) olapCubes.get( c ) ).getName().equals( cubeName ) ) {
+        olapCube = (OlapCube) olapCubes.get( c );
+        break;
+      }
+    }
+
+    return olapCube;
+  }
+
+  /**
+   * Returns the physical column name that this annotation should operate on. For sources
+   * based on HierarchyLevels we need to consult the existing model to find the underlying
+   * source field.
+   *
+   * @param modelerWorkspace Workspace to look for the level
+   * @param levelName Level formula to find the level
+   * @param cubeName Cube name to find the level
+   * @return field
+   * @throws ModelerException
+   */
+  protected String resolveFieldFromLevel( final ModelerWorkspace modelerWorkspace,
+                                          final String levelName,
+                                          final String cubeName ) throws ModelerException {
+    if ( StringUtils.isBlank( levelName ) || StringUtils.isBlank( cubeName ) || modelerWorkspace == null ) {
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_LEVEL", levelName )
+      );
+    }
+
+    String locale = Locale.getDefault().toString();
+    OlapCube olapCube = getOlapCube( modelerWorkspace, cubeName );
+    if ( olapCube == null ) {
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CUBE", cubeName )
+      );
+    }
+
+    List usages = olapCube.getOlapDimensionUsages();
+    for ( int u = 0; u < usages.size(); u++ ) {
+      OlapDimensionUsage usage = (OlapDimensionUsage) usages.get( u );
+      OlapDimension olapDimension = usage.getOlapDimension();
+      List olapHierarchies = olapDimension.getHierarchies();
+      for ( int h = 0; h < olapHierarchies.size(); h++ ) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append( "[" );
+        buffer.append( usage.getName() );
+        OlapHierarchy olapHierarchy = (OlapHierarchy) olapHierarchies.get( h );
+        if ( StringUtils.isNotEmpty( olapHierarchy.getName() )
+          && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
+          buffer.append( "." ).append( olapHierarchy.getName() );
+        }
+        buffer.append( "].[" );
+        List hierarchyLevels = olapHierarchy.getHierarchyLevels();
+        for ( int hl = 0; hl < hierarchyLevels.size(); hl++ ) {
+          OlapHierarchyLevel olapHierarchyLevel = (OlapHierarchyLevel) hierarchyLevels.get( hl );
+          if ( levelName.equals( buffer.toString() + olapHierarchyLevel.getName() + "]" ) ) {
+            return olapHierarchyLevel.getReferenceColumn().getName( locale );
+          }
+        }
+      }
+    }
+    throw new ModelerException(
+      BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_LEVEL", levelName )
+    );
+  }
+
+  /**
+   * Returns the physical column name that this annotation should operate on. For sources
+   * based on Measures we need to consult the existing model to find the underlying
+   * source field.
+   *
+   * @param modelerWorkspace Workspace to look for the level
+   * @param measureName Measure formula to find the level
+   * @param cubeName Cube name to find the level
+   * @return field
+   * @throws ModelerException
+   */
+  protected String resolveFieldFromMeasure( final ModelerWorkspace modelerWorkspace,
+                                            final String measureName,
+                                            final String cubeName ) throws ModelerException {
+    if ( StringUtils.isBlank( measureName ) || StringUtils.isBlank( cubeName ) || modelerWorkspace == null ) {
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measureName )
+      );
+    }
+
+    String locale = Locale.getDefault().toString();
+    OlapCube olapCube = getOlapCube( modelerWorkspace, cubeName );
+    if ( olapCube == null ) {
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CUBE", cubeName )
+      );
+    }
+    List measures = olapCube.getOlapMeasures();
+    for ( int m = 0; m < measures.size(); m++ ) {
+      OlapMeasure measure = (OlapMeasure) measures.get( m );
+      if ( measureName
+        .equals( "[" + MEASURES_DIMENSION + "].[" + measure.getLogicalColumn().getName( locale ) + "]" ) ) {
+        return (String) measure.getLogicalColumn().getName( locale );
+      }
+    }
+    throw new ModelerException(
+      BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measureName )
+    );
+  }
+
+
+  /**
+   * Returns the physical column name that this annotation should operate on. For sources
+   * based on CalculatedMember we need to consult the existing model to find the underlying
+   * source field.
+   *
+   * @param schema OLAP schema to search
+   * @param measure String name of the measure
+   * @return field name
+   * @throws ModelerException
+   */
+  protected String resolveFieldFromMeasure( final Document schema, String measure ) throws ModelerException {
+    if ( schema != null && !StringUtils.isBlank( measure ) ) {
+      NodeList measures = schema.getElementsByTagName( MEASURE_ELEMENT_NAME );
+      if ( ( measures == null ) || ( measures.getLength() <= 0 ) ) {
+        throw new ModelerException(
+          BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measure )
+        );
+      }
+
+      for ( int x = 0; x <= measures.getLength(); x++ ) {
+        Node measureNode = measures.item( x );
+        if ( measureNode != null ) {
+          // get measure name
+          Node nameNode = measureNode.getAttributes().getNamedItem( NAME_ATTRIBUTE );
+          if ( nameNode != null ) {
+            // match measure name to field
+            if ( nameNode.getNodeValue().equals(
+              measure.substring( measure.lastIndexOf( "[" ) + 1 ).replace( "]", "" )
+            ) ) {
+              // get the column
+              Node columnNode = measureNode.getAttributes().getNamedItem( COLUMN_ATTRIBUTE );
+              if ( columnNode != null ) {
+                return (String) columnNode.getNodeValue();
+              }
+            }
+          }
+        }
+      }
+      // not found
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measure )
+      );
+    } else {
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measure )
+      );
     }
   }
 
@@ -393,24 +576,22 @@ public abstract class AnnotationType implements Serializable {
   }
 
   /**
-   * Applies modeling changes on a Metadata model using a field as the source.
+   * Applies modeling changes on a Metadata model
    * 
    * @param workspace
-   * @param field
    * @param metaStore
    * @throws ModelerException
    */
   public abstract boolean apply(
-      final ModelerWorkspace workspace, final String field, final IMetaStore metaStore ) throws ModelerException;
+      final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException;
 
   /**
-   * Applies modeling change on a Mondrian schema using a field as the source..
+   * Applies modeling change on a Mondrian schema
    * 
    * @param schema
-   * @param field
    * @throws ModelerException
    */
-  public abstract boolean apply( final Document schema, final String field ) throws ModelerException;
+  public abstract boolean apply( final Document schema ) throws ModelerException;
 
   public abstract void validate() throws ModelerException;
 
@@ -419,4 +600,6 @@ public abstract class AnnotationType implements Serializable {
   public abstract String getSummary();
 
   public abstract String getName();
+
+  public abstract String getField();
 }

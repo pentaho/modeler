@@ -34,13 +34,29 @@ public class CreateDimensionKey extends AnnotationType {
 
   private static final long serialVersionUID = 1L;
 
-  @ModelProperty( id = "field", name = "Field", order = 1, hideUI = true )
+  public static final String NAME_ID = "name";
+  public static final String NAME_NAME = "Name";
+  public static final int NAME_ORDER = 0;
+
+  public static final String DIMENSION_ID = "dimension";
+  public static final String DIMENSION_NAME = "Dimension";
+  public static final int DIMENSION_ORDER = 1;
+
+  public static final String FIELD_ID = "field";
+  public static final String FIELD_NAME = "Field";
+  public static final int FIELD_ORDER = 2;
+
+  @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER, hideUI = true )
   @MetaStoreAttribute
   private String name;
 
   @MetaStoreAttribute
-  @ModelProperty( id = CreateAttribute.DIMENSION_ID, name = CreateAttribute.DIMENSION_NAME, order = 2 )
+  @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
   private String dimension;
+
+  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER )
+  @MetaStoreAttribute
+  private String field;
 
   public String getDimension() {
     return dimension;
@@ -60,13 +76,13 @@ public class CreateDimensionKey extends AnnotationType {
   }
 
   @Override
-  public boolean apply( ModelerWorkspace workspace, String field, final IMetaStore metaStore ) throws ModelerException {
+  public boolean apply( ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
     // nothing to do at apply time.  Will be used when a corresponding LinkDimension is specified
     return true;
   }
 
   @Override
-  public boolean apply( Document schema, String field ) throws ModelerException {
+  public boolean apply( Document schema ) throws ModelerException {
     // TODO  will only be factored in when modeling star schema
     return false;
   }
@@ -78,6 +94,12 @@ public class CreateDimensionKey extends AnnotationType {
       throw new ModelerException(
           BaseMessages.getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.ATTRIBUTE_NAME_REQUIRED" ) );
     }
+
+    if ( StringUtils.isBlank( getField() ) ) {
+      throw new ModelerException( BaseMessages.getString( MSG_CLASS,
+        "ModelAnnotation.CreateAttribute.validation.FIELD_NAME " ) );
+    }
+
     if ( StringUtils.isBlank( getDimension() ) ) {
       throw new ModelerException( BaseMessages.getString( MSG_CLASS,
           "ModelAnnotation.CreateAttribute.validation.PARENT_PROVIDED_MISSING_DIMENSION" ) );
@@ -94,5 +116,12 @@ public class CreateDimensionKey extends AnnotationType {
     return BaseMessages.getString( MSG_CLASS, "Modeler.CreateDimensionKey.Summary", getName(), getDimension() );
   }
 
+  @Override
+  public String getField() {
+    return field;
+  }
 
+  public void setField( String field ) {
+    this.field = field;
+  }
 }

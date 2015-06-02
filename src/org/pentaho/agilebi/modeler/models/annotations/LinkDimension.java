@@ -56,6 +56,10 @@ public class LinkDimension extends AnnotationType {
   public static final String SHARED_DIMENSION_NAME = "Shared Dimension";
   public static final int SHARED_DIMENSION_ORDER = 1;
 
+  public static final String FIELD_ID = "field";
+  public static final String FIELD_NAME = "Field Name";
+  public static final int FIELD_ORDER = 2;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
@@ -64,8 +68,12 @@ public class LinkDimension extends AnnotationType {
   @ModelProperty( id = SHARED_DIMENSION_ID, name = SHARED_DIMENSION_NAME, order = SHARED_DIMENSION_ORDER )
   private String sharedDimension;
 
+  @MetaStoreAttribute
+  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER )
+  private String field;
+
   @Override public boolean apply(
-      final ModelerWorkspace factWorkspace, final String field, final IMetaStore metaStore ) throws ModelerException {
+      final ModelerWorkspace factWorkspace, final IMetaStore metaStore ) throws ModelerException {
     ModelAnnotationManager modelAnnotationManager =
         new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
     try {
@@ -138,7 +146,7 @@ public class LinkDimension extends AnnotationType {
   private String locateDimensionKey( final ModelAnnotationGroup modelAnnotations ) {
     for ( ModelAnnotation modelAnnotation : modelAnnotations ) {
       if ( modelAnnotation.getType().equals( ModelAnnotation.Type.CREATE_DIMENSION_KEY ) ) {
-        return modelAnnotation.getField();
+        return ( (CreateDimensionKey) modelAnnotation.getAnnotation() ).getField();
       }
     }
     return null;
@@ -161,9 +169,9 @@ public class LinkDimension extends AnnotationType {
         (List<SqlPhysicalTable>) factWorkspace.getDomain().getPhysicalModels().get( 0 ).getPhysicalTables();
     physicalTables.add( (SqlPhysicalTable) dimTable.getPhysicalTable() );
     logicalModel.addLogicalRelationship(
-        new LogicalRelationship(
-            logicalModel, factTable, dimTable,
-            locateLogicalColumn( factWorkspace, factKey ), locateLogicalColumn( dimensionWorkspace, dimKey ) ) );
+      new LogicalRelationship(
+        logicalModel, factTable, dimTable,
+        locateLogicalColumn( factWorkspace, factKey ), locateLogicalColumn( dimensionWorkspace, dimKey ) ) );
   }
 
   private void removeExistingDimension( final ModelerWorkspace factWorkspace ) {
@@ -199,7 +207,7 @@ public class LinkDimension extends AnnotationType {
     return model;
   }
 
-  @Override public boolean apply( final Document schema, final String field ) throws ModelerException {
+  @Override public boolean apply( final Document schema ) throws ModelerException {
     return false;
   }
 
@@ -229,5 +237,14 @@ public class LinkDimension extends AnnotationType {
 
   public void setSharedDimension( String sharedDimension ) {
     this.sharedDimension = sharedDimension;
+  }
+
+  @Override
+  public String getField() {
+    return field;
+  }
+
+  public void setField( String field ) {
+    this.field = field;
   }
 }

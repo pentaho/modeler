@@ -28,7 +28,6 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
@@ -142,21 +141,19 @@ public class CreateCalculatedMember extends AnnotationType {
    * CalculatedMembers are not yet supported in the Metadata model
    *
    * @param workspace
-   * @param column
    * @return
    * @throws org.pentaho.agilebi.modeler.ModelerException
    */
-  @Override public boolean apply( ModelerWorkspace workspace, String column, IMetaStore metaStore ) throws ModelerException {
+  @Override public boolean apply( ModelerWorkspace workspace, IMetaStore metaStore ) throws ModelerException {
     throw new UnsupportedOperationException();
   }
 
   /**
    * @param schema
-   * @param field
    * @return
    * @throws org.pentaho.agilebi.modeler.ModelerException
    */
-  @Override public boolean apply( Document schema, String field ) throws ModelerException {
+  @Override public boolean apply( Document schema ) throws ModelerException {
     if ( schema == null ) {
       return false;
     }
@@ -207,12 +204,6 @@ public class CreateCalculatedMember extends AnnotationType {
 
   @Override public String getSummary() {
     return BaseMessages.getString( MSG_CLASS, "Modeler.CreateCalculatedMember.Summary", getName() );
-  }
-
-  private boolean columnMatches( final ModelerWorkspace workspace, final String column,
-                                 final LogicalColumn logicalColumn ) {
-    return column.equalsIgnoreCase(
-      logicalColumn.getName( workspace.getWorkspaceHelper().getLocale() ) );
   }
 
   public String getName() {
@@ -289,5 +280,9 @@ public class CreateCalculatedMember extends AnnotationType {
 
   public void setCalculateSubtotals( boolean calculateSubtotals ) {
     this.calculateSubtotals = calculateSubtotals;
+  }
+
+  public String getField() {
+    return null;
   }
 }

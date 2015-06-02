@@ -37,6 +37,7 @@ public class CreateDimensionKeyTest {
     CreateDimensionKey createKey = new CreateDimensionKey();
     createKey.setName( "field1" );
     createKey.setDimension( "dim1" );
+    createKey.setField( "field1" );
     createKey.validate();
   }
 
@@ -44,6 +45,7 @@ public class CreateDimensionKeyTest {
   public void testValidateNoDimension() throws Exception {
     CreateDimensionKey createKey = new CreateDimensionKey();
     createKey.setName( "field1" );
+    createKey.setField( "field1" );
     try {
       createKey.validate();
       fail( "no exception" );
@@ -55,6 +57,20 @@ public class CreateDimensionKeyTest {
   @Test
   public void testValidateNoName() throws Exception {
     CreateDimensionKey createKey = new CreateDimensionKey();
+    createKey.setField( "field1" );
+    createKey.setDimension( "d" );
+    try {
+      createKey.validate();
+      fail( "no exception" );
+    } catch ( ModelerException e ) {
+      //
+    }
+  }
+
+  @Test
+  public void testValidateNoField() throws Exception {
+    CreateDimensionKey createKey = new CreateDimensionKey();
+    createKey.setName( "field1" );
     createKey.setDimension( "d" );
     try {
       createKey.validate();
@@ -76,6 +92,6 @@ public class CreateDimensionKeyTest {
 
   @Test
   public void testApplyIsAlwaysTrue() throws Exception {
-    assertEquals( true, new CreateDimensionKey().apply( null, null, null ) );
+    assertEquals( true, new CreateDimensionKey().apply( null, null ) );
   }
 }

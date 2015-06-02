@@ -83,7 +83,7 @@ public class LinkDimensionTest {
     LinkDimension linkDimension = new LinkDimension();
     assertEquals( ModelAnnotation.Type.LINK_DIMENSION, linkDimension.getType() );
     List<ModelProperty> modelProperties = linkDimension.getModelProperties();
-    assertEquals( 2, modelProperties.size() );
+    assertEquals( 3, modelProperties.size() );
     assertEquals( "Dimension Name", modelProperties.get( 0 ).name() );
     assertEquals( "Shared Dimension", modelProperties.get( 1 ).name() );
 
@@ -102,7 +102,8 @@ public class LinkDimensionTest {
     LinkDimension linkDimension = new LinkDimension();
     linkDimension.setName( "Product Dim" );
     linkDimension.setSharedDimension( "shared product group" );
-    assertTrue( linkDimension.apply( model, "PRODUCT_ID", metaStore ) );
+    linkDimension.setField( "PRODUCT_ID" );
+    assertTrue( linkDimension.apply( model, metaStore ) );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -130,20 +131,23 @@ public class LinkDimensionTest {
     String sharedDimName = "Shared Product dim";
     productName.setDimension( sharedDimName );
     productName.setName( "Product" );
+    productName.setField( "PRODUCT_NAME" );
 
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setDimension( sharedDimName );
     productDescription.setName( "Description" );
     productDescription.setParentAttribute( "Product" );
+    productDescription.setField( "PRODUCT_DESCRIPTION" );
 
     CreateDimensionKey productId = new CreateDimensionKey();
     productId.setDimension( sharedDimName );
     productId.setName( "id" );
+    productId.setField( "PRODUCT_ID" );
 
     final ModelAnnotationGroup modelAnnotationGroup = new ModelAnnotationGroup();
-    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_DESCRIPTION", productDescription ) );
-    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_NAME", productName ) );
-    modelAnnotationGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", productId ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( productDescription ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( productName ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateDimensionKey>( productId ) );
     modelAnnotationGroup.setSharedDimension( true );
     modelAnnotationGroup.setName( "shared product group" );
     ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
@@ -164,12 +168,14 @@ public class LinkDimensionTest {
     LinkDimension linkProduct = new LinkDimension();
     linkProduct.setName( "Product" );
     linkProduct.setSharedDimension( "shared product group" );
-    assertTrue( linkProduct.apply( model, "PRODUCT_ID", metaStore ) );
+    linkProduct.setField( "PRODUCT_ID" );
+    assertTrue( linkProduct.apply( model, metaStore ) );
 
     LinkDimension linkDescription = new LinkDimension();
     linkDescription.setName( "Description" );
     linkDescription.setSharedDimension( "shared description group" );
-    assertTrue( linkDescription.apply( model, "PRODUCT_ID", metaStore ) );
+    linkDescription.setField( "PRODUCT_ID" );
+    assertTrue( linkDescription.apply( model, metaStore ) );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -199,29 +205,33 @@ public class LinkDimensionTest {
     CreateAttribute productName = new CreateAttribute();
     productName.setDimension( "Product Dim" );
     productName.setName( "Product" );
+    productName.setField( "PRODUCT_NAME" );
 
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setDimension( "Description Dim" );
     productDescription.setName( "Description" );
     productDescription.setGeoType( ModelAnnotation.GeoType.State );
+    productDescription.setField( "PRODUCT_DESCRIPTION" );
 
     CreateDimensionKey productId = new CreateDimensionKey();
     productId.setDimension( "Product Dim" );
     productId.setName( "id" );
+    productId.setField( "PRODUCT_ID" );
 
     CreateDimensionKey descriptionId = new CreateDimensionKey();
     descriptionId.setDimension( "Description Dim" );
     descriptionId.setName( "id" );
+    descriptionId.setField( "PRODUCT_ID" );
 
     final ModelAnnotationGroup productGroup = new ModelAnnotationGroup();
-    productGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_NAME", productName ) );
-    productGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", productId ) );
+    productGroup.add( new ModelAnnotation<CreateAttribute>( productName ) );
+    productGroup.add( new ModelAnnotation<CreateDimensionKey>( productId ) );
     productGroup.setSharedDimension( true );
     productGroup.setName( "shared product group" );
 
     final ModelAnnotationGroup descriptionGroup = new ModelAnnotationGroup();
-    descriptionGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_DESCRIPTION", productDescription ) );
-    descriptionGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", descriptionId ) );
+    descriptionGroup.add( new ModelAnnotation<CreateAttribute>( productDescription ) );
+    descriptionGroup.add( new ModelAnnotation<CreateDimensionKey>( descriptionId ) );
     descriptionGroup.setSharedDimension( true );
     descriptionGroup.setName( "shared description group" );
     ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
@@ -252,8 +262,9 @@ public class LinkDimensionTest {
     LinkDimension linkDate = new LinkDimension();
     linkDate.setName( "Date" );
     linkDate.setSharedDimension( "shared date group" );
-    assertTrue( linkDate.apply( model, "DATE", metaStore ) );
-    assertTrue( linkDate.apply( model, "DATE", metaStore ) );
+    linkDate.setField( "DATE" );
+    assertTrue( linkDate.apply( model, metaStore ) );
+    assertTrue( linkDate.apply( model, metaStore ) );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -287,28 +298,32 @@ public class LinkDimensionTest {
     year.setDimension( "DATE" );
     year.setName( "Year" );
     year.setHierarchy( "Date" );
+    year.setField( "YEAR" );
 
     CreateAttribute month = new CreateAttribute();
     month.setDimension( "DATE" );
     month.setName( "Month" );
     month.setParentAttribute( "Year" );
     month.setHierarchy( "Date" );
+    month.setField( "MONTH" );
 
     CreateAttribute day = new CreateAttribute();
     day.setDimension( "DATE" );
     day.setName( "Date" );
     day.setParentAttribute( "Month" );
     day.setHierarchy( "Date" );
+    day.setField( "DATE" );
 
     CreateDimensionKey dateKey = new CreateDimensionKey();
     dateKey.setDimension( "DATE" );
     dateKey.setName( "date" );
+    dateKey.setField( "DATE" );
 
     final ModelAnnotationGroup dateGroup = new ModelAnnotationGroup();
-    dateGroup.add( new ModelAnnotation<CreateAttribute>( "YEAR", year ) );
-    dateGroup.add( new ModelAnnotation<CreateAttribute>( "MONTH", month ) );
-    dateGroup.add( new ModelAnnotation<CreateAttribute>( "DATE", day ) );
-    dateGroup.add( new ModelAnnotation<CreateDimensionKey>( "DATE", dateKey ) );
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( year ) );
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( month ) );
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( day ) );
+    dateGroup.add( new ModelAnnotation<CreateDimensionKey>( dateKey ) );
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 
@@ -329,7 +344,8 @@ public class LinkDimensionTest {
     LinkDimension linkDate = new LinkDimension();
     linkDate.setName( "Date" );
     linkDate.setSharedDimension( "shared date group" );
-    assertFalse( linkDate.apply( model, "DATE", metaStore ) );
+    linkDate.setField( "DATE" );
+    assertFalse( linkDate.apply( model, metaStore ) );
   }
 
   private void saveBadDbMeta() throws Exception {
@@ -337,14 +353,16 @@ public class LinkDimensionTest {
     year.setDimension( "Date" );
     year.setName( "Year" );
     year.setHierarchy( "Date" );
+    year.setField( "YEAR" );
 
     CreateDimensionKey dateKey = new CreateDimensionKey();
     dateKey.setDimension( "Date" );
     dateKey.setName( "date" );
+    dateKey.setField( "DATE" );
 
     final ModelAnnotationGroup dateGroup = new ModelAnnotationGroup();
-    dateGroup.add( new ModelAnnotation<CreateAttribute>( "YEAR", year ) );
-    dateGroup.add( new ModelAnnotation<CreateDimensionKey>( "DATE", dateKey ) );
+    dateGroup.add( new ModelAnnotation<CreateAttribute>( year ) );
+    dateGroup.add( new ModelAnnotation<CreateDimensionKey>( dateKey ) );
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 

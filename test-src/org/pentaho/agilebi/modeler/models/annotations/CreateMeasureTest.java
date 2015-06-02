@@ -21,8 +21,8 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static junit.framework.Assert.assertNotNull;
 
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -46,6 +46,7 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.pentaho.metadata.model.LogicalModel.PROPERTY_OLAP_CUBES;
 import static org.pentaho.metadata.model.SqlPhysicalColumn.TARGET_COLUMN;
 import static org.pentaho.metadata.model.concept.types.AggregationType.*;
@@ -64,6 +65,7 @@ public class CreateMeasureTest {
     createMeasure.setAggregateType( AVERAGE );
     createMeasure.setName( "Avg Weight" );
     createMeasure.setFormatString( "##.##" );
+    createMeasure.setField( "differentName" );
 
     ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
@@ -71,10 +73,11 @@ public class CreateMeasureTest {
         .setName( new LocalizedString( model.getWorkspaceHelper().getLocale(), "differentName" ) );
     model.getWorkspaceHelper().populateDomain( model );
 
-    createMeasure.apply( model, "differentName", metaStore );
+    createMeasure.apply( model, metaStore );
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 4, measures.size() );
-    MeasureMetaData measureMetaData = measures.get( 3 );
+    MeasureMetaData measureMetaData = AnnotationUtil.getMeasureMetaData( "Avg Weight", measures );
+    assertNotNull( measureMetaData );
     assertEquals( "QUANTITYINSTOCK", measureMetaData.getColumnName() );
     assertEquals( "Avg Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
@@ -86,8 +89,10 @@ public class CreateMeasureTest {
 
     // only fields in rowMeta should be present
     assertEquals( 4, cube.getOlapMeasures().size() );
-    assertEquals( "Avg Weight", cube.getOlapMeasures().get( 3 ).getName() );
-    assertEquals( "QUANTITYINSTOCK", cube.getOlapMeasures().get( 3 ).getLogicalColumn().getPhysicalColumn()
+    OlapMeasure olapMeasure = AnnotationUtil.getOlapMeasure( "Avg Weight", cube.getOlapMeasures() );
+    assertNotNull( olapMeasure );
+    assertEquals( "Avg Weight", olapMeasure.getName() );
+    assertEquals( "QUANTITYINSTOCK", olapMeasure.getLogicalColumn().getPhysicalColumn()
         .getProperty( TARGET_COLUMN ) );
   }
 
@@ -97,15 +102,17 @@ public class CreateMeasureTest {
     createMeasure.setAggregateType( MINIMUM );
     createMeasure.setName( "Min Weight" );
     createMeasure.setFormatString( "##.##" );
+    createMeasure.setField( "bc_QUANTITYINSTOCK" );
 
     ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
     LogicalTable logicalTable = model.getLogicalModel( ModelerPerspective.ANALYSIS ).getLogicalTables().get( 0 );
     logicalTable.addLogicalColumn( (LogicalColumn) logicalTable.getLogicalColumns().get( 6 ).clone() );
-    createMeasure.apply( model, "bc_QUANTITYINSTOCK", metaStore );
+    createMeasure.apply( model, metaStore );
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 4, measures.size() );
-    MeasureMetaData measureMetaData = measures.get( 3 );
+    MeasureMetaData measureMetaData = AnnotationUtil.getMeasureMetaData( "Min Weight", measures );
+    assertNotNull( measureMetaData );
     assertEquals( "QUANTITYINSTOCK", measureMetaData.getColumnName() );
     assertEquals( "Min Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
@@ -125,9 +132,10 @@ public class CreateMeasureTest {
     createMeasure.setAggregateType( MINIMUM );
     createMeasure.setName( "Min Buy Price" );
     createMeasure.setFormatString( "##.##" );
+    createMeasure.setMeasure( "[Measures].[bc_BUYPRICE]" );
+    createMeasure.setCube( "products_38GA" );
     ModelAnnotation annotation =
-        new ModelAnnotation<CreateMeasure>( ModelAnnotation.SourceType.Measure, "products_38GA",
-            "[Measures].[bc_BUYPRICE]", createMeasure );
+        new ModelAnnotation<CreateMeasure>( createMeasure );
 
     ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
@@ -135,9 +143,12 @@ public class CreateMeasureTest {
     logicalTable.addLogicalColumn( (LogicalColumn) logicalTable.getLogicalColumns().get( 6 ).clone() );
     annotation.apply( model, metaStore );
 
+    Assert.assertEquals( "bc_BUYPRICE", ( (CreateMeasure) annotation.getAnnotation() ).getField() );
+
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 4, measures.size() );
-    MeasureMetaData measureMetaData = measures.get( 3 );
+    MeasureMetaData measureMetaData = AnnotationUtil.getMeasureMetaData( "Min Buy Price", measures );
+    assertNotNull( measureMetaData );
     assertEquals( "BUYPRICE", measureMetaData.getColumnName() );
     assertEquals( "Min Buy Price", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
@@ -155,9 +166,10 @@ public class CreateMeasureTest {
     createMeasure.setAggregateType( AggregationType.COUNT_DISTINCT );
     createMeasure.setName( "Product Count" );
     createMeasure.setFormatString( "##.##" );
+    createMeasure.setLevel( "[PRODUCTNAME].[PRODUCTNAME]" );
+    createMeasure.setCube( "products_38GA" );
     ModelAnnotation annotation =
-        new ModelAnnotation<CreateMeasure>( ModelAnnotation.SourceType.HierarchyLevel, "products_38GA",
-            "[PRODUCTNAME].[PRODUCTNAME]", createMeasure );
+        new ModelAnnotation<CreateMeasure>( createMeasure );
 
     ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
@@ -167,7 +179,8 @@ public class CreateMeasureTest {
 
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 4, measures.size() );
-    MeasureMetaData measureMetaData = measures.get( 3 );
+    MeasureMetaData measureMetaData = AnnotationUtil.getMeasureMetaData( "Product Count", measures );
+    assertNotNull( measureMetaData );
     assertEquals( "PRODUCTNAME", measureMetaData.getColumnName() );
     assertEquals( "Product Count", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
@@ -180,11 +193,12 @@ public class CreateMeasureTest {
     minWeight.setAggregateType( MINIMUM );
     minWeight.setName( "Min Weight" );
     minWeight.setFormatString( "##.##" );
+    minWeight.setField( "PRODUCTCODE_OLAP" );
 
     ModelerWorkspace model =
         new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
-    minWeight.apply( model, "PRODUCTCODE_OLAP", metaStore );
+    minWeight.apply( model, metaStore );
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     assertEquals( 8, cube.getOlapDimensionUsages().size() );
@@ -197,20 +211,23 @@ public class CreateMeasureTest {
     minWeight.setAggregateType( MINIMUM );
     minWeight.setName( "Min Weight" );
     minWeight.setFormatString( "##.##" );
+    minWeight.setField( "bc_QUANTITYINSTOCK" );
 
     CreateMeasure maxWeight = new CreateMeasure();
     maxWeight.setAggregateType( MAXIMUM );
     maxWeight.setName( "Max Weight" );
     maxWeight.setFormatString( "##.##" );
+    maxWeight.setField( "bc_QUANTITYINSTOCK" );
 
     ModelerWorkspace model =
         new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( "test-res/products.xmi" ) ) );
-    minWeight.apply( model, "bc_QUANTITYINSTOCK", metaStore );
-    maxWeight.apply( model, "bc_QUANTITYINSTOCK", metaStore );
+    minWeight.apply( model, metaStore );
+    maxWeight.apply( model, metaStore );
     MeasuresCollection measures = model.getModel().getMeasures();
     assertEquals( 5, measures.size() );
-    MeasureMetaData minMeta = measures.get( 3 );
+    MeasureMetaData minMeta = AnnotationUtil.getMeasureMetaData( "Min Weight", measures );
+    assertNotNull( minMeta );
     assertEquals( "QUANTITYINSTOCK", minMeta.getColumnName() );
     assertEquals( "Min Weight", minMeta.getName() );
     assertEquals( "##.##", minMeta.getFormat() );
@@ -243,8 +260,55 @@ public class CreateMeasureTest {
 
   @Test
   public void testValidate() throws Exception {
+
+    CreateMeasure createMeasure = new CreateMeasure();
+
     try {
-      ( new CreateMeasure() ).validate();
+      createMeasure.validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
+
+    createMeasure.setName( "name" );
+    createMeasure.setField( "field" );
+    createMeasure.validate();
+
+    createMeasure.setField( "" );
+    try {
+      createMeasure.validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
+
+    createMeasure.setName( "name" );
+    createMeasure.setLevel( "level" );
+    try {
+      createMeasure.validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
+
+
+    createMeasure.setCube( "cube" );
+    createMeasure.validate();
+
+    createMeasure.setLevel( "" );
+    try {
+      createMeasure.validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
+
+    createMeasure.setMeasure( "measure" );
+    try {
+      createMeasure.validate();
+    } catch ( ModelerException me ) {
+      assertNotNull( me );
+    }
+
+    createMeasure.setCube( "" );
+    try {
+      createMeasure.validate();
     } catch ( ModelerException me ) {
       assertNotNull( me );
     }
@@ -260,27 +324,37 @@ public class CreateMeasureTest {
     CreateMeasure sumBuyPrice = new CreateMeasure();
     sumBuyPrice.setAggregateType( SUM );
     sumBuyPrice.setName( "Sum Buy Price" );
-    sumBuyPrice.apply( model, "BUYPRICE", metaStore );
+    sumBuyPrice.setField( "BUYPRICE" );
+    sumBuyPrice.apply( model, metaStore );
 
     CreateMeasure avgBuyPrice = new CreateMeasure();
     avgBuyPrice.setAggregateType( AVERAGE );
     avgBuyPrice.setName( "BUYPRICE" );
-    avgBuyPrice.apply( model, "BUYPRICE", metaStore );
+    avgBuyPrice.setField( "BUYPRICE" );
+    avgBuyPrice.apply( model, metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
     assertEquals( 4, olapMeasures.size() );
-    assertEquals( SUM, olapMeasures.get( 0 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "MSRP", olapMeasures.get( 0 ).getName() );
-    assertEquals( SUM, olapMeasures.get( 1 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "QUANTITYINSTOCK", olapMeasures.get( 1 ).getName() );
-    assertEquals( SUM, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "Sum Buy Price", olapMeasures.get( 2 ).getName() );
-    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_2", olapMeasures.get( 2 ).getLogicalColumn().getId() );
-    assertEquals( AVERAGE, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "BUYPRICE", olapMeasures.get( 3 ).getName() );
-    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", olapMeasures.get( 3 ).getLogicalColumn().getId() );
+    OlapMeasure msrp = AnnotationUtil.getOlapMeasure( "MSRP", olapMeasures );
+    assertNotNull( msrp );
+    assertEquals( SUM, msrp.getLogicalColumn().getAggregationType() );
+    assertEquals( "MSRP", msrp.getName() );
+    OlapMeasure qtyStock = AnnotationUtil.getOlapMeasure( "QUANTITYINSTOCK", olapMeasures );
+    assertNotNull( qtyStock );
+    assertEquals( SUM, qtyStock.getLogicalColumn().getAggregationType() );
+    assertEquals( "QUANTITYINSTOCK", qtyStock.getName() );
+    OlapMeasure sumBuyPriceMeasure = AnnotationUtil.getOlapMeasure( "Sum Buy Price", olapMeasures );
+    assertNotNull( sumBuyPriceMeasure );
+    assertEquals( SUM, sumBuyPriceMeasure.getLogicalColumn().getAggregationType() );
+    assertEquals( "Sum Buy Price", sumBuyPriceMeasure.getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_2", sumBuyPriceMeasure.getLogicalColumn().getId() );
+    OlapMeasure avgPriceMeasure = AnnotationUtil.getOlapMeasure( "BUYPRICE", olapMeasures );
+    assertNotNull( avgPriceMeasure );
+    assertEquals( AVERAGE, avgPriceMeasure.getLogicalColumn().getAggregationType() );
+    assertEquals( "BUYPRICE", avgPriceMeasure.getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", avgPriceMeasure.getLogicalColumn().getId() );
   }
 
   @Test
@@ -293,13 +367,16 @@ public class CreateMeasureTest {
     CreateMeasure sumBuyPrice = new CreateMeasure();
     sumBuyPrice.setAggregateType( SUM );
     sumBuyPrice.setName( "Sum Buy Price" );
-    sumBuyPrice.apply( model, "buy_price", metaStore );
+    sumBuyPrice.setField( "buy_price" );
+    sumBuyPrice.apply( model, metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
-    assertEquals( SUM, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "Sum Buy Price", olapMeasures.get( 3 ).getName() );
+    OlapMeasure sumMeasure = AnnotationUtil.getOlapMeasure( "Sum Buy Price", olapMeasures );
+    assertNotNull( sumMeasure );
+    assertEquals( SUM, sumMeasure.getLogicalColumn().getAggregationType() );
+    assertEquals( "Sum Buy Price", sumMeasure.getName() );
   }
 
   @Test
@@ -312,19 +389,23 @@ public class CreateMeasureTest {
     CreateMeasure sumBuyPrice = new CreateMeasure();
     sumBuyPrice.setAggregateType( SUM );
     sumBuyPrice.setName( "Buy Price" );
-    sumBuyPrice.apply( model, "BUYPRICE", metaStore );
+    sumBuyPrice.setField( "BUYPRICE" );
+    sumBuyPrice.apply( model, metaStore );
 
     CreateMeasure avgBuyPrice = new CreateMeasure();
     avgBuyPrice.setAggregateType( AVERAGE );
     avgBuyPrice.setName( "Buy Price" );
-    avgBuyPrice.apply( model, "BUYPRICE", metaStore );
+    avgBuyPrice.setField( "BUYPRICE" );
+    avgBuyPrice.apply( model, metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
     List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
     assertEquals( 3, olapMeasures.size() );
-    assertEquals( AVERAGE, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "Buy Price", olapMeasures.get( 2 ).getName() );
+    OlapMeasure priceMeasure = AnnotationUtil.getOlapMeasure( "Buy Price", olapMeasures );
+    assertNotNull( priceMeasure );
+    assertEquals( AVERAGE, priceMeasure.getLogicalColumn().getAggregationType() );
+    assertEquals( "Buy Price", priceMeasure.getName() );
   }
 
   @Test

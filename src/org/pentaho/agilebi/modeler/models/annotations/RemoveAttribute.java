@@ -49,14 +49,22 @@ public class RemoveAttribute extends AnnotationType {
   private static final String NAME_NAME = "Name";
   private static final int NAME_ORDER = 0;
 
+  private static final String LEVEL_ID = "level";
+  private static final String LEVEL_NAME = "Level";
+  private static final int LEVEL_ORDER = 1;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
 
+  @MetaStoreAttribute
+  @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER )
+  private String level;
+
   @Override
   public boolean apply(
-    final ModelerWorkspace workspace, final String field, final IMetaStore metaStore ) throws ModelerException {
-    LevelMetaData existingLevel = locateLevelFromFormula( workspace, field );
+    final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
+    LevelMetaData existingLevel = locateLevelFromFormula( workspace, level );
     boolean isApplied = false;
 
     if ( existingLevel != null && workspace != null ) {
@@ -121,11 +129,15 @@ public class RemoveAttribute extends AnnotationType {
   }
 
   @Override
-  public boolean apply( final Document schema, final String field ) throws ModelerException {
+  public boolean apply( final Document schema ) throws ModelerException {
     throw new UnsupportedOperationException();
   }
 
   @Override public void validate() throws ModelerException {
+    if ( StringUtils.isBlank( getLevel() ) ) {
+      throw new ModelerException( BaseMessages.getString( MSG_CLASS,
+        "ModelAnnotation.RemoveAttribute.validation.FIELD_NAME_REQUIRED" ) );
+    }
   }
 
   @Override
@@ -150,6 +162,18 @@ public class RemoveAttribute extends AnnotationType {
 
   public void setName( String name ) {
     this.name = name;
+  }
+
+  public String getLevel() {
+    return level;
+  }
+
+  public void setLevel( String level ) {
+    this.level = level;
+  }
+
+  public String getField() {
+    return null;
   }
 }
 

@@ -66,7 +66,7 @@ public class MockAnnotationType extends AnnotationType {
   }
 
   @Override
-  public boolean apply( ModelerWorkspace workspace, String column, final IMetaStore metaStore ) {
+  public boolean apply( ModelerWorkspace workspace, final IMetaStore metaStore ) {
     return true;
   }
 
@@ -80,7 +80,7 @@ public class MockAnnotationType extends AnnotationType {
   }
 
   @Override
-  public boolean apply( Document schema, String field ) throws ModelerException {
+  public boolean apply( Document schema ) throws ModelerException {
     // TODO Auto-generated method stub
     return false;
   }
@@ -91,5 +91,10 @@ public class MockAnnotationType extends AnnotationType {
 
   @Override
   public void validate() throws ModelerException {
+  }
+
+  @Override
+  public String getField() {
+    return null;
   }
 }
