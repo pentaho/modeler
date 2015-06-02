@@ -26,7 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.FAILED;
-import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.NULL_FIELD;
+import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.NULL_ANNOTATION;
 import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.SUCCESS;
 
 import org.junit.BeforeClass;
@@ -151,7 +151,7 @@ public class ModelAnnotationGroupTest {
     ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup( modelAnnotation );
 
     Map<ApplyStatus, List<ModelAnnotation>> statusMap = modelAnnotations.applyAnnotations( model, null );
-    assertEquals( 1, statusMap.get( ApplyStatus.NULL_FIELD ).size() );
+    assertEquals( 1, statusMap.get( ApplyStatus.NULL_ANNOTATION ).size() );
     assertEquals( 0, statusMap.get( ApplyStatus.SUCCESS ).size() );
     assertEquals( 0, statusMap.get( ApplyStatus.FAILED ).size() );
   }
@@ -165,7 +165,7 @@ public class ModelAnnotationGroupTest {
     ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup( annotation1, annotation2 );
 
     Map<ApplyStatus, List<ModelAnnotation>> statusMap = modelAnnotations.applyAnnotations( model, null );
-    assertEquals( 0, statusMap.get( ApplyStatus.NULL_FIELD ).size() );
+    assertEquals( 0, statusMap.get( ApplyStatus.NULL_ANNOTATION ).size() );
     assertEquals( 0, statusMap.get( ApplyStatus.FAILED ).size() );
     assertEquals( 2, statusMap.get( ApplyStatus.SUCCESS ).size() );
   }
@@ -181,7 +181,7 @@ public class ModelAnnotationGroupTest {
     Map<ApplyStatus, List<ModelAnnotation>> statusMap = modelAnnotations.applyAnnotations( model, null );
     assertEquals( 2, statusMap.get( FAILED ).size() );
     assertEquals( 1, statusMap.get( SUCCESS ).size() );
-    assertEquals( 0, statusMap.get( NULL_FIELD ).size() );
+    assertEquals( 0, statusMap.get( NULL_ANNOTATION ).size() );
   }
 
   private ModelAnnotation testingAnnotation( final boolean... statuses ) {

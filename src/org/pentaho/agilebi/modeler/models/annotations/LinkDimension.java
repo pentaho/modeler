@@ -239,6 +239,7 @@ public class LinkDimension extends AnnotationType {
     this.sharedDimension = sharedDimension;
   }
 
+  @Override
   public String getField() {
     return field;
   }

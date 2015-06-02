@@ -382,7 +382,7 @@ public abstract class AnnotationType implements Serializable {
    *
    * @param modelerWorkspace Workspace to look for the level
    * @param levelName Level formula to find the level
-   * @param cubeName Cube name to file the level
+   * @param cubeName Cube name to find the level
    * @return field
    * @throws ModelerException
    */
@@ -447,7 +447,7 @@ public abstract class AnnotationType implements Serializable {
    *
    * @param modelerWorkspace Workspace to look for the level
    * @param measureName Measure formula to find the level
-   * @param cubeName Cube name to file the level
+   * @param cubeName Cube name to find the level
    * @return field
    * @throws ModelerException
    */
@@ -596,4 +596,6 @@ public abstract class AnnotationType implements Serializable {
   public abstract String getSummary();
 
   public abstract String getName();
+
+  public abstract String getField();
 }

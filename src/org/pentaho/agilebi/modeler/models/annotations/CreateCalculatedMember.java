@@ -281,4 +281,8 @@ public class CreateCalculatedMember extends AnnotationType {
   public void setCalculateSubtotals( boolean calculateSubtotals ) {
     this.calculateSubtotals = calculateSubtotals;
   }
+
+  public String getField() {
+    return null;
+  }
 }

@@ -110,4 +110,8 @@ public class RemoveMeasure extends AnnotationType {
   public void setCube( String cube ) {
     this.cube = cube;
   }
+
+  public String getField() {
+    return null;
+  }
 }

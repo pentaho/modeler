@@ -125,6 +125,11 @@ public class ModelAnnotationTest {
 
       @Override
       public void validate() throws ModelerException { }
+
+      @Override
+      public String getField() {
+        return "";
+      }
     };
     ModelAnnotation<AnnotationType> modelAnnotation = new ModelAnnotation<AnnotationType>();
     modelAnnotation.setAnnotation( annotationType );

@@ -92,4 +92,9 @@ public class MockAnnotationType extends AnnotationType {
   @Override
   public void validate() throws ModelerException {
   }
+
+  @Override
+  public String getField() {
+    return null;
+  }
 }

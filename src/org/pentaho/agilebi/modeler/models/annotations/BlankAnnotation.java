@@ -64,6 +64,7 @@ public class BlankAnnotation extends AnnotationType {
     return null;
   }
 
+  @Override
   public String getField() {
     return field;
   }

@@ -171,5 +171,9 @@ public class RemoveAttribute extends AnnotationType {
   public void setLevel( String level ) {
     this.level = level;
   }
+
+  public String getField() {
+    return null;
+  }
 }
 
