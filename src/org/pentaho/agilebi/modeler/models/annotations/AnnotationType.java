@@ -376,6 +376,26 @@ public abstract class AnnotationType implements Serializable {
   }
 
   /**
+   * Retrieves the olap cube from the workspace based on the cube name
+   * @param modelerWorkspace workspace to search for the cube
+   * @param cubeName cube name
+   * @return OlapCube otherwise null
+   */
+  private OlapCube getOlapCube( final ModelerWorkspace modelerWorkspace, final String cubeName ) {
+    LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
+    List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( OLAP_CUBES_PROPERTY );
+    OlapCube olapCube = null;
+    for ( int c = 0; c < olapCubes.size(); c++ ) {
+      if ( ( (OlapCube) olapCubes.get( c ) ).getName().equals( cubeName ) ) {
+        olapCube = (OlapCube) olapCubes.get( c );
+        break;
+      }
+    }
+
+    return olapCube;
+  }
+
+  /**
    * Returns the physical column name that this annotation should operate on. For sources
    * based on HierarchyLevels we need to consult the existing model to find the underlying
    * source field.
@@ -389,55 +409,47 @@ public abstract class AnnotationType implements Serializable {
   protected String resolveFieldFromLevel( final ModelerWorkspace modelerWorkspace,
                                           final String levelName,
                                           final String cubeName ) throws ModelerException {
-    if ( !StringUtils.isBlank( levelName ) && !StringUtils.isBlank( cubeName ) ) {
-      String locale = Locale.getDefault().toString();
-      LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
-      List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( OLAP_CUBES_PROPERTY );
-      OlapCube olapCube = null;
-      for ( int c = 0; c < olapCubes.size(); c++ ) {
-        if ( ( (OlapCube) olapCubes.get( c ) ).getName().equals( cubeName ) ) {
-          olapCube = (OlapCube) olapCubes.get( c );
-          break;
-        }
-      }
-      if ( olapCube == null ) {
-        throw new ModelerException(
-          BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CUBE", cubeName )
-        );
-      }
-
-      List usages = olapCube.getOlapDimensionUsages();
-      for ( int u = 0; u < usages.size(); u++ ) {
-        OlapDimensionUsage usage = (OlapDimensionUsage) usages.get( u );
-        OlapDimension olapDimension = usage.getOlapDimension();
-        List olapHierarchies = olapDimension.getHierarchies();
-        for ( int h = 0; h < olapHierarchies.size(); h++ ) {
-          StringBuffer buffer = new StringBuffer();
-          buffer.append( "[" );
-          buffer.append( usage.getName() );
-          OlapHierarchy olapHierarchy = (OlapHierarchy) olapHierarchies.get( h );
-          if ( StringUtils.isNotEmpty( olapHierarchy.getName() )
-            && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
-            buffer.append( "." ).append( olapHierarchy.getName() );
-          }
-          buffer.append( "].[" );
-          List hierarchyLevels = olapHierarchy.getHierarchyLevels();
-          for ( int hl = 0; hl < hierarchyLevels.size(); hl++ ) {
-            OlapHierarchyLevel olapHierarchyLevel = (OlapHierarchyLevel) hierarchyLevels.get( hl );
-            if ( levelName.equals( buffer.toString() + olapHierarchyLevel.getName() + "]" ) ) {
-              return olapHierarchyLevel.getReferenceColumn().getName( locale );
-            }
-          }
-        }
-      }
-      throw new ModelerException(
-        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_LEVEL", levelName )
-      );
-    } else {
+    if ( StringUtils.isBlank( levelName ) || StringUtils.isBlank( cubeName ) || modelerWorkspace == null ) {
       throw new ModelerException(
         BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_LEVEL", levelName )
       );
     }
+
+    String locale = Locale.getDefault().toString();
+    OlapCube olapCube = getOlapCube( modelerWorkspace, cubeName );
+    if ( olapCube == null ) {
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CUBE", cubeName )
+      );
+    }
+
+    List usages = olapCube.getOlapDimensionUsages();
+    for ( int u = 0; u < usages.size(); u++ ) {
+      OlapDimensionUsage usage = (OlapDimensionUsage) usages.get( u );
+      OlapDimension olapDimension = usage.getOlapDimension();
+      List olapHierarchies = olapDimension.getHierarchies();
+      for ( int h = 0; h < olapHierarchies.size(); h++ ) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append( "[" );
+        buffer.append( usage.getName() );
+        OlapHierarchy olapHierarchy = (OlapHierarchy) olapHierarchies.get( h );
+        if ( StringUtils.isNotEmpty( olapHierarchy.getName() )
+          && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
+          buffer.append( "." ).append( olapHierarchy.getName() );
+        }
+        buffer.append( "].[" );
+        List hierarchyLevels = olapHierarchy.getHierarchyLevels();
+        for ( int hl = 0; hl < hierarchyLevels.size(); hl++ ) {
+          OlapHierarchyLevel olapHierarchyLevel = (OlapHierarchyLevel) hierarchyLevels.get( hl );
+          if ( levelName.equals( buffer.toString() + olapHierarchyLevel.getName() + "]" ) ) {
+            return olapHierarchyLevel.getReferenceColumn().getName( locale );
+          }
+        }
+      }
+    }
+    throw new ModelerException(
+      BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_LEVEL", levelName )
+    );
   }
 
   /**
@@ -454,38 +466,30 @@ public abstract class AnnotationType implements Serializable {
   protected String resolveFieldFromMeasure( final ModelerWorkspace modelerWorkspace,
                                             final String measureName,
                                             final String cubeName ) throws ModelerException {
-    if ( !StringUtils.isBlank( measureName ) && !StringUtils.isBlank( cubeName ) && modelerWorkspace != null ) {
-      String locale = Locale.getDefault().toString();
-      LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
-      List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( OLAP_CUBES_PROPERTY );
-      OlapCube olapCube = null;
-      for ( int c = 0; c < olapCubes.size(); c++ ) {
-        if ( ( (OlapCube) olapCubes.get( c ) ).getName().equals( cubeName ) ) {
-          olapCube = (OlapCube) olapCubes.get( c );
-          break;
-        }
-      }
-      if ( olapCube == null ) {
-        throw new ModelerException(
-          BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CUBE", cubeName )
-        );
-      }
-      List measures = olapCube.getOlapMeasures();
-      for ( int m = 0; m < measures.size(); m++ ) {
-        OlapMeasure measure = (OlapMeasure) measures.get( m );
-        if ( measureName
-          .equals( "[" + MEASURES_DIMENSION + "].[" + measure.getLogicalColumn().getName( locale ) + "]" ) ) {
-          return (String) measure.getLogicalColumn().getName( locale );
-        }
-      }
-      throw new ModelerException(
-        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measureName )
-      );
-    } else {
+    if ( StringUtils.isBlank( measureName ) || StringUtils.isBlank( cubeName ) || modelerWorkspace == null ) {
       throw new ModelerException(
         BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measureName )
       );
     }
+
+    String locale = Locale.getDefault().toString();
+    OlapCube olapCube = getOlapCube( modelerWorkspace, cubeName );
+    if ( olapCube == null ) {
+      throw new ModelerException(
+        BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_CUBE", cubeName )
+      );
+    }
+    List measures = olapCube.getOlapMeasures();
+    for ( int m = 0; m < measures.size(); m++ ) {
+      OlapMeasure measure = (OlapMeasure) measures.get( m );
+      if ( measureName
+        .equals( "[" + MEASURES_DIMENSION + "].[" + measure.getLogicalColumn().getName( locale ) + "]" ) ) {
+        return (String) measure.getLogicalColumn().getName( locale );
+      }
+    }
+    throw new ModelerException(
+      BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_MEASURE", measureName )
+    );
   }
 
 
