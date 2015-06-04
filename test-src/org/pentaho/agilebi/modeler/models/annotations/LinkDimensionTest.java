@@ -31,6 +31,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
+import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
@@ -143,13 +144,13 @@ public class LinkDimensionTest {
 
     OlapHierarchyLevel nameLevel = productHierarchy.getHierarchyLevels().get( 0 );
     assertEquals( "Product", nameLevel.getName() );
-    assertEquals( "PRODUCT NAME",
-        nameLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+    assertEquals( "PRODUCT_NAME",
+        nameLevel.getReferenceColumn().getPhysicalColumn().getProperty( "target_column" ) );
 
     OlapHierarchyLevel descriptionLevel = productHierarchy.getHierarchyLevels().get( 1 );
     assertEquals( "Description", descriptionLevel.getName() );
-    assertEquals( "PRODUCT DESCRIPTION",
-        descriptionLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+    assertEquals( "PRODUCT_DESCRIPTION",
+        descriptionLevel.getReferenceColumn().getPhysicalColumn().getProperty( "target_column" ) );
 
     assertEquals( 2, cube.getOlapMeasures().size() );
   }
@@ -170,17 +171,27 @@ public class LinkDimensionTest {
     productId.setName( "id" );
 
     final ModelAnnotationGroup modelAnnotationGroup = new ModelAnnotationGroup();
-    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_DESCRIPTION", productDescription ) );
-    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( "PRODUCT_NAME", productName ) );
-    modelAnnotationGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", productId ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( "Description", productDescription ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( "Name", productName ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateDimensionKey>( "Id", productId ) );
     modelAnnotationGroup.setSharedDimension( true );
     modelAnnotationGroup.setName( "shared product group" );
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
     dataProvider.setTableName( "product" );
     dataProvider.setDatabaseMetaNameRef( metaRef );
+    ColumnMapping descMapping = new ColumnMapping();
+    descMapping.setColumnName( "product_description" );
+    descMapping.setName( "Description" );
+    ColumnMapping nameMapping = new ColumnMapping();
+    nameMapping.setColumnName( "product_name" );
+    nameMapping.setName( "Name" );
+    ColumnMapping idMapping = new ColumnMapping();
+    idMapping.setColumnName( "product_id" );
+    idMapping.setName( "Id" );
+    dataProvider.setColumnMappings( Arrays.asList( descMapping, nameMapping, idMapping ) );
 
     modelAnnotationGroup.setDataProviders( Collections.singletonList( dataProvider ) );
     manager.createGroup( modelAnnotationGroup, metaStore );
@@ -253,7 +264,7 @@ public class LinkDimensionTest {
     descriptionGroup.add( new ModelAnnotation<CreateDimensionKey>( "PRODUCT_ID", descriptionId ) );
     descriptionGroup.setSharedDimension( true );
     descriptionGroup.setName( "shared description group" );
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     DatabaseMeta decoyMeta = (DatabaseMeta) dbMeta.clone();
     decoyMeta.setName( "other" );
@@ -341,7 +352,7 @@ public class LinkDimensionTest {
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
@@ -377,7 +388,7 @@ public class LinkDimensionTest {
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( new DatabaseMeta(), metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );

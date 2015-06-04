@@ -68,8 +68,7 @@ public class LinkDimension extends AnnotationType {
 
   @Override public boolean apply(
       final ModelerWorkspace factWorkspace, final String field, final IMetaStore metaStore ) throws ModelerException {
-    ModelAnnotationManager modelAnnotationManager =
-        new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager( true );
     try {
       if ( !modelAnnotationManager.containsGroup( getSharedDimension(), metaStore ) ) {
         return false;
@@ -102,7 +101,7 @@ public class LinkDimension extends AnnotationType {
   private DataProvider locateDataProvider(
       final List<DataProvider> dataProviders, final ModelerWorkspace workspace, final IMetaStore metaStore )
       throws MetaStoreException, KettlePluginException, ModelerException {
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     DatabaseMeta factDbMeta = ( (ISpoonModelerSource) workspace.getModelSource() ).getDatabaseMeta();
     for ( DataProvider dataProvider : dataProviders ) {
       DatabaseMeta sharedDbMeta = manager.loadDatabaseMeta( dataProvider.getDatabaseMetaNameRef(), metaStore );
@@ -190,7 +189,7 @@ public class LinkDimension extends AnnotationType {
     DatabaseMeta dbMeta = ( (ISpoonModelerSource) workspace.getModelSource() ).getDatabaseMeta();
     TableModelerSource source =
         new TableModelerSource( dbMeta, dataProvider.getTableName(), dataProvider.getSchemaName() );
-    Domain domain = source.generateDomain();
+    Domain domain = source.generateDomain( new SharedDimensionImportStrategy( dataProvider ) );
     ModelerWorkspace model =
         new ModelerWorkspace(
             new ModelerWorkspaceHelper( workspace.getWorkspaceHelper().getLocale() ), workspace.getGeoContext() );
