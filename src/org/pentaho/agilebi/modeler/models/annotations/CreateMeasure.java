@@ -211,7 +211,10 @@ public class CreateMeasure extends AnnotationType {
           String targetColumn =
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
-              new MeasureMetaData( targetColumn, getFormatString(), getName(), workspace.getWorkspaceHelper().getLocale() );
+              new MeasureMetaData( targetColumn,
+                getFormatString(),
+                getName(),
+                workspace.getWorkspaceHelper().getLocale() );
 
           LogicalColumn columnClone = (LogicalColumn) logicalColumn.clone();
           columnClone.setId( BaseModelerWorkspaceHelper.uniquify( columnClone.getId(), logicalColumns ) );

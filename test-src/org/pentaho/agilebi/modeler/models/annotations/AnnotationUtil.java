@@ -28,6 +28,10 @@ import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.util.List;
 
@@ -35,6 +39,12 @@ import java.util.List;
  * @author Brandon Groves
  */
 public final class AnnotationUtil {
+
+  public static final String MEASURE_ELEMENT_NAME = "Measure";
+  public static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
+
+  public static final String NAME_ATTRIB = "name";
+  public static final String VISIBLE_ATTRIB = "visible";
 
   private AnnotationUtil() {
   }
@@ -106,6 +116,7 @@ public final class AnnotationUtil {
     for ( OlapMeasure measure : olapMeasures ){
       if ( measureName.equals( measure.getName() ) ) {
         olapMeasure = measure;
+        break;
       }
     }
 
@@ -134,5 +145,34 @@ public final class AnnotationUtil {
     }
 
     return measureMetaData;
+  }
+
+  /**
+   * @param docToTest Document to find node
+   * @param tagName Name of the tag to look up
+   * @param nodeName Name of the node to look up
+   * @param attributeName Name of the attribute to test
+   * @param testValue Test value to compare against the attributeName value
+   * @return True if nodeName value equals otherwise false
+   */
+  public static boolean validateNodeAttribute( Document docToTest, String tagName, String nodeName,
+                                               String attributeName , String testValue ) {
+    boolean validated = false;
+
+    NodeList nodeList = docToTest.getElementsByTagName( tagName );
+    if ( nodeList.getLength() > 0 ) {
+      for ( int i = 0; i < nodeList.getLength(); i++ ) {
+        Element element = (Element) nodeList.item( i );
+        if ( nodeName.equals( element.getAttribute( NAME_ATTRIB ) ) ) {
+          // Found element now test attribute
+          if ( element != null ) {
+            validated = testValue.equals( element.getAttribute( attributeName ) );
+            break;
+          }
+        }
+      }
+    }
+
+    return validated;
   }
 }

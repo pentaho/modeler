@@ -42,13 +42,10 @@ public class CreateCalculatedMemberTest {
   private static final String TEST_CALCULATED_MEMBER_DIMENSION = "Test Dimension";
   private static final String TEST_CALCULATED_MEMBER_FORMAT_STRING = "$#,##0.00";
   private static final String MONDRIAN_TEST_FILE_PATH = "test-res/products.mondrian.xml";
-  private static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
   private static final String CAPTION_ATTRIB = "caption";
   private static final String DESCRIPTION_ATTRIB = "description";
   private static final String DIMENSION_ATTRIB = "dimension";
   private static final String FORMULA_ATTRIB = "formula";
-  private static final String NAME_ATTRIB = "name";
-  private static final String VISIBLE_ATTRIB = "visible";
   private static final String FORMAT_STRING_ATTRIB = "formatString";
 
   CreateCalculatedMember createCalculatedMember = new CreateCalculatedMember();
@@ -77,15 +74,44 @@ public class CreateCalculatedMemberTest {
 
     createCalculatedMember.apply( mondrianSchemaXmlDoc );
 
-    assert ( mondrianSchemaXmlDoc != null );
-    assert ( mondrianSchemaXmlDoc.getElementsByTagName( CALCULATED_MEMBER_ELEMENT_NAME ).getLength() > 0 );
-    assert ( validateNodeValue( mondrianSchemaXmlDoc, CAPTION_ATTRIB, TEST_CALCULCATED_MEMBER_CAPTION ) );
-    assert ( validateNodeValue( mondrianSchemaXmlDoc, DESCRIPTION_ATTRIB, TEST_CALCULATED_MEMBER_DESC ) );
-    assert ( validateNodeValue( mondrianSchemaXmlDoc, DIMENSION_ATTRIB, TEST_CALCULATED_MEMBER_DIMENSION ) );
-    assert ( validateNodeValue( mondrianSchemaXmlDoc, FORMULA_ATTRIB, TEST_CALCULATED_MEMBER_FORMULA ) );
-    assert ( validateNodeValue( mondrianSchemaXmlDoc, NAME_ATTRIB, TEST_CALCULATED_MEMBER_NAME ) );
-    assert ( validateNodeValue( mondrianSchemaXmlDoc, FORMAT_STRING_ATTRIB, TEST_CALCULATED_MEMBER_FORMAT_STRING ) );
-    assert ( validateNodeValue( mondrianSchemaXmlDoc, VISIBLE_ATTRIB, Boolean.TRUE.toString() ) );
+    assert( mondrianSchemaXmlDoc != null );
+    assert( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME ).getLength()
+      > 0 );
+    assert( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      TEST_CALCULATED_MEMBER_NAME,
+      CAPTION_ATTRIB,
+      TEST_CALCULCATED_MEMBER_CAPTION ) );
+    assert( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      TEST_CALCULATED_MEMBER_NAME,
+      DESCRIPTION_ATTRIB,
+      TEST_CALCULATED_MEMBER_DESC ) );
+    assert( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      TEST_CALCULATED_MEMBER_NAME,
+      DIMENSION_ATTRIB,
+      TEST_CALCULATED_MEMBER_DIMENSION ) );
+    assert( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      TEST_CALCULATED_MEMBER_NAME,
+      FORMULA_ATTRIB,
+      TEST_CALCULATED_MEMBER_FORMULA ) );
+    assert( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      TEST_CALCULATED_MEMBER_NAME,
+      AnnotationUtil.NAME_ATTRIB,
+      TEST_CALCULATED_MEMBER_NAME ) );
+    assert( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      TEST_CALCULATED_MEMBER_NAME,
+      FORMAT_STRING_ATTRIB,
+      TEST_CALCULATED_MEMBER_FORMAT_STRING ) );
+    assert( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      TEST_CALCULATED_MEMBER_NAME,
+      AnnotationUtil.VISIBLE_ATTRIB,
+      Boolean.TRUE.toString() ) );
   }
 
   /**
@@ -106,25 +132,5 @@ public class CreateCalculatedMemberTest {
   @Test
   public void testValidate() throws Exception {
     createCalculatedMember.validate();
-  }
-
-  /**
-   * @param docToTest
-   * @param nodeName
-   * @param testValue
-   * @return
-   */
-  private boolean validateNodeValue( Document docToTest, String nodeName, String testValue ) {
-    boolean validated = false;
-    NodeList calculatedMemberNodeList = docToTest.getElementsByTagName( CALCULATED_MEMBER_ELEMENT_NAME );
-    if ( calculatedMemberNodeList.getLength() > 0 ) {
-      // just check the first element
-      Element calculatedMemberNode = (Element) calculatedMemberNodeList.item( 0 );
-      if( calculatedMemberNode != null ) {
-        validated = testValue.equals( calculatedMemberNode.getAttribute( nodeName ) );
-      }
-    }
-
-    return validated;
   }
 }

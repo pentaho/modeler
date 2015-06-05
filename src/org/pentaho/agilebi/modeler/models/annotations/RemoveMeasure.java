@@ -71,7 +71,7 @@ public class RemoveMeasure extends AnnotationType {
 
   @Override public boolean apply( Document schema ) throws ModelerException {
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schema );
-    mondrianSchemaHandler.removeMeasure( null, this.getName(), this.getDimension(), this.getCube() );
+    mondrianSchemaHandler.removeMeasure( this.getCube(), this.getName(), this.getDimension() );
     return true;
   }
 

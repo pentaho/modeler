@@ -53,6 +53,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final String REMOVE_MEASURE_ENUM_VALUE = "Remove Measure";
   private static final String LINK_DIMENSION_ENUM_VALUE = "Link Dimension";
   private static final String REMOVE_ATTRIBUTE_ENUM_VALUE = "Remove Attribute";
+  private static final String UPDATE_MEASURE_ENUM_VALUE = "Update Measure";
 
   @MetaStoreAttribute
   private String name = UUID.randomUUID().toString(); // default random identifier
@@ -225,6 +226,14 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
       }
     },
     REMOVE_ATTRIBUTE( REMOVE_ATTRIBUTE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
+        return true;
+      }
+    },
+    UPDATE_MEASURE( UPDATE_MEASURE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
         final ModelAnnotationGroup modelAnnotations,
         final ModelAnnotation modelAnnotation,
