@@ -42,14 +42,12 @@ import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
-import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
 
 
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "CreateMeasure", description = "CreateMeasure Annotation" )
 public class CreateMeasure extends AnnotationType {
 
   private static final long serialVersionUID = -2487305952482463126L;
@@ -220,6 +218,9 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setLogicalColumn( columnClone );
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
+          if ( getDescription() != null ) {
+            measureMetaData.setDescription( getDescription() );
+          }
           removeAutoMeasure( workspace, resolveField( workspace ) );
           removeMeasure( workspace, getName() );
           workspace.getModel().getMeasures().add( measureMetaData );
@@ -293,7 +294,7 @@ public class CreateMeasure extends AnnotationType {
     LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
     String locale = workspace.getWorkspaceHelper().getLocale();
     for ( MeasureMetaData measure : workspace.getModel().getMeasures() ) {
-      if ( measure.getName().equals( column )
+      if ( measureNameEquals( column, measure )
           && measure.getLogicalColumn().getPhysicalColumn().getName( locale ).equals(
           logicalColumn.getPhysicalColumn().getName( locale ) )
           && measure.getDefaultAggregation().equals( AggregationType.SUM ) ) {
@@ -301,6 +302,11 @@ public class CreateMeasure extends AnnotationType {
         break;
       }
     }
+  }
+
+  private boolean measureNameEquals( String column, MeasureMetaData measure ) {
+    return measure.getName().equalsIgnoreCase( column )
+        || measure.getName().equalsIgnoreCase( PhysicalTableImporter.beautifyName( column ) );
   }
 
   private void removeMeasure( final ModelerWorkspace workspace, final String measureName ) {

@@ -110,6 +110,7 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
           "validation.hierarchy.REQUIRES_AT_LEAST_ONE_LEVEL" ) );
     }
     for ( LevelMetaData level : children ) {
+      // level's validate doesn't trigger events, only validateNode, so this is ok
       level.validate();
       valid &= level.isValid();
       validationMessages.addAll( level.getValidationMessages() );
@@ -120,14 +121,17 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
                 level.getName() );
         validationMessages.add( dupeString );
 
-        level.invalidate();
+        if ( level.isValid() ) {
+          invalidateQuietly( level );
+        }
         if ( !level.getValidationMessages().contains( dupeString ) ) {
           level.getValidationMessages().add( dupeString );
         }
 
         LevelMetaData l = usedNames.get( level.getName() );
         if ( l.isValid() ) {
-          l.invalidate();
+          // avoid infinite loop here
+          invalidateQuietly( l );
           if ( !l.getValidationMessages().contains( dupeString ) ) {
             l.getValidationMessages().add( dupeString );
           }
@@ -136,6 +140,18 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
         usedNames.put( level.getName(), level );
       }
     }
+  }
+
+  /**
+   * Hierarchy has a validation listener on its level children and invalidate triggers it;
+   * if a level finds itself valid but hierarchy invalidates it we'd have an infinite loop
+   * @param level
+   */
+  private void invalidateQuietly( LevelMetaData level ) {
+    boolean prevLevelSuppress = level.suppressEvents;
+    level.suppressEvents = true;
+    level.invalidate();
+    level.suppressEvents = prevLevelSuppress;
   }
 
   @Bindable

@@ -49,7 +49,6 @@ import java.util.logging.Logger;
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "CreateAttribute", description = "CreateAttribute Annotation" )
 public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
@@ -351,6 +350,9 @@ public class CreateAttribute extends AnnotationType {
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) && !isAutoModeled( workspace, column ) ) {
         hierarchyMetaData.setParent( dimensionMetaData );
+        if ( dimensionMetaData.isEmpty() ) {
+          dimensionMetaData.setDimensionType( dimensionType() );
+        }
         dimensionMetaData.add( hierarchyMetaData );
       }
     }
@@ -402,6 +404,9 @@ public class CreateAttribute extends AnnotationType {
       }
       GeoRole geoRole = workspace.getGeoContext().getGeoRoleByName( getGeoType().name() );
       levelMetaData.getMemberAnnotations().put( "Data.Role", geoRole );
+    }
+    if ( getDescription() != null ) {
+      levelMetaData.setDescription( getDescription() );
     }
   }
 

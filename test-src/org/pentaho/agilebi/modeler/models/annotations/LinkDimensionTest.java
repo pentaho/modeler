@@ -21,15 +21,21 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
+import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
@@ -41,6 +47,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchy;
@@ -56,14 +63,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 @SuppressWarnings( "unchecked" )
 public class LinkDimensionTest {
   private IMetaStore metaStore;
   private DatabaseMeta dbMeta;
+
+  //private static final String GEO_ROLE_PROPERTIES = "test-res/geoRoles.properties";
+  private static final String GEO_ROLE_PROPERTIES = "/Users/rbelen/Development/workspace_github/modeler/test-res/geoRoles.properties";
 
   @Before
   public void setUp() throws Exception {
@@ -76,6 +82,30 @@ public class LinkDimensionTest {
     PluginRegistry.addPluginType( StepPluginType.getInstance() );
     PluginRegistry.init();
     Props.init( 0 );
+  }
+
+  @Test
+  public void testDimensionAndSharedDimensionRequired() throws Exception {
+    LinkDimension linkDimension = new LinkDimension();
+    try {
+      linkDimension.validate();
+      fail( "expected Exception" );
+    } catch ( ModelerException e ) {
+      assertEquals( "Dimension Name is required.", e.getMessage() );
+    }
+    linkDimension.setName( "anything" );
+    try {
+      linkDimension.validate();
+      fail( "expected Exception" );
+    } catch ( ModelerException e ) {
+      assertEquals( "Shared Dimension is required.", e.getMessage() );
+    }
+    linkDimension.setSharedDimension( "aShared Dim" );
+    try {
+      linkDimension.validate();
+    } catch ( ModelerException e ) {
+      fail( "should have been valid" );
+    }
   }
 
   @Test
@@ -115,12 +145,12 @@ public class LinkDimensionTest {
 
     OlapHierarchyLevel nameLevel = productHierarchy.getHierarchyLevels().get( 0 );
     assertEquals( "Product", nameLevel.getName() );
-    assertEquals( "PRODUCT NAME",
+    assertEquals( "Name",
         nameLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
 
     OlapHierarchyLevel descriptionLevel = productHierarchy.getHierarchyLevels().get( 1 );
     assertEquals( "Description", descriptionLevel.getName() );
-    assertEquals( "PRODUCT DESCRIPTION",
+    assertEquals( "Description",
         descriptionLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
 
     assertEquals( 2, cube.getOlapMeasures().size() );
@@ -131,18 +161,18 @@ public class LinkDimensionTest {
     String sharedDimName = "Shared Product dim";
     productName.setDimension( sharedDimName );
     productName.setName( "Product" );
-    productName.setField( "PRODUCT_NAME" );
+    productName.setField( "Name" );
 
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setDimension( sharedDimName );
     productDescription.setName( "Description" );
     productDescription.setParentAttribute( "Product" );
-    productDescription.setField( "PRODUCT_DESCRIPTION" );
+    productDescription.setField( "Description" );
 
     CreateDimensionKey productId = new CreateDimensionKey();
     productId.setDimension( sharedDimName );
     productId.setName( "id" );
-    productId.setField( "PRODUCT_ID" );
+    productId.setField( "Id" );
 
     final ModelAnnotationGroup modelAnnotationGroup = new ModelAnnotationGroup();
     modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( productDescription ) );
@@ -150,12 +180,22 @@ public class LinkDimensionTest {
     modelAnnotationGroup.add( new ModelAnnotation<CreateDimensionKey>( productId ) );
     modelAnnotationGroup.setSharedDimension( true );
     modelAnnotationGroup.setName( "shared product group" );
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
     dataProvider.setTableName( "product" );
     dataProvider.setDatabaseMetaNameRef( metaRef );
+    ColumnMapping descMapping = new ColumnMapping();
+    descMapping.setColumnName( "product_description" );
+    descMapping.setName( "Description" );
+    ColumnMapping nameMapping = new ColumnMapping();
+    nameMapping.setColumnName( "product_name" );
+    nameMapping.setName( "Name" );
+    ColumnMapping idMapping = new ColumnMapping();
+    idMapping.setColumnName( "product_id" );
+    idMapping.setName( "Id" );
+    dataProvider.setColumnMappings( Arrays.asList( descMapping, nameMapping, idMapping ) );
 
     modelAnnotationGroup.setDataProviders( Collections.singletonList( dataProvider ) );
     manager.createGroup( modelAnnotationGroup, metaStore );
@@ -234,7 +274,7 @@ public class LinkDimensionTest {
     descriptionGroup.add( new ModelAnnotation<CreateDimensionKey>( descriptionId ) );
     descriptionGroup.setSharedDimension( true );
     descriptionGroup.setName( "shared description group" );
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     DatabaseMeta decoyMeta = (DatabaseMeta) dbMeta.clone();
     decoyMeta.setName( "other" );
@@ -327,7 +367,7 @@ public class LinkDimensionTest {
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
@@ -366,7 +406,7 @@ public class LinkDimensionTest {
     dateGroup.setSharedDimension( true );
     dateGroup.setName( "shared date group" );
 
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     String metaRef = manager.storeDatabaseMeta( new DatabaseMeta(), metaStore );
     final DataProvider dataProvider = new DataProvider();
     dataProvider.setName( "dp" );
@@ -376,13 +416,68 @@ public class LinkDimensionTest {
     manager.createGroup( dateGroup, metaStore );
   }
 
+  @Test
+  public void testLinkDimRemovingSelf() throws Exception {
+
+    ModelerWorkspace model = prepareOrderModel();
+    CreateDimensionKey key = new CreateDimensionKey();
+    key.setDimension( "Shared" );
+    key.setField( "PRODUCT_ID" );
+
+    CreateAttribute attr = new CreateAttribute();
+    attr.setName( "Product ID" );
+    attr.setDimension( "Shared" );
+    attr.setHierarchy( "some hierarchy" );
+    attr.setField( "PRODUCT_ID" );
+
+    ModelAnnotationGroup sharedDim = new ModelAnnotationGroup(
+        new ModelAnnotation<CreateDimensionKey>( key ),
+        new ModelAnnotation<CreateAttribute>( attr ) );
+    sharedDim.setName( "SharedDim" );
+    sharedDim.setSharedDimension( true );
+    IMetaStore mstore = new MemoryMetaStore();
+    ModelAnnotationManager mgr = new ModelAnnotationManager( true );
+    String metaRef = mgr.storeDatabaseMeta( dbMeta, mstore );
+    final DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dp" );
+    dataProvider.setTableName( "orderfact" );
+    dataProvider.setDatabaseMetaNameRef( metaRef );
+    sharedDim.setDataProviders( Collections.singletonList( dataProvider ) );
+    mgr.createGroup( sharedDim, mstore );
+
+    CreateMeasure prodIdMeasure = new CreateMeasure();
+    prodIdMeasure.setName( "Product IDs" );
+    prodIdMeasure.setAggregateType( AggregationType.COUNT );
+    prodIdMeasure.setField( "PRODUCT_ID" );
+
+    LinkDimension linkDimension = new LinkDimension();
+    linkDimension.setName( "Product Dim" );
+    linkDimension.setSharedDimension( "SharedDim" );
+    linkDimension.setField( "PRODUCT_ID" );
+
+    assertTrue( prodIdMeasure.apply( model, mstore ) );
+    assertTrue( linkDimension.apply( model, mstore ) );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    assertEquals( 4, dimensionUsages.size() );
+    OlapDimensionUsage productDim = dimensionUsages.get( 3 );
+    OlapHierarchy productHierarchy = productDim.getOlapDimension().getHierarchies().get( 0 );
+    assertEquals( attr.getHierarchy(), productHierarchy.getName() );
+
+    OlapHierarchyLevel idLevel = productHierarchy.getHierarchyLevels().get( 0 );
+    assertEquals( attr.getName(), idLevel.getName() );
+
+    assertEquals( 3, cube.getOlapMeasures().size() );
+  }
 
   private ModelerWorkspace prepareOrderModel() throws Exception {
     createOrderfactDB();
     TableModelerSource source = new TableModelerSource( dbMeta, "orderfact", "" );
     Domain domain = source.generateDomain();
 
-    Reader propsReader = new FileReader( new File( "test-res/geoRoles.properties" ) );
+    Reader propsReader = new FileReader( new File( GEO_ROLE_PROPERTIES ) );
     Properties props = new Properties();
     props.load( propsReader );
     GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );

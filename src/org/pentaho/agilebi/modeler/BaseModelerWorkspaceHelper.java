@@ -53,6 +53,7 @@ import org.pentaho.metadata.model.concept.IConcept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
+import org.pentaho.metadata.model.olap.OlapAnnotation;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
@@ -228,7 +229,12 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
               level.getLogicalColumns().add( lc );
             }
           }
-
+          if ( lvl.getDescription() != null && !lvl.getDescription().equals( "" ) ) {
+            OlapAnnotation description = new OlapAnnotation();
+            description.setName( "description." + getLocale() );
+            description.setValue( lvl.getDescription() );
+            level.getAnnotations().add( description );
+          }
           level.setHavingUniqueMembers( lvl.isUniqueMembers() );
           levels.add( level );
         }
@@ -264,6 +270,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     Map<String, LogicalColumn> backingColumns = new HashMap<String, LogicalColumn>();
     for ( MeasureMetaData f : model.getModel().getMeasures() ) {
       LogicalColumn lCol = f.getLogicalColumn();
+      if ( f.getDescription() != null && !f.getDescription().equals( "" ) ) {
+        lCol.setDescription( new LocalizedString( getLocale(), f.getDescription() ) );
+      }
       LogicalTable lTable = lCol.getLogicalTable();
       OlapMeasure measure = new OlapMeasure();
 

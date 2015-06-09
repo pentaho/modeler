@@ -30,7 +30,6 @@ import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
-import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
 
 import java.io.Serializable;
@@ -43,7 +42,6 @@ import java.util.UUID;
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "ModelAnnotation", description = "ModelAnnotation" )
 public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;

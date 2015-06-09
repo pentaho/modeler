@@ -38,6 +38,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.TimeType;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -198,8 +199,7 @@ public class CreateAttributeTest {
     productDescription.setField( "PRODUCTDESCRIPTION_OLAP" );
     productDescription.apply( model, metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     assertEquals( 8, dimensionUsages.size() );
     OlapDimensionUsage dateDim = dimensionUsages.get( 7 );
@@ -308,8 +308,7 @@ public class CreateAttributeTest {
     city.setField( "CITY" );
     city.apply( model, metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
@@ -381,8 +380,7 @@ public class CreateAttributeTest {
     state.setField( "STATE" );
     state.apply( model, metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage geoDim = AnnotationUtil.getOlapDimensionUsage( "Geography", dimensionUsages );
     assertNotNull( geoDim );
@@ -462,8 +460,7 @@ public class CreateAttributeTest {
     city.setField( "CITY" );
     city.apply( model, metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage geoDim = AnnotationUtil.getOlapDimensionUsage( "Geo", dimensionUsages );
     assertNotNull( geoDim );
@@ -525,6 +522,17 @@ public class CreateAttributeTest {
     return dbMeta;
   }
 
+  private DatabaseMeta newH2Db( String ... statements ) throws Exception {
+    DatabaseMeta dbMeta = newH2Db();
+    Database db = new Database( null, dbMeta );
+    db.connect();
+    for ( String stmt : statements ) {
+      db.execStatement( stmt );
+    }
+    db.disconnect();
+    return dbMeta;
+  }
+
   private void assertAnnotation( final OlapAnnotation olapAnnotation, final String name, final String value ) {
     assertEquals( name, olapAnnotation.getName() );
     assertEquals( value, olapAnnotation.getValue() );
@@ -548,8 +556,7 @@ public class CreateAttributeTest {
     month.setField( "PRODUCTCODE_OLAP" );
     month.apply( model, metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage timeDim = AnnotationUtil.getOlapDimensionUsage( "DIM TIME", dimensionUsages );
     assertNotNull( timeDim );
@@ -585,8 +592,7 @@ public class CreateAttributeTest {
     productCode.setField( "PRODUCTCODE_OLAP" );
     productCode.apply( model, metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage timeDim = AnnotationUtil.getOlapDimensionUsage( "DIM TIME", dimensionUsages );
     assertNotNull( timeDim );
@@ -609,8 +615,7 @@ public class CreateAttributeTest {
     abbr.setField( "STATE_ABBR" );
     abbr.apply( model, metaStore );
 
-    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
-    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
     OlapDimensionUsage stateDim = AnnotationUtil.getOlapDimensionUsage( "dim", dimensionUsages );
     assertNotNull( stateDim );
@@ -651,4 +656,96 @@ public class CreateAttributeTest {
     assertNotNull( level );
     assertEquals( "Product Line", level.getName() );
   }
+
+  /**
+   * Time dimension with same name as a field not getting marked as time dimension.
+   */
+  @Test
+  public void testTimeDimensionSetAfterAutoModel() throws Exception {
+    ModelerWorkspace wspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    DatabaseMeta dbMeta = newH2Db( "DROP TABLE if exists datetable;",
+        "CREATE TABLE datetable\n"
+            + "(\n"
+            + "\"date\" TIMESTAMP\n"
+            + ");\n" );
+    TableModelerSource source = new TableModelerSource( dbMeta, "datetable", "" );
+    Domain domain = source.generateDomain();
+    wspace.setModelSource( source );
+    wspace.setDomain( domain );
+    wspace.setModelName( "DateModel" );
+    wspace.getWorkspaceHelper().autoModelFlat( wspace );
+    wspace.getWorkspaceHelper().populateDomain( wspace );
+
+    CreateAttribute createAttr = new CreateAttribute();
+    createAttr.setName( "Date" );
+    createAttr.setTimeType( TimeType.TimeDays );
+    createAttr.setDimension( "Date" );
+    createAttr.setHierarchy( "Date" );
+    createAttr.setField( "date" );
+    createAttr.apply( wspace, new MemoryMetaStore() );
+
+    OlapDimension dateDim =
+        getCubes( wspace ).get( 0 ).getOlapDimensionUsages().get( 0 ).getOlapDimension();
+    assertEquals( "Date", dateDim.getName() );
+    assertTrue( "time dimension not set", dateDim.isTimeDimension() );
+  }
+
+  @Test
+  public void testAttributeDescription() throws Exception {
+    ModelerWorkspace wspace =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    wspace.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    wspace.getWorkspaceHelper().populateDomain( wspace );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setDescription( "a line of products" );
+    productLine.setField( "PRODUCTLINE_OLAP" );
+
+    productLine.apply( wspace, metaStore );
+
+    boolean foundDim = false;
+    for ( OlapDimensionUsage dimUse : getCubes( wspace ).get( 0 ).getOlapDimensionUsages() ) {
+      if ( dimUse.getName().equals( productLine.getDimension() ) ) {
+        foundDim = true;
+        OlapHierarchyLevel prodLineLvl =
+            dimUse.getOlapDimension().getHierarchies().get( 0 ).getHierarchyLevels().get( 0 );
+        assertEquals( 1, prodLineLvl.getAnnotations().size() );
+        OlapAnnotation desc = prodLineLvl.getAnnotations().get( 0 );
+        assertEquals( "description.en_US", desc.getName() );
+        assertEquals( productLine.getDescription(), desc.getValue() );
+        break;
+      }
+    }
+    assertTrue( foundDim );
+  }
+
+  /**
+   * <a href="http://jira.pentaho.com/browse/BACKLOG-3219">BACKLOG-3219</a>
+   */
+  @Test
+  public void testGeoAttributeTriggersStackOverflow() throws Exception {
+    ModelerWorkspace model = prepareGeoModel();
+
+    CreateAttribute state = new CreateAttribute();
+    state.setName( "STATE" );
+    state.setDimension( "Geography" );
+    state.setHierarchy( "Geography" );
+    state.setParentAttribute( "CITY" );
+    state.setGeoType( ModelAnnotation.GeoType.State );
+    state.setField( "STATE" );
+
+    // threw StackOverflowError from validation loop
+    state.apply( model, metaStore );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private List<OlapCube> getCubes( ModelerWorkspace wspace ) {
+    return (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
+        LogicalModel.PROPERTY_OLAP_CUBES );
+  }
+
 }
+
