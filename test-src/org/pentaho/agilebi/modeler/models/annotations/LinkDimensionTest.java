@@ -68,8 +68,7 @@ public class LinkDimensionTest {
   private IMetaStore metaStore;
   private DatabaseMeta dbMeta;
 
-  //private static final String GEO_ROLE_PROPERTIES = "test-res/geoRoles.properties";
-  private static final String GEO_ROLE_PROPERTIES = "/Users/rbelen/Development/workspace_github/modeler/test-res/geoRoles.properties";
+  private static final String GEO_ROLE_PROPERTIES = "test-res/geoRoles.properties";
 
   @Before
   public void setUp() throws Exception {
