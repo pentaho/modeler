@@ -341,16 +341,24 @@ public class CreateMeasureTest {
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
     assertEquals( 4, olapMeasures.size() );
-    assertEquals( SUM, olapMeasures.get( 0 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "MSRP", olapMeasures.get( 0 ).getName() );
-    assertEquals( SUM, olapMeasures.get( 1 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "QUANTITYINSTOCK", olapMeasures.get( 1 ).getName() );
-    assertEquals( SUM, olapMeasures.get( 2 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "Sum Buy Price", olapMeasures.get( 2 ).getName() );
-    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_2", olapMeasures.get( 2 ).getLogicalColumn().getId() );
-    assertEquals( AVERAGE, olapMeasures.get( 3 ).getLogicalColumn().getAggregationType() );
-    assertEquals( "buyprice", olapMeasures.get( 3 ).getName() );
-    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", olapMeasures.get( 3 ).getLogicalColumn().getId() );
+    OlapMeasure msrp = AnnotationUtil.getOlapMeasure( "MSRP", olapMeasures );
+    assertNotNull( msrp );
+    assertEquals( SUM, msrp.getLogicalColumn().getAggregationType() );
+    assertEquals( "MSRP", msrp.getName() );
+    OlapMeasure qtyStock = AnnotationUtil.getOlapMeasure( "QUANTITYINSTOCK", olapMeasures );
+    assertNotNull( qtyStock );
+    assertEquals( SUM, qtyStock.getLogicalColumn().getAggregationType() );
+    assertEquals( "QUANTITYINSTOCK", qtyStock.getName() );
+    OlapMeasure sumBuyPriceMeasure = AnnotationUtil.getOlapMeasure( "Sum Buy Price", olapMeasures );
+    assertNotNull( sumBuyPriceMeasure );
+    assertEquals( SUM, sumBuyPriceMeasure.getLogicalColumn().getAggregationType() );
+    assertEquals( "Sum Buy Price", sumBuyPriceMeasure.getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_2", sumBuyPriceMeasure.getLogicalColumn().getId() );
+    OlapMeasure avgPriceMeasure = AnnotationUtil.getOlapMeasure( "buyprice", olapMeasures );
+    assertNotNull( avgPriceMeasure );
+    assertEquals( AVERAGE, avgPriceMeasure.getLogicalColumn().getAggregationType() );
+    assertEquals( "buyprice", avgPriceMeasure.getName() );
+    assertEquals( "LC_INLINE_SQL_1_pc_BUYPRICE_OLAP_3", avgPriceMeasure.getLogicalColumn().getId() );
   }
 
   @Test
