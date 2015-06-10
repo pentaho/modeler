@@ -22,6 +22,8 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -74,8 +76,7 @@ public class LinkDimension extends AnnotationType {
 
   @Override public boolean apply(
       final ModelerWorkspace factWorkspace, final IMetaStore metaStore ) throws ModelerException {
-    ModelAnnotationManager modelAnnotationManager =
-        new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager( true );
     try {
       if ( !modelAnnotationManager.containsGroup( getSharedDimension(), metaStore ) ) {
         return false;
@@ -93,9 +94,9 @@ public class LinkDimension extends AnnotationType {
       if ( Const.isEmpty( dimKey ) ) {
         return false;
       }
-      moveDimensionToModel( dimensionWorkspace, factWorkspace, field, dimKey );
       removeAutoLevel( factWorkspace, locateLevel( factWorkspace, field ) );
       removeAutoMeasure( factWorkspace, field );
+      moveDimensionToModel( dimensionWorkspace, factWorkspace, field, dimKey );
       factWorkspace.getWorkspaceHelper().populateDomain( factWorkspace );
       return true;
     } catch ( KettlePluginException e ) {
@@ -108,7 +109,7 @@ public class LinkDimension extends AnnotationType {
   private DataProvider locateDataProvider(
       final List<DataProvider> dataProviders, final ModelerWorkspace workspace, final IMetaStore metaStore )
       throws MetaStoreException, KettlePluginException, ModelerException {
-    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
     DatabaseMeta factDbMeta = ( (ISpoonModelerSource) workspace.getModelSource() ).getDatabaseMeta();
     for ( DataProvider dataProvider : dataProviders ) {
       DatabaseMeta sharedDbMeta = manager.loadDatabaseMeta( dataProvider.getDatabaseMetaNameRef(), metaStore );
@@ -196,7 +197,7 @@ public class LinkDimension extends AnnotationType {
     DatabaseMeta dbMeta = ( (ISpoonModelerSource) workspace.getModelSource() ).getDatabaseMeta();
     TableModelerSource source =
         new TableModelerSource( dbMeta, dataProvider.getTableName(), dataProvider.getSchemaName() );
-    Domain domain = source.generateDomain();
+    Domain domain = source.generateDomain( new SharedDimensionImportStrategy( dataProvider ) );
     ModelerWorkspace model =
         new ModelerWorkspace(
             new ModelerWorkspaceHelper( workspace.getWorkspaceHelper().getLocale() ), workspace.getGeoContext() );
@@ -212,7 +213,14 @@ public class LinkDimension extends AnnotationType {
   }
 
   @Override public void validate() throws ModelerException {
-
+    if ( StringUtils.isBlank( getName() ) ) {
+      throw new ModelerException(
+          BaseMessages.getString( MSG_CLASS, "Modeler.LinkDimension.validation.DIMENSION_NAME_REQUIRED" ) );
+    }
+    if ( StringUtils.isBlank( getSharedDimension() ) ) {
+      throw new ModelerException( BaseMessages.getString( MSG_CLASS,
+          "Modeler.LinkDimension.validation.SHARED_DIMENSION_REQUIRED" ) );
+    }
   }
 
   @Override public ModelAnnotation.Type getType() {

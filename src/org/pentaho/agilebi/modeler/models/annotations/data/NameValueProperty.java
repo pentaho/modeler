@@ -2,14 +2,12 @@ package org.pentaho.agilebi.modeler.models.annotations.data;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
-import org.pentaho.metastore.persist.MetaStoreElementType;
 
 import java.io.Serializable;
 
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "NameValueProperty", description = "NameValueProperty" )
 public class NameValueProperty implements Serializable {
 
   @MetaStoreAttribute

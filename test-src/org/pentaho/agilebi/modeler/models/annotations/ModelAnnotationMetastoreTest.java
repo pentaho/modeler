@@ -55,16 +55,20 @@ public class ModelAnnotationMetastoreTest {
     createMeasure.setAggregateType( AggregationType.AVERAGE );
     ModelAnnotation modelAnnotation = new ModelAnnotation( createMeasure );
 
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.setName( "myGroup" );
+    group.add( modelAnnotation );
+
     // Save in the metastore
-    MetaStoreFactory<ModelAnnotation> factory = new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
-    factory.saveElement( modelAnnotation );
+    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager();
+    modelAnnotationManager.createGroup( group, metaStore );
 
     // Load all elements
-    List<ModelAnnotation> list = factory.getElements();
+    List<ModelAnnotationGroup> list = modelAnnotationManager.listGroups( metaStore );
     assertNotNull( list );
     assertEquals( 1, list.size() );
 
-    ModelAnnotation<CreateMeasure> loaded = list.get( 0 );
+    ModelAnnotation<CreateMeasure> loaded = list.get( 0 ).get( 0 );
     assertNotNull( loaded );
     assertEquals( ModelAnnotation.Type.CREATE_MEASURE, loaded.getType() );
     assertEquals( "myMeasure", loaded.getAnnotation().getName() );
@@ -87,16 +91,20 @@ public class ModelAnnotationMetastoreTest {
     createAttribute.setTimeType( ModelAnnotation.TimeType.TimeHalfYears );
     ModelAnnotation modelAnnotation = new ModelAnnotation( createAttribute );
 
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.setName( "myGroup" );
+    group.add( modelAnnotation );
+
     // Save in the metastore
-    MetaStoreFactory<ModelAnnotation> factory = new MetaStoreFactory( ModelAnnotation.class, metaStore, "pentaho" );
-    factory.saveElement( modelAnnotation );
+    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager();
+    modelAnnotationManager.createGroup( group, metaStore );
 
     // Load all elements
-    List<ModelAnnotation> list = factory.getElements();
+    List<ModelAnnotationGroup> list = modelAnnotationManager.listGroups( metaStore );
     assertNotNull( list );
     assertEquals( 1, list.size() );
 
-    ModelAnnotation<CreateAttribute> loaded = list.get( 0 );
+    ModelAnnotation<CreateAttribute> loaded = list.get( 0 ).get( 0 );
     assertNotNull( loaded );
     assertEquals( ModelAnnotation.Type.CREATE_ATTRIBUTE, loaded.getType() );
     assertEquals( "myAttribute", loaded.getAnnotation().getName() );
@@ -179,15 +187,24 @@ public class ModelAnnotationMetastoreTest {
     ModelAnnotation<CreateDimensionKey> annotation =
         new ModelAnnotation<CreateDimensionKey>( createDimKey );
 
-    MetaStoreFactory<ModelAnnotation<?>> factory = getModelAnnotationFactory();
-    factory.saveElement( annotation );
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.setName( "myGroup" );
+    group.add( annotation );
+
+    // Save in the metastore
+    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager();
+    modelAnnotationManager.createGroup( group, metaStore );
+
+    // Load all elements
+    List<ModelAnnotationGroup> list = modelAnnotationManager.listGroups( metaStore );
+
     assertNotNull( createDimKey.getName() );
     assertNotNull( createDimKey.getDimension() );
 
-    assertEquals( 1, factory.getElements().size() );
+    assertEquals( 1, list.size() );
     @SuppressWarnings( "unchecked" )
     ModelAnnotation<CreateDimensionKey> roundtripAnnotation =
-        (ModelAnnotation<CreateDimensionKey>) factory.getElements().get( 0 );
+        (ModelAnnotation<CreateDimensionKey>) list.get( 0 ).get( 0 );
 
     CreateDimensionKey roundtripCreateDimKey = roundtripAnnotation.getAnnotation();
     assertEquals( createDimKey.getName(), roundtripCreateDimKey.getName() );
@@ -204,14 +221,24 @@ public class ModelAnnotationMetastoreTest {
 
     ModelAnnotation<LinkDimension> linkDimensionModelAnnotation =
         new ModelAnnotation<LinkDimension>( linkDimension );
-    MetaStoreFactory<ModelAnnotation<?>> factory = getModelAnnotationFactory();
-    factory.saveElement( linkDimensionModelAnnotation );
+
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.setName( "myGroup" );
+    group.add( linkDimensionModelAnnotation );
+
+    // Save in the metastore
+    ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager();
+    modelAnnotationManager.createGroup( group, metaStore );
+
+    // Load all elements
+    List<ModelAnnotationGroup> list = modelAnnotationManager.listGroups( metaStore );
+
     assertNotNull( linkDimension.getName() );
     assertNotNull( linkDimension.getSharedDimension() );
 
-    assertEquals( 1, factory.getElements().size() );
+    assertEquals( 1, list.size() );
     ModelAnnotation<LinkDimension> loadedAnnotation =
-        (ModelAnnotation<LinkDimension>) factory.getElements().get( 0 );
+        (ModelAnnotation<LinkDimension>) list.get( 0 ).get( 0 );
     LinkDimension loadedLinkDimension = loadedAnnotation.getAnnotation();
     assertEquals( linkDimension.getName(), loadedLinkDimension.getName() );
     assertEquals( linkDimension.getSharedDimension(), loadedLinkDimension.getSharedDimension() );
@@ -257,4 +284,61 @@ public class ModelAnnotationMetastoreTest {
     return columnMappings;
   }
 
+  @Test
+  public void testSaveAndLoadSharedDimensionGroup() throws Exception {
+
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.setName( "My Category" );
+    group.setDescription( "Test Description" );
+
+    for ( int i = 0; i < 100; i++ ) {
+      if ( i % 2 == 0 ) {
+        CreateMeasure createMeasure = new CreateMeasure();
+        createMeasure.setName( "measure" + 1 );
+        createMeasure.setField( "f" + i );
+        group.add( new ModelAnnotation( createMeasure ) );
+      } else {
+        CreateAttribute createAttribute = new CreateAttribute();
+        createAttribute.setName( "attribute" + 1 );
+        createAttribute.setField( "f" );
+        group.add( new ModelAnnotation( createAttribute ) );
+      }
+    }
+
+    DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dataProvider1" );
+    dataProvider.setSchemaName( "schemaName" );
+    dataProvider.setTableName( "tableName" );
+    dataProvider.setDatabaseMetaNameRef( "dbMeta1" );
+    dataProvider.setColumnMappings( getTestColumnMappings() );
+
+    List<DataProvider> dataProviders = new ArrayList<DataProvider>();
+    dataProviders.add( dataProvider );
+
+    group.setDataProviders( dataProviders );
+    group.setSharedDimension( true ); // flag to indicate this is a shared dimension
+
+    ModelAnnotationManager manager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    manager.createGroup( group, metaStore );
+
+    // load element
+    assertEquals( 1, manager.listGroups( metaStore ).size() );
+
+    ModelAnnotationGroup loadedGroup = manager.readGroup( group.getName(), metaStore );
+
+    assertEquals( group.size(), loadedGroup.size() );
+
+    assertEquals( "Test Description", loadedGroup.getDescription() );
+
+    assertEquals( true, loadedGroup.isSharedDimension() );
+    assertEquals( 1, loadedGroup.getDataProviders().size() );
+    assertEquals( "dbMeta1", loadedGroup.getDataProviders().get( 0 ).getDatabaseMetaNameRef() );
+    assertEquals( 2, loadedGroup.getDataProviders().get( 0 ).getColumnMappings().size() );
+
+    group.setModelAnnotations( null );
+    assertEquals( 0, group.size() );
+
+    group.setModelAnnotations( new ModelAnnotationGroup() );
+    assertEquals( 0, group.size() );
+  }
 }

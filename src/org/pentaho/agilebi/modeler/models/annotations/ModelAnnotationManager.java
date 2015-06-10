@@ -43,39 +43,52 @@ public class ModelAnnotationManager {
   public static final String DEFAULT_NAMESPACE = "pentaho";
   public static final String SHARED_DIMENSIONS_NAMESPACE = "pentaho.shared.dimensions";
 
-  private String nameSpace;
+  private boolean sharedDimension;
   private ModelAnnotationObjectFactory modelAnnotationObjectFactory = new ModelAnnotationObjectFactory();
 
   public ModelAnnotationManager() {
     this( null );
   }
 
-  public ModelAnnotationManager( String namespace ) {
-    this.nameSpace = namespace;
-    if ( StringUtils.isBlank( this.nameSpace ) ) {
-      this.nameSpace = DEFAULT_NAMESPACE;
+  public ModelAnnotationManager( boolean sharedDimension ) {
+    this.sharedDimension = sharedDimension;
+  }
+
+  @Deprecated
+  public ModelAnnotationManager( String type ) {
+    if ( StringUtils.equals( SHARED_DIMENSIONS_NAMESPACE, type ) ) {
+      sharedDimension = true;
     }
   }
 
-  private MetaStoreFactory<ModelAnnotation> getMetaStoreFactory( IMetaStore metastore ) {
-    MetaStoreFactory<ModelAnnotation>
-        factory =
-        new MetaStoreFactory( ModelAnnotation.class, metastore, this.nameSpace );
+  private MetaStoreFactory<? extends ModelAnnotationGroup> getGroupMetaStoreFactory( IMetaStore metastore )
+      throws MetaStoreException {
+
+    if ( this.sharedDimension ) {
+      return getMetaStoreFactory( metastore, SharedDimensionGroup.class );
+    } else {
+      return getMetaStoreFactory( metastore, ModelAnnotationGroup.class );
+    }
+  }
+
+  private <T> MetaStoreFactory<T> getMetaStoreFactory( IMetaStore metastore, Class<T> clazz )
+      throws MetaStoreException {
+    if ( !metastore.namespaceExists( DEFAULT_NAMESPACE ) ) {
+      metastore.createNamespace( DEFAULT_NAMESPACE );
+    }
+    MetaStoreFactory<T> factory = new MetaStoreFactory<T>( clazz, metastore, DEFAULT_NAMESPACE );
     factory.setObjectFactory( this.modelAnnotationObjectFactory );
     return factory;
   }
 
-  private MetaStoreFactory<ModelAnnotationGroup> getGroupMetaStoreFactory( IMetaStore metastore ) {
-    MetaStoreFactory<ModelAnnotationGroup>
-        factory =
-        new MetaStoreFactory( ModelAnnotationGroup.class, metastore, this.nameSpace );
-    factory.setObjectFactory( this.modelAnnotationObjectFactory );
-    return factory;
-  }
+  private ModelAnnotationGroup augmentGroup( ModelAnnotationGroup modelAnnotationGroup ) {
 
-  public void create( ModelAnnotation modelAnnotation, IMetaStore metastore ) throws MetaStoreException {
-    MetaStoreFactory factory = this.getMetaStoreFactory( metastore );
-    factory.saveElement( modelAnnotation );
+    if ( this.sharedDimension ) {
+      return new SharedDimensionGroup( modelAnnotationGroup );
+    } else {
+      return modelAnnotationGroup;
+    }
+
   }
 
   public void createGroup( final ModelAnnotationGroup modelAnnotationGroup, final IMetaStore metastore )
@@ -85,12 +98,7 @@ public class ModelAnnotationManager {
     }
 
     MetaStoreFactory factory = getGroupMetaStoreFactory( metastore );
-    factory.saveElement( modelAnnotationGroup );
-  }
-
-  public ModelAnnotation read( String modelAnnotationName, IMetaStore metastore ) throws MetaStoreException {
-    MetaStoreFactory factory = this.getMetaStoreFactory( metastore );
-    return (ModelAnnotation) factory.loadElement( modelAnnotationName );
+    factory.saveElement( augmentGroup( modelAnnotationGroup ) );
   }
 
   public ModelAnnotationGroup readGroup( String groupName, IMetaStore metastore ) throws MetaStoreException {
@@ -98,21 +106,10 @@ public class ModelAnnotationManager {
     return (ModelAnnotationGroup) factory.loadElement( groupName );
   }
 
-  public void update( ModelAnnotation modelAnnotation, IMetaStore metastore ) throws MetaStoreException {
-    MetaStoreFactory factory = this.getMetaStoreFactory( metastore );
-    factory.deleteElement( modelAnnotation.getName() );
-    factory.saveElement( modelAnnotation );
-  }
-
   public void updateGroup( ModelAnnotationGroup modelAnnotationGroup, IMetaStore metastore ) throws MetaStoreException {
     MetaStoreFactory factory = this.getGroupMetaStoreFactory( metastore );
     factory.deleteElement( modelAnnotationGroup.getName() );
-    factory.saveElement( modelAnnotationGroup );
-  }
-
-  public void delete( String modelAnnotationName, IMetaStore metastore ) throws MetaStoreException {
-    MetaStoreFactory factory = this.getMetaStoreFactory( metastore );
-    factory.deleteElement( modelAnnotationName );
+    factory.saveElement( augmentGroup( modelAnnotationGroup ) );
   }
 
   public void deleteGroup( String groupName, IMetaStore metastore ) throws MetaStoreException {
@@ -120,44 +117,14 @@ public class ModelAnnotationManager {
     factory.deleteElement( groupName );
   }
 
-  public ModelAnnotationGroup list( final IMetaStore metastore ) throws Exception {
-
-    final ModelAnnotationGroup modelAnnotationGroup = new ModelAnnotationGroup();
-    try {
-      MetaStoreFactory factory = getMetaStoreFactory( metastore );
-      modelAnnotationGroup.addAll( factory.getElements() );
-    } catch ( MetaStoreException e ) {
-      throw new RuntimeException( e );
-    }
-
-    return modelAnnotationGroup;
-  }
-
-  public List<ModelAnnotationGroup> listGroups( final IMetaStore metastore ) throws Exception {
+  public List<ModelAnnotationGroup> listGroups( final IMetaStore metastore ) throws MetaStoreException {
     MetaStoreFactory factory = getGroupMetaStoreFactory( metastore );
     return factory.getElements();
-  }
-
-  public List<String> listNames( IMetaStore metastore ) throws MetaStoreException {
-    MetaStoreFactory factory = this.getMetaStoreFactory( metastore );
-    return factory.getElementNames();
   }
 
   public List<String> listGroupNames( IMetaStore metastore ) throws MetaStoreException {
     MetaStoreFactory factory = this.getGroupMetaStoreFactory( metastore );
     return factory.getElementNames();
-  }
-
-  public boolean contains( String modelAnnotationName, IMetaStore metastore ) throws MetaStoreException {
-    if ( metastore == null ) {
-      return false;
-    }
-    for ( String name : listNames( metastore ) ) {
-      if ( name.equals( modelAnnotationName ) ) {
-        return true;
-      }
-    }
-    return false;
   }
 
   public boolean containsGroup( String groupName, IMetaStore metastore ) throws MetaStoreException {
@@ -170,16 +137,6 @@ public class ModelAnnotationManager {
       }
     }
     return false;
-  }
-
-  public void deleteAll( IMetaStore metastore ) throws MetaStoreException {
-    if ( metastore == null ) {
-      return;
-    }
-
-    for ( String name : listNames( metastore ) ) {
-      this.delete( name, metastore );
-    }
   }
 
   public void deleteAllGroups( IMetaStore metastore ) throws MetaStoreException {
@@ -199,25 +156,18 @@ public class ModelAnnotationManager {
    */
   public String storeDatabaseMeta( DatabaseMeta dbMeta, IMetaStore mstore ) throws MetaStoreException {
     // TODO: what to do about shared objects, variables?
-    // check if exists
-    boolean exists = false;
-    for ( DatabaseMeta stored : DatabaseMetaStoreUtil.getDatabaseElements( mstore ) ) {
-      if ( stored.equals( dbMeta ) ) {
-        exists = true;
-        break;
-      }
-    }
+
+    // get the type that's actually stored, the one that comes in the element is new from populate
+    IMetaStoreElementType properType = getDatabaseMetaType( mstore );
+    IMetaStoreElement dbMetaElement = DatabaseMetaStoreUtil.populateDatabaseElement( mstore, dbMeta );
+    IMetaStoreElement dbMetaExisting =
+        mstore.getElementByName( properType.getNamespace(), properType, dbMeta.getName() );
     // update if exists, create if doesn't
-    if ( exists ) {
-      IMetaStoreElement dbMetaElement = DatabaseMetaStoreUtil.populateDatabaseElement( mstore, dbMeta );
-      // get the type that's actually stored, the one that comes in the element is new from populate
-      IMetaStoreElementType properType = getDatabaseMetaType( mstore );
-      mstore.updateElement( properType.getNamespace(), properType, dbMetaElement.getId(), dbMetaElement );
+    if ( dbMetaExisting != null ) {
+      mstore.updateElement( properType.getNamespace(), properType, dbMetaExisting.getId(), dbMetaElement );
     } else {
-      // creates type if not there, throws if element exists
-      DatabaseMetaStoreUtil.createDatabaseElement( mstore, dbMeta );
+      mstore.createElement( properType.getNamespace(), properType, dbMetaElement );
     }
-    // id == name
     return dbMeta.getName();
   }
 
@@ -232,6 +182,9 @@ public class ModelAnnotationManager {
   }
 
   private static IMetaStoreElementType getDatabaseMetaType( IMetaStore metaStore ) throws MetaStoreException {
+    if ( !metaStore.namespaceExists( PentahoDefaults.NAMESPACE ) ) {
+      metaStore.createNamespace( PentahoDefaults.NAMESPACE );
+    }
     IMetaStoreElementType elementType =
         metaStore.getElementTypeByName( PentahoDefaults.NAMESPACE,
             PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );

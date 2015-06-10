@@ -24,7 +24,6 @@ package org.pentaho.agilebi.modeler.models.annotations.data;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
-import org.pentaho.metastore.persist.MetaStoreElementType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ import java.util.List;
 /**
  * @author Rowell Belen
  */
-@MetaStoreElementType( name = "DataProvider", description = "DataProvider" )
 public class DataProvider implements Serializable {
 
   private static final long serialVersionUID = -2098838998948067999L;
