@@ -54,8 +54,7 @@ import static org.pentaho.metadata.model.concept.types.AggregationType.*;
 
 public class CreateMeasureTest {
 
-  //private static String PRODUCT_XMI_FILE = "test-res/products.xmi";
-  private static String PRODUCT_XMI_FILE = "/Users/rbelen/Development/workspace_github/modeler/test-res/products.xmi";
+  private static String PRODUCT_XMI_FILE = "test-res/products.xmi";
 
   private IMetaStore metaStore;
 
