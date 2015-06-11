@@ -22,13 +22,16 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import mondrian.rolap.aggmatcher.DefaultDef;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
@@ -57,6 +60,10 @@ public class UpdateMeasure extends AnnotationType {
   private static final String CUBE_NAME = "Cube";
   private static final int CUBE_ORDER = 2;
 
+  private static final String AGGREGATION_TYPE_ID = "aggregationType";
+  private static final String AGGREGATION_TYPE_NAME = "Aggregation Type";
+  private static final int AGGREGATION_TYPE_ORDER = 3;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
@@ -68,6 +75,10 @@ public class UpdateMeasure extends AnnotationType {
   @MetaStoreAttribute
   @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
   private String cube;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = AGGREGATION_TYPE_ID, name = AGGREGATION_TYPE_NAME, order = AGGREGATION_TYPE_ORDER )
+  private AggregationType aggregationType;
 
   /**
    * Retrieves the measure based on the formula.
@@ -98,28 +109,35 @@ public class UpdateMeasure extends AnnotationType {
   @Override
   public boolean apply(
     final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
+    if ( workspace == null ) {
+      return false;
+    }
+
     MeasureMetaData existingMeasure = locateMeasureFromFormula( workspace, measure );
+
+    if ( existingMeasure == null ) {
+      return false;
+    }
 
     // Check to see the name is already be used for another measure
     StringBuilder newMeasureFormula = new StringBuilder();
     newMeasureFormula.append( "[" + MEASURES_DIMENSION + "].[" );
-    newMeasureFormula.append( getName() );
+    newMeasureFormula.append( name );
     newMeasureFormula.append( "]" );
     MeasureMetaData prexistingMeasure = locateMeasureFromFormula( workspace, newMeasureFormula.toString() );
     // ignore if the name doesn't change
-    if ( !newMeasureFormula.equals( getMeasure() ) && prexistingMeasure != null ) {
+    if ( !newMeasureFormula.toString().equals( measure ) && prexistingMeasure != null ) {
       return false;
     }
 
-    boolean isApplied = false;
-
-    if ( existingMeasure != null && workspace != null ) {
-      existingMeasure.setName( getName() );
-      workspace.getWorkspaceHelper().populateDomain( workspace );
-      isApplied = true;
+    if ( aggregationType != null ) {
+      existingMeasure.setDefaultAggregation( aggregationType );
     }
 
-    return isApplied;
+    existingMeasure.setName( name );
+    workspace.getWorkspaceHelper().populateDomain( workspace );
+
+    return true;
   }
 
   @Override
@@ -128,15 +146,19 @@ public class UpdateMeasure extends AnnotationType {
       return false;
     }
 
+    String mondrianAggregationType = null;
+    if ( aggregationType != null ) {
+      mondrianAggregationType = MondrianModelExporter.convertToMondrian( aggregationType );
+    }
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schema );
-    mondrianSchemaHandler.updateMeasure( getCube(), getMeasure(), null, getName() );
+    mondrianSchemaHandler.updateMeasure( cube, measure, name, mondrianAggregationType );
 
     return true;
   }
 
   @Override
   public void validate() throws ModelerException {
-    if ( StringUtils.isBlank( getMeasure() ) ) {
+    if ( StringUtils.isBlank( measure ) ) {
       throw new ModelerException( BaseMessages.getString( MSG_CLASS,
         "ModelAnnotation.UpdateMeasure.validation.MEASURE_NAME_REQUIRED" ) );
     }
@@ -185,6 +207,14 @@ public class UpdateMeasure extends AnnotationType {
   @Override
   public String getField() {
     return null;
+  }
+
+  public AggregationType getAggregationType() {
+    return aggregationType;
+  }
+
+  public void setAggregationType( AggregationType aggregationType ) {
+    this.aggregationType = aggregationType;
   }
 }
 
