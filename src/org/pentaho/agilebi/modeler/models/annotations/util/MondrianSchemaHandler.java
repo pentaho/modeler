@@ -23,9 +23,12 @@
 package org.pentaho.agilebi.modeler.models.annotations.util;
 
 import mondrian.olap.MondrianDef;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -42,6 +45,8 @@ import javax.xml.xpath.XPathFactory;
  * Created by pminutillo on 3/7/15.
  */
 public class MondrianSchemaHandler {
+  protected static final Class<?> MSG_CLASS = MondrianSchemaHandler.class;
+
   public static final String XPATH_SEPARATOR = "/";
   public static final String SCHEMA_XPATH_EXPR = XPATH_SEPARATOR + "Schema";
   public static final String CUBE_XPATH_EXPR = SCHEMA_XPATH_EXPR + XPATH_SEPARATOR + "Cube";
@@ -159,13 +164,7 @@ public class MondrianSchemaHandler {
     }
   }
 
-  /**
-   * remove a measure
-   * @param cubeName
-   * @param measureName
-   * @throws ModelerException
-   */
-  public void removeMeasure( String cubeName, String measureName, String dimension, String cube ) throws ModelerException {
+  private Node getMeasureNode( String cubeName, String measureName, String dimension ) throws ModelerException {
     String cubeXPathPart = CUBE_XPATH_EXPR;
 
     if( dimension == null ){
@@ -177,7 +176,7 @@ public class MondrianSchemaHandler {
     }
 
     // try to resolve name attribute if formatted with dimension
-    if( measureName.contains( "[" ) ){
+    if( measureName.contains( "[" ) ) {
       // assuming measure is immediate child of dimension
       //  e.g. [Measures].[Quantity]
       measureName = measureName.substring(
@@ -193,8 +192,57 @@ public class MondrianSchemaHandler {
       StringBuffer xPathExpr = new StringBuffer();
       xPathExpr.append( cubeXPathPart + "//*[@name=\"" + measureName + "\"]" );
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      Node measure = (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
+      return (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
+    }
+  }
+
+
+  /**
+   * remove a measure
+   * @param cubeName
+   * @param measureName
+   * @throws ModelerException
+   */
+  public void removeMeasure( String cubeName, String measureName, String dimension ) throws ModelerException {
+    try {
+      Node measure = getMeasureNode( cubeName, measureName, dimension );
       measure.getParentNode().removeChild( measure );
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
+    }
+  }
+
+  public void updateMeasure( String cubeName, String measureName, String dimension, String newName ) throws ModelerException {
+    if ( StringUtils.isBlank( measureName ) ) {
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
+      );
+    }
+
+    try {
+      // Check to make sure there isn't a measure that already exists with the new name
+      Node duplicateMeasure = getMeasureNode( cubeName, newName, dimension );
+      if ( !measureName.equals( newName ) && duplicateMeasure != null ) {
+        throw new ModelerException(
+          BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.MEASURE_ALREADY_EXISTS", newName )
+        );
+      }
+
+      Node measure = getMeasureNode( cubeName, measureName, dimension );
+      if ( measure != null ) {
+        // Name Change
+        if ( !StringUtils.isBlank( newName ) ) {
+          NamedNodeMap measureAttrs = measure.getAttributes();
+          Node nameNode = measureAttrs.getNamedItem( "name" );
+          nameNode.setNodeValue( newName );
+        }
+      } else {
+        throw new ModelerException(
+          BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
+        );
+      }
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }

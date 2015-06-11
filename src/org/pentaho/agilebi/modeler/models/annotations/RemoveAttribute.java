@@ -81,8 +81,6 @@ public class RemoveAttribute extends AnnotationType {
       return null;
     }
 
-    workspace.getModel().getDimensions();
-
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
         for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
@@ -172,6 +170,7 @@ public class RemoveAttribute extends AnnotationType {
     this.level = level;
   }
 
+  @Override
   public String getField() {
     return null;
   }

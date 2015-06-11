@@ -1,0 +1,190 @@
+/*!
+ * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ *
+ * Copyright 2002 - 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ *
+ * NOTICE: All information including source code contained herein is, and
+ * remains the sole property of Pentaho and its licensors. The intellectual
+ * and technical concepts contained herein are proprietary and confidential
+ * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * patents, or patents in process, and are protected by trade secret and
+ * copyright laws. The receipt or possession of this source code and/or related
+ * information does not convey or imply any rights to reproduce, disclose or
+ * distribute its contents, or to manufacture, use, or sell anything that it
+ * may describe, in whole or in part. Any reproduction, modification, distribution,
+ * or public display of this information without the express written authorization
+ * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * international treaties. Access to the source code contained herein is strictly
+ * prohibited to anyone except those individuals and entities who have executed
+ * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * explicitly covering such access.
+ */
+
+package org.pentaho.agilebi.modeler.models.annotations;
+
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
+import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.model.olap.OlapMeasure;
+import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.persist.MetaStoreAttribute;
+import org.pentaho.metastore.persist.MetaStoreElementType;
+import org.w3c.dom.Document;
+
+import java.util.logging.Logger;
+
+/**
+ * @author Brandon Groves
+ */
+@MetaStoreElementType( name = "UpdateMeasure", description = "UpdateMeasure Annotation" )
+public class UpdateMeasure extends AnnotationType {
+
+  private static final long serialVersionUID = -8365062607663928537L;
+  private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
+
+  private static final String NAME_ID = "name";
+  private static final String NAME_NAME = "Name";
+  private static final int NAME_ORDER = 0;
+
+  private static final String MEASURE_ID = "measure";
+  private static final String MEASURE_NAME = "Measure";
+  private static final int MEASURE_ORDER = 1;
+
+  private static final String CUBE_ID = "cube";
+  private static final String CUBE_NAME = "Cube";
+  private static final int CUBE_ORDER = 2;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
+  private String name;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = MEASURE_ID, name = MEASURE_NAME, order = MEASURE_ORDER )
+  private String measure;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
+  private String cube;
+
+  /**
+   * Retrieves the measure based on the formula.
+   *
+   * @param workspace Workspace to search for formula
+   * @param formula Formula to search for (ex [MEASURES].[SALES])
+   * @return Measure otherwise null
+   */
+  private MeasureMetaData locateMeasureFromFormula( final ModelerWorkspace workspace, final String formula ) {
+    if ( formula == null || workspace == null ) {
+      return null;
+    }
+
+    for ( MeasureMetaData measureMetaData : workspace.getModel().getMeasures() ) {
+      StringBuilder formulaBuilder = new StringBuilder();
+      formulaBuilder.append( "[" + MEASURES_DIMENSION + "].[" );
+      formulaBuilder.append( measureMetaData.getName() );
+      formulaBuilder.append( "]" );
+
+      if ( formula.equals( formulaBuilder.toString() ) ) {
+        return measureMetaData;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
+  public boolean apply(
+    final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
+    MeasureMetaData existingMeasure = locateMeasureFromFormula( workspace, measure );
+
+    // Check to see the name is already be used for another measure
+    StringBuilder newMeasureFormula = new StringBuilder();
+    newMeasureFormula.append( "[" + MEASURES_DIMENSION + "].[" );
+    newMeasureFormula.append( getName() );
+    newMeasureFormula.append( "]" );
+    MeasureMetaData prexistingMeasure = locateMeasureFromFormula( workspace, newMeasureFormula.toString() );
+    // ignore if the name doesn't change
+    if ( !newMeasureFormula.equals( getMeasure() ) && prexistingMeasure != null ) {
+      return false;
+    }
+
+    boolean isApplied = false;
+
+    if ( existingMeasure != null && workspace != null ) {
+      existingMeasure.setName( getName() );
+      workspace.getWorkspaceHelper().populateDomain( workspace );
+      isApplied = true;
+    }
+
+    return isApplied;
+  }
+
+  @Override
+  public boolean apply( final Document schema ) throws ModelerException {
+    if ( schema == null ) {
+      return false;
+    }
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schema );
+    mondrianSchemaHandler.updateMeasure( getCube(), getMeasure(), null, getName() );
+
+    return true;
+  }
+
+  @Override
+  public void validate() throws ModelerException {
+    if ( StringUtils.isBlank( getMeasure() ) ) {
+      throw new ModelerException( BaseMessages.getString( MSG_CLASS,
+        "ModelAnnotation.UpdateMeasure.validation.MEASURE_NAME_REQUIRED" ) );
+    }
+  }
+
+  @Override
+  public ModelAnnotation.Type getType() {
+    return ModelAnnotation.Type.UPDATE_MEASURE;
+  }
+
+  private String summaryMsgKey() {
+    return "Modeler.UpdateMeasure.Summary";
+  }
+
+  @Override
+  public String getSummary() {
+    return BaseMessages
+      .getString( MSG_CLASS, summaryMsgKey(), getMeasure(), getName() );
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
+
+  public String getMeasure() {
+    return measure;
+  }
+
+  public void setMeasure( String measure ) {
+    this.measure = measure;
+  }
+
+  public String getCube() {
+    return cube;
+  }
+
+  public void setCube( String cube ) {
+    this.cube = cube;
+  }
+
+  @Override
+  public String getField() {
+    return null;
+  }
+}
+
