@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import mondrian.rolap.agg.Aggregation;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.metadata.model.LogicalModel;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.metadata.util.XmiParser;
@@ -134,6 +136,38 @@ public class UpdateMeasureTest {
   }
 
   @Test
+  public void testMetaDataUpdateAggregation() throws Exception {
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    // Initial measure exists
+    LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    OlapCube cube = ( (List<OlapCube>) logicalModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
+    OlapMeasure measure = AnnotationUtil.getOlapMeasure( INIT_BUYPRICE_NAME, olapMeasures );
+    assertNotNull( measure );
+    assertEquals( AggregationType.SUM, measure.getLogicalColumn().getAggregationType() );
+
+    // Changing the aggregation type
+    UpdateMeasure updateMeasure = new UpdateMeasure();
+    updateMeasure.setMeasure( INIT_MEASURE_FORMULA );
+    updateMeasure.setName( INIT_BUYPRICE_NAME );
+    updateMeasure.setAggregationType( AggregationType.AVERAGE );
+    boolean isApplied = updateMeasure.apply( model, metaStore );
+    assertTrue( isApplied );
+
+    // Ensure the aggregation type got set
+    logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    cube = ( (List<OlapCube>) logicalModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    olapMeasures = cube.getOlapMeasures();
+    measure = AnnotationUtil.getOlapMeasure( INIT_BUYPRICE_NAME, olapMeasures );
+    assertNotNull( measure );
+    assertEquals( AggregationType.AVERAGE, measure.getLogicalColumn().getAggregationType() );
+  }
+
+  @Test
   public void testMondrianUpdateName() throws Exception {
     File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
 
@@ -198,6 +232,51 @@ public class UpdateMeasureTest {
       EXISTING_COLUMN,
       AnnotationUtil.NAME_ATTRIB,
       EXISTING_COLUMN ) );
+  }
+
+  @Test
+  public void testMondrianUpdateAggregation() throws Exception {
+    File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
+
+    Document mondrianSchemaXmlDoc =
+      DocumentBuilderFactory
+        .newInstance()
+        .newDocumentBuilder()
+        .parse( mondrianSchemaXmlFile );
+    assertTrue( mondrianSchemaXmlDoc != null );
+    // Check existing state
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.NAME_ATTRIB,
+      INIT_BUYPRICE_COLUMN ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.AGGREGATOR_ATTRIB,
+      "sum" ) );
+
+    // Changing the aggregation type
+    UpdateMeasure updateMeasure = new UpdateMeasure();
+    updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
+    updateMeasure.setName( INIT_BUYPRICE_COLUMN );
+    updateMeasure.setAggregationType( AggregationType.AVERAGE );
+    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc  );
+    assertTrue( isApplied );
+
+    // Check change
+    assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.MEASURE_ELEMENT_NAME ).getLength()
+      > 0 );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.NAME_ATTRIB,
+      INIT_BUYPRICE_COLUMN ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.AGGREGATOR_ATTRIB,
+      "avg" ) );
   }
 
   @Test
