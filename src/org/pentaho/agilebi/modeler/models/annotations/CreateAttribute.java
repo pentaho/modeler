@@ -99,6 +99,18 @@ public class CreateAttribute extends AnnotationType {
   public static final String UNIQUE_NAME = "Is Unique";
   public static final int UNIQUE_ORDER = 10;
 
+  public static final String FIELD_ID = "field";
+  public static final String FIELD_NAME = "Field";
+  public static final int FIELD_ORDER = 11;
+
+  public static final String LEVEL_ID = "level";
+  public static final String LEVEL_NAME = "Level";
+  public static final int LEVEL_ORDER = 12;
+
+  public static final String CUBE_ID = "cube";
+  public static final String CUBE_NAME = "Cube";
+  public static final int CUBE_ORDER = 13;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
@@ -143,6 +155,18 @@ public class CreateAttribute extends AnnotationType {
   // Do not expose business group in the UI (for now)
   //@ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
   private String businessGroup;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER )
+  private String field;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER )
+  private String level;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
+  private String cube;
 
   public String getName() {
     return name;
@@ -233,19 +257,60 @@ public class CreateAttribute extends AnnotationType {
   }
 
   @Override
+  public String getField() {
+    return field;
+  }
+
+  public void setField( String field ) {
+    this.field = field;
+  }
+
+  public String getLevel() {
+    return level;
+  }
+
+  public void setLevel( String level ) {
+    this.level = level;
+  }
+
+  public String getCube() {
+    return cube;
+  }
+
+  public void setCube( String cube ) {
+    this.cube = cube;
+  }
+
+  @Override
   public boolean apply(
-      final ModelerWorkspace workspace, final String column, final IMetaStore metaStore ) throws ModelerException {
+      final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
     HierarchyMetaData existingHierarchy = locateHierarchy( workspace, getHierarchy() );
     if ( existingHierarchy == null && !isEmpty( getParentAttribute() ) ) {
       return false;
     } else if ( existingHierarchy != null && isEmpty( getParentAttribute() ) ) {
       removeHierarchy( existingHierarchy );
-      return createNewHierarchy( workspace, column );
+      return createNewHierarchy( workspace, resolveField( workspace ) );
     } else if ( existingHierarchy == null ) {
-      return createNewHierarchy( workspace, column );
+      return createNewHierarchy( workspace, resolveField( workspace ) );
     } else {
-      return attachLevel( workspace, existingHierarchy, column );
+      return attachLevel( workspace, existingHierarchy, resolveField( workspace ) );
     }
+  }
+
+  private String resolveField( final ModelerWorkspace workspace ) throws ModelerException {
+    String field = getField();
+    if ( StringUtils.isBlank( field ) ) {
+      if ( !StringUtils.isBlank( getLevel() ) && !StringUtils.isBlank( getCube() ) ) {
+        field = resolveFieldFromLevel( workspace, getLevel(), getCube() );
+        setField( field );
+      } else {
+        throw new ModelerException(
+          BaseMessages.getString( "ModelAnnotation.resolveField.UNABLE_TO_FIND_FIELD" )
+        );
+      }
+    }
+
+    return field;
   }
 
   private void removeHierarchy( final HierarchyMetaData hierarchy ) {
@@ -446,7 +511,7 @@ public class CreateAttribute extends AnnotationType {
   }
 
   @Override
-  public boolean apply( Document schema, String field ) throws ModelerException {
+  public boolean apply( Document schema ) throws ModelerException {
     throw new UnsupportedOperationException();
   }
 
@@ -456,6 +521,12 @@ public class CreateAttribute extends AnnotationType {
     if ( StringUtils.isBlank( getName() ) ) {
       throw new ModelerException( BaseMessages
           .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.ATTRIBUTE_NAME_REQUIRED" ) );
+    }
+
+    if ( StringUtils.isBlank( getField() ) && ( StringUtils.isBlank( getLevel() )
+        || StringUtils.isBlank( getCube() ) ) ) {
+      throw new ModelerException( BaseMessages
+        .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.FIELD_OR_LEVEL_NOT_PROVIDED" ) );
     }
 
     if ( StringUtils.isBlank( getDimension() ) ) {

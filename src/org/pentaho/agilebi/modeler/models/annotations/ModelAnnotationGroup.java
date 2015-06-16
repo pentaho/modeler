@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.FAILED;
-import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.NULL_FIELD;
+import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.NULL_ANNOTATION;
 import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.SUCCESS;
 
 @MetaStoreElementType( name = "ModelAnnotationGroup", description = "ModelAnnotationGroup" )
@@ -149,7 +149,7 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
   public enum ApplyStatus {
     SUCCESS,
     FAILED,
-    NULL_FIELD
+    NULL_ANNOTATION
   }
 
   public Map<ApplyStatus, List<ModelAnnotation>> applyAnnotations(
@@ -170,7 +170,7 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
     ModelAnnotationGroup failedAnnotations = new ModelAnnotationGroup();
     for ( ModelAnnotation modelAnnotation : toApply ) {
       if ( modelAnnotation.getAnnotation() == null ) {
-        statusMap.get( NULL_FIELD ).add( modelAnnotation );
+        statusMap.get( NULL_ANNOTATION ).add( modelAnnotation );
         continue;
       }
       boolean applied = modelAnnotation.apply( model, metaStore );

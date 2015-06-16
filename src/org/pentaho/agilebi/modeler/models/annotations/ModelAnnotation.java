@@ -22,21 +22,12 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.metadata.model.LogicalModel;
-import org.pentaho.metadata.model.olap.OlapCube;
-import org.pentaho.metadata.model.olap.OlapDimension;
-import org.pentaho.metadata.model.olap.OlapDimensionUsage;
-import org.pentaho.metadata.model.olap.OlapHierarchy;
-import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
-import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
@@ -45,7 +36,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -56,16 +46,17 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
   private static final long serialVersionUID = 5742135911581602697L;
 
-  private SourceType sourceType = SourceType.StreamField;
+  private static final String CREATE_MEASURE_ENUM_VALUE = "Create Measure";
+  private static final String CREATE_ATTRIBUTE_ENUM_VALUE = "Create Attribute";
+  private static final String CREATE_DIMENSION_ENUM_VALUE = "Create Dimension Key";
+  private static final String CREATE_CALCULATED_MEMBER_ENUM_VALUE = "Create Calculated Member";
+  private static final String REMOVE_MEASURE_ENUM_VALUE = "Remove Measure";
+  private static final String LINK_DIMENSION_ENUM_VALUE = "Link Dimension";
+  private static final String REMOVE_ATTRIBUTE_ENUM_VALUE = "Remove Attribute";
+  private static final String UPDATE_MEASURE_ENUM_VALUE = "Update Measure";
 
   @MetaStoreAttribute
   private String name = UUID.randomUUID().toString(); // default random identifier
-
-  @MetaStoreAttribute
-  private String field;
-
-  @MetaStoreAttribute
-  private String cube;
 
   @MetaStoreAttribute
   private T annotation;
@@ -83,16 +74,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     this.name = name;
   }
 
-  public ModelAnnotation( final String field, final T annotation ) {
-    setField( field );
-    setAnnotation( annotation );
-    this.sourceType = SourceType.StreamField;
-  }
-
-  public ModelAnnotation( final SourceType sourceType, final String cube, final String field, final T annotation ) {
-    setCube( cube );
-    setField( field );
-    this.sourceType = sourceType;
+  public ModelAnnotation( final T annotation ) {
     setAnnotation( annotation );
   }
 
@@ -101,18 +83,19 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    */
 
   public static List<ModelAnnotation<CreateMeasure>> getMeasures(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateMeasure.class );
   }
 
   public static List<ModelAnnotation<CreateAttribute>> getAttributes(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateAttribute.class );
   }
 
-  private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>> filter(
-      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
-      Class<S> cls ) {
+  private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>>
+  filter(
+    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
+    Class<S> cls ) {
 
     List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
     if ( cls != null && annotations != null && annotations.size() > 0 ) {
@@ -127,22 +110,6 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     return list;
   }
 
-  public String getField() {
-    return field;
-  }
-
-  public void setField( String field ) {
-    this.field = field;
-  }
-
-  public String getCube() {
-    return cube;
-  }
-
-  public void setCube( String cube ) {
-    this.cube = cube;
-  }
-
   public T getAnnotation() {
     return annotation;
   }
@@ -151,121 +118,12 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     this.annotation = annotation;
   }
 
-  public SourceType getSourceType() {
-    return sourceType;
-  }
-
-  public void setSourceType( SourceType sourceType ) {
-    this.sourceType = sourceType;
-  }
-
   public boolean apply( final ModelerWorkspace modelerWorkspace, final IMetaStore metaStore ) throws ModelerException {
-    return annotation.apply( modelerWorkspace, resolveField( modelerWorkspace ), metaStore );
-  }
-
-  /**
-   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel
-   * and Measure, we need to consult the existing model to find the underlying physical source.
-   *
-   * @param modelerWorkspace
-   * @return
-   * @throws ModelerException
-   */
-  private String resolveField( final ModelerWorkspace modelerWorkspace ) throws ModelerException {
-
-    switch ( sourceType ) {
-      case StreamField: {
-        return field;
-      }
-      case Measure:
-      case HierarchyLevel: {
-        String locale = Locale.getDefault().toString();
-        LogicalModel businessModel = modelerWorkspace.getLogicalModel( ModelerPerspective.ANALYSIS );
-        List<OlapCube> olapCubes = (List<OlapCube>) businessModel.getProperty( "olap_cubes" );
-        OlapCube olapCube = null;
-        for ( int c = 0; c < olapCubes.size(); c++ ) {
-          if ( ( (OlapCube) olapCubes.get( c ) ).getName().equals( cube ) ) {
-            olapCube = (OlapCube) olapCubes.get( c );
-            break;
-          }
-        }
-        if ( olapCube == null ) {
-          throw new ModelerException( "Unable to find cube: " + cube );
-        }
-        if ( sourceType == SourceType.Measure ) {
-          List measures = olapCube.getOlapMeasures();
-          for ( int m = 0; m < measures.size(); m++ ) {
-            OlapMeasure measure = (OlapMeasure) measures.get( m );
-            if ( field.equals( "[Measures].[" + measure.getLogicalColumn().getName( locale ) + "]" ) ) {
-              return (String) measure.getLogicalColumn().getName( locale );
-            }
-          }
-          throw new ModelerException( "Unable to find measure: " + field );
-        } else {
-
-          List usages = olapCube.getOlapDimensionUsages();
-          for ( int u = 0; u < usages.size(); u++ ) {
-            OlapDimensionUsage usage = (OlapDimensionUsage) usages.get( u );
-            OlapDimension olapDimension = usage.getOlapDimension();
-            List olapHierarchies = olapDimension.getHierarchies();
-            for ( int h = 0; h < olapHierarchies.size(); h++ ) {
-              StringBuffer buffer = new StringBuffer();
-              buffer.append( "[" );
-              buffer.append( usage.getName() );
-              OlapHierarchy olapHierarchy = (OlapHierarchy) olapHierarchies.get( h );
-              if ( StringUtils.isNotEmpty( olapHierarchy.getName() )
-                  && !StringUtils.equals( olapHierarchy.getName(), usage.getName() ) ) {
-                buffer.append( "." ).append( olapHierarchy.getName() );
-              }
-              buffer.append( "].[" );
-              List hierarchyLevels = olapHierarchy.getHierarchyLevels();
-              for ( int hl = 0; hl < hierarchyLevels.size(); hl++ ) {
-                OlapHierarchyLevel olapHierarchyLevel = (OlapHierarchyLevel) hierarchyLevels.get( hl );
-                if ( field.equals( buffer.toString() + olapHierarchyLevel.getName() + "]" ) ) {
-                  return (String) olapHierarchyLevel.getReferenceColumn().getName( locale );
-                }
-              }
-            }
-          }
-          throw new ModelerException( "Unable to find level: " + field );
-        }
-      }
-      default: {
-        throw new IllegalStateException();
-      }
-    }
-  }
-
-  /**
-   * Returns the physical column that this annotation should operate on.  For sources based on HierarchyLevel
-   * and Measure, we need to consult the existing model to find the underlying physical source.
-   *
-   * @param modelerWorkspace
-   * @return
-   * @throws ModelerException
-   */
-  private String resolveField( final Document schema ) throws ModelerException {
-
-    switch ( sourceType ) {
-      case StreamField: {
-        return field;
-      }
-      case Measure: {
-        // TODO
-        throw new ModelerException( "Unable to find measure: " + field );
-      }
-      case HierarchyLevel: {
-        // TODO
-        throw new ModelerException( "Unable to find level: " + field );
-      }
-      default: {
-        throw new IllegalStateException();
-      }
-    }
+    return annotation.apply( modelerWorkspace, metaStore );
   }
 
   public boolean apply( final Document schema ) throws ModelerException {
-    return annotation.apply( schema, resolveField( schema ) );
+    return annotation.apply( schema );
   }
 
   public org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.Type getType() {
@@ -307,28 +165,28 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public static enum Type {
-    CREATE_MEASURE( "Create Measure" ) {
+    CREATE_MEASURE( CREATE_MEASURE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-          final ModelAnnotationGroup modelAnnotations,
-          final ModelAnnotation modelAnnotation,
-          final ValueMetaInterface valueMeta ) {
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
         return !modelAnnotations.isSharedDimension();
       }
     },
-    CREATE_ATTRIBUTE( "Create Attribute" ) {
+    CREATE_ATTRIBUTE( CREATE_ATTRIBUTE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-          final ModelAnnotationGroup modelAnnotations,
-          final ModelAnnotation modelAnnotation,
-          final ValueMetaInterface valueMeta ) {
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
         return true;
       }
     },
-    CREATE_DIMENSION_KEY( "Create Dimension Key" ) {
+    CREATE_DIMENSION_KEY( CREATE_DIMENSION_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-          final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
-          final ValueMetaInterface valueMeta ) {
+        final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
         return modelAnnotations.isSharedDimension()
-            && ( isDimensionKey( modelAnnotation ) || !hasDimensionKey( modelAnnotations ) );
+          && ( isDimensionKey( modelAnnotation ) || !hasDimensionKey( modelAnnotations ) );
       }
 
       private boolean isDimensionKey( final ModelAnnotation modelAnnotation ) {
@@ -344,11 +202,43 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         return false;
       }
     },
-    LINK_DIMENSION( "Link Dimension" ) {
+    LINK_DIMENSION( LINK_DIMENSION_ENUM_VALUE ) {
       @Override
       public boolean isApplicable( final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
                                    final ValueMetaInterface valueMeta ) {
         return !modelAnnotations.isSharedDimension();
+      }
+    },
+    CREATE_CALCULATED_MEMBER( CREATE_CALCULATED_MEMBER_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.isSharedDimension();
+      }
+    },
+    REMOVE_MEASURE( REMOVE_MEASURE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
+        return !modelAnnotations.isSharedDimension();
+      }
+    },
+    REMOVE_ATTRIBUTE( REMOVE_ATTRIBUTE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
+        return true;
+      }
+    },
+    UPDATE_MEASURE( UPDATE_MEASURE_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
+        return true;
       }
     };
 
@@ -360,9 +250,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       Type[] types = values();
-      String[] names = new String[types.length];
+      String[] names = new String[ types.length ];
       for ( int i = 0; i < types.length; i++ ) {
-        names[i] = types[i].name();
+        names[ i ] = types[ i ].name();
       }
       return names;
     }
@@ -372,9 +262,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     }
 
     public abstract boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta );
+      final ModelAnnotationGroup modelAnnotations,
+      final ModelAnnotation modelAnnotation,
+      final ValueMetaInterface valueMeta );
   }
 
   public static enum TimeType {
@@ -390,9 +280,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       TimeType[] types = values();
-      String[] names = new String[types.length];
+      String[] names = new String[ types.length ];
       for ( int i = 0; i < types.length; i++ ) {
-        names[i] = types[i].name();
+        names[ i ] = types[ i ].name();
       }
       return names;
     }
@@ -410,24 +300,11 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
 
     public static String[] names() {
       GeoType[] types = values();
-      String[] names = new String[types.length];
+      String[] names = new String[ types.length ];
       for ( int i = 0; i < types.length; i++ ) {
-        names[i] = types[i].name();
+        names[ i ] = types[ i ].name();
       }
       return names;
     }
   }
-
-  /**
-   * Represents the source of the modeling action...
-   * i.e. are we creating a measure off of a field, level or another measure?
-   *
-   * @author Benny
-   */
-  public static enum SourceType {
-    StreamField,
-    HierarchyLevel,
-    Measure
-  }
-
 }

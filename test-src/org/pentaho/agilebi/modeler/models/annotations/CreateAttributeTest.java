@@ -26,6 +26,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -80,7 +81,7 @@ public class CreateAttributeTest {
   @Test
   public void testCanCreateHierarchyWithMultipleLevels() throws Exception {
     ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -88,15 +89,17 @@ public class CreateAttributeTest {
     productLine.setName( "Product Line" );
     productLine.setDimension( "Products" );
     productLine.setHierarchy( "Products" );
-    productLine.apply( model, "PRODUCTLINE_OLAP", metaStore );
+    productLine.setField( "PRODUCTLINE_OLAP" );
+    productLine.apply( model, metaStore );
 
     CreateAttribute productName = new CreateAttribute();
     productName.setName( "Product Name" );
     productName.setParentAttribute( "Product Line" );
     productName.setDimension( "Products" );
     productName.setHierarchy( "Products" );
+    productName.setField( "PRODUCTNAME_OLAP" );
     productName.setOrdinalField( "PRODUCTSCALE_OLAP" );
-    productName.apply( model, "PRODUCTNAME_OLAP", metaStore );
+    productName.apply( model, metaStore );
 
     CreateAttribute year = new CreateAttribute();
     year.setName( "Year" );
@@ -104,7 +107,8 @@ public class CreateAttributeTest {
     year.setHierarchy( "DateByMonth" );
     year.setTimeType( ModelAnnotation.TimeType.TimeYears );
     year.setTimeFormat( "yyyy" );
-    year.apply( model, "PRODUCTCODE_OLAP", metaStore );
+    year.setField( "PRODUCTCODE_OLAP" );
+    year.apply( model, metaStore );
 
     CreateAttribute month = new CreateAttribute();
     month.setName( "Month" );
@@ -114,7 +118,8 @@ public class CreateAttributeTest {
     month.setOrdinalField( "bc_MSRP" );
     month.setTimeType( ModelAnnotation.TimeType.TimeMonths );
     month.setTimeFormat( "mm" );
-    month.apply( model, "PRODUCTDESCRIPTION_OLAP", metaStore );
+    month.setField( "PRODUCTDESCRIPTION_OLAP" );
+    month.apply( model, metaStore );
 
     final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
     final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
@@ -122,28 +127,38 @@ public class CreateAttributeTest {
     assertEquals( 2, cube.getOlapMeasures().size() );
 
     assertEquals( 5, dimensionUsages.size() );
-    OlapDimensionUsage productsDim = dimensionUsages.get( 3 );
+    OlapDimensionUsage productsDim = AnnotationUtil.getOlapDimensionUsage( "Products", dimensionUsages );
+    assertNotNull( productsDim );
     assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
     assertFalse( productsDim.getOlapDimension().isTimeDimension() );
     OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
-    assertEquals( "Product Line", levels.get( 0 ).getName() );
-    assertEquals( "Product Name", levels.get( 1 ).getName() );
-    assertEquals( "PRODUCTSCALE_OLAP",
-        levels.get( 1 ).getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+    OlapHierarchyLevel productLineLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Line", levels );
+    assertNotNull( productLineLevel );
+    assertEquals( "Product Line", productLineLevel.getName() );
 
-    OlapDimensionUsage dateDim = dimensionUsages.get( 4 );
+    OlapHierarchyLevel productNameLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Name", levels );
+    assertNotNull( productNameLevel );
+    assertEquals( "Product Name", productNameLevel.getName() );
+    assertEquals( "PRODUCTSCALE_OLAP",
+      productNameLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+
+    OlapDimensionUsage dateDim = AnnotationUtil.getOlapDimensionUsage( "Date", dimensionUsages );
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, dateDim.getOlapDimension().getType() );
     assertTrue( dateDim.getOlapDimension().isTimeDimension() );
     OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> dateLevels = dateHierarchy.getHierarchyLevels();
-    assertEquals( "Year", dateLevels.get( 0 ).getName() );
-    assertEquals( "TimeYears", dateLevels.get( 0 ).getLevelType() );
-    assertEquals( "[yyyy]", dateLevels.get( 0 ).getAnnotations().get( 0 ).getValue() );
-    assertEquals( "Month", dateLevels.get( 1 ).getName() );
-    assertEquals( "TimeMonths", dateLevels.get( 1 ).getLevelType() );
-    assertEquals( "[yyyy].[mm]", dateLevels.get( 1 ).getAnnotations().get( 0 ).getValue() );
+    OlapHierarchyLevel yearLevel = AnnotationUtil.getOlapHierarchyLevel( "Year", dateLevels );
+    assertNotNull( yearLevel );
+    assertEquals( "Year", yearLevel.getName() );
+    assertEquals( "TimeYears", yearLevel.getLevelType() );
+    assertEquals( "[yyyy]", yearLevel.getAnnotations().get( 0 ).getValue() );
 
+    OlapHierarchyLevel monthLevel = AnnotationUtil.getOlapHierarchyLevel( "Month", dateLevels );
+    assertNotNull( monthLevel );
+    assertEquals( "Month", monthLevel.getName() );
+    assertEquals( "TimeMonths", monthLevel.getLevelType() );
+    assertEquals( "[yyyy].[mm]", monthLevel.getAnnotations().get( 0 ).getValue() );
   }
 
   @Test
@@ -153,34 +168,36 @@ public class CreateAttributeTest {
     createAttribute.setParentAttribute( "Product Category" );
     createAttribute.setHierarchy( "Product" );
     assertEquals(
-        "Product Name participates in hierarchy Product with parent Product Category",
-        createAttribute.getSummary() );
+      "Product Name participates in hierarchy Product with parent Product Category",
+      createAttribute.getSummary() );
 
     CreateAttribute topAttribute = new CreateAttribute();
     topAttribute.setName( "Product Category" );
     topAttribute.setHierarchy( "Product" );
     assertEquals(
-        "Product Category is top level in hierarchy Product",
-        topAttribute.getSummary() );
+      "Product Category is top level in hierarchy Product",
+      topAttribute.getSummary() );
   }
 
   @Test
   public void testEmptyHierarchyIsValid() throws Exception {
     ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
     CreateAttribute productCode = new CreateAttribute();
     productCode.setName( "Product Code" );
     productCode.setDimension( "Product" );
-    productCode.apply( model, "PRODUCTCODE_OLAP", metaStore );
+    productCode.setField( "PRODUCTCODE_OLAP" );
+    productCode.apply( model, metaStore );
 
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setName( "Product Description" );
     productDescription.setParentAttribute( "Product Code" );
     productDescription.setDimension( "Product" );
-    productDescription.apply( model, "PRODUCTDESCRIPTION_OLAP", metaStore );
+    productDescription.setField( "PRODUCTDESCRIPTION_OLAP" );
+    productDescription.apply( model, metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
@@ -189,12 +206,18 @@ public class CreateAttributeTest {
     assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, dateDim.getOlapDimension().getType() );
     OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> dateLevels = dateHierarchy.getHierarchyLevels();
+
+    OlapHierarchyLevel productCodeLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Code", dateLevels );
+    assertNotNull( productCodeLevel );
     assertEquals( "Product Code", dateLevels.get( 0 ).getName() );
-    assertEquals( "Product Description", dateLevels.get( 1 ).getName() );
+
+    OlapHierarchyLevel productDescLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Description", dateLevels );
+    assertNotNull( productDescLevel );
+    assertEquals( "Product Description", productDescLevel.getName() );
 
     assertEquals( "Product Code is top level in hierarchy", productCode.getSummary() );
     assertEquals( "Product Description participates in hierarchy with parent Product Code",
-        productDescription.getSummary() );
+      productDescription.getSummary() );
   }
 
   @Test
@@ -203,23 +226,50 @@ public class CreateAttributeTest {
     CreateAttribute createAttribute = new CreateAttribute();
     createAttribute.setName( "A" );
     createAttribute.setDimension( "ADim" );
+    createAttribute.setField( "Field" );
+    createAttribute.validate(); // no error
+
+
+    createAttribute.setField( "" );
+    createAttribute.setLevel( "[Dimension].[Level]" );
+    createAttribute.setCube( "Cube" );
     createAttribute.validate(); // no error
 
     try {
+      createAttribute.setLevel( "" );
+      createAttribute.validate(); // throws an error
+      fail( "no exception" );
+    } catch ( ModelerException me ) {
+    }
+
+    try {
+      createAttribute.setLevel( "[Dimension].[Level]" );
+      createAttribute.setCube( "" );
+      createAttribute.validate(); // throws an error
+      fail( "no exception" );
+    } catch ( ModelerException me ) {
+    }
+
+    try {
+      createAttribute.setCube( "Cube" );
       createAttribute.setDimension( "" );
       createAttribute.setParentAttribute( "parent" );
       createAttribute.validate(); // throws an error
+      fail( "no exception" );
     } catch ( ModelerException me ) {
-      assertNotNull( me );
     }
 
-    createAttribute.setDimension( "dimension" );
-    createAttribute.validate(); // no error
+    try {
+      createAttribute.setDimension( "dimension" );
+      createAttribute.validate(); // no error
+    } catch ( ModelerException me ) {
+      fail( "Exception" );
+    }
 
     try {
       ( new CreateAttribute() ).validate();
+      fail( "no exception" );
     } catch ( ModelerException me ) {
-      assertNotNull( me );
     }
   }
 
@@ -239,21 +289,24 @@ public class CreateAttributeTest {
     country.setName( "Country" );
     country.setDimension( "Geo" );
     country.setGeoType( ModelAnnotation.GeoType.Country );
-    country.apply( model, "Country", metaStore );
+    country.setField( "Country" );
+    country.apply( model, metaStore );
 
     CreateAttribute state = new CreateAttribute();
     state.setName( "State" );
     state.setParentAttribute( "Country" );
     state.setDimension( "Geo" );
     state.setGeoType( ModelAnnotation.GeoType.State );
-    state.apply( model, "STATE", metaStore );
+    state.setField( "STATE" );
+    state.apply( model, metaStore );
 
     CreateAttribute city = new CreateAttribute();
     city.setName( "City" );
     city.setParentAttribute( "State" );
     city.setDimension( "Geo" );
     city.setGeoType( ModelAnnotation.GeoType.City );
-    city.apply( model, "CITY", metaStore );
+    city.setField( "CITY" );
+    city.apply( model, metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
@@ -261,23 +314,25 @@ public class CreateAttributeTest {
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
 
-    OlapHierarchyLevel countryLevel = levels.get( 0 );
+    OlapHierarchyLevel countryLevel = AnnotationUtil.getOlapHierarchyLevel( "Country", levels );
+    assertNotNull( countryLevel );
     assertEquals( "Country", countryLevel.getName() );
     assertAnnotation( countryLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( countryLevel.getAnnotations().get( 1 ), "Geo.Role", "country" );
 
-    OlapHierarchyLevel stateLevel = levels.get( 1 );
+    OlapHierarchyLevel stateLevel = AnnotationUtil.getOlapHierarchyLevel( "State", levels );
+    assertNotNull( stateLevel );
     assertEquals( "State", stateLevel.getName() );
     assertAnnotation( stateLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( stateLevel.getAnnotations().get( 1 ), "Geo.Role", "state" );
     assertAnnotation( stateLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country" );
 
-    OlapHierarchyLevel cityLevel = levels.get( 2 );
+    OlapHierarchyLevel cityLevel = AnnotationUtil.getOlapHierarchyLevel( "City", levels );
+    assertNotNull( cityLevel );
     assertEquals( "City", cityLevel.getName() );
     assertAnnotation( cityLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( cityLevel.getAnnotations().get( 1 ), "Geo.Role", "city" );
     assertAnnotation( cityLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country,state" );
-
   }
 
   @Test
@@ -290,7 +345,8 @@ public class CreateAttributeTest {
     country.setDimension( "Geography" );
     country.setGeoType( ModelAnnotation.GeoType.Country );
     country.setHierarchy( "Geo" );
-    country.apply( model, "Country", metaStore );
+    country.setField( "Country" );
+    country.apply( model, metaStore );
 
     CreateAttribute state = new CreateAttribute();
     state.setName( "State" );
@@ -298,7 +354,8 @@ public class CreateAttributeTest {
     state.setDimension( "Geography" );
     state.setHierarchy( "Geo" );
     state.setGeoType( ModelAnnotation.GeoType.State );
-    state.apply( model, "STATE", metaStore );
+    state.setField( "STATE" );
+    state.apply( model, metaStore );
 
     CreateAttribute city = new CreateAttribute();
     city.setName( "City" );
@@ -306,44 +363,54 @@ public class CreateAttributeTest {
     city.setDimension( "Geography" );
     city.setHierarchy( "Geo" );
     city.setGeoType( ModelAnnotation.GeoType.City );
-    city.apply( model, "CITY", metaStore );
+    city.setField( "CITY" );
+    city.apply( model, metaStore );
 
     // Test additional hierarchy
     country.setName( "MyCountry" );
     country.setDimension( "MyGeography" );
     country.setHierarchy( "MyGeo" );
-    country.apply( model, "Country", metaStore );
+    country.setField( "Country" );
+    country.apply( model, metaStore );
 
     state.setName( "MyState" );
     state.setParentAttribute( "MyCountry" );
     state.setDimension( "MyGeography" );
     state.setHierarchy( "MyGeo" );
-    state.apply( model, "STATE", metaStore );
+    state.setField( "STATE" );
+    state.apply( model, metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
+    OlapDimensionUsage geoDim = AnnotationUtil.getOlapDimensionUsage( "Geography", dimensionUsages );
+    assertNotNull( geoDim );
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
 
-    OlapHierarchyLevel countryLevel = levels.get( 0 );
+    OlapHierarchyLevel countryLevel = AnnotationUtil.getOlapHierarchyLevel( "Country", levels );
+    assertNotNull( countryLevel );
     assertEquals( "Country", countryLevel.getName() );
 
-    OlapHierarchyLevel stateLevel = levels.get( 1 );
+    OlapHierarchyLevel stateLevel = AnnotationUtil.getOlapHierarchyLevel( "State", levels );
+    assertNotNull( stateLevel );
     assertEquals( "State", stateLevel.getName() );
 
-    OlapHierarchyLevel cityLevel = levels.get( 2 );
+
+    OlapHierarchyLevel cityLevel = AnnotationUtil.getOlapHierarchyLevel( "City", levels );
+    assertNotNull( cityLevel );
     assertEquals( "City", cityLevel.getName() );
 
     // Test second hierarchy
-    geoDim = dimensionUsages.get( 3 );
+    geoDim = AnnotationUtil.getOlapDimensionUsage( "MyGeography", dimensionUsages );
     hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
     levels = hierarchy.getHierarchyLevels();
 
-    countryLevel = levels.get( 0 );
+    countryLevel = AnnotationUtil.getOlapHierarchyLevel( "MyCountry", levels );
+    assertNotNull( countryLevel );
     assertEquals( "MyCountry", countryLevel.getName() );
 
-    stateLevel = levels.get( 1 );
+    stateLevel = AnnotationUtil.getOlapHierarchyLevel( "MyState", levels );
+    assertNotNull( stateLevel );
     assertEquals( "MyState", stateLevel.getName() );
   }
 
@@ -375,47 +442,54 @@ public class CreateAttributeTest {
     country.setName( "Country" );
     country.setDimension( "Geo" );
     country.setGeoType( ModelAnnotation.GeoType.Country );
-    country.apply( model, "Country", metaStore );
+    country.setField( "Country" );
+    country.apply( model, metaStore );
 
     CreateAttribute state = new CreateAttribute();
     state.setName( "State" );
     state.setDimension( "Geo2" );
     state.setGeoType( ModelAnnotation.GeoType.State );
-    state.apply( model, "STATE", metaStore );
+    state.setField( "STATE" );
+    state.apply( model, metaStore );
 
     CreateAttribute city = new CreateAttribute();
     city.setName( "City" );
     city.setParentAttribute( "State" );
     city.setDimension( "Geo2" );
     city.setGeoType( ModelAnnotation.GeoType.City );
-    city.apply( model, "CITY", metaStore );
+    city.setField( "CITY" );
+    city.apply( model, metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
+    OlapDimensionUsage geoDim = AnnotationUtil.getOlapDimensionUsage( "Geo", dimensionUsages );
+    assertNotNull( geoDim );
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
 
-    OlapHierarchyLevel countryLevel = levels.get( 0 );
+    OlapHierarchyLevel countryLevel = AnnotationUtil.getOlapHierarchyLevel( "Country", levels );
+    assertNotNull( countryLevel );
     assertEquals( "Country", countryLevel.getName() );
     assertAnnotation( countryLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( countryLevel.getAnnotations().get( 1 ), "Geo.Role", "country" );
 
-    OlapDimensionUsage geoDim2 = dimensionUsages.get( 3 );
+    OlapDimensionUsage geoDim2 = AnnotationUtil.getOlapDimensionUsage( "Geo2", dimensionUsages );
+    assertNotNull( geoDim2 );
     OlapHierarchy hierarchy2 = geoDim2.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels2 = hierarchy2.getHierarchyLevels();
-    OlapHierarchyLevel stateLevel = levels2.get( 0 );
+    OlapHierarchyLevel stateLevel = AnnotationUtil.getOlapHierarchyLevel( "State", levels2 );
+    assertNotNull( stateLevel );
     assertEquals( "State", stateLevel.getName() );
     assertAnnotation( stateLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( stateLevel.getAnnotations().get( 1 ), "Geo.Role", "state" );
     assertAnnotation( stateLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country" );
 
-    OlapHierarchyLevel cityLevel = levels2.get( 1 );
+    OlapHierarchyLevel cityLevel = AnnotationUtil.getOlapHierarchyLevel( "City", levels2 );
+    assertNotNull( cityLevel );
     assertEquals( "City", cityLevel.getName() );
     assertAnnotation( cityLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( cityLevel.getAnnotations().get( 1 ), "Geo.Role", "city" );
     assertAnnotation( cityLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country,state" );
-
   }
 
   private DatabaseMeta createGeoTable() throws Exception {
@@ -424,14 +498,14 @@ public class CreateAttributeTest {
     db.connect();
     db.execStatement( "DROP TABLE if exists geodata;" );
     db.execStatement( "CREATE TABLE geodata\n"
-        + "(\n"
-        + "  state_fips bigint\n"
-        + ", state varchar(25)\n"
-        + ", state_abbr varchar(4)\n"
-        + ", zipcode varchar(10)\n"
-        + ", country varchar(45)\n"
-        + ", city varchar(45)\n"
-        + ");\n" );
+      + "(\n"
+      + "  state_fips bigint\n"
+      + ", state varchar(25)\n"
+      + ", state_abbr varchar(4)\n"
+      + ", zipcode varchar(10)\n"
+      + ", country varchar(45)\n"
+      + ", city varchar(45)\n"
+      + ");\n" );
     db.disconnect();
     return dbMeta;
 
@@ -467,7 +541,7 @@ public class CreateAttributeTest {
   @Test
   public void testNoExceptionWithOrdinalSameAsColumn() throws Exception {
     ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -479,24 +553,28 @@ public class CreateAttributeTest {
     month.setOrdinalField( "PRODUCTCODE_OLAP" );
     month.setTimeType( ModelAnnotation.TimeType.TimeMonths );
     month.setTimeFormat( "MMM" );
-    month.apply( model, "PRODUCTCODE_OLAP", metaStore );
+    month.setField( "PRODUCTCODE_OLAP" );
+    month.apply( model, metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    OlapDimensionUsage timeDim = dimensionUsages.get( 8 );
+    OlapDimensionUsage timeDim = AnnotationUtil.getOlapDimensionUsage( "DIM TIME", dimensionUsages );
+    assertNotNull( timeDim );
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, timeDim.getOlapDimension().getType() );
     OlapHierarchy timeHierarchy = timeDim.getOlapDimension().getHierarchies().get( 0 );
-    OlapHierarchyLevel monthLevel = timeHierarchy.getHierarchyLevels().get( 0 );
+    OlapHierarchyLevel monthLevel = AnnotationUtil.getOlapHierarchyLevel( "MonthDesc",
+      timeHierarchy.getHierarchyLevels() );
+    assertNotNull( monthLevel );
     assertEquals( "PRODUCTCODE_OLAP",
-        monthLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+      monthLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
     assertEquals( "PRODUCTCODE_OLAP",
-        monthLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+      monthLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
   }
 
   @Test
   public void testUsingHierarchyWithSameNameWillOverwrite() throws Exception {
     ModelerWorkspace model =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -504,22 +582,27 @@ public class CreateAttributeTest {
     month.setName( "MonthDesc" );
     month.setDimension( "DIM TIME" );
     month.setHierarchy( "Time" );
-    month.apply( model, "PRODUCTCODE_OLAP", metaStore );
+    month.setField( "PRODUCTCODE_OLAP" );
+    month.apply( model, metaStore );
 
     CreateAttribute productCode = new CreateAttribute();
     productCode.setName( "Product Code" );
     productCode.setDimension( "DIM TIME" );
     productCode.setHierarchy( "Time" );
-    productCode.apply( model, "PRODUCTCODE_OLAP", metaStore );
+    productCode.setField( "PRODUCTCODE_OLAP" );
+    productCode.apply( model, metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    OlapDimensionUsage timeDim = dimensionUsages.get( 8 );
+    OlapDimensionUsage timeDim = AnnotationUtil.getOlapDimensionUsage( "DIM TIME", dimensionUsages );
+    assertNotNull( timeDim );
     OlapHierarchy timeHierarchy = timeDim.getOlapDimension().getHierarchies().get( 0 );
-    OlapHierarchyLevel codeLevel = timeHierarchy.getHierarchyLevels().get( 0 );
+    OlapHierarchyLevel codeLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Code",
+      timeHierarchy.getHierarchyLevels() );
+    assertNotNull( codeLevel );
     assertEquals( "Product Code", codeLevel.getName() );
     assertEquals( "PRODUCTCODE_OLAP",
-        codeLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+      codeLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
   }
 
   @Test
@@ -529,13 +612,16 @@ public class CreateAttributeTest {
     CreateAttribute abbr = new CreateAttribute();
     abbr.setName( "State Abbr" );
     abbr.setDimension( "dim" );
-    abbr.apply( model, "STATE_ABBR", metaStore );
+    abbr.setField( "STATE_ABBR" );
+    abbr.apply( model, metaStore );
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    OlapDimensionUsage stateDim = dimensionUsages.get( 2 );
+    OlapDimensionUsage stateDim = AnnotationUtil.getOlapDimensionUsage( "dim", dimensionUsages );
+    assertNotNull( stateDim );
     OlapHierarchy hierarchy = stateDim.getOlapDimension().getHierarchies().get( 0 );
-    OlapHierarchyLevel level = hierarchy.getHierarchyLevels().get( 0 );
+    OlapHierarchyLevel level = AnnotationUtil.getOlapHierarchyLevel( "State Abbr", hierarchy.getHierarchyLevels() );
+    assertNotNull( level );
     assertEquals( "State Abbr", level.getName() );
   }
 
@@ -616,6 +702,129 @@ public class CreateAttributeTest {
     state.setGeoType( ModelAnnotation.GeoType.State );
     // threw StackOverflowError from validation loop
     state.apply( model, "STATE", metaStore );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private List<OlapCube> getCubes( ModelerWorkspace wspace ) {
+    return (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
+        LogicalModel.PROPERTY_OLAP_CUBES );
+  }
+
+
+  @Test
+  public void testResolveFieldFromLevel() throws Exception {
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setLevel( "[PRODUCTLINE].[PRODUCTLINE]" );
+    productLine.setCube( "products_38GA" );
+    productLine.apply( model, metaStore );
+    assertEquals( "PRODUCTLINE_OLAP", productLine.getField() );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    assertEquals( 3, cube.getOlapMeasures().size() );
+
+    assertEquals( 9, dimensionUsages.size() );
+    OlapDimensionUsage productsDim = AnnotationUtil.getOlapDimensionUsage( "Products", dimensionUsages );
+    assertEquals( OlapDimension.TYPE_STANDARD_DIMENSION, productsDim.getOlapDimension().getType() );
+    assertFalse( productsDim.getOlapDimension().isTimeDimension() );
+    OlapHierarchy hierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
+    OlapHierarchyLevel level = AnnotationUtil.getOlapHierarchyLevel( "Product Line", hierarchy.getHierarchyLevels() );
+    assertNotNull( level );
+    assertEquals( "Product Line", level.getName() );
+  }
+
+  /**
+   * Time dimension with same name as a field not getting marked as time dimension.
+   */
+  @Test
+  public void testTimeDimensionSetAfterAutoModel() throws Exception {
+    ModelerWorkspace wspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    DatabaseMeta dbMeta = newH2Db( "DROP TABLE if exists datetable;",
+        "CREATE TABLE datetable\n"
+            + "(\n"
+            + "\"date\" TIMESTAMP\n"
+            + ");\n" );
+    TableModelerSource source = new TableModelerSource( dbMeta, "datetable", "" );
+    Domain domain = source.generateDomain();
+    wspace.setModelSource( source );
+    wspace.setDomain( domain );
+    wspace.setModelName( "DateModel" );
+    wspace.getWorkspaceHelper().autoModelFlat( wspace );
+    wspace.getWorkspaceHelper().populateDomain( wspace );
+
+    CreateAttribute createAttr = new CreateAttribute();
+    createAttr.setName( "Date" );
+    createAttr.setTimeType( TimeType.TimeDays );
+    createAttr.setDimension( "Date" );
+    createAttr.setHierarchy( "Date" );
+    createAttr.setField( "date" );
+    createAttr.apply( wspace, new MemoryMetaStore() );
+
+    OlapDimension dateDim =
+        getCubes( wspace ).get( 0 ).getOlapDimensionUsages().get( 0 ).getOlapDimension();
+    assertEquals( "Date", dateDim.getName() );
+    assertTrue( "time dimension not set", dateDim.isTimeDimension() );
+  }
+
+  @Test
+  public void testAttributeDescription() throws Exception {
+    ModelerWorkspace wspace =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    wspace.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    wspace.getWorkspaceHelper().populateDomain( wspace );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setDescription( "a line of products" );
+    productLine.setField( "PRODUCTLINE_OLAP" );
+
+    productLine.apply( wspace, metaStore );
+
+    boolean foundDim = false;
+    for ( OlapDimensionUsage dimUse : getCubes( wspace ).get( 0 ).getOlapDimensionUsages() ) {
+      if ( dimUse.getName().equals( productLine.getDimension() ) ) {
+        foundDim = true;
+        OlapHierarchyLevel prodLineLvl =
+            dimUse.getOlapDimension().getHierarchies().get( 0 ).getHierarchyLevels().get( 0 );
+        assertEquals( 1, prodLineLvl.getAnnotations().size() );
+        OlapAnnotation desc = prodLineLvl.getAnnotations().get( 0 );
+        assertEquals( "description.en_US", desc.getName() );
+        assertEquals( productLine.getDescription(), desc.getValue() );
+        break;
+      }
+    }
+    assertTrue( foundDim );
+  }
+
+  /**
+   * <a href="http://jira.pentaho.com/browse/BACKLOG-3219">BACKLOG-3219</a>
+   */
+  @Test
+  public void testGeoAttributeTriggersStackOverflow() throws Exception {
+    ModelerWorkspace model = prepareGeoModel();
+
+    CreateAttribute state = new CreateAttribute();
+    state.setName( "STATE" );
+    state.setDimension( "Geography" );
+    state.setHierarchy( "Geography" );
+    state.setParentAttribute( "CITY" );
+    state.setGeoType( ModelAnnotation.GeoType.State );
+    state.setField( "STATE" );
+
+    // threw StackOverflowError from validation loop
+    state.apply( model, metaStore );
   }
 
   @SuppressWarnings( "unchecked" )
