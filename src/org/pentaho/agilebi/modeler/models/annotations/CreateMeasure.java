@@ -312,11 +312,6 @@ public class CreateMeasure extends AnnotationType {
         || measure.getName().equalsIgnoreCase( PhysicalTableImporter.beautifyName( column ) );
   }
 
-  private boolean measureNameEquals( String column, MeasureMetaData measure ) {
-    return measure.getName().equalsIgnoreCase( column )
-        || measure.getName().equalsIgnoreCase( PhysicalTableImporter.beautifyName( column ) );
-  }
-
   private void removeMeasure( final ModelerWorkspace workspace, final String measureName ) {
     for ( MeasureMetaData measure : workspace.getModel().getMeasures() ) {
       if ( measure.getName().equals( measureName ) ) {

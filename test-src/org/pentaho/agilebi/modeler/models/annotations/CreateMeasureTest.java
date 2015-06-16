@@ -428,37 +428,6 @@ public class CreateMeasureTest {
     CreateMeasure msrp = new CreateMeasure();
     msrp.setName( "MSRP" );
     msrp.setDescription( "Manufacturer's Suggested Retail Price" );
-    msrp.apply( wspace, "bc_MSRP", metaStore );
-
-    boolean found = false;
-    for ( OlapMeasure measure : getCubes( wspace ).get( 0 ).getOlapMeasures() ) {
-      if ( measure.getName().equals( msrp.getName() ) ) {
-        found = true;
-        final String description = measure.getLogicalColumn().getDescription().getString( "en_US" );
-        assertEquals( msrp.getDescription(), description );
-        break;
-      }
-    }
-    assertTrue( found );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  private List<OlapCube> getCubes( ModelerWorkspace wspace ) {
-    return (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
-        LogicalModel.PROPERTY_OLAP_CUBES );
-  }
-
-
-  @Test
-  public void testMeasureDescription() throws Exception {
-    ModelerWorkspace wspace =
-        new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
-    wspace.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
-    wspace.getWorkspaceHelper().populateDomain( wspace );
-
-    CreateMeasure msrp = new CreateMeasure();
-    msrp.setName( "MSRP" );
-    msrp.setDescription( "Manufacturer's Suggested Retail Price" );
     msrp.setField( "bc_MSRP" );
     msrp.apply( wspace, metaStore );
 
