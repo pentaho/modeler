@@ -4,16 +4,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.models.annotations.CreateAttribute;
 import org.pentaho.agilebi.modeler.models.annotations.CreateMeasure;
+import org.pentaho.agilebi.modeler.models.annotations.LinkDimension;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationManager;
@@ -48,7 +47,7 @@ public class ModelAnnotationManagerTest {
     tempDir = f.getParent();
     metaStore = new XmlMetaStore( tempDir );
     modelAnnotationManager = new ModelAnnotationManager();
-    sharedDimensionManager = new ModelAnnotationManager( ModelAnnotationManager.SHARED_DIMENSIONS_NAMESPACE );
+    sharedDimensionManager = new ModelAnnotationManager( true );
   }
 
   @After
@@ -60,29 +59,47 @@ public class ModelAnnotationManagerTest {
   public void testCreateModelAnnotationGroup() throws Exception {
 
     CreateAttribute ca = new CreateAttribute();
+    ca.setField( "country" );
     ca.setGeoType( ModelAnnotation.GeoType.Country );
+    ModelAnnotation<CreateAttribute> m1 = new ModelAnnotation<CreateAttribute>( ca );
 
-    ModelAnnotation<CreateAttribute> m = new ModelAnnotation<CreateAttribute>( ca );
+    LinkDimension ld = new LinkDimension();
+    ld.setField( "country" );
+    ld.setSharedDimension( "Geo Dimension" );
+    ModelAnnotation<LinkDimension> m2 = new ModelAnnotation<LinkDimension>( ld );
+
     ModelAnnotationGroup group = new ModelAnnotationGroup();
     group.setName( "My Category" );
-    group.add( m );
+    group.add( m1 );
+    group.add( m2 );
 
     modelAnnotationManager.createGroup( group, this.metaStore );
-
     assertNotNull( modelAnnotationManager.readGroup( group.getName(), this.metaStore ) );
     assertNotNull(
         modelAnnotationManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
 
+    SharedDimensionGroup sGroup = new SharedDimensionGroup(  );
+    sGroup.setName( "Shared Dimension Group" );
+    sGroup.add( m1 );
+    sGroup.add( m2 );
 
-    group.setSharedDimension( true ); // make this a shared dimension
+    sharedDimensionManager.createGroup( sGroup, this.metaStore ); // able to save even with the same group name
 
-    sharedDimensionManager.createGroup( group, this.metaStore ); // able to save even with the same group name
+    ModelAnnotationGroup sharedDimensionGroup = sharedDimensionManager.readGroup( sGroup.getName(), this.metaStore );
+    assertEquals( sharedDimensionGroup.getName(), "Shared Dimension Group" );
+    assertTrue( sharedDimensionGroup instanceof SharedDimensionGroup );
+    assertEquals( sharedDimensionGroup.size(), 2 );
+    assertNotNull( sharedDimensionGroup.get( 0 ).getAnnotation().getType() );
+    assertNotNull( sharedDimensionGroup.get( 1 ).getAnnotation().getType() );
+    assertEquals( sharedDimensionGroup.get( 0 ).getAnnotation().getType(), ModelAnnotation.Type.CREATE_ATTRIBUTE );
+    assertEquals( sharedDimensionGroup.get( 1 ).getAnnotation().getType(), ModelAnnotation.Type.LINK_DIMENSION );
 
-    assertTrue( sharedDimensionManager.readGroup( group.getName(), this.metaStore ) instanceof SharedDimensionGroup );
+    CreateAttribute createAttribute = (CreateAttribute) sharedDimensionGroup.get( 0 ).getAnnotation();
+    assertEquals( createAttribute.getField(), "country" );
 
-    assertNotNull( sharedDimensionManager.readGroup( group.getName(), this.metaStore ) );
-    assertNotNull(
-        sharedDimensionManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
+    LinkDimension linkDimension = (LinkDimension) sharedDimensionGroup.get( 1 ).getAnnotation();
+    assertEquals( linkDimension.getField(), "country" );
+    assertEquals( linkDimension.getSharedDimension(), "Geo Dimension" );
   }
 
   @Test
@@ -241,7 +258,9 @@ public class ModelAnnotationManagerTest {
   @Test
   public void testStoreLoadDbMetaNew() throws Exception {
     KettleClientEnvironment.init();
-    DatabaseMeta dbMeta = new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
+    DatabaseMeta
+        dbMeta =
+        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
     dbMeta.getAttributes().setProperty( "SUPPORTS_BOOLEAN_DATA_TYPE", "N" );
     final String dbRef = modelAnnotationManager.storeDatabaseMeta( dbMeta, this.metaStore );
     assertEquals( dbMeta.getName(), dbRef );
@@ -255,15 +274,19 @@ public class ModelAnnotationManagerTest {
     assertEquals( dbMeta.getUsername(), dbMetaBack.getUsername() );
     assertEquals( dbMeta.getPassword(), dbMetaBack.getPassword() );
     assertEquals( dbMeta.getDatabaseName(), dbMetaBack.getDatabaseName() );
-    assertEquals( dbMeta.getURL() , dbMetaBack.getURL() );
+    assertEquals( dbMeta.getURL(), dbMetaBack.getURL() );
   }
 
   @Test
   public void testStoreLoadDbMetaUpdate() throws Exception {
     KettleClientEnvironment.init();
-    DatabaseMeta dbMetaPrevious = new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "otherhost", "db", "3002", "user1", "pass1" );
+    DatabaseMeta
+        dbMetaPrevious =
+        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "otherhost", "db", "3002", "user1", "pass1" );
     final String dbRefPrev = modelAnnotationManager.storeDatabaseMeta( dbMetaPrevious, this.metaStore );
-    DatabaseMeta dbMeta = new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
+    DatabaseMeta
+        dbMeta =
+        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
     dbMeta.getAttributes().setProperty( "SUPPORTS_BOOLEAN_DATA_TYPE", "N" );
     final String dbRef = modelAnnotationManager.storeDatabaseMeta( dbMeta, this.metaStore );
     assertEquals( dbMeta.getName(), dbRef );
@@ -278,6 +301,6 @@ public class ModelAnnotationManagerTest {
     assertEquals( dbMeta.getUsername(), dbMetaBack.getUsername() );
     assertEquals( dbMeta.getPassword(), dbMetaBack.getPassword() );
     assertEquals( dbMeta.getDatabaseName(), dbMetaBack.getDatabaseName() );
-    assertEquals( dbMeta.getURL() , dbMetaBack.getURL() );
+    assertEquals( dbMeta.getURL(), dbMetaBack.getURL() );
   }
 }
