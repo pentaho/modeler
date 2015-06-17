@@ -47,7 +47,7 @@ public class ModelAnnotationManager {
   private ModelAnnotationObjectFactory modelAnnotationObjectFactory = new ModelAnnotationObjectFactory();
 
   public ModelAnnotationManager() {
-    this( null );
+    this( false );
   }
 
   public ModelAnnotationManager( boolean sharedDimension ) {

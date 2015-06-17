@@ -78,7 +78,7 @@ public class ModelAnnotationManagerTest {
     assertNotNull(
         modelAnnotationManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
 
-    SharedDimensionGroup sGroup = new SharedDimensionGroup(  );
+    SharedDimensionGroup sGroup = new SharedDimensionGroup();
     sGroup.setName( "Shared Dimension Group" );
     sGroup.add( m1 );
     sGroup.add( m2 );
@@ -143,6 +143,33 @@ public class ModelAnnotationManagerTest {
   }
 
   @Test
+  public void testListSharedDimensionGroups() throws Exception {
+
+    final SharedDimensionGroup group = createSampleSharedDimensionGroup();
+
+    // add annotations
+    sharedDimensionManager.createGroup( group, this.metaStore );
+
+    List<String> names = sharedDimensionManager.listGroupNames( this.metaStore );
+
+    assertTrue( CollectionUtils.exists( names, new Predicate() {
+      @Override public boolean evaluate( Object o ) {
+
+        String name = (String) o;
+        if ( name.equals( group.getName() ) ) { // check mcm object
+          return true;
+        }
+
+        return false;
+      }
+    } ) );
+
+    List<ModelAnnotationGroup> loadedGroups =
+        sharedDimensionManager.listGroups( this.metaStore );
+    assertEquals( 1, loadedGroups.size() );
+  }
+
+  @Test
   public void testContainsGroup() throws Exception {
 
     ModelAnnotationGroup group = new ModelAnnotationGroup();
@@ -167,6 +194,19 @@ public class ModelAnnotationManagerTest {
     assertTrue( modelAnnotationManager.containsGroup( group.getName(), this.metaStore ) );
 
     assertFalse( sharedDimensionManager.containsGroup( group.getName(), this.metaStore ) );
+  }
+
+  @Test
+  public void testContainsSharedDimensionGroup() throws Exception {
+
+    SharedDimensionGroup group = createSampleSharedDimensionGroup();
+
+    // add annotations
+    sharedDimensionManager.createGroup( group, this.metaStore );
+
+    assertFalse( sharedDimensionManager.containsGroup( "null", this.metaStore ) );
+    assertTrue( sharedDimensionManager.containsGroup( group.getName(), this.metaStore ) );
+    assertFalse( modelAnnotationManager.containsGroup( group.getName(), this.metaStore ) );
   }
 
   @Test
@@ -201,9 +241,12 @@ public class ModelAnnotationManagerTest {
 
     modelAnnotationManager.deleteAllGroups( this.metaStore );
     assertEquals( 0, modelAnnotationManager.listGroupNames( this.metaStore ).size() );
+  }
 
-    // Make this a shared dimension group
-    group.setSharedDimension( true );
+  @Test
+  public void testDeleteSharedDimensionGroups() throws Exception {
+
+    SharedDimensionGroup group = createSampleSharedDimensionGroup();
 
     // add annotations
     sharedDimensionManager.createGroup( group, this.metaStore );
@@ -231,6 +274,27 @@ public class ModelAnnotationManagerTest {
 
     final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
     group.add( mcm );
+
+    CreateAttribute ca = new CreateAttribute();
+    ca.setGeoType( ModelAnnotation.GeoType.Country );
+
+    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
+    group.add( mca );
+
+    return group;
+  }
+
+  private SharedDimensionGroup createSampleSharedDimensionGroup() {
+
+    final SharedDimensionGroup group = new SharedDimensionGroup();
+    group.setName( "Shared Dimension" );
+
+    LinkDimension ld = new LinkDimension();
+    ld.setField( "country" );
+    ld.setSharedDimension( "Geo Dimension" );
+    ModelAnnotation<LinkDimension> mld = new ModelAnnotation<LinkDimension>( ld );
+
+    group.add( mld );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
