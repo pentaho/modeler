@@ -23,6 +23,7 @@
 package org.pentaho.agilebi.modeler.models.annotations.util;
 
 import mondrian.olap.MondrianDef;
+import org.apache.bcel.generic.MONITORENTER;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -42,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import java.io.StringWriter;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -62,7 +64,9 @@ public class MondrianSchemaHandlerTest {
   private static final String TEST_CALC_MEMBER_DIMENSION = "Test Calc Dimension";
   private static final String TEST_CALC_MEMBER_DESCRIPTION = "Test Calc Description";
 
-
+  private static final String TEST_AVERAGE_AGG_TYPE = "avg";
+  private static final String TEST_NUM_DECIMAL_FORMAT_STRING = "##.##";
+  private static final String TEST_EXISTING_MEASURE_STRING = "bc_BUYPRICE";
 
   Document schemaDocument;
 
@@ -170,5 +174,43 @@ public class MondrianSchemaHandlerTest {
     catch( Exception e ){
       return null;
     }
+  }
+
+  @Test
+  public void testUpdateMeasure() {
+    assertTrue( schemaDocument != null );
+
+    MondrianDef.Measure measure = new MondrianDef.Measure();
+    measure.name = TEST_MEASURE_NAME;
+    measure.aggregator = TEST_AVERAGE_AGG_TYPE;
+    measure.formatString = TEST_NUM_DECIMAL_FORMAT_STRING;
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+
+    try {
+      mondrianSchemaHandler.updateMeasure( null, TEST_EXISTING_MEASURE_STRING, measure );
+    } catch ( ModelerException e ) {
+      e.printStackTrace();
+    }
+
+    boolean testMeasureFound = false;
+    NodeList nodeList = schemaDocument.getElementsByTagName( MEASURE_NODE_NAME );
+    for( int x = 0; x <= nodeList.getLength() - 1; x++ ){
+      Node measureNode = nodeList.item( x );
+      String measureName = measureNode.getAttributes().getNamedItem(
+        MondrianSchemaHandler.MEASURE_NAME_ATTRIBUTE ).getNodeValue();
+      if( measureName != null && measureName.equals( TEST_MEASURE_NAME ) ) {
+        testMeasureFound = true;
+        assertEquals( TEST_AVERAGE_AGG_TYPE,
+          measureNode.getAttributes().getNamedItem(
+            MondrianSchemaHandler.MEASURE_AGGREGATOR_ATTRIBUTE ).getNodeValue() );
+        assertEquals( TEST_NUM_DECIMAL_FORMAT_STRING,
+          measureNode.getAttributes().getNamedItem(
+            MondrianSchemaHandler.MEASURE_FORMAT_STRING_ATTRIBUTE ).getNodeValue() );
+        break;
+      }
+    }
+
+    assertTrue( testMeasureFound );
   }
 }

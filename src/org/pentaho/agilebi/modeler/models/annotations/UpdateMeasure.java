@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import mondrian.olap.MondrianDef;
 import mondrian.rolap.aggmatcher.DefaultDef;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -52,24 +53,23 @@ public class UpdateMeasure extends AnnotationType {
   private static final String NAME_NAME = "Name";
   private static final int NAME_ORDER = 0;
 
-  private static final String MEASURE_ID = "measure";
-  private static final String MEASURE_NAME = "Measure";
-  private static final int MEASURE_ORDER = 1;
-
   private static final String CUBE_ID = "cube";
   private static final String CUBE_NAME = "Cube";
-  private static final int CUBE_ORDER = 2;
+  private static final int CUBE_ORDER = 1;
 
   private static final String AGGREGATION_TYPE_ID = "aggregationType";
   private static final String AGGREGATION_TYPE_NAME = "Aggregation Type";
-  private static final int AGGREGATION_TYPE_ORDER = 3;
+  private static final int AGGREGATION_TYPE_ORDER = 2;
+
+  private static final String FORMAT_ID = "format";
+  private static final String FORMAT_NAME = "Format";
+  private static final int FORMAT_ORDER = 3;
 
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
 
   @MetaStoreAttribute
-  @ModelProperty( id = MEASURE_ID, name = MEASURE_NAME, order = MEASURE_ORDER )
   private String measure;
 
   @MetaStoreAttribute
@@ -79,6 +79,10 @@ public class UpdateMeasure extends AnnotationType {
   @MetaStoreAttribute
   @ModelProperty( id = AGGREGATION_TYPE_ID, name = AGGREGATION_TYPE_NAME, order = AGGREGATION_TYPE_ORDER )
   private AggregationType aggregationType;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = FORMAT_ID, name = FORMAT_NAME, order = FORMAT_ORDER )
+  private String format;
 
   /**
    * Retrieves the measure based on the formula.
@@ -110,7 +114,9 @@ public class UpdateMeasure extends AnnotationType {
   public boolean apply(
     final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
     if ( workspace == null ) {
-      return false;
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
+      );
     }
 
     MeasureMetaData existingMeasure = locateMeasureFromFormula( workspace, measure );
@@ -134,7 +140,13 @@ public class UpdateMeasure extends AnnotationType {
       existingMeasure.setDefaultAggregation( aggregationType );
     }
 
-    existingMeasure.setName( name );
+    // No null or empty check so that default format can be set. See getFormat().
+    existingMeasure.setFormat( format );
+
+    if ( !StringUtils.isBlank( name ) ) {
+      existingMeasure.setName( name );
+    }
+
     workspace.getWorkspaceHelper().populateDomain( workspace );
 
     return true;
@@ -143,7 +155,9 @@ public class UpdateMeasure extends AnnotationType {
   @Override
   public boolean apply( final Document schema ) throws ModelerException {
     if ( schema == null ) {
-      return false;
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
+      );
     }
 
     String mondrianAggregationType = null;
@@ -151,7 +165,12 @@ public class UpdateMeasure extends AnnotationType {
       mondrianAggregationType = MondrianModelExporter.convertToMondrian( aggregationType );
     }
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schema );
-    mondrianSchemaHandler.updateMeasure( cube, measure, name, mondrianAggregationType );
+
+    MondrianDef.Measure updatedMeasure = new MondrianDef.Measure();
+    updatedMeasure.name = name;
+    updatedMeasure.aggregator = mondrianAggregationType;
+    updatedMeasure.formatString = format;
+    mondrianSchemaHandler.updateMeasure( cube, measure, updatedMeasure );
 
     return true;
   }
@@ -215,6 +234,14 @@ public class UpdateMeasure extends AnnotationType {
 
   public void setAggregationType( AggregationType aggregationType ) {
     this.aggregationType = aggregationType;
+  }
+
+  public String getFormat() {
+    return format;
+  }
+
+  public void setFormat( String format ) {
+    this.format = format;
   }
 }
 
