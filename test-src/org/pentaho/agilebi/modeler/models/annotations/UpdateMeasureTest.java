@@ -68,6 +68,9 @@ public class UpdateMeasureTest {
   private static String INIT_MEASURE_MONDRIAN_FORMULA = "[" + AnnotationType.MEASURES_DIMENSION + "].["
     + INIT_BUYPRICE_COLUMN + "]";
 
+  private static final String INIT_FORMAT = "#";
+  private static final String NEW_FORMAT = "##.##";
+
   @Before
   public void setUp() throws Exception {
     metaStore = new MemoryMetaStore();
@@ -165,6 +168,38 @@ public class UpdateMeasureTest {
     measure = AnnotationUtil.getOlapMeasure( INIT_BUYPRICE_NAME, olapMeasures );
     assertNotNull( measure );
     assertEquals( AggregationType.AVERAGE, measure.getLogicalColumn().getAggregationType() );
+  }
+
+  @Test
+  public void testMetaDataUpdateFormat() throws Exception {
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    // Initial measure exists
+    LogicalModel logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    OlapCube cube = ( (List<OlapCube>) logicalModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
+    OlapMeasure measure = AnnotationUtil.getOlapMeasure( INIT_BUYPRICE_NAME, olapMeasures );
+    assertNotNull( measure );
+    assertEquals( INIT_FORMAT, measure.getLogicalColumn().getProperty( "mask" ) );
+
+    // Changing the aggregation type
+    UpdateMeasure updateMeasure = new UpdateMeasure();
+    updateMeasure.setMeasure( INIT_MEASURE_FORMULA );
+    updateMeasure.setName( INIT_BUYPRICE_NAME );
+    updateMeasure.setFormat( NEW_FORMAT );
+    boolean isApplied = updateMeasure.apply( model, metaStore );
+    assertTrue( isApplied );
+
+    // Ensure the aggregation type got set
+    logicalModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    cube = ( (List<OlapCube>) logicalModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+    olapMeasures = cube.getOlapMeasures();
+    measure = AnnotationUtil.getOlapMeasure( INIT_BUYPRICE_NAME, olapMeasures );
+    assertNotNull( measure );
+    assertEquals( NEW_FORMAT, measure.getLogicalColumn().getProperty( "mask" ) );
   }
 
   @Test
@@ -277,6 +312,51 @@ public class UpdateMeasureTest {
       INIT_BUYPRICE_COLUMN,
       AnnotationUtil.AGGREGATOR_ATTRIB,
       "avg" ) );
+  }
+
+  @Test
+  public void testMondrianUpdateFormat() throws Exception {
+    File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
+
+    Document mondrianSchemaXmlDoc =
+      DocumentBuilderFactory
+        .newInstance()
+        .newDocumentBuilder()
+        .parse( mondrianSchemaXmlFile );
+    assertTrue( mondrianSchemaXmlDoc != null );
+    // Check existing state
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.NAME_ATTRIB,
+      INIT_BUYPRICE_COLUMN ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.FORMATSTRING_ATTRIB,
+      INIT_FORMAT ) );
+
+    // Changing the aggregation type
+    UpdateMeasure updateMeasure = new UpdateMeasure();
+    updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
+    updateMeasure.setName( INIT_BUYPRICE_COLUMN );
+    updateMeasure.setFormat( NEW_FORMAT );
+    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc  );
+    assertTrue( isApplied );
+
+    // Check change
+    assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.MEASURE_ELEMENT_NAME ).getLength()
+      > 0 );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.NAME_ATTRIB,
+      INIT_BUYPRICE_COLUMN ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.FORMATSTRING_ATTRIB,
+      NEW_FORMAT ) );
   }
 
   @Test

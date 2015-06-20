@@ -26,7 +26,6 @@ import mondrian.olap.MondrianDef;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.metadata.util.MondrianModelExporter;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -220,12 +219,10 @@ public class MondrianSchemaHandler {
    *
    * @param cubeName Cube to search for measure
    * @param measureName Name of measure to search for
-   * @param newName The new name to give the measure (optional)
-   * @param aggregation The new aggregation type to set (optional)
+   * @param measure The updated measure
    * @throws ModelerException
    */
-  public void updateMeasure( String cubeName, String measureName,
-                             String newName, String aggregation ) throws ModelerException {
+  public void updateMeasure( String cubeName, String measureName, MondrianDef.Measure measure ) throws ModelerException {
     if ( StringUtils.isBlank( measureName ) ) {
       throw new ModelerException(
         BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
@@ -244,32 +241,36 @@ public class MondrianSchemaHandler {
 
     try {
       // Check to make sure there isn't a measure that already exists with the new name
-      Node duplicateMeasure = getMeasureNode( cubeName, newName );
-      if ( !measureName.equals( newName ) && duplicateMeasure != null ) {
+      Node duplicateMeasure = getMeasureNode( cubeName, measure.name );
+      if ( !measureName.equals( measure.name ) && duplicateMeasure != null ) {
         throw new ModelerException(
-          BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.MEASURE_ALREADY_EXISTS", newName )
+          BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.MEASURE_ALREADY_EXISTS", measure.name )
         );
       }
 
-      Node measure = getMeasureNode( cubeName, measureName );
-      if ( measure == null ) {
+      Node measureNode = getMeasureNode( cubeName, measureName );
+      if ( measureNode == null ) {
         throw new ModelerException(
           BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
         );
       }
 
-      NamedNodeMap measureAttrs = measure.getAttributes();
+      NamedNodeMap measureAttrs = measureNode.getAttributes();
 
       // Change aggregation
-      if ( !StringUtils.isBlank( aggregation ) ) {
+      if ( !StringUtils.isBlank( measure.aggregator ) ) {
         Node aggNode = measureAttrs.getNamedItem( "aggregator" );
-        aggNode.setNodeValue( aggregation );
+        aggNode.setNodeValue( measure.aggregator );
       }
 
+      // Change format
+      Node formatNode = measureAttrs.getNamedItem( "formatString" );
+      formatNode.setNodeValue( measure.formatString );
+
       // Name Change
-      if ( !StringUtils.isBlank( newName ) ) {
+      if ( !StringUtils.isBlank( measure.name ) ) {
         Node nameNode = measureAttrs.getNamedItem( "name" );
-        nameNode.setNodeValue( newName );
+        nameNode.setNodeValue( measure.name );
       }
     } catch ( Exception e ) {
       throw new ModelerException( e );

@@ -46,6 +46,7 @@ public final class AnnotationUtil {
   public static final String NAME_ATTRIB = "name";
   public static final String AGGREGATOR_ATTRIB = "aggregator";
   public static final String VISIBLE_ATTRIB = "visible";
+  public static final String FORMATSTRING_ATTRIB = "formatString";
 
   private AnnotationUtil() {
   }
