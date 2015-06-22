@@ -16,7 +16,7 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ModelAnnotationGroupCompatibilityTest {
 
-  private static String XML_METASTORE = "test-res/metastore_legacy";
+  private static String XML_METASTORE = "test-res/metastore_test";
 
   private IMetaStore metaStore = null;
   private ModelAnnotationManager modelAnnotationManager = null;
