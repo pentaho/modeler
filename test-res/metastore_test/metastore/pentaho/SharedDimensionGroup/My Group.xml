@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<element>
+  <id>My Group</id>
+  <value></value>
+  <type>String</type>
+  <children>
+    <child>
+      <id>modelAnnotations</id>
+      <value>org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation</value>
+      <type>String</type>
+      <children>
+        <child>
+          <id>0</id>
+          <value></value>
+          <type>String</type>
+          <children>
+            <child>
+              <id>annotation</id>
+              <value>org.pentaho.agilebi.modeler.models.annotations.CreateDimensionKey</value>
+              <type>String</type>
+              <children>
+                <child>
+                  <id>name</id>
+                  <value>Some Name</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>dimension</id>
+                  <value>Some Dimension</value>
+                  <type>String</type>
+                </child>
+              </children>
+            </child>
+            <child>
+              <id>field</id>
+              <value>f1</value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>name</id>
+              <value>138a25f5-69d0-40b3-b5bd-9a318b37c190</value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>cube</id>
+              <value></value>
+              <type>String</type>
+            </child>
+          </children>
+        </child>
+        <child>
+          <id>1</id>
+          <value></value>
+          <type>String</type>
+          <children>
+            <child>
+              <id>annotation</id>
+              <value>org.pentaho.agilebi.modeler.models.annotations.CreateAttribute</value>
+              <type>String</type>
+              <children>
+                <child>
+                  <id>geoType</id>
+                  <value>City</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>businessGroup</id>
+                  <value>Some Business Group</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>unique</id>
+                  <value>Y</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>timeFormat</id>
+                  <value>Some Time Format</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>hierarchy</id>
+                  <value>Some hierarchy</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>name</id>
+                  <value>Attribute Name</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>timeType</id>
+                  <value>TimeDays</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>description</id>
+                  <value>Some Description</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>ordinalField</id>
+                  <value>Some Ordinal Field</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>dimension</id>
+                  <value>Some Dimension</value>
+                  <type>String</type>
+                </child>
+                <child>
+                  <id>parentAttribute</id>
+                  <value>Some Parent Attribute</value>
+                  <type>String</type>
+                </child>
+              </children>
+            </child>
+            <child>
+              <id>field</id>
+              <value>f2</value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>name</id>
+              <value>18d02eab-fcaa-4c44-a21c-a7f95062a37b</value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>cube</id>
+              <value></value>
+              <type>String</type>
+            </child>
+          </children>
+        </child>
+      </children>
+    </child>
+    <child>
+      <id>sharedDimension</id>
+      <value>Y</value>
+      <type>String</type>
+    </child>
+    <child>
+      <id>name</id>
+      <value>My Group</value>
+      <type>String</type>
+    </child>
+    <child>
+      <id>description</id>
+      <value>My Description</value>
+      <type>String</type>
+    </child>
+    <child>
+      <id>dataProviders</id>
+      <value>org.pentaho.agilebi.modeler.models.annotations.data.DataProvider</value>
+      <type>String</type>
+      <children>
+        <child>
+          <id>0</id>
+          <value></value>
+          <type>String</type>
+          <children>
+            <child>
+              <id>columnMappings</id>
+              <value></value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>databaseMetaNameRef</id>
+              <value>Some Database Meta Name Ref</value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>name</id>
+              <value>Some Data Provider</value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>schemaName</id>
+              <value>Some Schema Name</value>
+              <type>String</type>
+            </child>
+            <child>
+              <id>tableName</id>
+              <value>Some Table Name</value>
+              <type>String</type>
+            </child>
+          </children>
+        </child>
+      </children>
+    </child>
+    <child>
+      <id>id</id>
+      <value>My Id</value>
+      <type>String</type>
+    </child>
+  </children>
+  <name>My Group</name>
+  <security>
+    <owner/>
+    <owner-permissions-list/>
+  </security>
+</element>

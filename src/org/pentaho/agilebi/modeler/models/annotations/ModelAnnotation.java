@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -59,9 +60,23 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private String name = UUID.randomUUID().toString(); // default random identifier
 
   @MetaStoreAttribute
+  @Deprecated // Legacy Support
+  private String field;
+
+  @MetaStoreAttribute
+  @Deprecated // Legacy Support
+  private String cube;
+
+  @MetaStoreAttribute
   private T annotation;
 
   public ModelAnnotation() {
+  }
+
+  @Deprecated // Legacy Support
+  public ModelAnnotation( final String field, final T annotation ) {
+    setAnnotation( annotation );
+    setField( field ); // backwards compatibility
   }
 
   // Required by the MetaStore
@@ -108,6 +123,39 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     }
 
     return list;
+  }
+
+  @Deprecated // Legacy Support
+  public String getField() {
+    try {
+      // Return the field property of the annotation type
+      String f = PropertyUtils.getProperty( annotation, "field" ).toString();
+      return f;
+    } catch ( Exception e ) {
+      // Return legacy field
+      return field;
+    }
+  }
+
+  @Deprecated // Legacy Support
+  public void setField( String field ) {
+    this.field = field;
+    try {
+      // try to apply to the field property of the annotation, if exists
+      PropertyUtils.setProperty( annotation, "field", field );
+    } catch ( Exception e ) {
+      // ignore
+    }
+  }
+
+  @Deprecated // Legacy Support
+  public String getCube() {
+    return cube;
+  }
+
+  @Deprecated // Legacy Support
+  public void setCube( String cube ) {
+    this.cube = cube;
   }
 
   public T getAnnotation() {
