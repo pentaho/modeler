@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -19,57 +19,17 @@
  * confidentiality and non-disclosure agreements or other agreements with Pentaho,
  * explicitly covering such access.
  */
-
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.metastore.api.IMetaStore;
-import org.w3c.dom.Document;
+import org.junit.Test;
 
-/**
- * @author Brandon Groves on 5/22/15.
- */
-public class BlankAnnotation extends AnnotationType {
-  private String field;
+import static org.junit.Assert.*;
 
-  @Override
-  public boolean apply( ModelerWorkspace workspace, IMetaStore metaStore )
-    throws ModelerException {
-    return false;
-  }
 
-  @Override
-  public boolean apply( Document schema ) throws ModelerException {
-    return false;
-  }
-
-  @Override
-  public void validate() throws ModelerException {
-
-  }
-
-  @Override
-  public ModelAnnotation.Type getType() {
-    return ModelAnnotation.Type.BLANK;
-  }
-
-  @Override
-  public String getSummary() {
-    return null;
-  }
-
-  @Override
-  public String getName() {
-    return null;
-  }
-
-  @Override
-  public String getField() {
-    return field;
-  }
-
-  public void setField( String field ) {
-    this.field = field;
+public class BlankAnnotationTest {
+  @Test
+  public void testBlankTypeIsNotNull() throws Exception {
+    BlankAnnotation blankAnnotation = new BlankAnnotation();
+    assertEquals( ModelAnnotation.Type.BLANK, blankAnnotation.getType() );
   }
 }
