@@ -22,8 +22,12 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.*;
+import static org.pentaho.agilebi.modeler.models.annotations.CreateDimensionKey.FIELD_ID;
 
+import java.util.List;
 import java.util.Locale;
 
 import org.junit.Test;
@@ -93,5 +97,20 @@ public class CreateDimensionKeyTest {
   @Test
   public void testApplyIsAlwaysTrue() throws Exception {
     assertEquals( true, new CreateDimensionKey().apply( null, null ) );
+  }
+
+  @Test
+  public void testFieldIsHiddenProperty() throws Exception {
+    CreateDimensionKey createDimensionKey = new CreateDimensionKey();
+    List<ModelProperty> modelProperties = createDimensionKey.getModelProperties();
+    int assertCount = 0;
+    for ( ModelProperty modelProperty : modelProperties ) {
+      String id = modelProperty.id();
+      if ( FIELD_ID.equals( id ) ) {
+        assertTrue( modelProperty.hideUI() );
+        assertCount++;
+      }
+    }
+    assertEquals( 1, assertCount );
   }
 }

@@ -54,7 +54,7 @@ public class CreateDimensionKey extends AnnotationType {
   @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
   private String dimension;
 
-  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER )
+  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true )
   @MetaStoreAttribute
   private String field;
 

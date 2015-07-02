@@ -105,19 +105,19 @@ public class CreateMeasure extends AnnotationType {
   private String description;
 
   @MetaStoreAttribute
-  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER )
+  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true  )
   private String field;
 
   @MetaStoreAttribute
-  @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER )
+  @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER, hideUI = true  )
   private String level;
 
   @MetaStoreAttribute
-  @ModelProperty( id = MEASURE_ID, name = MEASURE_NAME, order = MEASURE_ORDER )
+  @ModelProperty( id = MEASURE_ID, name = MEASURE_NAME, order = MEASURE_ORDER, hideUI = true  )
   private String measure;
 
   @MetaStoreAttribute
-  @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
+  @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER, hideUI = true  )
   private String cube;
 
   @MetaStoreAttribute

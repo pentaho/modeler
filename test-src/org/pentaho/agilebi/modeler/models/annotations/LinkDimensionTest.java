@@ -21,10 +21,7 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,9 +61,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @SuppressWarnings( "unchecked" )
 public class LinkDimensionTest {
@@ -474,6 +469,21 @@ public class LinkDimensionTest {
     assertEquals( attr.getName(), idLevel.getName() );
 
     assertEquals( 3, cube.getOlapMeasures().size() );
+  }
+
+  @Test
+  public void testFieldIsHiddenProperty() throws Exception {
+    LinkDimension linkDimension = new LinkDimension();
+    List<ModelProperty> modelProperties = linkDimension.getModelProperties();
+    int assertCount = 0;
+    for ( ModelProperty modelProperty : modelProperties ) {
+      String id = modelProperty.id();
+      if ( LinkDimension.FIELD_ID.equals( id ) ) {
+        Assert.assertTrue( modelProperty.hideUI() );
+        assertCount++;
+      }
+    }
+    assertEquals( 1, assertCount );
   }
 
   private ModelerWorkspace prepareOrderModel() throws Exception {

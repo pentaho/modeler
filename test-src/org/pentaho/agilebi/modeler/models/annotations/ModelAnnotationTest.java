@@ -204,4 +204,22 @@ public class ModelAnnotationTest {
     assertFalse( ModelAnnotation.Type.LINK_DIMENSION
         .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaInteger() ) );
   }
+
+  @Test
+  public void testTheInlineAnnotationsAreNeverApplicable() throws Exception {
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup();
+    modelAnnotations.setDataProviders( Arrays.asList( new DataProvider() ) );
+    assertFalse(
+        ModelAnnotation.Type.UPDATE_MEASURE
+        .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
+    assertFalse(
+        ModelAnnotation.Type.REMOVE_MEASURE
+        .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
+    assertFalse(
+        ModelAnnotation.Type.REMOVE_ATTRIBUTE
+        .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
+    assertFalse(
+        ModelAnnotation.Type.CREATE_CALCULATED_MEMBER
+        .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
+  }
 }

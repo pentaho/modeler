@@ -71,7 +71,7 @@ public class LinkDimension extends AnnotationType {
   private String sharedDimension;
 
   @MetaStoreAttribute
-  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER )
+  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true )
   private String field;
 
   @Override public boolean apply(
@@ -170,7 +170,7 @@ public class LinkDimension extends AnnotationType {
         (List<SqlPhysicalTable>) factWorkspace.getDomain().getPhysicalModels().get( 0 ).getPhysicalTables();
     physicalTables.add( (SqlPhysicalTable) dimTable.getPhysicalTable() );
     logicalModel.addLogicalRelationship(
-      new LogicalRelationship(
+        new LogicalRelationship(
         logicalModel, factTable, dimTable,
         locateLogicalColumn( factWorkspace, factKey ), locateLogicalColumn( dimensionWorkspace, dimKey ) ) );
   }
