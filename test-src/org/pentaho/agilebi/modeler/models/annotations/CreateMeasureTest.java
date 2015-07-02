@@ -21,9 +21,6 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +44,8 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import java.io.FileInputStream;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.*;
+import static org.pentaho.agilebi.modeler.models.annotations.CreateMeasure.*;
 import static org.pentaho.metadata.model.LogicalModel.PROPERTY_OLAP_CUBES;
 import static org.pentaho.metadata.model.SqlPhysicalColumn.TARGET_COLUMN;
 import static org.pentaho.metadata.model.concept.types.AggregationType.*;
@@ -441,6 +438,21 @@ public class CreateMeasureTest {
       }
     }
     assertTrue( found );
+  }
+
+  @Test
+  public void testFieldLevelCubeMeasureAreHiddenProperties() throws Exception {
+    CreateMeasure createMeasure = new CreateMeasure();
+    List<ModelProperty> modelProperties = createMeasure.getModelProperties();
+    int assertCount = 0;
+    for ( ModelProperty modelProperty : modelProperties ) {
+      String id = modelProperty.id();
+      if ( FIELD_ID.equals( id ) || LEVEL_ID.equals( id ) || CUBE_ID.equals( id ) || MEASURE_ID.equals( id ) ) {
+        assertTrue( modelProperty.hideUI() );
+        assertCount++;
+      }
+    }
+    assertEquals( 4, assertCount );
   }
 
   @SuppressWarnings( "unchecked" )

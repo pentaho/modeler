@@ -32,19 +32,19 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
-import static org.pentaho.di.core.Const.isEmpty;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.olap.OlapDimension;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
-import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static org.pentaho.di.core.Const.isEmpty;
 
 /**
  * @author Rowell Belen
@@ -157,15 +157,15 @@ public class CreateAttribute extends AnnotationType {
   private String businessGroup;
 
   @MetaStoreAttribute
-  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER )
+  @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true )
   private String field;
 
   @MetaStoreAttribute
-  @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER )
+  @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER, hideUI = true  )
   private String level;
 
   @MetaStoreAttribute
-  @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
+  @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER, hideUI = true )
   private String cube;
 
   public String getName() {

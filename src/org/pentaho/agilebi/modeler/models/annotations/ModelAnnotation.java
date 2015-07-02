@@ -99,19 +99,19 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
    */
 
   public static List<ModelAnnotation<CreateMeasure>> getMeasures(
-    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateMeasure.class );
   }
 
   public static List<ModelAnnotation<CreateAttribute>> getAttributes(
-    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations ) {
     return filter( annotations, CreateAttribute.class );
   }
 
   private static <S extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType> List<ModelAnnotation<S>>
-  filter(
-    final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
-    Class<S> cls ) {
+      filter(
+      final List<ModelAnnotation<? extends org.pentaho.agilebi.modeler.models.annotations.AnnotationType>> annotations,
+      Class<S> cls ) {
 
     List<ModelAnnotation<S>> list = new ArrayList<ModelAnnotation<S>>();
     if ( cls != null && annotations != null && annotations.size() > 0 ) {
@@ -216,24 +216,24 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   public static enum Type {
     CREATE_MEASURE( CREATE_MEASURE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
         return !modelAnnotations.isSharedDimension();
       }
     },
     CREATE_ATTRIBUTE( CREATE_ATTRIBUTE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
         return true;
       }
     },
     CREATE_DIMENSION_KEY( CREATE_DIMENSION_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
+          final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
         return modelAnnotations.isSharedDimension()
           && ( isDimensionKey( modelAnnotation ) || !hasDimensionKey( modelAnnotations ) );
       }
@@ -260,41 +260,41 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     },
     CREATE_CALCULATED_MEMBER( CREATE_CALCULATED_MEMBER_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
-        return !modelAnnotations.isSharedDimension();
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return false;
       }
     },
     REMOVE_MEASURE( REMOVE_MEASURE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
-        return !modelAnnotations.isSharedDimension();
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return false;
       }
     },
     REMOVE_ATTRIBUTE( REMOVE_ATTRIBUTE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
-        return true;
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return false;
       }
     },
     UPDATE_MEASURE( UPDATE_MEASURE_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
-        return true;
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
+        return false;
       }
     },
     BLANK( BLANK_ENUM_VALUE ) {
       @Override public boolean isApplicable(
-        final ModelAnnotationGroup modelAnnotations,
-        final ModelAnnotation modelAnnotation,
-        final ValueMetaInterface valueMeta ) {
+          final ModelAnnotationGroup modelAnnotations,
+          final ModelAnnotation modelAnnotation,
+          final ValueMetaInterface valueMeta ) {
         return false;
       }
     };
@@ -319,9 +319,9 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
     }
 
     public abstract boolean isApplicable(
-      final ModelAnnotationGroup modelAnnotations,
-      final ModelAnnotation modelAnnotation,
-      final ValueMetaInterface valueMeta );
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta );
   }
 
   public static enum TimeType {

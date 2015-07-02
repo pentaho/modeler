@@ -27,6 +27,7 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
+import static org.pentaho.agilebi.modeler.models.annotations.CreateAttribute.*;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -81,7 +82,7 @@ public class CreateAttributeTest {
   @Test
   public void testCanCreateHierarchyWithMultipleLevels() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -141,7 +142,7 @@ public class CreateAttributeTest {
     assertNotNull( productNameLevel );
     assertEquals( "Product Name", productNameLevel.getName() );
     assertEquals( "PRODUCTSCALE_OLAP",
-      productNameLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+        productNameLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
 
     OlapDimensionUsage dateDim = AnnotationUtil.getOlapDimensionUsage( "Date", dimensionUsages );
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, dateDim.getOlapDimension().getType() );
@@ -168,21 +169,21 @@ public class CreateAttributeTest {
     createAttribute.setParentAttribute( "Product Category" );
     createAttribute.setHierarchy( "Product" );
     assertEquals(
-      "Product Name participates in hierarchy Product with parent Product Category",
-      createAttribute.getSummary() );
+        "Product Name participates in hierarchy Product with parent Product Category",
+        createAttribute.getSummary() );
 
     CreateAttribute topAttribute = new CreateAttribute();
     topAttribute.setName( "Product Category" );
     topAttribute.setHierarchy( "Product" );
     assertEquals(
-      "Product Category is top level in hierarchy Product",
-      topAttribute.getSummary() );
+        "Product Category is top level in hierarchy Product",
+        topAttribute.getSummary() );
   }
 
   @Test
   public void testEmptyHierarchyIsValid() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -217,7 +218,7 @@ public class CreateAttributeTest {
 
     assertEquals( "Product Code is top level in hierarchy", productCode.getSummary() );
     assertEquals( "Product Description participates in hierarchy with parent Product Code",
-      productDescription.getSummary() );
+        productDescription.getSummary() );
   }
 
   @Test
@@ -240,6 +241,7 @@ public class CreateAttributeTest {
       createAttribute.validate(); // throws an error
       fail( "no exception" );
     } catch ( ModelerException me ) {
+      assertEquals( "Field name or level name is required.", me.getMessage() );
     }
 
     try {
@@ -248,6 +250,7 @@ public class CreateAttributeTest {
       createAttribute.validate(); // throws an error
       fail( "no exception" );
     } catch ( ModelerException me ) {
+      assertEquals( "Field name or level name is required.", me.getMessage() );
     }
 
     try {
@@ -257,6 +260,7 @@ public class CreateAttributeTest {
       createAttribute.validate(); // throws an error
       fail( "no exception" );
     } catch ( ModelerException me ) {
+      assertEquals( "Dimension name is required.", me.getMessage() );
     }
 
     try {
@@ -270,6 +274,7 @@ public class CreateAttributeTest {
       ( new CreateAttribute() ).validate();
       fail( "no exception" );
     } catch ( ModelerException me ) {
+      assertEquals( "Attribute Name is required.", me.getMessage() );
     }
   }
 
@@ -498,14 +503,14 @@ public class CreateAttributeTest {
     db.connect();
     db.execStatement( "DROP TABLE if exists geodata;" );
     db.execStatement( "CREATE TABLE geodata\n"
-      + "(\n"
-      + "  state_fips bigint\n"
-      + ", state varchar(25)\n"
-      + ", state_abbr varchar(4)\n"
-      + ", zipcode varchar(10)\n"
-      + ", country varchar(45)\n"
-      + ", city varchar(45)\n"
-      + ");\n" );
+        + "(\n"
+        + "  state_fips bigint\n"
+        + ", state varchar(25)\n"
+        + ", state_abbr varchar(4)\n"
+        + ", zipcode varchar(10)\n"
+        + ", country varchar(45)\n"
+        + ", city varchar(45)\n"
+        + ");\n" );
     db.disconnect();
     return dbMeta;
 
@@ -541,7 +546,7 @@ public class CreateAttributeTest {
   @Test
   public void testNoExceptionWithOrdinalSameAsColumn() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -563,18 +568,18 @@ public class CreateAttributeTest {
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, timeDim.getOlapDimension().getType() );
     OlapHierarchy timeHierarchy = timeDim.getOlapDimension().getHierarchies().get( 0 );
     OlapHierarchyLevel monthLevel = AnnotationUtil.getOlapHierarchyLevel( "MonthDesc",
-      timeHierarchy.getHierarchyLevels() );
+        timeHierarchy.getHierarchyLevels() );
     assertNotNull( monthLevel );
     assertEquals( "PRODUCTCODE_OLAP",
-      monthLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+        monthLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
     assertEquals( "PRODUCTCODE_OLAP",
-      monthLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+        monthLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
   }
 
   @Test
   public void testUsingHierarchyWithSameNameWillOverwrite() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -598,11 +603,11 @@ public class CreateAttributeTest {
     assertNotNull( timeDim );
     OlapHierarchy timeHierarchy = timeDim.getOlapDimension().getHierarchies().get( 0 );
     OlapHierarchyLevel codeLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Code",
-      timeHierarchy.getHierarchyLevels() );
+        timeHierarchy.getHierarchyLevels() );
     assertNotNull( codeLevel );
     assertEquals( "Product Code", codeLevel.getName() );
     assertEquals( "PRODUCTCODE_OLAP",
-      codeLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+        codeLevel.getReferenceColumn().getName( model.getWorkspaceHelper().getLocale() ) );
   }
 
   @Test
@@ -628,7 +633,7 @@ public class CreateAttributeTest {
   @Test
   public void testResolveFieldFromLevel() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
