@@ -168,6 +168,17 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   }
 
   public boolean apply( final ModelerWorkspace modelerWorkspace, final IMetaStore metaStore ) throws ModelerException {
+
+    // Backwards Compatibility
+    if ( this.getField() != null ) {
+      try {
+        // try to apply to the field property of the annotation, if exists
+        PropertyUtils.setProperty( annotation, "field", this.getField() );
+      } catch ( Exception e ) {
+        // ignore
+      }
+    }
+
     return annotation.apply( modelerWorkspace, metaStore );
   }
 
