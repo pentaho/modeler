@@ -21,14 +21,7 @@
  */
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.FAILED;
-import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.NULL_ANNOTATION;
-import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.SUCCESS;
-
+import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -44,15 +37,20 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Document;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.*;
+import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.*;
 
 public class ModelAnnotationGroupTest {
 
@@ -187,8 +185,17 @@ public class ModelAnnotationGroupTest {
   private ModelAnnotation testingAnnotation( final boolean... statuses ) {
     return new ModelAnnotation() {
       private int i = 0;
+      @SuppressWarnings( "SimplifiableIfStatement" )
       @Override public boolean apply( final ModelerWorkspace modelerWorkspace, final IMetaStore metaStore )
           throws ModelerException {
+        if ( statuses.length > i ) {
+          return statuses[i++];
+        }
+        return true;
+      }
+
+      @SuppressWarnings( "SimplifiableIfStatement" )
+      @Override public boolean apply( final Document schema ) throws ModelerException {
         if ( statuses.length > i ) {
           return statuses[i++];
         }
@@ -246,5 +253,37 @@ public class ModelAnnotationGroupTest {
     }
     DatabaseMeta dbMeta = new DatabaseMeta( "myh2", "HYPERSONIC", "Native", null, dbDir, null, "sa", null );
     return dbMeta;
+  }
+
+  @SuppressWarnings( "MismatchedQueryAndUpdateOfCollection" )
+  @Test
+  public void testMondrianAnnotationsRetry() throws Exception {
+    ModelAnnotation annotation1 = testingAnnotation( false, false, false );
+    ModelAnnotation annotation2 = testingAnnotation( false, true );
+    ModelAnnotation annotation3 = testingAnnotation( true );
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup( annotation1, annotation2, annotation3 );
+    Document document = XMLHandler.loadXMLFile( getClass().getResourceAsStream( "resources/simple.mondrian.xml" ) );
+    Map<ApplyStatus, List<ModelAnnotation>> statusMap = modelAnnotations.applyAnnotations( document );
+    assertEquals( 2, statusMap.get( ApplyStatus.SUCCESS ).size() );
+    assertEquals( 1, statusMap.get( ApplyStatus.FAILED ).size() );
+    assertEquals( 0, statusMap.get( ApplyStatus.NULL_ANNOTATION ).size() );
+  }
+
+  @SuppressWarnings( "MismatchedQueryAndUpdateOfCollection" )
+  @Test
+  public void testAnnotationsApplyToMondrianSchema() throws Exception {
+    UpdateMeasure updateMeasure = new UpdateMeasure();
+    updateMeasure.setMeasure( "[Measures].[PRICEEACH]" );
+    updateMeasure.setName( "Price Each" );
+    updateMeasure.setFormat( "##.##" );
+    ModelAnnotation annotation1 = new ModelAnnotation<>( updateMeasure );
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup( annotation1 );
+    Document document = XMLHandler.loadXMLFile( getClass().getResourceAsStream( "resources/simple.mondrian.xml" ) );
+    Map<ApplyStatus, List<ModelAnnotation>> statusMap = modelAnnotations.applyAnnotations( document );
+    assertEquals( 1, statusMap.get( ApplyStatus.SUCCESS ).size() );
+    assertEquals( 0, statusMap.get( ApplyStatus.FAILED ).size() );
+    assertEquals( 0, statusMap.get( ApplyStatus.NULL_ANNOTATION ).size() );
+    String actual = XMLHandler.formatNode( document );
+    assertEquals( IOUtils.toString( getClass().getResourceAsStream( "resources/annotated.mondrian.xml" ) ), actual );
   }
 }

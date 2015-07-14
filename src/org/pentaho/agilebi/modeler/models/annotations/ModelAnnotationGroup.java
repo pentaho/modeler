@@ -28,6 +28,7 @@ import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
+import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -152,6 +153,39 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
     NULL_ANNOTATION
   }
 
+  private interface AnnotateStrategy {
+    boolean apply( ModelAnnotation modelAnnotation ) throws ModelerException;
+
+    Map<ApplyStatus, List<ModelAnnotation>> applyAll( ModelAnnotationGroup modelAnnotations ) throws ModelerException;
+
+    boolean isEmptyModel();
+  }
+
+  public Map<ApplyStatus, List<ModelAnnotation>> applyAnnotations( final Document mondrianSchema )
+    throws ModelerException {
+    return applyAnnotations( mondrianSchema, this );
+  }
+
+  private Map<ApplyStatus, List<ModelAnnotation>> applyAnnotations(
+      final Document mondrianSchema, final ModelAnnotationGroup toApply ) throws ModelerException {
+    AnnotateStrategy strategy = new AnnotateStrategy() {
+
+      @Override public boolean apply( final ModelAnnotation modelAnnotation ) throws ModelerException {
+        return modelAnnotation.apply( mondrianSchema );
+      }
+
+      @Override public Map<ApplyStatus, List<ModelAnnotation>> applyAll(
+        final ModelAnnotationGroup modelAnnotations ) throws ModelerException {
+        return applyAnnotations( mondrianSchema, modelAnnotations );
+      }
+
+      @Override public boolean isEmptyModel() {
+        return !mondrianSchema.hasChildNodes();
+      }
+    };
+    return applyAnnotations( strategy, toApply );
+  }
+
   public Map<ApplyStatus, List<ModelAnnotation>> applyAnnotations(
       final ModelerWorkspace model, final IMetaStore metaStore )
       throws ModelerException {
@@ -161,7 +195,28 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
   private Map<ApplyStatus, List<ModelAnnotation>> applyAnnotations(
       final ModelerWorkspace model, final IMetaStore metaStore, final ModelAnnotationGroup toApply )
       throws ModelerException {
-    if ( model.getModel().getDimensions().size() == 0 && model.getModel().getMeasures().size() == 0 ) {
+    AnnotateStrategy strategy = new AnnotateStrategy() {
+
+      @Override public boolean apply( final ModelAnnotation modelAnnotation ) throws ModelerException {
+        return modelAnnotation.apply( model, metaStore );
+      }
+
+      @Override public Map<ApplyStatus, List<ModelAnnotation>> applyAll(
+        final ModelAnnotationGroup modelAnnotations ) throws ModelerException {
+        return applyAnnotations( model, metaStore, modelAnnotations );
+      }
+
+      @Override public boolean isEmptyModel() {
+        return model.getModel().getDimensions().size() == 0 && model.getModel().getMeasures().size() == 0;
+      }
+    };
+    return applyAnnotations( strategy, toApply );
+  }
+
+  private Map<ApplyStatus, List<ModelAnnotation>> applyAnnotations( AnnotateStrategy strategy,
+                                                                    final ModelAnnotationGroup toApply )
+    throws ModelerException {
+    if ( strategy.isEmptyModel() ) {
       //the model is empty so there is no use trying to apply annotations.
       //this usually happens when there is no data.
       return Collections.emptyMap();
@@ -173,7 +228,7 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
         statusMap.get( NULL_ANNOTATION ).add( modelAnnotation );
         continue;
       }
-      boolean applied = modelAnnotation.apply( model, metaStore );
+      boolean applied = strategy.apply( modelAnnotation );
       if ( applied ) {
         statusMap.get( SUCCESS ).add( modelAnnotation );
       } else {
@@ -181,7 +236,7 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
       }
     }
     if ( failedAnnotations.size() < toApply.size() ) {
-      Map<ApplyStatus, List<ModelAnnotation>> recurStatusMap = applyAnnotations( model, metaStore, failedAnnotations );
+      Map<ApplyStatus, List<ModelAnnotation>> recurStatusMap = strategy.applyAll( failedAnnotations );
       for ( ApplyStatus applyStatus : ApplyStatus.values() ) {
         statusMap.get( applyStatus ).addAll( recurStatusMap.get( applyStatus ) );
       }
