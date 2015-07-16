@@ -23,7 +23,6 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import mondrian.olap.MondrianDef;
-import mondrian.rolap.aggmatcher.DefaultDef;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -31,7 +30,6 @@ import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
@@ -65,11 +63,16 @@ public class UpdateMeasure extends AnnotationType {
   private static final String FORMAT_NAME = "Format";
   private static final int FORMAT_ORDER = 3;
 
+  private static final String MEASURE_ID = "measure";
+  private static final String MEASURE_NAME = "Measure";
+  private static final int MEASURE_ORDER = 4;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
 
   @MetaStoreAttribute
+  @ModelProperty( id = MEASURE_ID, name = MEASURE_NAME, order = MEASURE_ORDER )
   private String measure;
 
   @MetaStoreAttribute
@@ -112,7 +115,7 @@ public class UpdateMeasure extends AnnotationType {
 
   @Override
   public boolean apply(
-    final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
+      final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
     if ( workspace == null ) {
       throw new ModelerException(
         BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )

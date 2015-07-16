@@ -12,6 +12,6 @@
     <Table name="sales" schema="public"/>
     <DimensionUsage foreignKey="product_id" name="Product" source="Product"/>
     <Measure aggregator="sum" column="priceeach" formatString="##.##" name="Price Each"/>
-    <Measure aggregator="sum" column="quantityordered" formatString="#" name="Quantity ordered"/>
+    <Measure aggregator="avg" column="quantityordered" formatString="#" name="Quantity Ordered"/>
   </Cube>
 </Schema>

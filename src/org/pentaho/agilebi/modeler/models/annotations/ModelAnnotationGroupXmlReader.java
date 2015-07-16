@@ -22,30 +22,21 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
+import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.metadata.model.concept.types.DataType;
+import org.w3c.dom.Node;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.pentaho.agilebi.modeler.models.annotations.AnnotationType;
-import org.pentaho.agilebi.modeler.models.annotations.BlankAnnotation;
-import org.pentaho.agilebi.modeler.models.annotations.CreateAttribute;
-import org.pentaho.agilebi.modeler.models.annotations.CreateDimensionKey;
-import org.pentaho.agilebi.modeler.models.annotations.CreateMeasure;
-import org.pentaho.agilebi.modeler.models.annotations.LinkDimension;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation;
-import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup;
-import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
-import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
-import org.w3c.dom.Node;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.exception.KettleException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.BooleanUtils;
-
-import org.pentaho.metadata.model.concept.types.DataType;
 
 public class ModelAnnotationGroupXmlReader {
 
@@ -156,7 +147,7 @@ public class ModelAnnotationGroupXmlReader {
     }
     dataProvider.setColumnMappings( columnMappings );
   }
-  
+
   public static ModelAnnotation<?> create( String annotationType, String field )
       throws KettleException {
 
@@ -184,11 +175,13 @@ public class ModelAnnotationGroupXmlReader {
         LinkDimension ld = new LinkDimension();
         ld.setField( field );
         return new ModelAnnotation<LinkDimension>( ld );
+      case UPDATE_MEASURE:
+        UpdateMeasure um = new UpdateMeasure();
+        return new ModelAnnotation<>( um );
       default:
         BlankAnnotation ba = new BlankAnnotation();
         ba.setField( field );
         return new ModelAnnotation<AnnotationType>( ba );
     }
   }
-  
 }
