@@ -22,21 +22,17 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
-import static org.pentaho.agilebi.modeler.models.annotations.util.XMLUtil.compactPrint;
-import static org.pentaho.agilebi.modeler.models.annotations.util.XMLUtil.prettyPrint;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.w3c.dom.Document;
 
-import org.pentaho.di.core.xml.XMLHandler;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Rowell Belen
@@ -51,7 +47,7 @@ public class ModelAnnotationGroupXmlReaderTest {
     ModelAnnotationGroupXmlReader mar = new ModelAnnotationGroupXmlReader();
     ModelAnnotationGroup group = mar.readModelAnnotationGroup( doc );
 
-    assertEquals(group.getDescription(),"descr");
+    assertEquals( group.getDescription(), "descr" );
   }
 
   @Test
@@ -91,14 +87,14 @@ public class ModelAnnotationGroupXmlReaderTest {
     List<ModelAnnotation> lma = group.getModelAnnotations();
     assertEquals( 3, lma.size() );
     assertEquals( lma.get( 0 ).getName(), "myName" );
-    CreateMeasure cm = ( CreateMeasure ) lma.get( 0 ).getAnnotation();
+    CreateMeasure cm = (CreateMeasure) lma.get( 0 ).getAnnotation();
     assertEquals( cm.getFormatString(), "xxxx" );
     assertEquals( cm.getAggregateType(), AggregationType.SUM );
     assertEquals( cm.getDescription(), "some description" );
     assertEquals( cm.getField(), "col1" );
 
     assertEquals( group.get( 2 ).getName(), "ld" );
-    LinkDimension linkDimension = ( LinkDimension ) group.get( 2 ).getAnnotation();
+    LinkDimension linkDimension = (LinkDimension) group.get( 2 ).getAnnotation();
     assertEquals( linkDimension.getName(), "ldName" );
     assertEquals( linkDimension.getSharedDimension(), "sharedDimension" );
     assertEquals( linkDimension.getField(), "ld" );
@@ -107,7 +103,7 @@ public class ModelAnnotationGroupXmlReaderTest {
   @Test
   public void testGetXmlWithDataProviders() throws Exception {
     // mock data
-    
+
     String xml = "  <annotations>"
         + "    <sharedDimension>Y</sharedDimension>"
         + "    <description/>"
@@ -155,5 +151,32 @@ public class ModelAnnotationGroupXmlReaderTest {
 
     assertEquals( lcm.get( 1 ).getName(), "cm2name" );
     assertEquals( lcm.get( 1 ).getColumnDataType(), DataType.DATE );
+  }
+
+  @Test
+  public void testWriteReadsUpdateMeasureAnnotations() throws Exception {
+    UpdateMeasure avgSales = new UpdateMeasure();
+    avgSales.setMeasure( "[Measures].[Sales]" );
+    avgSales.setCube( "Sales2" );
+    avgSales.setAggregationType( AggregationType.AVERAGE );
+    avgSales.setName( "Avg Sales" );
+    ModelAnnotation<UpdateMeasure> salesAnnotation = new ModelAnnotation<>( avgSales );
+
+    UpdateMeasure cntOrders = new UpdateMeasure();
+    cntOrders.setMeasure( "[Measures].[Orders]" );
+    cntOrders.setCube( "Sales2" );
+    cntOrders.setAggregationType( AggregationType.COUNT );
+    cntOrders.setName( "Order Count" );
+    ModelAnnotation<UpdateMeasure> ordersAnnotation = new ModelAnnotation<>( cntOrders );
+
+    ModelAnnotationGroup originalAnnotations = new ModelAnnotationGroup( salesAnnotation, ordersAnnotation );
+
+    ModelAnnotationGroupXmlWriter writer = new ModelAnnotationGroupXmlWriter( originalAnnotations );
+    ModelAnnotationGroupXmlReader reader = new ModelAnnotationGroupXmlReader();
+    ModelAnnotationGroup readAnnotations = reader.readModelAnnotationGroup(
+        XMLHandler.loadXMLString( writer.getXML() ) );
+    assertEquals( 2, readAnnotations.size() );
+    assertEquals( salesAnnotation, readAnnotations.get( 0 ) );
+    assertEquals( ordersAnnotation, readAnnotations.get( 1 ) );
   }
 }

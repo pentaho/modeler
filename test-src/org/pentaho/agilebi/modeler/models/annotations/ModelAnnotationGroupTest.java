@@ -272,15 +272,22 @@ public class ModelAnnotationGroupTest {
   @SuppressWarnings( "MismatchedQueryAndUpdateOfCollection" )
   @Test
   public void testAnnotationsApplyToMondrianSchema() throws Exception {
-    UpdateMeasure updateMeasure = new UpdateMeasure();
-    updateMeasure.setMeasure( "[Measures].[PRICEEACH]" );
-    updateMeasure.setName( "Price Each" );
-    updateMeasure.setFormat( "##.##" );
-    ModelAnnotation annotation1 = new ModelAnnotation<>( updateMeasure );
-    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup( annotation1 );
+    UpdateMeasure updatePrice = new UpdateMeasure();
+    updatePrice.setMeasure( "[Measures].[PRICEEACH]" );
+    updatePrice.setName( "Price Each" );
+    updatePrice.setFormat( "##.##" );
+    ModelAnnotation annotation1 = new ModelAnnotation<>( updatePrice );
+    UpdateMeasure updateQuantity = new UpdateMeasure();
+    updateQuantity.setMeasure( "[Measures].[Quantity ordered]" );
+    updateQuantity.setName( "Quantity Ordered" );
+    updateQuantity.setFormat( "#" );
+    updateQuantity.setAggregationType( AggregationType.AVERAGE );
+    ModelAnnotation annotation2 = new ModelAnnotation<>( updateQuantity );
+
+    ModelAnnotationGroup modelAnnotations = new ModelAnnotationGroup( annotation1, annotation2 );
     Document document = XMLHandler.loadXMLFile( getClass().getResourceAsStream( "resources/simple.mondrian.xml" ) );
     Map<ApplyStatus, List<ModelAnnotation>> statusMap = modelAnnotations.applyAnnotations( document );
-    assertEquals( 1, statusMap.get( ApplyStatus.SUCCESS ).size() );
+    assertEquals( 2, statusMap.get( ApplyStatus.SUCCESS ).size() );
     assertEquals( 0, statusMap.get( ApplyStatus.FAILED ).size() );
     assertEquals( 0, statusMap.get( ApplyStatus.NULL_ANNOTATION ).size() );
     String actual = XMLHandler.formatNode( document );
