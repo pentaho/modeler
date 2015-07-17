@@ -86,6 +86,10 @@ public abstract class AnnotationType implements Serializable {
   private static final long serialVersionUID = 3952409344571242884L;
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
 
+  protected Logger getLogger() {
+    return logger;
+  }
+
   protected List<Field> findAllFields( List<Field> fields, Class<?> type ) {
 
     fields.addAll( Arrays.asList( type.getDeclaredFields() ) );
@@ -219,7 +223,20 @@ public abstract class AnnotationType implements Serializable {
 
   protected void attemptAutoConvertAndAssign( final Field field, final Object value ) throws Exception {
 
-    if ( ClassUtils.isAssignable( value.getClass(), field.getType(), true ) ) {
+    if ( field == null ) {
+      return; // exit early
+    }
+
+    if ( value == null ) {
+      try {
+        PropertyUtils.setProperty( this, field.getName(), value );
+      } catch ( Exception e ) {
+        // ignore
+      }
+      return; // exit early
+    }
+
+    if ( value != null && ClassUtils.isAssignable( value.getClass(), field.getType(), true ) ) {
       PropertyUtils.setProperty( this, field.getName(), value );
     } else {
 
@@ -276,7 +293,7 @@ public abstract class AnnotationType implements Serializable {
         }
       } catch ( Exception e ) {
         // ignore
-        logger.warning( "Unable to set value for id: " + id );
+        getLogger().warning( "Unable to set value for id: " + id );
       }
     }
     return map;
@@ -368,7 +385,7 @@ public abstract class AnnotationType implements Serializable {
           setModelPropertyValueById( id, propertiesMap.get( id ) );
         } catch ( Exception e ) {
           // do nothing
-          logger.warning( "Unable to set value for id: " + id );
+          getLogger().warning( "Unable to set value for id: " + id );
         }
       }
     }

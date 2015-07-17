@@ -8,6 +8,10 @@ import static org.junit.Assert.assertTrue;
 import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
 
 import org.junit.Test;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
@@ -18,6 +22,7 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
 import java.io.FileInputStream;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +76,7 @@ public class AnnotationTypeTest {
   }
 
   @Test
-  public void testConvertAndAssign() {
+  public void testConvertAndAssign() throws Exception {
 
     Map<String, Serializable> properties = new HashMap<String, Serializable>();
     properties.put( "i", "11" );
@@ -88,6 +93,15 @@ public class AnnotationTypeTest {
     assertEquals( mockAnnotationType.getF(), 22.22F, 0 );
     assertEquals( mockAnnotationType.getL(), Long.MAX_VALUE );
     assertEquals( mockAnnotationType.getS(), Short.MAX_VALUE );
+
+    // Test null/empty value
+    properties = new HashMap<String, Serializable>();
+    properties.put( "l", "" );
+    properties.put( "s", null );
+    mockAnnotationType = spy( new MockAnnotationType() );
+    mockAnnotationType.populate( properties );
+    verify( mockAnnotationType, times( 2 ) ).attemptAutoConvertAndAssign( any( Field.class ), any() );
+    verify( mockAnnotationType, times( 0 ) ).getLogger(); // ignored
   }
 
   @Test
@@ -153,7 +167,7 @@ public class AnnotationTypeTest {
   public void testResolveFieldFromLevel() throws Exception {
     IMetaStore metaStore = new MemoryMetaStore();
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -171,7 +185,7 @@ public class AnnotationTypeTest {
   public void testResolveFieldFromMeasure() throws Exception {
     IMetaStore metaStore = new MemoryMetaStore();
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
