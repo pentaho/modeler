@@ -23,6 +23,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.io.IOUtils;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.platform.api.repository.RepositoryException;
 import org.pentaho.platform.api.repository2.unified.MondrianSchemaAnnotator;
 import org.w3c.dom.Document;
 
@@ -39,8 +40,7 @@ public class ModelingSchemaAnnotator implements MondrianSchemaAnnotator {
       modelAnnotations.applyAnnotations( schemaDoc );
       return IOUtils.toInputStream( XMLHandler.formatNode( schemaDoc ) );
     } catch ( Exception e ) {
-      e.printStackTrace();
-      return null;
+      throw new RepositoryException( e );
     }
   }
 }
