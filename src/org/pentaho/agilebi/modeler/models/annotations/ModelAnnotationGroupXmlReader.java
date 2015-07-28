@@ -177,7 +177,7 @@ public class ModelAnnotationGroupXmlReader {
         return new ModelAnnotation<LinkDimension>( ld );
       case UPDATE_MEASURE:
         UpdateMeasure um = new UpdateMeasure();
-        return new ModelAnnotation<>( um );
+        return new ModelAnnotation<UpdateMeasure>( um );
       default:
         BlankAnnotation ba = new BlankAnnotation();
         ba.setField( field );
