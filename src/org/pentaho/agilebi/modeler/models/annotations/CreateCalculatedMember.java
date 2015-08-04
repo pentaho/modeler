@@ -25,9 +25,12 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import mondrian.olap.MondrianDef;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.model.olap.OlapCalculatedMember;
+import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
@@ -35,6 +38,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -144,8 +148,16 @@ public class CreateCalculatedMember extends AnnotationType {
    * @return
    * @throws org.pentaho.agilebi.modeler.ModelerException
    */
-  @Override public boolean apply( ModelerWorkspace workspace, IMetaStore metaStore ) throws ModelerException {
-    throw new UnsupportedOperationException();
+  @SuppressWarnings( "unchecked" ) @Override
+  public boolean apply( ModelerWorkspace workspace, IMetaStore metaStore ) throws ModelerException {
+    workspace.getWorkspaceHelper().populateDomain( workspace );
+    List<OlapCube> cubes = (List<OlapCube>) workspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
+        "olap_cubes" );
+    OlapCube olapCube = cubes.get( 0 );
+    OlapCalculatedMember calcMember =
+        new OlapCalculatedMember( getName(), getDimension(), getFormula(), getFormatString() );
+    olapCube.getOlapCalculatedMembers().add( calcMember );
+    return true;
   }
 
   /**
