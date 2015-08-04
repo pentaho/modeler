@@ -34,6 +34,7 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
+import org.pentaho.metadata.model.olap.OlapCalculatedMember;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metadata.model.olap.OlapMeasure;
 
@@ -166,6 +167,20 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
         }
       }
     }
+  }
+
+  @Test
+  public void testPopulateDomainRetainsCalculatedMembers() throws Exception {
+    ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper( LOCALE );
+    LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
+    helper.autoModelFlat( workspace );
+    helper.populateDomain( workspace );
+    List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
+    OlapCalculatedMember olapCalculatedMember = new OlapCalculatedMember( "aName", "aDim", "aFormula", "aString" );
+    cubes.get( 0 ).getOlapCalculatedMembers().add( olapCalculatedMember );
+    helper.populateDomain( workspace );
+    cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
+    assertSame( olapCalculatedMember, cubes.get( 0 ).getOlapCalculatedMembers().get( 0 ) );
   }
 
   private void spiceUpRelationalModel( RelationalModelNode model ) {

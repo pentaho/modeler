@@ -260,7 +260,8 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
 
     }
 
-    OlapCube cube = new OlapCube();
+    List<OlapCube> existingCubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
+    OlapCube cube = existingCubes == null ? new OlapCube() : existingCubes.get( 0 );
     cube.setLogicalTable( factTable );
     // TODO find a better way to generate default names
     //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
