@@ -366,6 +366,9 @@ public class CreateAttribute extends AnnotationType {
     LevelMetaData existingLevel = locateLevel( workspace, column );
     LevelMetaData ordinalAutoLevel = locateLevel( workspace, getOrdinalField() );
     LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
+    if ( logicalColumn == null ) {
+      return false;
+    }
     LevelMetaData levelMetaData = new LevelMetaData( hierarchyMetaData, getName() );
     hierarchyMetaData.add( levelMetaData );
     fillLevelProperties( workspace, logicalColumn, levelMetaData );

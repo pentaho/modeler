@@ -155,6 +155,62 @@ public class LinkDimensionTest {
     assertEquals( 2, cube.getOlapMeasures().size() );
   }
 
+  @Test
+  public void testInvalidAnnotationsApplication() throws Exception {
+    ModelerWorkspace model = prepareOrderModel();
+    saveInvalidProductToMetastore();
+    LinkDimension linkDimension = new LinkDimension();
+    linkDimension.setName( "Product Dim" );
+    linkDimension.setSharedDimension( "shared product group" );
+    linkDimension.setField( "PRODUCT_ID" );
+    assertFalse( "This should fail", linkDimension.apply( model, metaStore ) );
+  }
+
+  private void saveInvalidProductToMetastore() throws Exception {
+    CreateAttribute productName = new CreateAttribute();
+    String sharedDimName = "Shared Product dim";
+    productName.setDimension( sharedDimName );
+    productName.setName( "Product" );
+    productName.setField( "Name-1" );
+
+    CreateAttribute productDescription = new CreateAttribute();
+    productDescription.setDimension( sharedDimName );
+    productDescription.setName( "Description" );
+    productDescription.setParentAttribute( "Product" );
+    productDescription.setField( "Description" );
+
+    CreateDimensionKey productId = new CreateDimensionKey();
+    productId.setDimension( sharedDimName );
+    productId.setName( "id" );
+    productId.setField( "Id" );
+
+    final ModelAnnotationGroup modelAnnotationGroup = new ModelAnnotationGroup();
+    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( productDescription ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateAttribute>( productName ) );
+    modelAnnotationGroup.add( new ModelAnnotation<CreateDimensionKey>( productId ) );
+    modelAnnotationGroup.setSharedDimension( true );
+    modelAnnotationGroup.setName( "shared product group" );
+    ModelAnnotationManager manager = new ModelAnnotationManager( true );
+    String metaRef = manager.storeDatabaseMeta( dbMeta, metaStore );
+    final DataProvider dataProvider = new DataProvider();
+    dataProvider.setName( "dp" );
+    dataProvider.setTableName( "product" );
+    dataProvider.setDatabaseMetaNameRef( metaRef );
+    ColumnMapping descMapping = new ColumnMapping();
+    descMapping.setColumnName( "product_description" );
+    descMapping.setName( "Description" );
+    ColumnMapping nameMapping = new ColumnMapping();
+    nameMapping.setColumnName( "product_name" );
+    nameMapping.setName( "Name" );
+    ColumnMapping idMapping = new ColumnMapping();
+    idMapping.setColumnName( "product_id" );
+    idMapping.setName( "Id" );
+    dataProvider.setColumnMappings( Arrays.asList( descMapping, nameMapping, idMapping ) );
+
+    modelAnnotationGroup.setDataProviders( Collections.singletonList( dataProvider ) );
+    manager.createGroup( modelAnnotationGroup, metaStore );
+  }
+
   private void saveProductToMetastore() throws Exception {
     CreateAttribute productName = new CreateAttribute();
     String sharedDimName = "Shared Product dim";

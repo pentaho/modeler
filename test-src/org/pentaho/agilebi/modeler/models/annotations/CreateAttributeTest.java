@@ -222,6 +222,29 @@ public class CreateAttributeTest {
   }
 
   @Test
+  public void testInvalidColumn() throws Exception {
+    ModelerWorkspace model =
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute productCode = new CreateAttribute();
+    productCode.setName( "Product Code" );
+    productCode.setDimension( "Productz" );
+    productCode.setField( "PRODUCTCODE_OLAP-1" );
+    boolean applied = productCode.apply( model, metaStore );
+    assertFalse( "This should not be applied", applied );
+
+    CreateAttribute productDescription = new CreateAttribute();
+    productDescription.setName( "Product Description" );
+    productDescription.setDimension( "Product" );
+    productDescription.setField( "PRODUCTCODE_OLAP" );
+    applied = productDescription.apply( model, metaStore );
+    assertTrue( "This should be applied", applied );
+
+  }
+
+  @Test
   public void testValidate() throws Exception {
 
     CreateAttribute createAttribute = new CreateAttribute();

@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
@@ -48,6 +49,7 @@ import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
 
 import java.util.List;
+import java.util.Map;
 
 public class LinkDimension extends AnnotationType {
   public static final String NAME_ID = "name";
@@ -89,7 +91,12 @@ public class LinkDimension extends AnnotationType {
         return false;
       }
       ModelerWorkspace dimensionWorkspace = autoModelSharedDimension( factWorkspace, dataProvider );
-      sharedAnnotations.applyAnnotations( dimensionWorkspace, metaStore );
+      
+      Map<ApplyStatus,List<ModelAnnotation>> applied = sharedAnnotations.applyAnnotations( dimensionWorkspace,
+          metaStore );
+      if ( applied.get( ApplyStatus.FAILED ) != null && applied.get( ApplyStatus.FAILED ).size() > 0 ){
+        return false;
+      }
       String dimKey = locateDimensionKey( sharedAnnotations );
       if ( Const.isEmpty( dimKey ) ) {
         return false;
