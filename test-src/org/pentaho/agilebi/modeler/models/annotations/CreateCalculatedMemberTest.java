@@ -141,6 +141,15 @@ public class CreateCalculatedMemberTest {
   }
 
   @Test
+  public void testGetSummary() throws Exception {
+    CreateCalculatedMember cm = new CreateCalculatedMember();
+    cm.setName( "Some Name" );
+    cm.setFormula( "[A]+[B]" );
+
+    assertEquals( "Some Name, with formula [A]+[B]", cm.getSummary() );
+  }
+
+  @Test
   public void testValidate() throws Exception {
     createCalculatedMember.validate();
   }

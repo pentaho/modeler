@@ -227,7 +227,7 @@ public class CreateCalculatedMember extends AnnotationType {
   }
 
   @Override public String getSummary() {
-    return BaseMessages.getString( MSG_CLASS, "Modeler.CreateCalculatedMember.Summary", getName() );
+    return BaseMessages.getString( MSG_CLASS, "Modeler.CreateCalculatedMember.Summary", getName(), getFormula() );
   }
 
   public String getName() {
