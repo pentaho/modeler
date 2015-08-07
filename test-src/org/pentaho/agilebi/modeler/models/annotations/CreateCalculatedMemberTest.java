@@ -22,9 +22,13 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
@@ -51,9 +55,6 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.Properties;
-
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class CreateCalculatedMemberTest {
   private static final String TEST_CALCULATED_MEMBER_NAME = "TestCalculatedMember";
@@ -142,6 +143,24 @@ public class CreateCalculatedMemberTest {
   @Test
   public void testValidate() throws Exception {
     createCalculatedMember.validate();
+  }
+
+  @Test
+  public void testValidateException() throws Exception {
+    CreateCalculatedMember cm = new CreateCalculatedMember();
+
+    try {
+      cm.validate();
+    } catch ( ModelerException me ) {
+      Assert.assertEquals( me.getMessage(), "Catalog name is required." );
+    }
+
+    try {
+      cm.setPdiContext( true );
+      cm.validate();
+    } catch ( ModelerException me ) {
+      Assert.assertEquals( me.getMessage(), "Measure name is required." );
+    }
   }
 
   @BeforeClass
