@@ -178,6 +178,9 @@ public class ModelAnnotationGroupXmlReader {
       case UPDATE_MEASURE:
         UpdateMeasure um = new UpdateMeasure();
         return new ModelAnnotation<UpdateMeasure>( um );
+      case CREATE_CALCULATED_MEMBER:
+        CreateCalculatedMember calculatedMember = new CreateCalculatedMember();
+        return new ModelAnnotation<CreateCalculatedMember>( calculatedMember );
       default:
         BlankAnnotation ba = new BlankAnnotation();
         ba.setField( field );

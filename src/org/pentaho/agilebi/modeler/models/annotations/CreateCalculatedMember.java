@@ -141,6 +141,8 @@ public class CreateCalculatedMember extends AnnotationType {
   @ModelProperty( id = CALCULATE_SUBTOTALS_ID, name = CALCULATE_SUBTOTALS_NAME, order = CALCULATE_SUBTOTALS_ORDER )
   private boolean calculateSubtotals;
 
+  private transient boolean pdiContext;
+
   /**
    * CalculatedMembers are not yet supported in the Metadata model
    *
@@ -191,14 +193,24 @@ public class CreateCalculatedMember extends AnnotationType {
 
   }
 
-  @Override public void validate() throws ModelerException {
+  @Override
+  public void validate() throws ModelerException {
     if ( StringUtils.isBlank( getName() ) ) {
-      throw new ModelerException(
-        BaseMessages.getString(
-          MSG_CLASS,
-          "ModelAnnotation.CreateCalculatedMember.validation.CATALOG_NAME_REQUIRED"
-        )
-      );
+      if ( this.pdiContext ) {
+        throw new ModelerException(
+            BaseMessages.getString(
+                MSG_CLASS,
+                "ModelAnnotation.CreateCalculatedMember.validation.MEASURE_NAME_REQUIRED"
+            )
+        );
+      } else {
+        throw new ModelerException(
+            BaseMessages.getString(
+                MSG_CLASS,
+                "ModelAnnotation.CreateCalculatedMember.validation.CATALOG_NAME_REQUIRED"
+            )
+        );
+      }
     }
 
     if ( StringUtils.isBlank( getFormula() ) ) {
@@ -296,5 +308,13 @@ public class CreateCalculatedMember extends AnnotationType {
 
   public String getField() {
     return null;
+  }
+
+  public boolean isPdiContext() {
+    return pdiContext;
+  }
+
+  public void setPdiContext( boolean pdiContext ) {
+    this.pdiContext = pdiContext;
   }
 }
