@@ -146,7 +146,7 @@ public class CreateCalculatedMemberTest {
     cm.setName( "Some Name" );
     cm.setFormula( "[A]+[B]" );
 
-    assertEquals( "Some Name, with formula [A]+[B]", cm.getSummary() );
+    assertEquals( "Some Name, calculated from [A]+[B]", cm.getSummary() );
   }
 
   @Test
