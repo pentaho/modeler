@@ -298,6 +298,10 @@ public class CreateCalculatedMember extends AnnotationType {
     this.measureContent = measureContent;
   }
 
+  public String getMeasureContent() {
+    return measureContent;
+  }
+
   public boolean isCalculateSubtotals() {
     return calculateSubtotals;
   }
