@@ -173,7 +173,8 @@ public class ModelAnnotationManager {
 
   public DatabaseMeta loadDatabaseMeta( String databaseMetaRefName, IMetaStore mstore ) throws MetaStoreException,
       KettlePluginException {
-    IMetaStoreElementType dbMetaType = DatabaseMetaStoreUtil.populateDatabaseElementType( mstore );
+    IMetaStoreElementType dbMetaType =
+        mstore.getElementTypeByName( PentahoDefaults.NAMESPACE, PentahoDefaults.DATABASE_CONNECTION_ELEMENT_TYPE_NAME );
     IMetaStoreElement element = mstore.getElementByName( dbMetaType.getNamespace(), dbMetaType, databaseMetaRefName );
     if ( element == null ) {
       return null;
