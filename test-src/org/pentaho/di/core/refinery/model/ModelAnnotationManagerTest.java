@@ -3,13 +3,20 @@ package org.pentaho.di.core.refinery.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.agilebi.modeler.models.annotations.CreateAttribute;
 import org.pentaho.agilebi.modeler.models.annotations.CreateMeasure;
 import org.pentaho.agilebi.modeler.models.annotations.LinkDimension;
@@ -22,8 +29,10 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
+import org.pentaho.metastore.util.PentahoDefaults;
 
 import java.io.File;
 import java.io.IOException;
@@ -328,7 +337,10 @@ public class ModelAnnotationManagerTest {
     dbMeta.getAttributes().setProperty( "SUPPORTS_BOOLEAN_DATA_TYPE", "N" );
     final String dbRef = modelAnnotationManager.storeDatabaseMeta( dbMeta, this.metaStore );
     assertEquals( dbMeta.getName(), dbRef );
-    DatabaseMeta dbMetaBack = modelAnnotationManager.loadDatabaseMeta( dbRef, this.metaStore );
+    IMetaStore spy = Mockito.spy( this.metaStore );
+    DatabaseMeta dbMetaBack = modelAnnotationManager.loadDatabaseMeta( dbRef, spy );
+    Mockito.verify( spy ).getElementByName(
+        eq( PentahoDefaults.NAMESPACE ) , argThat( idNotNull() ), eq( dbRef ) );
     assertEquals( dbMeta, dbMetaBack );
     dbMetaBack.setChangedDate( dbMeta.getChangedDate() );
     assertEquals( dbMeta.getAccessType(), dbMetaBack.getAccessType() );
@@ -339,6 +351,19 @@ public class ModelAnnotationManagerTest {
     assertEquals( dbMeta.getPassword(), dbMetaBack.getPassword() );
     assertEquals( dbMeta.getDatabaseName(), dbMetaBack.getDatabaseName() );
     assertEquals( dbMeta.getURL(), dbMetaBack.getURL() );
+  }
+
+  private Matcher<IMetaStoreElementType> idNotNull() {
+    return new BaseMatcher<IMetaStoreElementType>() {
+      @Override public boolean matches( final Object item ) {
+        IMetaStoreElementType elementType = (IMetaStoreElementType) item;
+        return elementType.getId() != null;
+      }
+
+      @Override public void describeTo( final Description description ) {
+
+      }
+    };
   }
 
   @Test
