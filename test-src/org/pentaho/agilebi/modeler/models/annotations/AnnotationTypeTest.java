@@ -199,4 +199,33 @@ public class AnnotationTypeTest {
     assertEquals( "bc_BUYPRICE", createMeasure.getField() );
   }
 
+  @Test
+  public void testAttemptAutoConvertAndAssignTimeType() throws Exception {
+
+    CreateAttribute createAttribute = spy( new CreateAttribute() );
+
+    createAttribute.setModelPropertyValueById( CreateAttribute.TIME_TYPE_ID, null );
+    verify( createAttribute, times( 0 ) ).getLogger();
+
+    createAttribute.setModelPropertyValueById( CreateAttribute.TIME_TYPE_ID, "" );
+    verify( createAttribute, times( 0 ) ).getLogger(); // still no warning
+
+    createAttribute.setModelPropertyValueById( CreateAttribute.TIME_TYPE_ID, "someInvalidValue" );
+    verify( createAttribute, times( 1 ) ).getLogger(); // warning!
+  }
+
+  @Test
+  public void testAttemptAutoConvertAndAssignGeoType() throws Exception {
+
+    CreateAttribute createAttribute = spy( new CreateAttribute() );
+
+    createAttribute.setModelPropertyValueById( CreateAttribute.GEO_TYPE_ID, null );
+    verify( createAttribute, times( 0 ) ).getLogger();
+
+    createAttribute.setModelPropertyValueById( CreateAttribute.GEO_TYPE_ID, "" );
+    verify( createAttribute, times( 0 ) ).getLogger(); // still no warning
+
+    createAttribute.setModelPropertyValueById( CreateAttribute.GEO_TYPE_ID, "someInvalidValue" );
+    verify( createAttribute, times( 1 ) ).getLogger(); // warning!
+  }
 }

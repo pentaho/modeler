@@ -275,8 +275,11 @@ public abstract class AnnotationType implements Serializable {
           PropertyUtils.setProperty( this, field.getName(), number );
         }
       } catch ( Exception e ) {
-        // ignore
-        logger.warning( "Unable to convert " + value.toString() + " in to " + field.getType() );
+        if ( value == null || StringUtils.isBlank( value.toString() ) ) {
+          return; // do not log
+        }
+        // ignore error but log
+        getLogger().warning( "Unable to convert " + value.toString() + " in to " + field.getType() );
       }
     }
   }
