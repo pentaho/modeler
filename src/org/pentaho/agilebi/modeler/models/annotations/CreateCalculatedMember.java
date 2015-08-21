@@ -35,8 +35,6 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -157,7 +155,7 @@ public class CreateCalculatedMember extends AnnotationType {
         "olap_cubes" );
     OlapCube olapCube = cubes.get( 0 );
     OlapCalculatedMember calcMember =
-        new OlapCalculatedMember( getName(), getDimension(), getFormula(), getFormatString() );
+        new OlapCalculatedMember( getName(), getDimension(), getFormula(), getFormatString(), isCalculateSubtotals() );
     olapCube.getOlapCalculatedMembers().add( calcMember );
     return true;
   }
@@ -181,16 +179,16 @@ public class CreateCalculatedMember extends AnnotationType {
     calculatedMember.dimension = this.getDimension();
     calculatedMember.formula = this.getFormula();
     calculatedMember.visible = this.isVisible();
+    MondrianDef.CalculatedMemberProperty solveOrder = new MondrianDef.CalculatedMemberProperty();
+    solveOrder.name = "SOLVE_ORDER";
+    solveOrder.value = isCalculateSubtotals() ? "200" : "0";
+    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{ solveOrder };
 
     calculatedMember.formatString = this.getFormatString();
 
     mondrianSchemaHandler.addCalculatedMember( null, calculatedMember );
 
     return true;
-  }
-
-  private void insertCalculatedMeasureNode( Node cube, Element measureElement ) {
-
   }
 
   @Override

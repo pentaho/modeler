@@ -176,7 +176,7 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
     helper.autoModelFlat( workspace );
     helper.populateDomain( workspace );
     List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
-    OlapCalculatedMember olapCalculatedMember = new OlapCalculatedMember( "aName", "aDim", "aFormula", "aString" );
+    OlapCalculatedMember olapCalculatedMember = new OlapCalculatedMember( "aName", "aDim", "aFormula", "aString", false );
     cubes.get( 0 ).getOlapCalculatedMembers().add( olapCalculatedMember );
     helper.populateDomain( workspace );
     cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );

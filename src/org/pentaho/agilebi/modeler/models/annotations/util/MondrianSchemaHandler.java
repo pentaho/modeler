@@ -57,11 +57,14 @@ public class MondrianSchemaHandler {
   public static final String MEASURE_AGGREGATOR_ATTRIBUTE = "aggregator";
 
   public static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
+  public static final String CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME = "CalculatedMemberProperty";
   public static final String CALCULATED_MEMBER_CAPTION_ATTRIBUTE = "caption";
   public static final String CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE = "description";
   public static final String CALCULATED_MEMBER_DIMENSION_ATTRIBUTE = "dimension";
   public static final String CALCULATED_MEMBER_FORMULA_ATTRIBUTE = "formula";
   public static final String CALCULATED_MEMBER_NAME_ATTRIBUTE = "name";
+  public static final String CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE = "name";
+  public static final String CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE = "value";
   public static final String CALCULATED_MEMBER_VISIBLE_ATTRIBUTE = "visible";
   public static final String MEASURE_DIMENSION = "Measure";
   public static final String MEASURE_FORMAT_STRING_ATTRIBUTE = "formatString";
@@ -69,11 +72,11 @@ public class MondrianSchemaHandler {
 
   private Document schema;
 
-  public MondrianSchemaHandler(){
+  public MondrianSchemaHandler() {
 
   }
 
-  public MondrianSchemaHandler( Document schema ){
+  public MondrianSchemaHandler( Document schema ) {
     this.schema = schema;
   }
 
@@ -83,7 +86,7 @@ public class MondrianSchemaHandler {
    * @param measure
    * @throws ModelerException
    */
-  public void addMeasure( String cubeName, MondrianDef.Measure measure) throws ModelerException {
+  public void addMeasure( String cubeName, MondrianDef.Measure measure ) throws ModelerException {
     try {
       XPathFactory xPathFactory = XPathFactory.newInstance();
       XPath xPath = xPathFactory.newXPath();
@@ -91,7 +94,7 @@ public class MondrianSchemaHandler {
 
       String cubeXPathPart = CUBE_XPATH_EXPR;
 
-      if( cubeName != null ){
+      if ( cubeName != null ) {
         cubeXPathPart += "[@name=\"" + cubeName + "\"]";
       }
 
@@ -103,13 +106,12 @@ public class MondrianSchemaHandler {
 
       // check if cube contains calculated members
       NodeList calculatedMemberNodeList = this.schema.getElementsByTagName( CALCULATED_MEMBER_ELEMENT_NAME );
-      if( ( calculatedMemberNodeList != null ) && ( calculatedMemberNodeList.getLength() > 0 ) ){
+      if ( ( calculatedMemberNodeList != null ) && ( calculatedMemberNodeList.getLength() > 0 ) ) {
         // get the first calculated member
         Node firstCalculatedMemberNode = calculatedMemberNodeList.item( 0 );
         // insert measure before the first calculated member
         cube.insertBefore( measureElement, firstCalculatedMemberNode );
-      }
-      else{
+      } else {
         cube.appendChild( measureElement );
       }
 
@@ -117,7 +119,7 @@ public class MondrianSchemaHandler {
       measureElement.setAttribute( MEASURE_COLUMN_ATTRIBUTE, measure.column );
       measureElement.setAttribute( MEASURE_AGGREGATOR_ATTRIBUTE,  measure.aggregator );
 
-      if( measure.formatString != null ) {
+      if ( measure.formatString != null ) {
         measureElement.setAttribute( MEASURE_FORMAT_STRING_ATTRIBUTE, measure.formatString );
       }
 
@@ -137,11 +139,11 @@ public class MondrianSchemaHandler {
     try {
       XPathFactory xPathFactory = XPathFactory.newInstance();
       XPath xPath = xPathFactory.newXPath();
-      StringBuffer xPathExpr = new StringBuffer();
+      StringBuilder xPathExpr = new StringBuilder();
 
       String cubeXPathPart = CUBE_XPATH_EXPR;
 
-      if( cubeName != null ){
+      if ( cubeName != null ) {
         cubeXPathPart += "[@name=\"" + cubeName + "\"]";
       }
 
@@ -159,6 +161,13 @@ public class MondrianSchemaHandler {
       measureElement.setAttribute( CALCULATED_MEMBER_VISIBLE_ATTRIBUTE, Boolean.toString( calculatedMember.visible ) );
       measureElement.setAttribute( CALCULATED_MEMBER_FORMAT_STRING_ATTRIBUTE, calculatedMember.formatString );
 
+      for ( MondrianDef.CalculatedMemberProperty property : calculatedMember.memberProperties ) {
+        Element propertyElement = this.schema.createElement( CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME );
+        propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, property.name );
+        propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE, property.value );
+        measureElement.appendChild( propertyElement );
+      }
+
     } catch ( XPathExpressionException e ) {
       throw new ModelerException( e );
     }
@@ -171,17 +180,17 @@ public class MondrianSchemaHandler {
 
     String cubeXPathPart = CUBE_XPATH_EXPR;
 
-    if ( !StringUtils.isBlank( cubeName ) ){
+    if ( !StringUtils.isBlank( cubeName ) ) {
       cubeXPathPart += "[@name=\"" + cubeName + "\"]";
     }
 
     // try to resolve name attribute if formatted with dimension
-    if( measureName.contains( "[" ) ) {
+    if ( measureName.contains( "[" ) ) {
       // assuming measure is immediate child of dimension
       //  e.g. [Measures].[Quantity]
       measureName = measureName.substring(
-        measureName.lastIndexOf("[") + 1,
-        measureName.lastIndexOf("]")
+        measureName.lastIndexOf( "[" ) + 1,
+        measureName.lastIndexOf( "]" )
       );
     }
 
@@ -230,12 +239,12 @@ public class MondrianSchemaHandler {
     }
 
     // try to resolve name attribute if formatted with dimension
-    if( measureName.contains( "[" ) ) {
+    if ( measureName.contains( "[" ) ) {
       // assuming measure is immediate child of dimension
       //  e.g. [Measures].[Quantity]
       measureName = measureName.substring(
-        measureName.lastIndexOf("[") + 1,
-        measureName.lastIndexOf("]")
+        measureName.lastIndexOf( "[" ) + 1,
+        measureName.lastIndexOf( "]" )
       );
     }
 

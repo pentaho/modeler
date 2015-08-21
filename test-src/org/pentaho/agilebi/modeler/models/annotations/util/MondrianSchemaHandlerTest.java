@@ -23,7 +23,6 @@
 package org.pentaho.agilebi.modeler.models.annotations.util;
 
 import mondrian.olap.MondrianDef;
-import org.apache.bcel.generic.MONITORENTER;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
@@ -35,16 +34,9 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import java.io.StringWriter;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
+import static org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler.*;
 
 /**
  * Created by pminutillo on 3/5/15.
@@ -79,10 +71,10 @@ public class MondrianSchemaHandlerTest {
     } catch ( ParserConfigurationException e ) {
       e.printStackTrace();
     }
-   }
+  }
 
   @Test
-  public void testAddMeasure(){
+  public void testAddMeasure() {
     assertTrue( schemaDocument != null );
 
     MondrianDef.Measure measure = new MondrianDef.Measure();
@@ -100,11 +92,11 @@ public class MondrianSchemaHandlerTest {
 
     boolean testMeasureFound = false;
     NodeList nodeList = schemaDocument.getElementsByTagName( MEASURE_NODE_NAME );
-    for( int x = 0; x <= nodeList.getLength() - 1; x++ ){
+    for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
       Node measureNode = nodeList.item( x );
       String measureName = measureNode.getAttributes().getNamedItem( MondrianSchemaHandler.MEASURE_NAME_ATTRIBUTE ).getNodeValue();
-      if( measureName != null ){
-        if( measureName.equals( TEST_MEASURE_NAME )){
+      if ( measureName != null ) {
+        if ( measureName.equals( TEST_MEASURE_NAME ) ) {
           testMeasureFound = true;
         }
       }
@@ -114,7 +106,7 @@ public class MondrianSchemaHandlerTest {
   }
 
   @Test
-  public void testAddCalculatedMember(){
+  public void testAddCalculatedMember() {
     assertTrue( schemaDocument != null );
 
     MondrianDef.CalculatedMember calculatedMember = new MondrianDef.CalculatedMember();
@@ -124,10 +116,17 @@ public class MondrianSchemaHandlerTest {
     calculatedMember.dimension = TEST_CALC_MEMBER_DIMENSION;
     calculatedMember.description = TEST_CALC_MEMBER_DESCRIPTION;
     calculatedMember.visible = true;
+    MondrianDef.CalculatedMemberProperty property1 = new MondrianDef.CalculatedMemberProperty();
+    property1.name = "name1";
+    property1.value = "value1";
+    MondrianDef.CalculatedMemberProperty property2 = new MondrianDef.CalculatedMemberProperty();
+    property2.name = "name2";
+    property2.value = "value2";
+    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{property1, property2};
 
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
 
-    try{
+    try {
       mondrianSchemaHandler.addCalculatedMember( null, calculatedMember );
     } catch ( ModelerException e ) {
       e.printStackTrace();
@@ -136,44 +135,43 @@ public class MondrianSchemaHandlerTest {
     Element measureNode = null;
 
     NodeList nodeList = schemaDocument.getElementsByTagName( CALCULATED_MEMBER_NODE_NAME );
-    for( int x = 0; x <= nodeList.getLength() - 1; x++ ){
+    for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
       measureNode = (Element) nodeList.item( x );
-      
-      String measureName = measureNode.getAttribute( MondrianSchemaHandler.CALCULATED_MEMBER_NAME_ATTRIBUTE );
 
-      if( measureName != null ){
-        if( measureName.equals( TEST_CALC_MEMBER_NAME )) {
+      String measureName = measureNode.getAttribute( CALCULATED_MEMBER_NAME_ATTRIBUTE );
+
+      if ( measureName != null ) {
+        if ( measureName.equals( TEST_CALC_MEMBER_NAME ) ) {
           break;
         }
       }
     }
 
-    String schemaXml = xmlDocToString( mondrianSchemaHandler.getSchema() );
-
-    assertTrue( measureNode.getAttributes().getNamedItem( MondrianSchemaHandler.CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue().equals( TEST_CALC_MEMBER_NAME ));
-    assertTrue( measureNode.getAttributes().getNamedItem( MondrianSchemaHandler.CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue().equals( TEST_CALC_MEMBER_CAPTION ));
-    assertTrue( measureNode.getAttributes().getNamedItem( MondrianSchemaHandler.CALCULATED_MEMBER_FORMULA_ATTRIBUTE ).getNodeValue().equals( TEST_CALC_MEMBER_FORMULA ));
-    assertTrue( measureNode.getAttributes().getNamedItem( MondrianSchemaHandler.CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue().equals( TEST_CALC_MEMBER_DIMENSION ));
-    assertTrue( measureNode.getAttributes().getNamedItem( MondrianSchemaHandler.CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue().equals( TEST_CALC_MEMBER_DESCRIPTION ));
-  }
-
-  private static String xmlDocToString( Document doc ){
-    try {
-      TransformerFactory transformerFactory = TransformerFactory.newInstance();
-      Transformer transformer = transformerFactory.newTransformer();
-      transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
-      transformer.setOutputProperty( "{http://xml.apache.org/xslt}indent-amount", "2" );
-
-      StringWriter writer = new StringWriter();
-      DOMSource source = new DOMSource( doc );
-      StreamResult result = new StreamResult( writer );
-
-      transformer.transform( source, result );
-      return writer.toString();
-    }
-    catch( Exception e ){
-      return null;
-    }
+    assertNotNull( measureNode );
+    assertEquals(
+        TEST_CALC_MEMBER_NAME,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_CAPTION,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_FORMULA,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_FORMULA_ATTRIBUTE ) .getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_DIMENSION,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_DESCRIPTION,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue() );
+    NodeList childNodes = measureNode.getChildNodes();
+    assertEquals( 2, childNodes.getLength() );
+    assertEquals(
+        "name1",
+        childNodes.item( 0 ).getAttributes().getNamedItem( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals( "value1", childNodes.item( 0 ).getAttributes().getNamedItem( "value" ).getNodeValue() );
+    assertEquals( "name2",
+        childNodes.item( 1 ).getAttributes().getNamedItem( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals( "value2", childNodes.item( 1 ).getAttributes().getNamedItem( "value" ).getNodeValue() );
   }
 
   @Test
@@ -195,18 +193,18 @@ public class MondrianSchemaHandlerTest {
 
     boolean testMeasureFound = false;
     NodeList nodeList = schemaDocument.getElementsByTagName( MEASURE_NODE_NAME );
-    for( int x = 0; x <= nodeList.getLength() - 1; x++ ){
+    for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
       Node measureNode = nodeList.item( x );
       String measureName = measureNode.getAttributes().getNamedItem(
-        MondrianSchemaHandler.MEASURE_NAME_ATTRIBUTE ).getNodeValue();
-      if( measureName != null && measureName.equals( TEST_MEASURE_NAME ) ) {
+          MondrianSchemaHandler.MEASURE_NAME_ATTRIBUTE ).getNodeValue();
+      if ( measureName != null && measureName.equals( TEST_MEASURE_NAME ) ) {
         testMeasureFound = true;
         assertEquals( TEST_AVERAGE_AGG_TYPE,
-          measureNode.getAttributes().getNamedItem(
-            MondrianSchemaHandler.MEASURE_AGGREGATOR_ATTRIBUTE ).getNodeValue() );
+            measureNode.getAttributes().getNamedItem(
+                MondrianSchemaHandler.MEASURE_AGGREGATOR_ATTRIBUTE ).getNodeValue() );
         assertEquals( TEST_NUM_DECIMAL_FORMAT_STRING,
-          measureNode.getAttributes().getNamedItem(
-            MondrianSchemaHandler.MEASURE_FORMAT_STRING_ATTRIBUTE ).getNodeValue() );
+            measureNode.getAttributes().getNamedItem(
+                MondrianSchemaHandler.MEASURE_FORMAT_STRING_ATTRIBUTE ).getNodeValue() );
         break;
       }
     }
