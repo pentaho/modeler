@@ -30,7 +30,6 @@ import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.List;
@@ -42,6 +41,7 @@ public final class AnnotationUtil {
 
   public static final String MEASURE_ELEMENT_NAME = "Measure";
   public static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
+  public static final String CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME = "CalculatedMemberProperty";
 
   public static final String NAME_ATTRIB = "name";
   public static final String AGGREGATOR_ATTRIB = "aggregator";
@@ -115,7 +115,7 @@ public final class AnnotationUtil {
 
     OlapMeasure olapMeasure = null;
 
-    for ( OlapMeasure measure : olapMeasures ){
+    for ( OlapMeasure measure : olapMeasures ) {
       if ( measureName.equals( measure.getName() ) ) {
         olapMeasure = measure;
         break;
@@ -140,7 +140,7 @@ public final class AnnotationUtil {
 
     MeasureMetaData measureMetaData = null;
 
-    for ( MeasureMetaData measure : measures ){
+    for ( MeasureMetaData measure : measures ) {
       if ( measureName.equals( measure.getName() ) ) {
         measureMetaData = measure;
       }

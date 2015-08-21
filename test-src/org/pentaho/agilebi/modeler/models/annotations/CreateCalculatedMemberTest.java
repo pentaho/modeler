@@ -138,6 +138,26 @@ public class CreateCalculatedMemberTest {
         TEST_CALCULATED_MEMBER_NAME,
         AnnotationUtil.VISIBLE_ATTRIB,
         Boolean.TRUE.toString() ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+        AnnotationUtil.CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME, "SOLVE_ORDER", "value", "0" ) );
+  }
+
+  @Test
+  public void testApplyMondrianCalculateSubTotalsHasSolvedOrder200() throws Exception {
+    File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
+
+    Document mondrianSchemaXmlDoc =
+        DocumentBuilderFactory
+            .newInstance()
+            .newDocumentBuilder()
+            .parse( mondrianSchemaXmlFile );
+
+    createCalculatedMember.setCalculateSubtotals( true );
+    createCalculatedMember.apply( mondrianSchemaXmlDoc );
+
+    assertTrue( mondrianSchemaXmlDoc != null );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+        AnnotationUtil.CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME, "SOLVE_ORDER", "value", "200" ) );
   }
 
   @Test
@@ -188,6 +208,7 @@ public class CreateCalculatedMemberTest {
     doubleQuantity.setFormula( "[Measures].[Quantity Ordered] * 2" );
     doubleQuantity.setName( "Double Quantity" );
     doubleQuantity.setDimension( "Measures" );
+    doubleQuantity.setCalculateSubtotals( false );
     doubleQuantity.apply( model, new MemoryMetaStore() );
 
     CreateCalculatedMember productTotal = new CreateCalculatedMember();
@@ -195,6 +216,7 @@ public class CreateCalculatedMemberTest {
     productTotal.setFormula( "Aggregate([PRODUCT ID].[PRODUCT ID].[PRODUCT ID].members)" );
     productTotal.setName( "Product Total" );
     productTotal.setDimension( "PRODUCT ID" );
+    productTotal.setCalculateSubtotals( true );
     productTotal.apply( model, new MemoryMetaStore() );
 
     assertCalcMembersInModel( model );
@@ -211,18 +233,19 @@ public class CreateCalculatedMemberTest {
     List<OlapCalculatedMember> olapCalcMembers = cubes.get( 0 ).getOlapCalculatedMembers();
     assertEquals( 2, olapCalcMembers.size() );
     assertCalcMember( olapCalcMembers.get( 0 ), "[Measures].[Quantity Ordered] * 2", "Double Quantity", "Measures",
-        "##.##" );
+        "##.##", false );
     assertCalcMember(
         olapCalcMembers.get( 1 ),
-        "Aggregate([PRODUCT ID].[PRODUCT ID].[PRODUCT ID].members)", "Product Total", "PRODUCT ID", "##" );
+        "Aggregate([PRODUCT ID].[PRODUCT ID].[PRODUCT ID].members)", "Product Total", "PRODUCT ID", "##", true );
   }
 
   private void assertCalcMember( final OlapCalculatedMember firstMember, final String formula, final String name,
-                                 final String dimension, final String format ) {
+                                 final String dimension, final String format, final boolean calculateSubtotals ) {
     assertEquals( formula, firstMember.getFormula() );
     assertEquals( name, firstMember.getName() );
     assertEquals( dimension, firstMember.getDimension() );
     assertEquals( format, firstMember.getFormatString() );
+    assertEquals( calculateSubtotals, firstMember.isCalculateSubtotals() );
   }
 
   private ModelerWorkspace prepareOrderModel() throws Exception {
