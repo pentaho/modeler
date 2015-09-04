@@ -22,8 +22,6 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import mondrian.rolap.agg.Aggregation;
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
@@ -56,7 +54,7 @@ public class UpdateMeasureTest {
   private static String INIT_BUYPRICE_COLUMN = "bc_BUYPRICE";
   private static String INIT_BUYPRICE_NAME = "BUYPRICE";
   private static String INIT_MEASURE_FORMULA = "[" + AnnotationType.MEASURES_DIMENSION + "].["
-    + INIT_BUYPRICE_NAME + "]";
+      + INIT_BUYPRICE_NAME + "]";
 
   private static String NEW_BUYPRICE_NAME = "new_buyprice";
 
@@ -66,7 +64,7 @@ public class UpdateMeasureTest {
   private static final String MONDRIAN_TEST_FILE_PATH = "test-res/products.mondrian.xml";
 
   private static String INIT_MEASURE_MONDRIAN_FORMULA = "[" + AnnotationType.MEASURES_DIMENSION + "].["
-    + INIT_BUYPRICE_COLUMN + "]";
+      + INIT_BUYPRICE_COLUMN + "]";
 
   private static final String INIT_FORMAT = "#";
   private static final String NEW_FORMAT = "##.##";
@@ -79,7 +77,7 @@ public class UpdateMeasureTest {
   @Test
   public void testMetaDataUpdateName() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -107,7 +105,7 @@ public class UpdateMeasureTest {
   @Test
   public void testMetaDataNoDuplicateNames() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -141,7 +139,7 @@ public class UpdateMeasureTest {
   @Test
   public void testMetaDataUpdateAggregation() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -173,7 +171,7 @@ public class UpdateMeasureTest {
   @Test
   public void testMetaDataUpdateFormat() throws Exception {
     ModelerWorkspace model =
-      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+        new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
@@ -207,26 +205,26 @@ public class UpdateMeasureTest {
     File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
 
     Document mondrianSchemaXmlDoc =
-      DocumentBuilderFactory
-        .newInstance()
-        .newDocumentBuilder()
-        .parse( mondrianSchemaXmlFile );
+        DocumentBuilderFactory
+            .newInstance()
+            .newDocumentBuilder()
+            .parse( mondrianSchemaXmlFile );
 
     // Renaming the measure
     UpdateMeasure updateMeasure = new UpdateMeasure();
     updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
     updateMeasure.setName( NEW_BUYPRICE_NAME );
-    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc  );
+    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc );
     assertTrue( isApplied );
 
     assertTrue( mondrianSchemaXmlDoc != null );
     assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.MEASURE_ELEMENT_NAME ).getLength()
-      > 0 );
+        > 0 );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      NEW_BUYPRICE_NAME,
-      AnnotationUtil.NAME_ATTRIB,
-      NEW_BUYPRICE_NAME ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        NEW_BUYPRICE_NAME,
+        AnnotationUtil.NAME_ATTRIB,
+        NEW_BUYPRICE_NAME ) );
   }
 
   @Test
@@ -234,39 +232,35 @@ public class UpdateMeasureTest {
     File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
 
     Document mondrianSchemaXmlDoc =
-      DocumentBuilderFactory
-        .newInstance()
-        .newDocumentBuilder()
-        .parse( mondrianSchemaXmlFile );
+        DocumentBuilderFactory
+            .newInstance()
+            .newDocumentBuilder()
+            .parse( mondrianSchemaXmlFile );
 
     // Renaming the measure
     UpdateMeasure updateMeasure = new UpdateMeasure();
     updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
     updateMeasure.setName( EXISTING_COLUMN );
-    try {
-      boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc );
-      fail( "Exception should have occurred" );
-    } catch ( Exception e ) {
-    }
+    assertFalse( updateMeasure.apply( mondrianSchemaXmlDoc ) );
 
     // Ensure nothing has changed
     assertTrue( mondrianSchemaXmlDoc != null );
     assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.MEASURE_ELEMENT_NAME ).getLength()
-      > 0 );
+        > 0 );
 
     // Ensure new Element was not created
     assertFalse( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      NEW_BUYPRICE_NAME,
-      AnnotationUtil.NAME_ATTRIB,
-      "" ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        NEW_BUYPRICE_NAME,
+        AnnotationUtil.NAME_ATTRIB,
+        "" ) );
 
     // Ensure original element still exists
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      EXISTING_COLUMN,
-      AnnotationUtil.NAME_ATTRIB,
-      EXISTING_COLUMN ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        EXISTING_COLUMN,
+        AnnotationUtil.NAME_ATTRIB,
+        EXISTING_COLUMN ) );
   }
 
   @Test
@@ -274,44 +268,44 @@ public class UpdateMeasureTest {
     File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
 
     Document mondrianSchemaXmlDoc =
-      DocumentBuilderFactory
-        .newInstance()
-        .newDocumentBuilder()
-        .parse( mondrianSchemaXmlFile );
+        DocumentBuilderFactory
+            .newInstance()
+            .newDocumentBuilder()
+            .parse( mondrianSchemaXmlFile );
     assertTrue( mondrianSchemaXmlDoc != null );
     // Check existing state
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.NAME_ATTRIB,
-      INIT_BUYPRICE_COLUMN ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.NAME_ATTRIB,
+        INIT_BUYPRICE_COLUMN ) );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.AGGREGATOR_ATTRIB,
-      "sum" ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.AGGREGATOR_ATTRIB,
+        "sum" ) );
 
     // Changing the aggregation type
     UpdateMeasure updateMeasure = new UpdateMeasure();
     updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
     updateMeasure.setName( INIT_BUYPRICE_COLUMN );
     updateMeasure.setAggregationType( AggregationType.AVERAGE );
-    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc  );
+    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc );
     assertTrue( isApplied );
 
     // Check change
     assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.MEASURE_ELEMENT_NAME ).getLength()
-      > 0 );
+        > 0 );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.NAME_ATTRIB,
-      INIT_BUYPRICE_COLUMN ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.NAME_ATTRIB,
+        INIT_BUYPRICE_COLUMN ) );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.AGGREGATOR_ATTRIB,
-      "avg" ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.AGGREGATOR_ATTRIB,
+        "avg" ) );
   }
 
   @Test
@@ -319,44 +313,44 @@ public class UpdateMeasureTest {
     File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
 
     Document mondrianSchemaXmlDoc =
-      DocumentBuilderFactory
-        .newInstance()
-        .newDocumentBuilder()
-        .parse( mondrianSchemaXmlFile );
+        DocumentBuilderFactory
+            .newInstance()
+            .newDocumentBuilder()
+            .parse( mondrianSchemaXmlFile );
     assertTrue( mondrianSchemaXmlDoc != null );
     // Check existing state
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.NAME_ATTRIB,
-      INIT_BUYPRICE_COLUMN ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.NAME_ATTRIB,
+        INIT_BUYPRICE_COLUMN ) );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.FORMATSTRING_ATTRIB,
-      INIT_FORMAT ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.FORMATSTRING_ATTRIB,
+        INIT_FORMAT ) );
 
     // Changing the aggregation type
     UpdateMeasure updateMeasure = new UpdateMeasure();
     updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
     updateMeasure.setName( INIT_BUYPRICE_COLUMN );
     updateMeasure.setFormat( NEW_FORMAT );
-    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc  );
+    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc );
     assertTrue( isApplied );
 
     // Check change
     assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.MEASURE_ELEMENT_NAME ).getLength()
-      > 0 );
+        > 0 );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.NAME_ATTRIB,
-      INIT_BUYPRICE_COLUMN ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.NAME_ATTRIB,
+        INIT_BUYPRICE_COLUMN ) );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
-      AnnotationUtil.MEASURE_ELEMENT_NAME,
-      INIT_BUYPRICE_COLUMN,
-      AnnotationUtil.FORMATSTRING_ATTRIB,
-      NEW_FORMAT ) );
+        AnnotationUtil.MEASURE_ELEMENT_NAME,
+        INIT_BUYPRICE_COLUMN,
+        AnnotationUtil.FORMATSTRING_ATTRIB,
+        NEW_FORMAT ) );
   }
 
   @Test

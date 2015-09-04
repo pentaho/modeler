@@ -175,7 +175,7 @@ public class MondrianSchemaHandlerTest {
   }
 
   @Test
-  public void testUpdateMeasure() {
+  public void testUpdateMeasure() throws ModelerException {
     assertTrue( schemaDocument != null );
 
     MondrianDef.Measure measure = new MondrianDef.Measure();
@@ -185,11 +185,7 @@ public class MondrianSchemaHandlerTest {
 
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
 
-    try {
-      mondrianSchemaHandler.updateMeasure( null, TEST_EXISTING_MEASURE_STRING, measure );
-    } catch ( ModelerException e ) {
-      e.printStackTrace();
-    }
+    assertTrue( mondrianSchemaHandler.updateMeasure( null, TEST_EXISTING_MEASURE_STRING, measure ) );
 
     boolean testMeasureFound = false;
     NodeList nodeList = schemaDocument.getElementsByTagName( MEASURE_NODE_NAME );
@@ -210,5 +206,33 @@ public class MondrianSchemaHandlerTest {
     }
 
     assertTrue( testMeasureFound );
+  }
+
+  @Test
+  public void testUpdatingMeasureNotFoundReturnsFalse() throws Exception {
+    assertTrue( schemaDocument != null );
+
+    MondrianDef.Measure measure = new MondrianDef.Measure();
+    measure.name = TEST_MEASURE_NAME;
+    measure.aggregator = TEST_AVERAGE_AGG_TYPE;
+    measure.formatString = TEST_NUM_DECIMAL_FORMAT_STRING;
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+
+    assertFalse( mondrianSchemaHandler.updateMeasure( null, "MeasureNotFound", measure ) );
+  }
+
+  @Test
+  public void testUpdatingMeasureToExistingReturnsFalse() throws Exception {
+    assertTrue( schemaDocument != null );
+
+    MondrianDef.Measure measure = new MondrianDef.Measure();
+    measure.name = TEST_EXISTING_MEASURE_STRING;
+    measure.aggregator = TEST_AVERAGE_AGG_TYPE;
+    measure.formatString = TEST_NUM_DECIMAL_FORMAT_STRING;
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+
+    assertFalse( mondrianSchemaHandler.updateMeasure( null, "bc_QUANTITYINSTOCK", measure ) );
   }
 }
