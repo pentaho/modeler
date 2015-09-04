@@ -241,11 +241,7 @@ public class UpdateMeasureTest {
     UpdateMeasure updateMeasure = new UpdateMeasure();
     updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
     updateMeasure.setName( EXISTING_COLUMN );
-    try {
-      boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc );
-      fail( "Exception should have occurred" );
-    } catch ( Exception e ) {
-    }
+    assertFalse( updateMeasure.apply( mondrianSchemaXmlDoc ) );
 
     // Ensure nothing has changed
     assertTrue( mondrianSchemaXmlDoc != null );

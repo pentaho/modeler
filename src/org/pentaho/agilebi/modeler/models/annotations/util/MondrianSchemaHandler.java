@@ -231,7 +231,7 @@ public class MondrianSchemaHandler {
    * @param measure The updated measure
    * @throws ModelerException
    */
-  public void updateMeasure( String cubeName, String measureName, MondrianDef.Measure measure ) throws ModelerException {
+  public boolean updateMeasure( String cubeName, String measureName, MondrianDef.Measure measure ) throws ModelerException {
     if ( StringUtils.isBlank( measureName ) ) {
       throw new ModelerException(
         BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
@@ -252,16 +252,12 @@ public class MondrianSchemaHandler {
       // Check to make sure there isn't a measure that already exists with the new name
       Node duplicateMeasure = getMeasureNode( cubeName, measure.name );
       if ( !measureName.equals( measure.name ) && duplicateMeasure != null ) {
-        throw new ModelerException(
-          BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.MEASURE_ALREADY_EXISTS", measure.name )
-        );
+        return false;
       }
 
       Node measureNode = getMeasureNode( cubeName, measureName );
       if ( measureNode == null ) {
-        throw new ModelerException(
-          BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
-        );
+        return false;
       }
 
       NamedNodeMap measureAttrs = measureNode.getAttributes();
@@ -284,6 +280,7 @@ public class MondrianSchemaHandler {
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }
+    return true;
   }
 
   public Document getSchema() {

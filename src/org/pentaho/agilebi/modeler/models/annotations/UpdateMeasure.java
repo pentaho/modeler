@@ -173,9 +173,7 @@ public class UpdateMeasure extends AnnotationType {
     updatedMeasure.name = name;
     updatedMeasure.aggregator = mondrianAggregationType;
     updatedMeasure.formatString = format;
-    mondrianSchemaHandler.updateMeasure( cube, measure, updatedMeasure );
-
-    return true;
+    return mondrianSchemaHandler.updateMeasure( cube, measure, updatedMeasure );
   }
 
   @Override
