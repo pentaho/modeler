@@ -50,7 +50,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final String CREATE_MEASURE_ENUM_VALUE = "Create Measure";
   private static final String CREATE_ATTRIBUTE_ENUM_VALUE = "Create Attribute";
   private static final String CREATE_DIMENSION_ENUM_VALUE = "Create Dimension Key";
-  private static final String CREATE_CALCULATED_MEMBER_ENUM_VALUE = "Create Calculated Member";
+  private static final String CREATE_CALCULATED_MEMBER_ENUM_VALUE = "Create Calculated Measure";
   private static final String REMOVE_MEASURE_ENUM_VALUE = "Remove Measure";
   private static final String LINK_DIMENSION_ENUM_VALUE = "Link Dimension";
   private static final String REMOVE_ATTRIBUTE_ENUM_VALUE = "Remove Attribute";
