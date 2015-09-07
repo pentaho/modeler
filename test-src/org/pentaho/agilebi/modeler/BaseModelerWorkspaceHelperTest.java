@@ -19,6 +19,7 @@ package org.pentaho.agilebi.modeler;
 
 import static junit.framework.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -170,10 +171,26 @@ public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
   }
 
   @Test
-  public void testPopulateDomainRetainsCalculatedMembers() throws Exception {
+  public void testPopulateDomainRetainsCalculatedMembersWithNullExistingCubes() throws Exception {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper( LOCALE );
     LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
     helper.autoModelFlat( workspace );
+    logicalModel.setProperty("olap_cubes", null);
+    helper.populateDomain( workspace );
+    List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
+    OlapCalculatedMember olapCalculatedMember = new OlapCalculatedMember( "aName", "aDim", "aFormula", "aString", false );
+    cubes.get( 0 ).getOlapCalculatedMembers().add( olapCalculatedMember );
+    helper.populateDomain( workspace );
+    cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
+    assertSame( olapCalculatedMember, cubes.get( 0 ).getOlapCalculatedMembers().get( 0 ) );
+  }
+
+  @Test
+  public void testPopulateDomainRetainsCalculatedMembersWithEmptyExistingCubes() throws Exception {
+    ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper( LOCALE );
+    LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
+    helper.autoModelFlat( workspace );
+    logicalModel.setProperty("olap_cubes", new ArrayList<OlapCube>());
     helper.populateDomain( workspace );
     List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
     OlapCalculatedMember olapCalculatedMember = new OlapCalculatedMember( "aName", "aDim", "aFormula", "aString", false );
