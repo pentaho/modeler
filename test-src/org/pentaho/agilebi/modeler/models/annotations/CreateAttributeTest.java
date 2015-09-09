@@ -187,11 +187,19 @@ public class CreateAttributeTest {
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
     model.getWorkspaceHelper().populateDomain( model );
 
+    assertEquals( "PRODUCTCODE",
+        AnnotationUtil.getOlapDimensionUsage( "PRODUCTCODE", getCubes( model ).get( 0 ).getOlapDimensionUsages() )
+            .getOlapDimension().getHierarchies().get( 0 ).getName() );
+
     CreateAttribute productCode = new CreateAttribute();
     productCode.setName( "Product Code" );
     productCode.setDimension( "Product" );
     productCode.setField( "PRODUCTCODE_OLAP" );
     productCode.apply( model, metaStore );
+
+    assertEquals( "Product",
+        AnnotationUtil.getOlapDimensionUsage( "Product", getCubes( model ).get( 0 ).getOlapDimensionUsages() )
+            .getOlapDimension().getHierarchies().get( 0 ).getName() ); // should be same as Dimension name
 
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setName( "Product Description" );
@@ -211,10 +219,12 @@ public class CreateAttributeTest {
     OlapHierarchyLevel productCodeLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Code", dateLevels );
     assertNotNull( productCodeLevel );
     assertEquals( "Product Code", dateLevels.get( 0 ).getName() );
+    assertEquals( "Product", productCodeLevel.getOlapHierarchy().getName() );
 
     OlapHierarchyLevel productDescLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Description", dateLevels );
     assertNotNull( productDescLevel );
     assertEquals( "Product Description", productDescLevel.getName() );
+    assertEquals( "Product", productDescLevel.getOlapHierarchy().getName() );
 
     assertEquals( "Product Code is top level in hierarchy", productCode.getSummary() );
     assertEquals( "Product Description participates in hierarchy with parent Product Code",
