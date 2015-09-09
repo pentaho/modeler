@@ -261,7 +261,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     }
 
     List<OlapCube> existingCubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
-    OlapCube cube = existingCubes == null ? new OlapCube() : existingCubes.get( 0 );
+    OlapCube cube = existingCubes == null || existingCubes.isEmpty() ? new OlapCube() : existingCubes.get( 0 );
     cube.setLogicalTable( factTable );
     // TODO find a better way to generate default names
     //cube.setName( BaseMessages.getString(ModelerWorkspaceUtil.class, "ModelerWorkspaceUtil.Populate.CubeName", model.getModelName() ) ); //$NON-NLS-1$
@@ -398,7 +398,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         Set<AggregationType> possibleAggs = new HashSet<AggregationType>();
         possibleAggs.add( fieldMeta.getDefaultAggregation() );
         possibleAggs.addAll( fieldMeta.getSelectedAggregations() );
-        lCol.setAggregationList( Arrays.<AggregationType>asList(possibleAggs
+        lCol.setAggregationList( Arrays.<AggregationType> asList( possibleAggs
             .toArray( new AggregationType[possibleAggs.size()] ) ) );
         cat.addLogicalColumn( lCol );
 
