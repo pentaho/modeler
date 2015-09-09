@@ -324,7 +324,7 @@ public class CreateAttribute extends AnnotationType {
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) ) {
         for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
-          if ( hierarchyMetaData.getName().equals( isEmpty( name ) ? "" : name ) ) {
+          if ( hierarchyMetaData.getName().equals( isEmpty( name ) ? getDimension() : name ) ) {
             return hierarchyMetaData;
           }
         }
@@ -346,7 +346,8 @@ public class CreateAttribute extends AnnotationType {
   }
 
   private boolean createNewHierarchy( final ModelerWorkspace workspace, final String column ) throws ModelerException {
-    HierarchyMetaData hierarchyMetaData = new HierarchyMetaData( isEmpty( getHierarchy() ) ? "" : getHierarchy() );
+    HierarchyMetaData hierarchyMetaData
+        = new HierarchyMetaData( isEmpty( getHierarchy() ) ? getDimension() : getHierarchy() );
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) && !isAutoModeled( workspace, column ) ) {
         hierarchyMetaData.setParent( dimensionMetaData );
