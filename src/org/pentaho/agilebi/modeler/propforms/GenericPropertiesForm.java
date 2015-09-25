@@ -28,7 +28,6 @@ import org.pentaho.ui.xul.containers.XulVbox;
 
 public class GenericPropertiesForm extends AbstractModelerNodeForm<AbstractMetaDataModelNode> {
 
-  private XulVbox messageBox;
   private XulLabel messageLabel;
   private XulButton messageBtn;
 
@@ -66,13 +65,11 @@ public class GenericPropertiesForm extends AbstractModelerNodeForm<AbstractMetaD
     if ( node == null ) {
       return;
     }
-    messageBox.setVisible( node.getValidationMessages().size() > 0 );
     setValidMessages( getNode().getValidationMessagesString() );
   }
 
   public void init( ModelerWorkspace workspace ) {
     super.init( workspace );
-    messageBox = (XulVbox) document.getElementById( "generic_message" );
     messageLabel = (XulLabel) document.getElementById( "generic_message_label" );
     bf.createBinding( this, "validMessages", messageLabel, "value", validMsgTruncatedBinding );
     messageBtn = (XulButton) document.getElementById( "generic_message_btn" );
