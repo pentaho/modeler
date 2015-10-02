@@ -30,7 +30,7 @@ import org.pentaho.metadata.model.LogicalModel;
 /**
  * User: nbaker Date: 4/8/11
  */
-public class AvailableColumnsTest extends AbstractModelerTest {
+public class AvailableColumnsIT extends AbstractModelerTest {
 
   @Test
   public void testAvailableColumnPossibleMeasure() throws Exception {

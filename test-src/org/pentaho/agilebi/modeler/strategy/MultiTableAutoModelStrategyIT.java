@@ -33,7 +33,7 @@ import org.pentaho.agilebi.modeler.nodes.RelationalModelNode;
  *
  * @author rfellows
  */
-public class MultiTableAutoModelStrategyTest extends AbstractModelerTest {
+public class MultiTableAutoModelStrategyIT extends AbstractModelerTest {
 
   private static final String LOCALE = "en-US";
 

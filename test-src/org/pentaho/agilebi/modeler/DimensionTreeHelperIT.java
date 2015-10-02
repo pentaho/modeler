@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertTrue;
  *
  * @author rfellows
  */
-public class DimensionTreeHelperTest extends AbstractModelerTest {
+public class DimensionTreeHelperIT extends AbstractModelerTest {
 
   DimensionTreeHelper helper;
 

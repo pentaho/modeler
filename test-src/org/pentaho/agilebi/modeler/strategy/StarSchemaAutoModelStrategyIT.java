@@ -52,7 +52,7 @@ import org.pentaho.metadata.model.concept.types.DataType;
  *
  * @author rfellows
  */
-public class StarSchemaAutoModelStrategyTest extends AbstractModelerTest {
+public class StarSchemaAutoModelStrategyIT extends AbstractModelerTest {
   private static final String LOCALE = "en-US";
   private static Properties props = null;
   private static GeoContextConfigProvider config;

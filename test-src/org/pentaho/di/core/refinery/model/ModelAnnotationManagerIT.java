@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * @author Rowell Belen
  */
-public class ModelAnnotationManagerTest {
+public class ModelAnnotationManagerIT {
 
   private String tempDir = null;
   private IMetaStore metaStore = null;

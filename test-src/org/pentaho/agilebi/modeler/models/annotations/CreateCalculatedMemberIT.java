@@ -56,7 +56,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Properties;
 
-public class CreateCalculatedMemberTest {
+public class CreateCalculatedMemberIT {
   private static final String TEST_CALCULATED_MEMBER_NAME = "TestCalculatedMember";
   private static final String TEST_CALCULCATED_MEMBER_CAPTION = "Test Caption";
   private static final String TEST_CALCULATED_MEMBER_DESC = "Test Description";

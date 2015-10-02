@@ -64,7 +64,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 @SuppressWarnings( "unchecked" )
-public class LinkDimensionTest {
+public class LinkDimensionIT {
   private IMetaStore metaStore;
   private DatabaseMeta dbMeta;
 

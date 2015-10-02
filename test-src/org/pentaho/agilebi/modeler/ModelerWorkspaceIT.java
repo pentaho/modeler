@@ -48,7 +48,7 @@ import org.pentaho.metadata.util.XmiParser;
  *
  * @author rfellows
  */
-public class ModelerWorkspaceTest extends AbstractModelerTest {
+public class ModelerWorkspaceIT extends AbstractModelerTest {
 
   @Test
   public void testUpConvertLegacyModel() throws Exception {

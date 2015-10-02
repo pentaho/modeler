@@ -67,7 +67,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Properties;
 
-public class CreateAttributeTest {
+public class CreateAttributeIT {
   private IMetaStore metaStore;
 
   private static String PRODUCT_XMI_FILE = "test-res/products.xmi";

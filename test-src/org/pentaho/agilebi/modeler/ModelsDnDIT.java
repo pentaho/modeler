@@ -35,7 +35,7 @@ import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 /**
  * User: nbaker Date: 4/15/11
  */
-public class ModelsDnDTest extends AbstractModelerTest {
+public class ModelsDnDIT extends AbstractModelerTest {
 
   @Test
   public void testValidDropIndications() throws ModelerException {

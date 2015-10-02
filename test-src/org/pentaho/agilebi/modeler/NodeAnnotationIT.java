@@ -28,7 +28,7 @@ import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 /**
  * User: nbaker Date: 10/20/11
  */
-public class NodeAnnotationTest extends AbstractModelerTest {
+public class NodeAnnotationIT extends AbstractModelerTest {
   @Test
   public void testAnnotations() throws Exception {
     generateTestDomain();
