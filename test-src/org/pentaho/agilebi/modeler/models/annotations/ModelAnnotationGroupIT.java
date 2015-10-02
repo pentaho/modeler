@@ -52,7 +52,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.*;
 
-public class ModelAnnotationGroupTest {
+public class ModelAnnotationGroupIT {
 
   @SuppressWarnings( "MismatchedQueryAndUpdateOfCollection" )
   @Test

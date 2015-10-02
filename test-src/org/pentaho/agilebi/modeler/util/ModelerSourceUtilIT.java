@@ -33,7 +33,7 @@ import org.pentaho.metadata.model.Domain;
  *
  * @author rfellows
  */
-public class ModelerSourceUtilTest extends AbstractModelerTest {
+public class ModelerSourceUtilIT extends AbstractModelerTest {
 
   private static String locale;
 

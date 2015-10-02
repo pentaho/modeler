@@ -42,9 +42,9 @@ import org.pentaho.metadata.model.olap.OlapCube;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultiTableModelerSourceTest extends AbstractModelerTest {
+public class MultiTableModelerSourceIT extends AbstractModelerTest {
 
-  private static Logger logger = LoggerFactory.getLogger( MultiTableModelerSourceTest.class );
+  private static Logger logger = LoggerFactory.getLogger( MultiTableModelerSourceIT.class );
 
   static {
     try {

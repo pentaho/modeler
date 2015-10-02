@@ -55,7 +55,7 @@ import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
  * Created by IntelliJ IDEA. User: rfellows Date: 9/16/11 Time: 9:19 AM To change this template use File | Settings |
  * File Templates.
  */
-public class GeoContextTest extends AbstractModelerTest {
+public class GeoContextIT extends AbstractModelerTest {
   private static final String GEO_ROLE_KEY = "geo.roles";
   private static Properties props = null;
   private static final String LOCALE = "en_US";

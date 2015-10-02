@@ -44,7 +44,7 @@ import org.pentaho.metadata.model.olap.OlapMeasure;
  *
  * @author rfellows
  */
-public class BaseModelerWorkspaceHelperTest extends AbstractModelerTest {
+public class BaseModelerWorkspaceHelperIT extends AbstractModelerTest {
 
   private static final String LOCALE = "en-US";
   RelationalModelNode relationalModelNode;

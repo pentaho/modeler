@@ -51,7 +51,7 @@ import org.pentaho.metadata.model.concept.types.DataType;
  *
  * @author rfellows
  */
-public class SimpleAutoModelStrategyTest extends AbstractModelerTest {
+public class SimpleAutoModelStrategyIT extends AbstractModelerTest {
 
   private static final String LOCALE = "en-US";
 

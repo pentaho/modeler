@@ -51,7 +51,7 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import java.io.FileInputStream;
 import java.util.List;
 
-public class RemoveAttributeTest {
+public class RemoveAttributeIT {
   private IMetaStore metaStore;
 
   private static String PRODUCT_XMI_FILE = "test-res/products.xmi";

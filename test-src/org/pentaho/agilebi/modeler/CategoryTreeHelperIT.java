@@ -46,7 +46,7 @@ import org.pentaho.metadata.util.SQLModelGenerator;
  *
  * @author rfellows
  */
-public class CategoryTreeHelperTest {
+public class CategoryTreeHelperIT {
 
   CategoryTreeHelper helper;
 

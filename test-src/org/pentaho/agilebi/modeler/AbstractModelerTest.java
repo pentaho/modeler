@@ -33,7 +33,7 @@ import org.pentaho.agilebi.modeler.models.SchemaModel;
 import org.pentaho.agilebi.modeler.util.ModelerSourceUtil;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.MultiTableModelerSource;
-import org.pentaho.agilebi.modeler.util.MultiTableModelerSourceTest;
+import org.pentaho.agilebi.modeler.util.MultiTableModelerSourceIT;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
@@ -87,7 +87,7 @@ public class AbstractModelerTest {
 
   protected void generateMultiStarTestDomain() throws Exception {
 
-    SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1( true );
+    SchemaModel schemaModel = MultiTableModelerSourceIT.getSchemaModel1(true);
 
     MultiTableModelerSource modelerSource =
         new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
@@ -98,7 +98,7 @@ public class AbstractModelerTest {
   }
 
   protected void generateMultiTableTestDomain() throws ModelerException {
-    SchemaModel schemaModel = MultiTableModelerSourceTest.getSchemaModel1( false );
+    SchemaModel schemaModel = MultiTableModelerSourceIT.getSchemaModel1(false);
 
     MultiTableModelerSource modelerSource =
         new MultiTableModelerSource( getDatabaseMeta(), schemaModel, "TEST", Arrays.asList( "CUSTOMERS", "PRODUCTS",
