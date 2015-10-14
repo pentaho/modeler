@@ -398,7 +398,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
         Set<AggregationType> possibleAggs = new HashSet<AggregationType>();
         possibleAggs.add( fieldMeta.getDefaultAggregation() );
         possibleAggs.addAll( fieldMeta.getSelectedAggregations() );
-        lCol.setAggregationList( Arrays.<AggregationType> asList( possibleAggs
+        lCol.setAggregationList( Arrays.<AggregationType>asList( possibleAggs
             .toArray( new AggregationType[possibleAggs.size()] ) ) );
         cat.addLogicalColumn( lCol );
 

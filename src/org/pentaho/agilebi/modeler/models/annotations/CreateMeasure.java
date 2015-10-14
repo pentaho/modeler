@@ -34,7 +34,6 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
@@ -43,6 +42,8 @@ import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
+
+import static org.pentaho.metadata.automodel.PhysicalTableImporter.*;
 
 
 /**
@@ -206,8 +207,7 @@ public class CreateMeasure extends AnnotationType {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
       for ( LogicalColumn logicalColumn : logicalColumns ) {
         if ( columnMatches( workspace, resolveField( workspace ), logicalColumn )
-            || columnMatches( workspace, PhysicalTableImporter.beautifyName( resolveField( workspace ) ), logicalColumn ) )
-        {
+            || columnMatches( workspace, beautifyName( resolveField( workspace ) ), logicalColumn ) ) {
           String targetColumn =
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
@@ -309,7 +309,7 @@ public class CreateMeasure extends AnnotationType {
 
   private boolean measureNameEquals( String column, MeasureMetaData measure ) {
     return measure.getName().equalsIgnoreCase( column )
-        || measure.getName().equalsIgnoreCase( PhysicalTableImporter.beautifyName( column ) );
+        || measure.getName().equalsIgnoreCase( beautifyName( column ) );
   }
 
   private void removeMeasure( final ModelerWorkspace workspace, final String measureName ) {
