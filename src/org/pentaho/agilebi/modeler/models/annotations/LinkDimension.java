@@ -91,10 +91,10 @@ public class LinkDimension extends AnnotationType {
         return false;
       }
       ModelerWorkspace dimensionWorkspace = autoModelSharedDimension( factWorkspace, dataProvider );
-      
-      Map<ApplyStatus,List<ModelAnnotation>> applied = sharedAnnotations.applyAnnotations( dimensionWorkspace,
+
+      Map<ApplyStatus, List<ModelAnnotation>> applied = sharedAnnotations.applyAnnotations( dimensionWorkspace,
           metaStore );
-      if ( applied.get( ApplyStatus.FAILED ) != null && applied.get( ApplyStatus.FAILED ).size() > 0 ){
+      if ( applied.get( ApplyStatus.FAILED ) != null && applied.get( ApplyStatus.FAILED ).size() > 0 ) {
         return false;
       }
       String dimKey = locateDimensionKey( sharedAnnotations );

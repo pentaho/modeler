@@ -24,7 +24,6 @@ import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.components.XulLabel;
-import org.pentaho.ui.xul.containers.XulVbox;
 
 public class GenericPropertiesForm extends AbstractModelerNodeForm<AbstractMetaDataModelNode> {
 

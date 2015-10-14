@@ -556,7 +556,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     for ( MeasureMetaData measure : model.getMeasures() ) {
       boolean found = false;
       if ( measure.getLogicalColumn() != null ) {
-      inner:
+        inner:
         for ( AvailableTable table : tablesList ) {
           for ( AvailableField f : table.getAvailableFields() ) {
             if ( f.getPhysicalColumn().getId().equals( measure.getLogicalColumn().getPhysicalColumn().getId() )
@@ -583,7 +583,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
           for ( LevelMetaData lm : hm ) {
             boolean found = false;
             if ( lm.getLogicalColumn() != null ) {
-            inner:
+              inner:
               for ( AvailableTable table : tablesList ) {
                 for ( AvailableField f : table.getAvailableFields() ) {
                   if ( f.getPhysicalColumn().getId().equals( lm.getLogicalColumn().getPhysicalColumn().getId() )
@@ -614,7 +614,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       for ( FieldMetaData field : category ) {
         boolean found = false;
         if ( field.getLogicalColumn() != null ) {
-        inner:
+          inner:
           for ( AvailableTable table : tablesList ) {
             for ( AvailableField f : table.getAvailableFields() ) {
               if ( f.getPhysicalColumn().getId().equals( field.getLogicalColumn().getPhysicalColumn().getId() )
