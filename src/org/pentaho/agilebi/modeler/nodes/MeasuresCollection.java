@@ -108,7 +108,9 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
       }
 
     }
-    this.firePropertyChange( "valid", null, valid );
+    if (this.suppressEvents == false ) {
+      this.firePropertyChange( "valid", null, valid );
+    }
   }
 
   @Override
