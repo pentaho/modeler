@@ -50,6 +50,7 @@ import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
 import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
+import org.pentaho.agilebi.modeler.util.DataFormatHolder;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.IPhysicalColumn;
@@ -399,6 +400,25 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     ColumnBackedNode node = createColumnBackedNode( selectedField, ModelerPerspective.REPORTING );
     field.setLogicalColumn( node.getLogicalColumn() );
     field.setFieldTypeDesc( node.getLogicalColumn().getDataType().getName() );
+    switch ( node.getLogicalColumn().getDataType() ) {
+      case DATE:
+        field.setFormatstring( DataFormatHolder.DATE_FORMATS );
+        break;
+      case NUMERIC:
+        field.setFormatstring( DataFormatHolder.NUMBER_FORMATS );
+        break;
+      case STRING:
+        field.setFormatstring( DataFormatHolder.CONVERSION_FORMATS );
+        break;
+      case BOOLEAN:
+      case URL:
+      case BINARY:
+      case UNKNOWN:
+      case IMAGE:
+      default:
+        break;
+    }
+    field.setFormat( "" );
     return field;
   }
 

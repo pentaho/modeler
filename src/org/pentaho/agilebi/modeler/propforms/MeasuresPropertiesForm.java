@@ -19,10 +19,12 @@ package org.pentaho.agilebi.modeler.propforms;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.util.Vector;
 
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
+import org.pentaho.agilebi.modeler.util.DataFormatHolder;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;
@@ -37,7 +39,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   private String locale;
   protected AggregationType defaultAggregation;
   protected String format;
-  protected XulMenuList formatList;
+  protected List<String> formatstring;
   private XulButton messageBtn;
 
   public MeasuresPropertiesForm( String panelId, String locale ) {
@@ -56,10 +58,12 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
         setDefaultAggregation( getNode().getDefaultAggregation() );
       } else if ( evt.getPropertyName().equals( "format" ) ) {
         setFormat( getNode().getFormat() );
+      } else if ( evt.getPropertyName().equals( "formatList" ) ) {
+        setFormatstring( getNode().getFormatstring() );
       }
     }
   };
-
+  
   private PropertyChangeListener validListener = new PropertyChangeListener() {
 
     public void propertyChange( PropertyChangeEvent evt ) {
@@ -77,21 +81,19 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
   @Bindable
   public void init( ModelerWorkspace workspace ) {
     super.init( workspace );
-
-    formatList = (XulMenuList) document.getElementById( "formatstring" );
+    XulMenuList formatXulMenuList = (XulMenuList) document.getElementById( "formatstring" );
 
     bf.createBinding( this, "notValid", "messages2", "visible" );
     bf.createBinding( this, "validMessages", "messages2label", "value", validMsgTruncatedBinding );
     bf.createBinding( this, "displayName", "displayname", "value" );
     bf.createBinding( this, "possibleAggregations", "defaultAggregation", "elements" );
     bf.createBinding( this, "defaultAggregation", "defaultAggregation", "selectedItem" );
-
-    bf.createBinding( this, "format", formatList, "value", new FormatStringConverter() );
+    bf.createBinding( this, "format", formatXulMenuList, "value", new FormatStringConverter() );
+    bf.createBinding( this, "formatstring", formatXulMenuList, "elements" );
     bf.createBinding( this, "backingColumnAvailable", "fixMeasuresColumnsBtn", "!visible" );
     bf.createBinding( this, "columnName", "measure_column_name", "value" );
     messageBtn = (XulButton) document.getElementById( "measure_message_btn" );
     bf.createBinding( this, "validMessages", messageBtn, "visible", showMsgBinding );
-
   }
 
   private void showValidations() {
@@ -112,6 +114,25 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
     t.addPropertyChangeListener( validListener );
     t.addPropertyChangeListener( propListener );
+    
+    switch ( t.getLogicalColumn().getDataType() ) {
+      case DATE:
+        setFormatstring( DataFormatHolder.DATE_FORMATS );
+        break;
+      case NUMERIC:
+        setFormatstring( DataFormatHolder.NUMBER_FORMATS );
+        break;
+      case STRING:
+        setFormatstring( DataFormatHolder.CONVERSION_FORMATS );
+        break;
+      case BOOLEAN:
+      case URL:
+      case BINARY:
+      case UNKNOWN:
+      case IMAGE:
+      default:
+        break;
+    }
 
     setDisplayName( t.getName() );
     setFormat( t.getFormat() );
@@ -236,6 +257,21 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     this.firePropertyChange( "defaultAggregation", previousAggregation, defaultAggregation );
     if ( getNode() != null ) {
       getNode().setDefaultAggregation( defaultAggregation );
+    }
+  }
+
+  @Bindable
+  public List<String> getFormatstring() {
+    return formatstring;
+  }
+
+  @Bindable
+  public void setFormatstring( List<String> formatList ) {
+    List<String> previousXulMenuList = this.formatstring;
+    this.formatstring = formatList;
+    this.firePropertyChange( "formatstring", previousXulMenuList, this.formatstring );
+    if ( getNode() != null ) {
+      getNode().setFormatstring( formatList );
     }
   }
 
