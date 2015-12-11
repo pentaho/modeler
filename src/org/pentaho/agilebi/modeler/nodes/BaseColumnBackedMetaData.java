@@ -44,6 +44,7 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   private static final long serialVersionUID = -7342401951588541248L;
   protected String name;
   protected String columnName;
+  protected boolean hidden;
   protected transient LogicalColumn logicalColumn;
   protected transient LogicalColumn logicalOrdinalColumn;
   protected transient LogicalColumn logicalCaptionColumn;
@@ -121,6 +122,14 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   @Bindable
   public void setColumnName( String columnName ) {
     this.columnName = columnName;
+  }
+
+  public boolean isHidden() {
+    return hidden;
+  }
+
+  public void setHidden( boolean hidden ) {
+    this.hidden = hidden;
   }
 
   @Bindable

@@ -84,6 +84,7 @@ public class CreateMeasureTest {
     assertEquals( "Avg Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AVERAGE, measureMetaData.getDefaultAggregation() );
+    assertFalse( measureMetaData.isHidden() );
 
     @SuppressWarnings( "unchecked" )
     OlapCube cube =
@@ -96,6 +97,7 @@ public class CreateMeasureTest {
     assertEquals( "Avg Weight", olapMeasure.getName() );
     assertEquals( "QUANTITYINSTOCK", olapMeasure.getLogicalColumn().getPhysicalColumn()
         .getProperty( TARGET_COLUMN ) );
+    assertFalse( olapMeasure.isHidden() );
   }
 
   @Test
@@ -105,6 +107,7 @@ public class CreateMeasureTest {
     createMeasure.setName( "Min Weight" );
     createMeasure.setFormatString( "##.##" );
     createMeasure.setField( "bc_QUANTITYINSTOCK" );
+    createMeasure.setHidden( true );
 
     ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
     model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
@@ -119,6 +122,7 @@ public class CreateMeasureTest {
     assertEquals( "Min Weight", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( MINIMUM, measureMetaData.getDefaultAggregation() );
+    assertTrue( measureMetaData.isHidden() );
   }
 
   /**
@@ -136,6 +140,7 @@ public class CreateMeasureTest {
     createMeasure.setFormatString( "##.##" );
     createMeasure.setMeasure( "[Measures].[bc_BUYPRICE]" );
     createMeasure.setCube( "products_38GA" );
+    createMeasure.setHidden( true );
     ModelAnnotation annotation =
         new ModelAnnotation<CreateMeasure>( createMeasure );
 
@@ -155,6 +160,7 @@ public class CreateMeasureTest {
     assertEquals( "Min Buy Price", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( MINIMUM, measureMetaData.getDefaultAggregation() );
+    assertTrue( measureMetaData.isHidden() );
   }
 
   /**
@@ -170,6 +176,7 @@ public class CreateMeasureTest {
     createMeasure.setFormatString( "##.##" );
     createMeasure.setLevel( "[PRODUCTNAME].[PRODUCTNAME]" );
     createMeasure.setCube( "products_38GA" );
+    createMeasure.setHidden( true );
     ModelAnnotation annotation =
         new ModelAnnotation<CreateMeasure>( createMeasure );
 
@@ -187,6 +194,7 @@ public class CreateMeasureTest {
     assertEquals( "Product Count", measureMetaData.getName() );
     assertEquals( "##.##", measureMetaData.getFormat() );
     assertEquals( AggregationType.COUNT_DISTINCT, measureMetaData.getDefaultAggregation() );
+    assertTrue( measureMetaData.isHidden() );
   }
 
   @Test
@@ -219,6 +227,7 @@ public class CreateMeasureTest {
     maxWeight.setName( "Max Weight" );
     maxWeight.setFormatString( "##.##" );
     maxWeight.setField( "bc_QUANTITYINSTOCK" );
+    maxWeight.setHidden( true );
 
     ModelerWorkspace model =
         new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
@@ -233,12 +242,14 @@ public class CreateMeasureTest {
     assertEquals( "Min Weight", minMeta.getName() );
     assertEquals( "##.##", minMeta.getFormat() );
     assertEquals( MINIMUM, minMeta.getDefaultAggregation() );
+    assertFalse( minMeta.isHidden() );
 
     MeasureMetaData maxMeta = measures.get( 4 );
     assertEquals( "QUANTITYINSTOCK", maxMeta.getColumnName() );
     assertEquals( "Max Weight", maxMeta.getName() );
     assertEquals( "##.##", maxMeta.getFormat() );
     assertEquals( MAXIMUM, maxMeta.getDefaultAggregation() );
+    assertTrue( maxMeta.isHidden() );
   }
 
   @Test

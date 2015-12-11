@@ -236,6 +236,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
             level.getAnnotations().add( description );
           }
           level.setHavingUniqueMembers( lvl.isUniqueMembers() );
+          level.setHidden( lvl.isHidden() );
           levels.add( level );
         }
 
@@ -301,6 +302,9 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       measure.setName( f.getName() );
 
       measure.setLogicalColumn( lCol );
+
+      measure.setHidden( f.isHidden() );
+
       measures.add( measure );
     }
 

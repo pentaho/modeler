@@ -89,6 +89,10 @@ public class CreateMeasure extends AnnotationType {
   public static final String CUBE_NAME = "Cube Name";
   public static final int CUBE_ORDER = 8;
 
+  public static final String HIDDEN_ID = "hidden";
+  public static final String HIDDEN_NAME = "Hidden";
+  public static final int HIDDEN_ORDER = 9;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
@@ -125,6 +129,10 @@ public class CreateMeasure extends AnnotationType {
   // Do not expose business group in the UI (for now)
   //@ModelProperty( id = BUSINESS_GROUP_ID, name = BUSINESS_GROUP_NAME, order = BUSINESS_GROUP_ORDER )
   private String businessGroup;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME, order = HIDDEN_ORDER )
+  private boolean hidden;
 
   public String getName() {
     return name;
@@ -199,6 +207,14 @@ public class CreateMeasure extends AnnotationType {
     this.cube = cube;
   }
 
+  public boolean isHidden() {
+    return hidden;
+  }
+
+  public void setHidden( boolean hidden ) {
+    this.hidden = hidden;
+  }
+
   @Override
   public boolean apply(
       final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
@@ -221,6 +237,7 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setLogicalColumn( columnClone );
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
+          measureMetaData.setHidden( isHidden() );
           if ( getDescription() != null ) {
             measureMetaData.setDescription( getDescription() );
           }
