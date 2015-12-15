@@ -137,12 +137,14 @@ public class CreateAttributeIT {
     OlapHierarchyLevel productLineLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Line", levels );
     assertNotNull( productLineLevel );
     assertEquals( "Product Line", productLineLevel.getName() );
+    assertFalse( productLineLevel.isHidden() );
 
     OlapHierarchyLevel productNameLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Name", levels );
     assertNotNull( productNameLevel );
     assertEquals( "Product Name", productNameLevel.getName() );
     assertEquals( "PRODUCTSCALE_OLAP",
         productNameLevel.getReferenceOrdinalColumn().getName( model.getWorkspaceHelper().getLocale() ) );
+    assertFalse( productNameLevel.isHidden() );
 
     OlapDimensionUsage dateDim = AnnotationUtil.getOlapDimensionUsage( "Date", dimensionUsages );
     assertEquals( OlapDimension.TYPE_TIME_DIMENSION, dateDim.getOlapDimension().getType() );
@@ -154,12 +156,14 @@ public class CreateAttributeIT {
     assertEquals( "Year", yearLevel.getName() );
     assertEquals( "TimeYears", yearLevel.getLevelType() );
     assertEquals( "[yyyy]", yearLevel.getAnnotations().get( 0 ).getValue() );
+    assertFalse( yearLevel.isHidden() );
 
     OlapHierarchyLevel monthLevel = AnnotationUtil.getOlapHierarchyLevel( "Month", dateLevels );
     assertNotNull( monthLevel );
     assertEquals( "Month", monthLevel.getName() );
     assertEquals( "TimeMonths", monthLevel.getLevelType() );
     assertEquals( "[yyyy].[mm]", monthLevel.getAnnotations().get( 0 ).getValue() );
+    assertFalse( monthLevel.isHidden() );
   }
 
   @Test
@@ -661,6 +665,7 @@ public class CreateAttributeIT {
     OlapHierarchyLevel level = AnnotationUtil.getOlapHierarchyLevel( "State Abbr", hierarchy.getHierarchyLevels() );
     assertNotNull( level );
     assertEquals( "State Abbr", level.getName() );
+    assertFalse( level.isHidden() );
   }
 
   @Test
@@ -693,6 +698,7 @@ public class CreateAttributeIT {
     OlapHierarchyLevel level = AnnotationUtil.getOlapHierarchyLevel( "Product Line", hierarchy.getHierarchyLevels() );
     assertNotNull( level );
     assertEquals( "Product Line", level.getName() );
+    assertFalse( level.isHidden() );
   }
 
   /**
@@ -741,6 +747,7 @@ public class CreateAttributeIT {
     productLine.setHierarchy( "Products" );
     productLine.setDescription( "a line of products" );
     productLine.setField( "PRODUCTLINE_OLAP" );
+    productLine.setHidden( true );
 
     productLine.apply( wspace, metaStore );
 
@@ -754,6 +761,7 @@ public class CreateAttributeIT {
         OlapAnnotation desc = prodLineLvl.getAnnotations().get( 0 );
         assertEquals( "description.en_US", desc.getName() );
         assertEquals( productLine.getDescription(), desc.getValue() );
+        assertTrue( prodLineLvl.isHidden() );
         break;
       }
     }

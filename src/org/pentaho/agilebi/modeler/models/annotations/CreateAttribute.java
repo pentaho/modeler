@@ -111,6 +111,10 @@ public class CreateAttribute extends AnnotationType {
   public static final String CUBE_NAME = "Cube";
   public static final int CUBE_ORDER = 13;
 
+  public static final String HIDDEN_ID = "hidden";
+  public static final String HIDDEN_NAME = "Hidden";
+  public static final int HIDDEN_ORDER = 14;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
@@ -167,6 +171,10 @@ public class CreateAttribute extends AnnotationType {
   @MetaStoreAttribute
   @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER, hideUI = true )
   private String cube;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME, order = HIDDEN_ORDER )
+  private boolean hidden;
 
   public String getName() {
     return name;
@@ -281,6 +289,14 @@ public class CreateAttribute extends AnnotationType {
     this.cube = cube;
   }
 
+  public boolean isHidden() {
+    return hidden;
+  }
+
+  public void setHidden( boolean hidden ) {
+    this.hidden = hidden;
+  }
+
   @Override
   public boolean apply(
       final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
@@ -392,6 +408,7 @@ public class CreateAttribute extends AnnotationType {
       final LevelMetaData levelMetaData ) {
     levelMetaData.setLogicalColumn( logicalColumn );
     levelMetaData.setUniqueMembers( isUnique() );
+    levelMetaData.setHidden( isHidden() );
     if ( getTimeType() != null ) {
       levelMetaData.setDataRole( TimeRole.fromMondrianAttributeValue( getTimeType().name() ) );
     }

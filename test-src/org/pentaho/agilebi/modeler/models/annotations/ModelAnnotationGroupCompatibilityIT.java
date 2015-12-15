@@ -83,7 +83,7 @@ public class ModelAnnotationGroupCompatibilityIT {
 
     ModelAnnotation m2 = group.get( 1 );
     assertNotNull( m2.getName() );
-    assertEquals( 3, m2.describeAnnotation().size() );
+    assertEquals( 4, m2.describeAnnotation().size() );
     assertEquals( "b4e7ef92-ad05-4e18-8850-7914684f63be", m2.getName() );
     assertEquals( "Home_Team", m2.getField() );
 
@@ -94,7 +94,7 @@ public class ModelAnnotationGroupCompatibilityIT {
 
     ModelAnnotation m3 = group.get( 2 );
     assertNotNull( m3.getName() );
-    assertEquals( 3, m3.describeAnnotation().size() );
+    assertEquals( 4, m3.describeAnnotation().size() );
     assertEquals( "3dbe378e-4baf-4e5d-a02c-fe7f6b2f1832", m3.getName() );
     assertEquals( "AwayTeam", m3.getField() );
 
@@ -105,7 +105,7 @@ public class ModelAnnotationGroupCompatibilityIT {
 
     ModelAnnotation m4 = group.get( 3 );
     assertNotNull( m4.getName() );
-    assertEquals( 3, m4.describeAnnotation().size() );
+    assertEquals( 4, m4.describeAnnotation().size() );
     assertEquals( "22a30b7c-9dc5-4be5-8ec8-24b863505b81", m4.getName() );
     assertEquals( "Home_Team", m4.getField() );
 
@@ -129,17 +129,17 @@ public class ModelAnnotationGroupCompatibilityIT {
 
     ModelAnnotation m2 = group.get( 1 );
     assertEquals( "QUANTITYORDERED", m2.getField() );
-    assertEquals( 4, m2.describeAnnotation().size() );
+    assertEquals( 5, m2.describeAnnotation().size() );
     assertEquals( "Orders", m2.describeAnnotation().get( "hierarchy" ) );
 
     ModelAnnotation m3 = group.get( 2 );
     assertEquals( "PRICEEACH", m3.getField() );
-    assertEquals( 3, m3.describeAnnotation().size() );
+    assertEquals( 4, m3.describeAnnotation().size() );
     assertEquals( "$#,###;($#,###)", m3.describeAnnotation().get( "formatString" ) );
 
     ModelAnnotation m4 = group.get( 3 );
     assertEquals( "PRICEEACH", m4.getField() );
-    assertEquals( 3, m4.describeAnnotation().size() );
+    assertEquals( 4, m4.describeAnnotation().size() );
     assertEquals( AggregationType.SUM, m4.describeAnnotation().get( "aggregateType" ) );
   }
 }
