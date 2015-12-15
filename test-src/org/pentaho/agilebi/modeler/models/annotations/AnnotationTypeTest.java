@@ -128,8 +128,8 @@ public class AnnotationTypeTest {
     } );
 
     // found hidden and name
-    assertEquals( 3, keyList.size() );
-    assertEquals( 3, valueList.size() );
+    assertEquals( 4, keyList.size() );
+    assertEquals( 4, valueList.size() );
   }
 
   @Test
