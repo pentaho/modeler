@@ -175,6 +175,73 @@ public class MondrianSchemaHandlerTest {
   }
 
   @Test
+  public void testAddCalculatedMemberInline() {
+    assertTrue( schemaDocument != null );
+
+    MondrianDef.CalculatedMember calculatedMember = new MondrianDef.CalculatedMember();
+    calculatedMember.caption = TEST_CALC_MEMBER_CAPTION;
+    calculatedMember.formula = TEST_CALC_MEMBER_FORMULA;
+    calculatedMember.name = TEST_CALC_MEMBER_NAME;
+    calculatedMember.dimension = TEST_CALC_MEMBER_DIMENSION;
+    calculatedMember.description = TEST_CALC_MEMBER_DESCRIPTION;
+    calculatedMember.visible = true;
+    MondrianDef.Annotation annotation = new MondrianDef.Annotation();
+    annotation.name = "name1";
+    annotation.cdata = "true";
+    MondrianDef.Annotations annotations = new MondrianDef.Annotations();
+    annotations.array = new MondrianDef.Annotation[] { annotation }; 
+    calculatedMember.annotations = annotations;
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+
+    try {
+      mondrianSchemaHandler.addCalculatedMember( null, calculatedMember );
+    } catch ( ModelerException e ) {
+      e.printStackTrace();
+    }
+
+    Element measureNode = null;
+
+    NodeList nodeList = schemaDocument.getElementsByTagName( CALCULATED_MEMBER_NODE_NAME );
+    for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
+      measureNode = (Element) nodeList.item( x );
+
+      String measureName = measureNode.getAttribute( CALCULATED_MEMBER_NAME_ATTRIBUTE );
+
+      if ( measureName != null ) {
+        if ( measureName.equals( TEST_CALC_MEMBER_NAME ) ) {
+          break;
+        }
+      }
+    }
+
+    assertNotNull( measureNode );
+    assertEquals(
+        TEST_CALC_MEMBER_NAME,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_CAPTION,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_FORMULA,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_FORMULA_ATTRIBUTE ) .getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_DIMENSION,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+        TEST_CALC_MEMBER_DESCRIPTION,
+        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue() );
+    NodeList childNodes = measureNode.getChildNodes();
+    assertEquals( 1, childNodes.getLength() );
+    NodeList annotNodes = childNodes.item( 0 ).getChildNodes();
+    assertEquals( 1, annotNodes.getLength() );
+    assertEquals(
+        "name1",
+        annotNodes.item( 0 ).getAttributes().getNamedItem( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals( "true", annotNodes.item( 0 ).getTextContent() );
+  }
+
+  @Test
   public void testUpdateMeasure() throws ModelerException {
     assertTrue( schemaDocument != null );
 
