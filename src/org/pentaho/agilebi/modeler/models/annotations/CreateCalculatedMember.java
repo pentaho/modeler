@@ -125,7 +125,7 @@ public class CreateCalculatedMember extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = VISIBLE_ID, name = VISIBLE_NAME, order = VISIBLE_ORDER )
-  private boolean visible;
+  private boolean visible = true; // default
 
   @MetaStoreAttribute
   @ModelProperty( id = INLINE_ID, name = INLINE_NAME, order = INLINE_ORDER )
@@ -163,7 +163,8 @@ public class CreateCalculatedMember extends AnnotationType {
         "olap_cubes" );
     OlapCube olapCube = cubes.get( 0 );
     OlapCalculatedMember calcMember =
-        new OlapCalculatedMember( getName(), getDimension(), getFormula(), getFormatString(), isCalculateSubtotals() );
+        new OlapCalculatedMember( getName(), getDimension(), getFormula(), getFormatString(),
+            isCalculateSubtotals(), !isVisible() );
     olapCube.getOlapCalculatedMembers().add( calcMember );
     return true;
   }
