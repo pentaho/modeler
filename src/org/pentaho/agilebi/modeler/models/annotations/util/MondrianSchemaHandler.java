@@ -58,6 +58,8 @@ public class MondrianSchemaHandler {
 
   public static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
   public static final String CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME = "CalculatedMemberProperty";
+  public static final String CALCULATED_MEMBER_ANNOTATION_ELEMENT_NAME = "Annotation";
+  public static final String CALCULATED_MEMBER_ANNOTATIONS_ELEMENT_NAME = "Annotations";
   public static final String CALCULATED_MEMBER_CAPTION_ATTRIBUTE = "caption";
   public static final String CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE = "description";
   public static final String CALCULATED_MEMBER_DIMENSION_ATTRIBUTE = "dimension";
@@ -161,11 +163,24 @@ public class MondrianSchemaHandler {
       measureElement.setAttribute( CALCULATED_MEMBER_VISIBLE_ATTRIBUTE, Boolean.toString( calculatedMember.visible ) );
       measureElement.setAttribute( CALCULATED_MEMBER_FORMAT_STRING_ATTRIBUTE, calculatedMember.formatString );
 
-      for ( MondrianDef.CalculatedMemberProperty property : calculatedMember.memberProperties ) {
-        Element propertyElement = this.schema.createElement( CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME );
-        propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, property.name );
-        propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE, property.value );
-        measureElement.appendChild( propertyElement );
+      if ( calculatedMember.annotations != null ) {
+        Element annotationsElement = this.schema.createElement( CALCULATED_MEMBER_ANNOTATIONS_ELEMENT_NAME );
+        for ( MondrianDef.Annotation annot : calculatedMember.annotations.array ) {
+          Element annotationElement = this.schema.createElement( CALCULATED_MEMBER_ANNOTATION_ELEMENT_NAME );
+          annotationElement.setAttribute( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, annot.name );
+          annotationElement.setTextContent( annot.cdata );
+          annotationsElement.appendChild( annotationElement );
+        }
+        measureElement.appendChild( annotationsElement );
+      }
+
+      if ( calculatedMember.memberProperties != null ) {
+        for ( MondrianDef.CalculatedMemberProperty property : calculatedMember.memberProperties ) {
+          Element propertyElement = this.schema.createElement( CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME );
+          propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, property.name );
+          propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE, property.value );
+          measureElement.appendChild( propertyElement );
+        }
       }
 
     } catch ( XPathExpressionException e ) {
