@@ -24,6 +24,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -217,6 +218,7 @@ public class CreateCalculatedMemberIT {
     productTotal.setName( "Product Total" );
     productTotal.setDimension( "PRODUCT ID" );
     productTotal.setCalculateSubtotals( true );
+    productTotal.setVisible( false );
     productTotal.apply( model, new MemoryMetaStore() );
 
     assertCalcMembersInModel( model );
@@ -234,9 +236,11 @@ public class CreateCalculatedMemberIT {
     assertEquals( 2, olapCalcMembers.size() );
     assertCalcMember( olapCalcMembers.get( 0 ), "[Measures].[Quantity Ordered] * 2", "Double Quantity", "Measures",
         "##.##", false );
+    assertFalse( olapCalcMembers.get( 0 ).isHidden() );
     assertCalcMember(
         olapCalcMembers.get( 1 ),
         "Aggregate([PRODUCT ID].[PRODUCT ID].[PRODUCT ID].members)", "Product Total", "PRODUCT ID", "##", true );
+    assertTrue( olapCalcMembers.get( 1 ).isHidden() );
   }
 
   private void assertCalcMember( final OlapCalculatedMember firstMember, final String formula, final String name,
