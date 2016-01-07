@@ -55,6 +55,8 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final String LINK_DIMENSION_ENUM_VALUE = "Link Dimension";
   private static final String REMOVE_ATTRIBUTE_ENUM_VALUE = "Remove Attribute";
   private static final String UPDATE_MEASURE_ENUM_VALUE = "Update Measure";
+  private static final String HIDE_ATTRIBUTE_ENUM_VALUE = "Hide Level";
+  private static final String HIDE_MEASURE_ENUM_VALUE = "Hide Measure";
   private static final String BLANK_ENUM_VALUE = "";
 
   @MetaStoreAttribute
@@ -306,6 +308,24 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
           final ModelAnnotationGroup modelAnnotations,
           final ModelAnnotation modelAnnotation,
           final ValueMetaInterface valueMeta ) {
+        return false;
+      }
+    },
+    HIDE_ATTRIBUTE( HIDE_ATTRIBUTE_ENUM_VALUE ) {
+      @Override
+      public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
+        return false;
+      }
+    },
+    HIDE_MEASURE( HIDE_MEASURE_ENUM_VALUE ) {
+      @Override
+      public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
         return false;
       }
     };

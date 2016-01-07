@@ -221,5 +221,11 @@ public class ModelAnnotationTest {
     assertFalse(
         ModelAnnotation.Type.CREATE_CALCULATED_MEMBER
         .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
+    assertFalse(
+      ModelAnnotation.Type.HIDE_ATTRIBUTE
+      .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
+    assertFalse(
+      ModelAnnotation.Type.HIDE_MEASURE
+        .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
   }
 }
