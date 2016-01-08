@@ -179,4 +179,29 @@ public class ModelAnnotationGroupXmlReaderTest {
     assertEquals( salesAnnotation, readAnnotations.get( 0 ) );
     assertEquals( ordersAnnotation, readAnnotations.get( 1 ) );
   }
+
+  @Test
+  public void testWriteReadsHideAnnotations() throws Exception {
+    HideMeasure hidePrice = new HideMeasure();
+    hidePrice.setName( "Price" );
+    hidePrice.setCube( "Sales" );
+    ModelAnnotation<HideMeasure> priceAnnotation = new ModelAnnotation<>( hidePrice );
+
+    HideAttribute hideAge = new HideAttribute();
+    hideAge.setCube( "Sales" );
+    hideAge.setDimension( "Customer" );
+    hideAge.setHierarchy( "Cust" );
+    hideAge.setName( "Age" );
+    ModelAnnotation<HideAttribute> ageAnnotation = new ModelAnnotation<>( hideAge );
+
+    ModelAnnotationGroup originalAnnotations = new ModelAnnotationGroup( priceAnnotation, ageAnnotation );
+
+    ModelAnnotationGroupXmlWriter writer = new ModelAnnotationGroupXmlWriter( originalAnnotations );
+    ModelAnnotationGroupXmlReader reader = new ModelAnnotationGroupXmlReader();
+    ModelAnnotationGroup readAnnotations = reader.readModelAnnotationGroup(
+      XMLHandler.loadXMLString( writer.getXML() ) );
+    assertEquals( 2, readAnnotations.size() );
+    assertEquals( priceAnnotation, readAnnotations.get( 0 ) );
+    assertEquals( ageAnnotation, readAnnotations.get( 1 ) );
+  }
 }

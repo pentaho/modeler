@@ -31,7 +31,12 @@ import org.pentaho.metadata.model.olap.OlapMeasure;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -40,6 +45,7 @@ import java.util.List;
 public final class AnnotationUtil {
 
   public static final String MEASURE_ELEMENT_NAME = "Measure";
+  public static final String LEVEL_ELEMENT_NAME = "Level";
   public static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
   public static final String CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME = "CalculatedMemberProperty";
 
@@ -158,7 +164,7 @@ public final class AnnotationUtil {
    * @return True if nodeName value equals otherwise false
    */
   public static boolean validateNodeAttribute( Document docToTest, String tagName, String nodeName,
-                                               String attributeName , String testValue ) {
+                                               String attributeName, String testValue ) {
     boolean validated = false;
 
     NodeList nodeList = docToTest.getElementsByTagName( tagName );
@@ -176,5 +182,14 @@ public final class AnnotationUtil {
     }
 
     return validated;
+  }
+
+  public static Document getMondrianDoc( final String mondrianTestFilePath )
+    throws SAXException, IOException, ParserConfigurationException {
+    File mondrianSchemaXmlFile = new File( mondrianTestFilePath );
+    return DocumentBuilderFactory
+      .newInstance()
+      .newDocumentBuilder()
+      .parse( mondrianSchemaXmlFile );
   }
 }

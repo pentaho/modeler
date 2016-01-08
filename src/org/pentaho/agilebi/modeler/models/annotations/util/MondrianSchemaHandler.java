@@ -33,10 +33,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import static java.lang.String.format;
+import static javax.xml.xpath.XPathConstants.NODE;
 
 /**
  * This class will attempt to encapsulate and abstract from the user
@@ -69,6 +71,7 @@ public class MondrianSchemaHandler {
   public static final String CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE = "value";
   public static final String CALCULATED_MEMBER_VISIBLE_ATTRIBUTE = "visible";
   public static final String MEASURE_DIMENSION = "Measure";
+  public static final String DIMENSION = "Dimension";
   public static final String MEASURE_FORMAT_STRING_ATTRIBUTE = "formatString";
   public static final String CALCULATED_MEMBER_FORMAT_STRING_ATTRIBUTE = "formatString";
 
@@ -102,7 +105,7 @@ public class MondrianSchemaHandler {
 
       xPathExpr.append( cubeXPathPart );
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      Node cube = (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
+      Node cube = (Node) xPathExpression.evaluate( this.schema, NODE );
       Element measureElement;
       measureElement = this.schema.createElement( MEASURE_ELEMENT_NAME );
 
@@ -151,7 +154,7 @@ public class MondrianSchemaHandler {
 
       xPathExpr.append( cubeXPathPart );
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      Node cube = (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
+      Node cube = (Node) xPathExpression.evaluate( this.schema, NODE );
       Element measureElement;
       measureElement = this.schema.createElement( CALCULATED_MEMBER_ELEMENT_NAME );
       cube.appendChild( measureElement );
@@ -216,12 +219,11 @@ public class MondrianSchemaHandler {
       StringBuffer xPathExpr = new StringBuffer();
       xPathExpr.append( cubeXPathPart + "//" + MEASURE_DIMENSION + "[@name=\"" + measureName + "\"]" );
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      return (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
+      return (Node) xPathExpression.evaluate( this.schema, NODE );
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }
   }
-
 
   /**
    * remove a measure
@@ -237,6 +239,7 @@ public class MondrianSchemaHandler {
       throw new ModelerException( e );
     }
   }
+
 
   /**
    * Update measure with name and/or aggregation type.
@@ -296,6 +299,87 @@ public class MondrianSchemaHandler {
       throw new ModelerException( e );
     }
     return true;
+  }
+
+  private Element getLevelNode( String cubeName, String dimensionName, String hierarchyName, String levelName )
+    throws ModelerException {
+    try {
+      XPathFactory xPathFactory = XPathFactory.newInstance();
+      XPath xPath = xPathFactory.newXPath();
+      String inlineWithHierarchy =
+        format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[@name=\"%s\"]/Level[@name=\"%s\"]",
+          cubeName, dimensionName, hierarchyName, levelName );
+      Element levelElement = (Element) xPath.compile( inlineWithHierarchy ).evaluate( this.schema, NODE );
+      if ( levelElement == null ) {
+        if ( dimensionName.equals( hierarchyName ) ) {
+          String inlineDefaultHierarchy =
+            format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[not(@name)]/Level[@name=\"%s\"]",
+              cubeName, dimensionName, levelName );
+          levelElement = (Element) xPath.compile( inlineDefaultHierarchy ).evaluate( this.schema, NODE );
+        }
+        if ( levelElement == null ) {
+          String dimensionUageXPath =
+            format( "Schema/Cube[@name=\"%s\"]/DimensionUsage[@name=\"%s\"]", cubeName, dimensionName );
+          Element usageElement = (Element) xPath.compile( dimensionUageXPath ).evaluate( this.schema, NODE );
+          if ( usageElement != null ) {
+            String sharedCompleteXPath =
+              format( "Schema/Dimension[@name=\"%s\"]/Hierarchy[@name=\"%s\"]/Level[@name=\"%s\"]",
+                usageElement.getAttribute( "source" ), hierarchyName, levelName );
+            levelElement = (Element) xPath.compile( sharedCompleteXPath ).evaluate( this.schema, NODE );
+            if ( levelElement == null && dimensionName.equals( hierarchyName ) ) {
+              String sharedDefaultHierarchyXPath =
+                format( "Schema/Dimension[@name=\"%s\"]/Hierarchy[not(@name)]/Level[@name=\"%s\"]",
+                  usageElement.getAttribute( "source" ), levelName );
+              levelElement = (Element) xPath.compile( sharedDefaultHierarchyXPath ).evaluate( this.schema, NODE );
+            }
+          }
+        }
+      }
+      return levelElement;
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
+    }
+  }
+
+  /**
+   * set visible=false on the given measure
+   *
+   * @param cubeName Cube to search for measure
+   * @param measureName Name of measure to search for
+   * @throws ModelerException
+   */
+  public boolean hideMeasure( final String cubeName, final String measureName ) throws ModelerException {
+    Element measureNode = (Element) getMeasureNode( cubeName, measureName );
+    if ( measureNode !=  null ) {
+      hideElement( measureNode );
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * set visible=false on the given attribute
+   *
+   * @param cubeName Cube to search for level
+   * @param dimensionName Dimension to search for level
+   * @param hierarchyName Hierarchy to search for level
+   * @param levelName Name of level to search for
+   * @throws ModelerException
+   */
+  public boolean hideAttribute(
+    final String cubeName, final String dimensionName, final String hierarchyName, final String levelName )
+    throws ModelerException {
+    Element levelNode = getLevelNode( cubeName, dimensionName, hierarchyName, levelName );
+    if ( levelNode != null ) {
+      hideElement( levelNode );
+      return true;
+    }
+    return false;
+  }
+
+  private void hideElement( final Element levelNode ) {
+    levelNode.setAttribute( "visible", "false" );
   }
 
   public Document getSchema() {
