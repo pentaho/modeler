@@ -26,10 +26,13 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
+
+import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class HideAttribute extends AnnotationType {
   protected static final Class<?> MSG_CLASS = BaseModelerWorkspaceHelper.class;
@@ -72,10 +75,27 @@ public class HideAttribute extends AnnotationType {
   }
 
   @Override public boolean apply( final Document schema ) throws ModelerException {
-    return false;
+    MondrianSchemaHandler schemaHandler = new MondrianSchemaHandler( schema );
+    return schemaHandler.hideAttribute( getCube(), getDimension(), getHierarchy(), getName() );
   }
 
   @Override public void validate() throws ModelerException {
+    if ( isBlank( getCube() ) ) {
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "ModelAnnotation.Hide.validation.CUBE_NAME_REQUIRED" ) );
+    }
+    if ( isBlank( getDimension() ) ) {
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "ModelAnnotation.Hide.validation.DIMENSION_NAME_REQUIRED" ) );
+    }
+    if ( isBlank( getHierarchy() ) ) {
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "ModelAnnotation.Hide.validation.HIERARCHY_NAME_REQUIRED" ) );
+    }
+    if ( isBlank( getName() ) ) {
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "ModelAnnotation.Hide.validation.LEVEL_NAME_REQUIRED" ) );
+    }
 
   }
 
