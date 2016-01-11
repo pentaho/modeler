@@ -341,6 +341,20 @@ public class MondrianSchemaHandler {
     }
   }
 
+  private Element getCalculatedMeasureNode( final String cubeName, final String measureName ) throws ModelerException {
+    try {
+      XPathFactory xPathFactory = XPathFactory.newInstance();
+      XPath xPath = xPathFactory.newXPath();
+      String inlineWithHierarchy =
+        format( "Schema/Cube[@name=\"%s\"]/CalculatedMember[@name=\"%s\" and @dimension=\"Measures\"]",
+          cubeName, measureName );
+      return (Element) xPath.compile( inlineWithHierarchy ).evaluate( this.schema, NODE );
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
+    }
+
+  }
+
   /**
    * set visible=false on the given measure
    *
@@ -350,6 +364,9 @@ public class MondrianSchemaHandler {
    */
   public boolean hideMeasure( final String cubeName, final String measureName ) throws ModelerException {
     Element measureNode = (Element) getMeasureNode( cubeName, measureName );
+    if ( measureNode == null ) {
+      measureNode = getCalculatedMeasureNode( cubeName, measureName );
+    }
     if ( measureNode !=  null ) {
       hideElement( measureNode );
       return true;

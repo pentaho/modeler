@@ -104,4 +104,14 @@ public class HideMeasureTest {
       assertEquals( "Measure Name is required", e.getMessage() );
     }
   }
+
+  @Test
+  public void testHidesCalculatedMeasures() throws Exception {
+    Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
+    HideMeasure hideMeasure = new HideMeasure();
+    hideMeasure.setName( "Profit" );
+    hideMeasure.setCube( "products" );
+    assertTrue( hideMeasure.apply( mondrianDoc ) );
+    assertTrue( validateNodeAttribute( mondrianDoc, CALCULATED_MEMBER_ELEMENT_NAME, "Profit", "visible", "false" ) );
+  }
 }
