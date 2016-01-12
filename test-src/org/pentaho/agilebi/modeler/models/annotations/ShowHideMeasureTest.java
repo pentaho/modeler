@@ -30,21 +30,23 @@ import org.w3c.dom.Document;
 import static org.junit.Assert.*;
 import static org.pentaho.agilebi.modeler.models.annotations.AnnotationUtil.*;
 
-public class HideMeasureTest {
+public class ShowHideMeasureTest {
   private static final String MONDRIAN_TEST_FILE_PATH = "test-res/hideshow.mondrian.xml";
 
   @Test
   public void testSummary() throws Exception {
-    HideMeasure hideMeasure = new HideMeasure();
-    hideMeasure.setName( "Price" );
-    hideMeasure.setCube( "Sales" );
-    assertEquals( "Hide measure Price in cube Sales", hideMeasure.getSummary() );
+    ShowHideMeasure showHideMeasure = new ShowHideMeasure();
+    showHideMeasure.setName( "Price" );
+    showHideMeasure.setCube( "Sales" );
+    assertEquals( "Hide measure Price in cube Sales", showHideMeasure.getSummary() );
+    showHideMeasure.setVisible( true );
+    assertEquals( "Show measure Price in cube Sales", showHideMeasure.getSummary() );
   }
 
   @Test
   public void testHidesMeasureWithNoVisibilitySpecified() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideMeasure hideMeasure = new HideMeasure();
+    ShowHideMeasure hideMeasure = new ShowHideMeasure();
     hideMeasure.setName( "Price" );
     hideMeasure.setCube( "products" );
     assertTrue( hideMeasure.apply( mondrianDoc ) );
@@ -54,7 +56,7 @@ public class HideMeasureTest {
   @Test
   public void testHidesMeasureWithExplicitVisible() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideMeasure hideMeasure = new HideMeasure();
+    ShowHideMeasure hideMeasure = new ShowHideMeasure();
     hideMeasure.setName( "visibleMeasure" );
     hideMeasure.setCube( "products" );
     assertTrue( hideMeasure.apply( mondrianDoc ) );
@@ -64,7 +66,7 @@ public class HideMeasureTest {
   @Test
   public void testHiddenMeasureStaysHidden() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideMeasure hideMeasure = new HideMeasure();
+    ShowHideMeasure hideMeasure = new ShowHideMeasure();
     hideMeasure.setName( "hiddenMeasure" );
     hideMeasure.setCube( "products" );
     assertTrue( hideMeasure.apply( mondrianDoc ) );
@@ -74,7 +76,7 @@ public class HideMeasureTest {
   @Test
   public void testHideMeasureNotFoundIsFalse() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideMeasure hideMeasure = new HideMeasure();
+    ShowHideMeasure hideMeasure = new ShowHideMeasure();
     hideMeasure.setName( "measureNotFound" );
     hideMeasure.setCube( "products" );
     assertFalse( hideMeasure.apply( mondrianDoc ) );
@@ -83,7 +85,7 @@ public class HideMeasureTest {
 
   @Test
   public void testCubeNameIsRequired() throws Exception {
-    HideMeasure hideMeasure = new HideMeasure();
+    ShowHideMeasure hideMeasure = new ShowHideMeasure();
     hideMeasure.setName( "aMeasure" );
     try {
       hideMeasure.validate();
@@ -95,7 +97,7 @@ public class HideMeasureTest {
 
   @Test
   public void testMeasureNameIsRequired() throws Exception {
-    HideMeasure hideMeasure = new HideMeasure();
+    ShowHideMeasure hideMeasure = new ShowHideMeasure();
     hideMeasure.setCube( "aCube" );
     try {
       hideMeasure.validate();
@@ -108,10 +110,21 @@ public class HideMeasureTest {
   @Test
   public void testHidesCalculatedMeasures() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideMeasure hideMeasure = new HideMeasure();
+    ShowHideMeasure hideMeasure = new ShowHideMeasure();
     hideMeasure.setName( "Profit" );
     hideMeasure.setCube( "products" );
     assertTrue( hideMeasure.apply( mondrianDoc ) );
     assertTrue( validateNodeAttribute( mondrianDoc, CALCULATED_MEMBER_ELEMENT_NAME, "Profit", "visible", "false" ) );
+  }
+
+  @Test
+  public void testShowsMeasure() throws Exception {
+    Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
+    ShowHideMeasure showMeasure = new ShowHideMeasure();
+    showMeasure.setName( "hiddenMeasure" );
+    showMeasure.setCube( "products" );
+    showMeasure.setVisible( true );
+    assertTrue( showMeasure.apply( mondrianDoc ) );
+    assertTrue( validateNodeAttribute( mondrianDoc, MEASURE_ELEMENT_NAME, "hiddenMeasure", "visible", "true" ) );
   }
 }
