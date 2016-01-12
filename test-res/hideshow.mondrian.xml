@@ -22,6 +22,13 @@
         <Level name="Age" column="age" uniqueMembers="true"/>
       </Hierarchy>
     </Dimension>
+    <Dimension name="Location">
+      <Hierarchy name="">
+        <Table name="geo"/>
+        <Level name="State" column="state"/>
+        <Level name="City" column="city"/>
+      </Hierarchy>
+    </Dimension>
     <DimensionUsage name="Product" source="Product Dimension"/>
     <Measure name="Price" column="BUYPRICE" aggregator="sum" formatString="&#x23;"/>
     <Measure name="visibleMeasure" column="QUANTITYINSTOCK" aggregator="sum" formatString="&#x23;" visible="true"/>

@@ -313,7 +313,7 @@ public class MondrianSchemaHandler {
       if ( levelElement == null ) {
         if ( dimensionName.equals( hierarchyName ) ) {
           String inlineDefaultHierarchy =
-            format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[not(@name)]/Level[@name=\"%s\"]",
+            format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[not(@name) or @name=\"\"]/Level[@name=\"%s\"]",
               cubeName, dimensionName, levelName );
           levelElement = (Element) xPath.compile( inlineDefaultHierarchy ).evaluate( this.schema, NODE );
         }

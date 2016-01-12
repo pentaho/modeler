@@ -158,4 +158,16 @@ public class HideAttributeTest {
       assertEquals( "Level Name is required", e.getMessage() );
     }
   }
+
+  @Test
+  public void testHidesLevelInHierarchyWithBlankName() throws Exception {
+    Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
+    HideAttribute hideAttribute = new HideAttribute();
+    hideAttribute.setCube( "products" );
+    hideAttribute.setDimension( "Location" );
+    hideAttribute.setHierarchy( "Location" );
+    hideAttribute.setName( "State" );
+    assertTrue( hideAttribute.apply( mondrianDoc ) );
+    assertTrue( validateNodeAttribute( mondrianDoc, LEVEL_ELEMENT_NAME, "State", "visible", "false" ) );
+  }
 }
