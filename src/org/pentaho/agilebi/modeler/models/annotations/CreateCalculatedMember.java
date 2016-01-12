@@ -73,6 +73,10 @@ public class CreateCalculatedMember extends AnnotationType {
   private static final String VISIBLE_NAME = "Visible";
   private static final int VISIBLE_ORDER = 0;
 
+  private static final String INLINE_ID = "inline";
+  private static final String INLINE_NAME = "Inline";
+  private static final int INLINE_ORDER = 0;
+
   public static final String FORMAT_STRING_ID = "formatString";
   public static final String FORMAT_STRING_NAME = "Format String";
   public static final int FORMAT_STRING_ORDER = 1;
@@ -122,6 +126,10 @@ public class CreateCalculatedMember extends AnnotationType {
   @MetaStoreAttribute
   @ModelProperty( id = VISIBLE_ID, name = VISIBLE_NAME, order = VISIBLE_ORDER )
   private boolean visible = true; // default
+
+  @MetaStoreAttribute
+  @ModelProperty( id = INLINE_ID, name = INLINE_NAME, order = INLINE_ORDER )
+  private boolean inline;
 
   @MetaStoreAttribute
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
@@ -183,7 +191,13 @@ public class CreateCalculatedMember extends AnnotationType {
     MondrianDef.CalculatedMemberProperty solveOrder = new MondrianDef.CalculatedMemberProperty();
     solveOrder.name = "SOLVE_ORDER";
     solveOrder.value = isCalculateSubtotals() ? "200" : "0";
+    MondrianDef.Annotation inline = new MondrianDef.Annotation();
+    inline.name = "AnalyzerInlineCreatedInline";
+    inline.cdata = isInline() ? "true" : "false";
     calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{ solveOrder };
+    MondrianDef.Annotations annot = new MondrianDef.Annotations();
+    annot.array = new MondrianDef.Annotation[]{ inline };
+    calculatedMember.annotations = annot;
 
     calculatedMember.formatString = this.getFormatString();
 
@@ -275,6 +289,14 @@ public class CreateCalculatedMember extends AnnotationType {
 
   public void setVisible( boolean visible ) {
     this.visible = visible;
+  }
+
+  public boolean isInline() {
+    return inline;
+  }
+
+  public void setInline( boolean inline ) {
+    this.inline = inline;
   }
 
   public String getFormatString() {
