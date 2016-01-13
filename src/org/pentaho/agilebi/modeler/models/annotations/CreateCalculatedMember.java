@@ -81,21 +81,25 @@ public class CreateCalculatedMember extends AnnotationType {
   public static final String FORMAT_STRING_NAME = "Format String";
   public static final int FORMAT_STRING_ORDER = 1;
 
+  public static final String FORMAT_CATEGORY_ID = "formatCategory";
+  public static final String FORMAT_CATEGORY_NAME = "Format Category";
+  public static final int FORMAT_CATEGORY_ORDER = 2;  
+
   public static final String DECIMAL_PLACES_ID = "decimalPlaces";
   public static final String DECIMAL_PLACES_NAME = "Decimal Places";
-  public static final int DECIMAL_PLACES_ORDER = 2;
+  public static final int DECIMAL_PLACES_ORDER = 3;
 
   public static final String MEASURE_CONTENT_ID = "measureContent";
   public static final String MEASURE_CONTENT_NAME = "Measure Content";
-  public static final int MEASURE_CONTENT_ORDER = 3;
+  public static final int MEASURE_CONTENT_ORDER = 4;
 
   public static final String CALCULATE_SUBTOTALS_ID = "calculateSubtotals";
   public static final String CALCULATE_SUBTOTALS_NAME = "Calculate Subtotals";
-  public static final int CALCULATE_SUBTOTALS_ORDER = 4;
+  public static final int CALCULATE_SUBTOTALS_ORDER = 5;
 
   public static final String CATALOG_NAME_ID = "catalogName";
   public static final String CATALOG_NAME_NAME = "Catalog Name";
-  public static final int CATALOG_NAME_ORDER = 5;
+  public static final int CATALOG_NAME_ORDER = 6;
 
   public static final String CALCULATED_MEMBER_NODE_NAME = "CalculatedMember";
   public static final String CALCULATED_MEMBER_NAME_ATTRIB = "name";
@@ -134,6 +138,10 @@ public class CreateCalculatedMember extends AnnotationType {
   @MetaStoreAttribute
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
   private String formatString;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = FORMAT_CATEGORY_ID, name = FORMAT_CATEGORY_NAME, order = FORMAT_CATEGORY_ORDER )
+  private String formatCategory;
 
   @MetaStoreAttribute
   @ModelProperty( id = DECIMAL_PLACES_ID, name = DECIMAL_PLACES_NAME, order = DECIMAL_PLACES_ORDER )
@@ -191,12 +199,43 @@ public class CreateCalculatedMember extends AnnotationType {
     MondrianDef.CalculatedMemberProperty solveOrder = new MondrianDef.CalculatedMemberProperty();
     solveOrder.name = "SOLVE_ORDER";
     solveOrder.value = isCalculateSubtotals() ? "200" : "0";
+    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{ solveOrder };
+
+    // annotation to indicate this was created via inline modeling, should always be true
     MondrianDef.Annotation inline = new MondrianDef.Annotation();
     inline.name = "AnalyzerInlineCreatedInline";
-    inline.cdata = isInline() ? "true" : "false";
-    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{ solveOrder };
+    inline.cdata = "true";
+
+    // annotation to store decimal places (scale)
+    MondrianDef.Annotation formatScaleAnnotation = new MondrianDef.Annotation();
+    formatScaleAnnotation.name = "formatScale";
+    formatScaleAnnotation.cdata = String.valueOf( this.getDecimalPlaces() );
+
+    // annotation to store format category
+    MondrianDef.Annotation formatCategoryAnnotation = new MondrianDef.Annotation();
+    formatCategoryAnnotation.name = "formatCategory";
+    formatCategoryAnnotation.cdata = this.getFormatCategory();
+
+    // annotation to store original formula
+    MondrianDef.Annotation formulaExpressionAnnotation = new MondrianDef.Annotation();
+    formulaExpressionAnnotation.name = "formulaExpression";
+    formulaExpressionAnnotation.cdata = this.getFormula();
+
+    // annotation to store calc subtotals
+    MondrianDef.Annotation calcSubtotalsAnnotation = new MondrianDef.Annotation();
+    calcSubtotalsAnnotation.name = "calcSubtotals";
+    calcSubtotalsAnnotation.cdata = isCalculateSubtotals() ? "true" : "false";
+
+    // add annotations to collection
     MondrianDef.Annotations annot = new MondrianDef.Annotations();
-    annot.array = new MondrianDef.Annotation[]{ inline };
+    annot.array = new MondrianDef.Annotation[]{
+            inline,
+            formatScaleAnnotation,
+            formatCategoryAnnotation,
+            formulaExpressionAnnotation,
+            calcSubtotalsAnnotation
+    };
+
     calculatedMember.annotations = annot;
 
     calculatedMember.formatString = this.getFormatString();
@@ -341,5 +380,13 @@ public class CreateCalculatedMember extends AnnotationType {
 
   public void setPdiContext( boolean pdiContext ) {
     this.pdiContext = pdiContext;
+  }
+
+  public String getFormatCategory() {
+    return formatCategory;
+  }
+
+  public void setFormatCategory(String formatCategory) {
+    this.formatCategory = formatCategory;
   }
 }

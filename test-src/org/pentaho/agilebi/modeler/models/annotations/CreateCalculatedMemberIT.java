@@ -64,12 +64,14 @@ public class CreateCalculatedMemberIT {
   private static final String TEST_CALCULATED_MEMBER_FORMULA = "Test Formula";
   private static final String TEST_CALCULATED_MEMBER_DIMENSION = "Test Dimension";
   private static final String TEST_CALCULATED_MEMBER_FORMAT_STRING = "$#,##0.00";
+  private static final String TEST_CALCULATED_MEMBER_FORMAT_CATEGORY = "Default";
   private static final String MONDRIAN_TEST_FILE_PATH = "test-res/products.mondrian.xml";
   private static final String CAPTION_ATTRIB = "caption";
   private static final String DESCRIPTION_ATTRIB = "description";
   private static final String DIMENSION_ATTRIB = "dimension";
   private static final String FORMULA_ATTRIB = "formula";
   private static final String FORMAT_STRING_ATTRIB = "formatString";
+  private static final String FORMAT_CATEGORY_ATTRIB = "formatCategory";
   private static final String GEO_ROLE_PROPERTIES = "test-res/geoRoles.properties";
 
 
@@ -86,6 +88,7 @@ public class CreateCalculatedMemberIT {
     createCalculatedMember.setFormula( TEST_CALCULATED_MEMBER_FORMULA );
     createCalculatedMember.setDimension( TEST_CALCULATED_MEMBER_DIMENSION );
     createCalculatedMember.setFormatString( TEST_CALCULATED_MEMBER_FORMAT_STRING );
+    createCalculatedMember.setFormatCategory( TEST_CALCULATED_MEMBER_FORMAT_CATEGORY );
     createCalculatedMember.setVisible( Boolean.TRUE );
   }
 
@@ -141,6 +144,13 @@ public class CreateCalculatedMemberIT {
         Boolean.TRUE.toString() ) );
     assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
         AnnotationUtil.CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME, "SOLVE_ORDER", "value", "0" ) );
+
+    // validate mondrian annotations
+    assertTrue( AnnotationUtil.validateMondrianAnnotationValue( mondrianSchemaXmlDoc,
+        AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+        TEST_CALCULATED_MEMBER_NAME,
+        FORMAT_CATEGORY_ATTRIB,
+        TEST_CALCULATED_MEMBER_FORMAT_CATEGORY ) );
   }
 
   @Test
