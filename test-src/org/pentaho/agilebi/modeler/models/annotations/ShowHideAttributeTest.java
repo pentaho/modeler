@@ -29,24 +29,27 @@ import org.w3c.dom.Document;
 import static org.junit.Assert.*;
 import static org.pentaho.agilebi.modeler.models.annotations.AnnotationUtil.*;
 
-public class HideAttributeTest {
+public class ShowHideAttributeTest {
   private static final String MONDRIAN_TEST_FILE_PATH = "test-res/hideshow.mondrian.xml";
 
   @Test
   public void testSummary() throws Exception {
-    HideAttribute hideAttribute = new HideAttribute();
-    hideAttribute.setCube( "Warehouse" );
-    hideAttribute.setDimension( "Location" );
-    hideAttribute.setHierarchy( "Geo" );
-    hideAttribute.setName( "City" );
+    ShowHideAttribute showHideAttribute = new ShowHideAttribute();
+    showHideAttribute.setCube( "Warehouse" );
+    showHideAttribute.setDimension( "Location" );
+    showHideAttribute.setHierarchy( "Geo" );
+    showHideAttribute.setName( "City" );
     assertEquals( "Hide attribute City in hierarchy Geo, dimension Location and cube Warehouse",
-      hideAttribute.getSummary() );
+      showHideAttribute.getSummary() );
+    showHideAttribute.setVisible( true );
+    assertEquals( "Show attribute City in hierarchy Geo, dimension Location and cube Warehouse",
+      showHideAttribute.getSummary() );
   }
 
   @Test
   public void testHidesInlineAttribute() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setCube( "products" );
     hideAttribute.setDimension( "Customer" );
     hideAttribute.setHierarchy( "cust" );
@@ -58,7 +61,7 @@ public class HideAttributeTest {
   @Test
   public void testHidesInlineAttributeWithDefaultHierarchyName() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setCube( "products" );
     hideAttribute.setDimension( "Customer" );
     hideAttribute.setHierarchy( "Customer" );
@@ -70,7 +73,7 @@ public class HideAttributeTest {
   @Test
   public void testHidesSharedAttribute() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setCube( "products" );
     hideAttribute.setDimension( "Product" );
     hideAttribute.setHierarchy( "By Line" );
@@ -82,7 +85,7 @@ public class HideAttributeTest {
   @Test
   public void testHidesSharedAttributeWithDefaultHierarchyName() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setCube( "products" );
     hideAttribute.setDimension( "Product" );
     hideAttribute.setHierarchy( "Product" );
@@ -94,7 +97,7 @@ public class HideAttributeTest {
   @Test
   public void testAttributeNotFoundIsFalse() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setCube( "products" );
     hideAttribute.setDimension( "Product" );
     hideAttribute.setHierarchy( "NotFoundHierarchy" );
@@ -105,7 +108,7 @@ public class HideAttributeTest {
 
   @Test
   public void testCubeNameIsRequired() throws Exception {
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setName( "aLevel" );
     hideAttribute.setDimension( "aDimension" );
     hideAttribute.setHierarchy( "aHierarchy" );
@@ -119,7 +122,7 @@ public class HideAttributeTest {
 
   @Test
   public void testDimensionNameIsRequired() throws Exception {
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setName( "aLevel" );
     hideAttribute.setCube( "aCube" );
     hideAttribute.setHierarchy( "aHierarchy" );
@@ -133,7 +136,7 @@ public class HideAttributeTest {
 
   @Test
   public void testHierarchyNameIsRequired() throws Exception {
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setName( "aLevel" );
     hideAttribute.setDimension( "aDimension" );
     hideAttribute.setCube( "aCube" );
@@ -147,7 +150,7 @@ public class HideAttributeTest {
 
   @Test
   public void testLevelNameIsRequired() throws Exception {
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setHierarchy( "aHierarchy" );
     hideAttribute.setDimension( "aDimension" );
     hideAttribute.setCube( "aCube" );
@@ -162,12 +165,25 @@ public class HideAttributeTest {
   @Test
   public void testHidesLevelInHierarchyWithBlankName() throws Exception {
     Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
-    HideAttribute hideAttribute = new HideAttribute();
+    ShowHideAttribute hideAttribute = new ShowHideAttribute();
     hideAttribute.setCube( "products" );
     hideAttribute.setDimension( "Location" );
     hideAttribute.setHierarchy( "Location" );
     hideAttribute.setName( "State" );
     assertTrue( hideAttribute.apply( mondrianDoc ) );
     assertTrue( validateNodeAttribute( mondrianDoc, LEVEL_ELEMENT_NAME, "State", "visible", "false" ) );
+  }
+
+  @Test
+  public void testShowsAttribute() throws Exception {
+    Document mondrianDoc = getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
+    ShowHideAttribute showAttribute = new ShowHideAttribute();
+    showAttribute.setCube( "products" );
+    showAttribute.setDimension( "Product" );
+    showAttribute.setHierarchy( "By Line" );
+    showAttribute.setName( "Product Line" );
+    showAttribute.setVisible( true );
+    assertTrue( showAttribute.apply( mondrianDoc ) );
+    assertTrue( validateNodeAttribute( mondrianDoc, LEVEL_ELEMENT_NAME, "Product Line", "visible", "true" ) );
   }
 }

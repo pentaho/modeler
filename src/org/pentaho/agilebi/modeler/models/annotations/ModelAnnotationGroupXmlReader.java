@@ -181,11 +181,11 @@ public class ModelAnnotationGroupXmlReader {
       case CREATE_CALCULATED_MEMBER:
         CreateCalculatedMember calculatedMember = new CreateCalculatedMember();
         return new ModelAnnotation<CreateCalculatedMember>( calculatedMember );
-      case HIDE_ATTRIBUTE:
-        HideAttribute hideAttribute = new HideAttribute();
+      case SHOW_HIDE_ATTRIBUTE:
+        ShowHideAttribute hideAttribute = new ShowHideAttribute();
         return new ModelAnnotation<>( hideAttribute );
-      case HIDE_MEASURE:
-        HideMeasure hideMeasure = new HideMeasure();
+      case SHOW_HIDE_MEASURE:
+        ShowHideMeasure hideMeasure = new ShowHideMeasure();
         return new ModelAnnotation<>( hideMeasure );
       default:
         BlankAnnotation ba = new BlankAnnotation();

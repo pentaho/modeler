@@ -182,17 +182,17 @@ public class ModelAnnotationGroupXmlReaderTest {
 
   @Test
   public void testWriteReadsHideAnnotations() throws Exception {
-    HideMeasure hidePrice = new HideMeasure();
+    ShowHideMeasure hidePrice = new ShowHideMeasure();
     hidePrice.setName( "Price" );
     hidePrice.setCube( "Sales" );
-    ModelAnnotation<HideMeasure> priceAnnotation = new ModelAnnotation<>( hidePrice );
+    ModelAnnotation<ShowHideMeasure> priceAnnotation = new ModelAnnotation<>( hidePrice );
 
-    HideAttribute hideAge = new HideAttribute();
+    ShowHideAttribute hideAge = new ShowHideAttribute();
     hideAge.setCube( "Sales" );
     hideAge.setDimension( "Customer" );
     hideAge.setHierarchy( "Cust" );
     hideAge.setName( "Age" );
-    ModelAnnotation<HideAttribute> ageAnnotation = new ModelAnnotation<>( hideAge );
+    ModelAnnotation<ShowHideAttribute> ageAnnotation = new ModelAnnotation<>( hideAge );
 
     ModelAnnotationGroup originalAnnotations = new ModelAnnotationGroup( priceAnnotation, ageAnnotation );
 

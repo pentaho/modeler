@@ -222,10 +222,10 @@ public class ModelAnnotationTest {
         ModelAnnotation.Type.CREATE_CALCULATED_MEMBER
         .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
     assertFalse(
-      ModelAnnotation.Type.HIDE_ATTRIBUTE
+      ModelAnnotation.Type.SHOW_HIDE_ATTRIBUTE
       .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
     assertFalse(
-      ModelAnnotation.Type.HIDE_MEASURE
+      ModelAnnotation.Type.SHOW_HIDE_MEASURE
         .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
   }
 }

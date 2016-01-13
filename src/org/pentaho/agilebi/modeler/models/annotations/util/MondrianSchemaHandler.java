@@ -346,15 +346,16 @@ public class MondrianSchemaHandler {
    *
    * @param cubeName Cube to search for measure
    * @param measureName Name of measure to search for
+   * @param visible
    * @throws ModelerException
    */
-  public boolean hideMeasure( final String cubeName, final String measureName ) throws ModelerException {
+  public boolean showHideMeasure( final String cubeName, final String measureName, final boolean visible ) throws ModelerException {
     Element measureNode = (Element) getMeasureNode( cubeName, measureName );
     if ( measureNode == null ) {
       measureNode = getCalculatedMeasureNode( cubeName, measureName );
     }
     if ( measureNode !=  null ) {
-      hideElement( measureNode );
+      showHideElement( measureNode, visible );
       return true;
     } else {
       return false;
@@ -368,21 +369,23 @@ public class MondrianSchemaHandler {
    * @param dimensionName Dimension to search for level
    * @param hierarchyName Hierarchy to search for level
    * @param levelName Name of level to search for
+   * @param visible
    * @throws ModelerException
    */
-  public boolean hideAttribute(
-    final String cubeName, final String dimensionName, final String hierarchyName, final String levelName )
+  public boolean showHideAttribute(
+    final String cubeName, final String dimensionName, final String hierarchyName, final String levelName,
+    final boolean visible )
     throws ModelerException {
     Element levelNode = getLevelNode( cubeName, dimensionName, hierarchyName, levelName );
     if ( levelNode != null ) {
-      hideElement( levelNode );
+      showHideElement( levelNode, visible );
       return true;
     }
     return false;
   }
 
-  private void hideElement( final Element levelNode ) {
-    levelNode.setAttribute( "visible", "false" );
+  private void showHideElement( final Element levelNode, final boolean visible ) {
+    levelNode.setAttribute( "visible", Boolean.toString( visible ) );
   }
 
   public Document getSchema() {
