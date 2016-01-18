@@ -53,6 +53,7 @@ public final class AnnotationUtil {
   public static final String AGGREGATOR_ATTRIB = "aggregator";
   public static final String VISIBLE_ATTRIB = "visible";
   public static final String FORMATSTRING_ATTRIB = "formatString";
+  private static final String ANNOTATION_TAG = "Annotation";
 
   private AnnotationUtil() {
   }
@@ -176,6 +177,41 @@ public final class AnnotationUtil {
           if ( element != null ) {
             validated = testValue.equals( element.getAttribute( attributeName ) );
             break;
+          }
+        }
+      }
+    }
+
+    return validated;
+  }
+
+  /**
+   *
+   * @param docToTest
+   * @param tagName
+   * @param nodeName
+   * @param annotationName
+   * @param testValue
+     * @return
+     */
+  public static boolean validateMondrianAnnotationValue( Document docToTest, String tagName, String nodeName,
+                                                        String annotationName, String testValue ) {
+    boolean validated = false;
+
+    NodeList nodeList = docToTest.getElementsByTagName( tagName );
+    if ( nodeList.getLength() > 0 ) {
+      for ( int i = 0; i < nodeList.getLength(); i++ ) {
+        Element element = (Element) nodeList.item( i );
+        if ( nodeName.equals( element.getAttribute( NAME_ATTRIB ) ) ) {
+          // Found element now test attribute
+          NodeList mondrianAnnotationNodes = element.getElementsByTagName( ANNOTATION_TAG );
+          for ( int x = 0; x < mondrianAnnotationNodes.getLength(); x++ ) {
+            Element annotationElement = (Element) mondrianAnnotationNodes.item( x );
+            if ( annotationName.equals( annotationElement.getAttribute( NAME_ATTRIB ) ) ) {
+              // annotation found, test value
+              validated = testValue.equals( annotationElement.getTextContent() );
+            }
+
           }
         }
       }
