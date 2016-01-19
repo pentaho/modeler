@@ -102,6 +102,10 @@ public class CreateCalculatedMember extends AnnotationType {
   public static final String CATALOG_NAME_NAME = "Catalog Name";
   public static final int CATALOG_NAME_ORDER = 6;
 
+  public static final String HIDDEN_ID = "hidden";
+  public static final String HIDDEN_NAME = "Hidden";
+  public static final int HIDDEN_ORDER = 7;
+
   public static final String CALCULATED_MEMBER_NODE_NAME = "CalculatedMember";
   public static final String CALCULATED_MEMBER_NAME_ATTRIB = "name";
   public static final String CALCULATED_MEMBER_COLUMN_ATTRIB = "column";
@@ -128,8 +132,12 @@ public class CreateCalculatedMember extends AnnotationType {
   @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
   private String dimension;
 
+  /**
+   * @deprecated Use {@link #hidden} instead.
+   */
+  @Deprecated
   @MetaStoreAttribute
-  @ModelProperty( id = VISIBLE_ID, name = VISIBLE_NAME, order = VISIBLE_ORDER )
+  @ModelProperty( id = VISIBLE_ID, name = VISIBLE_NAME, order = VISIBLE_ORDER, hideUI = true )
   private boolean visible = true; // default
 
   @MetaStoreAttribute
@@ -156,6 +164,10 @@ public class CreateCalculatedMember extends AnnotationType {
   @ModelProperty( id = CALCULATE_SUBTOTALS_ID, name = CALCULATE_SUBTOTALS_NAME, order = CALCULATE_SUBTOTALS_ORDER )
   private boolean calculateSubtotals;
 
+  @MetaStoreAttribute
+  @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME, order = HIDDEN_ORDER )
+  private boolean hidden;
+
   private transient boolean pdiContext;
 
   /**
@@ -173,7 +185,7 @@ public class CreateCalculatedMember extends AnnotationType {
     OlapCube olapCube = cubes.get( 0 );
     OlapCalculatedMember calcMember =
         new OlapCalculatedMember( getName(), getDimension(), getFormula(), getFormatString(),
-            isCalculateSubtotals(), !isVisible() );
+            isCalculateSubtotals(), isHidden() );
     olapCube.getOlapCalculatedMembers().add( calcMember );
     return true;
   }
@@ -196,11 +208,11 @@ public class CreateCalculatedMember extends AnnotationType {
     calculatedMember.description = this.getDescription();
     calculatedMember.dimension = this.getDimension();
     calculatedMember.formula = this.getFormula();
-    calculatedMember.visible = this.isVisible();
+    calculatedMember.visible = !this.isHidden();
     MondrianDef.CalculatedMemberProperty solveOrder = new MondrianDef.CalculatedMemberProperty();
     solveOrder.name = "SOLVE_ORDER";
     solveOrder.value = isCalculateSubtotals() ? "200" : "0";
-    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{ solveOrder };
+    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[] { solveOrder };
 
     // annotation to indicate this was created via inline modeling, should always be true
     MondrianDef.Annotation inline = new MondrianDef.Annotation();
@@ -229,12 +241,12 @@ public class CreateCalculatedMember extends AnnotationType {
 
     // add annotations to collection
     MondrianDef.Annotations annot = new MondrianDef.Annotations();
-    annot.array = new MondrianDef.Annotation[]{
-      inline,
-      formatScaleAnnotation,
-      formatCategoryAnnotation,
-      formulaExpressionAnnotation,
-      calcSubtotalsAnnotation
+    annot.array = new MondrianDef.Annotation[] {
+        inline,
+        formatScaleAnnotation,
+        formatCategoryAnnotation,
+        formulaExpressionAnnotation,
+        calcSubtotalsAnnotation
     };
 
     calculatedMember.annotations = annot;
@@ -268,9 +280,9 @@ public class CreateCalculatedMember extends AnnotationType {
 
     if ( StringUtils.isBlank( getFormula() ) ) {
       throw new ModelerException(
-        BaseMessages.getString(
-          MSG_CLASS,
-          "ModelAnnotation.CreateCalculatedMember.validation.FORMULA_REQUIRED" )
+          BaseMessages.getString(
+              MSG_CLASS,
+              "ModelAnnotation.CreateCalculatedMember.validation.FORMULA_REQUIRED" )
       );
     }
   }
@@ -323,10 +335,18 @@ public class CreateCalculatedMember extends AnnotationType {
     this.dimension = dimension;
   }
 
+  /**
+   * @deprecated Use {@link #isHidden()} instead.
+   */
+  @Deprecated
   public boolean isVisible() {
     return visible;
   }
 
+  /**
+   * @deprecated Use {@link #setHidden(boolean)} instead.
+   */
+  @Deprecated
   public void setVisible( boolean visible ) {
     this.visible = visible;
   }
@@ -389,5 +409,14 @@ public class CreateCalculatedMember extends AnnotationType {
 
   public void setFormatCategory( String formatCategory ) {
     this.formatCategory = formatCategory;
+  }
+
+  public boolean isHidden() {
+    return hidden;
+  }
+
+  public void setHidden( boolean hidden ) {
+    this.hidden = hidden;
+    this.setVisible( !hidden ); // Override deprecated value
   }
 }
