@@ -89,7 +89,7 @@ public class CreateCalculatedMemberIT {
     createCalculatedMember.setDimension( TEST_CALCULATED_MEMBER_DIMENSION );
     createCalculatedMember.setFormatString( TEST_CALCULATED_MEMBER_FORMAT_STRING );
     createCalculatedMember.setFormatCategory( TEST_CALCULATED_MEMBER_FORMAT_CATEGORY );
-    createCalculatedMember.setVisible( Boolean.TRUE );
+    createCalculatedMember.setHidden( Boolean.FALSE );
   }
 
   @Test
@@ -228,7 +228,7 @@ public class CreateCalculatedMemberIT {
     productTotal.setName( "Product Total" );
     productTotal.setDimension( "PRODUCT ID" );
     productTotal.setCalculateSubtotals( true );
-    productTotal.setVisible( false );
+    productTotal.setHidden( true );
     productTotal.apply( model, new MemoryMetaStore() );
 
     assertCalcMembersInModel( model );
