@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.util.AnnotationConstants;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.olap.OlapCalculatedMember;
@@ -203,27 +204,27 @@ public class CreateCalculatedMember extends AnnotationType {
 
     // annotation to indicate this was created via inline modeling, should always be true
     MondrianDef.Annotation inline = new MondrianDef.Annotation();
-    inline.name = "AnalyzerInlineCreatedInline";
-    inline.cdata = "true";
+    inline.name = AnnotationConstants.INLINE_ANNOTATION_CREATED_INLINE;
+    inline.cdata = isInline() ? "true" : "false";
 
     // annotation to store decimal places (scale)
     MondrianDef.Annotation formatScaleAnnotation = new MondrianDef.Annotation();
-    formatScaleAnnotation.name = "formatScale";
+    formatScaleAnnotation.name = AnnotationConstants.INLINE_ANNOTATION_FORMAT_SCALE;
     formatScaleAnnotation.cdata = String.valueOf( this.getDecimalPlaces() );
 
     // annotation to store format category
     MondrianDef.Annotation formatCategoryAnnotation = new MondrianDef.Annotation();
-    formatCategoryAnnotation.name = "formatCategory";
+    formatCategoryAnnotation.name = AnnotationConstants.INLINE_ANNOTATION_FORMAT_CATEGORY;
     formatCategoryAnnotation.cdata = this.getFormatCategory();
 
     // annotation to store original formula
     MondrianDef.Annotation formulaExpressionAnnotation = new MondrianDef.Annotation();
-    formulaExpressionAnnotation.name = "formulaExpression";
+    formulaExpressionAnnotation.name = AnnotationConstants.INLINE_ANNOTATION_FORMULA_EXPRESSION;
     formulaExpressionAnnotation.cdata = this.getFormula();
 
     // annotation to store calc subtotals
     MondrianDef.Annotation calcSubtotalsAnnotation = new MondrianDef.Annotation();
-    calcSubtotalsAnnotation.name = "calcSubtotals";
+    calcSubtotalsAnnotation.name = AnnotationConstants.INLINE_ANNOTATION_CALCULATE_SUBTOTALS;
     calcSubtotalsAnnotation.cdata = isCalculateSubtotals() ? "true" : "false";
 
     // add annotations to collection
