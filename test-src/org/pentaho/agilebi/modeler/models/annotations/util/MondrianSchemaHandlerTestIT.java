@@ -41,7 +41,7 @@ import static junit.framework.Assert.*;
 /**
  * Created by pminutillo on 3/5/15.
  */
-public class MondrianSchemaHandlerTest {
+public class MondrianSchemaHandlerTestIT {
   private static final String TEST_FILE_PATH = "test-res/products.with.calc.measures.mondrian.xml";
   private static final String TEST_MEASURE_NAME = "TestMeasure";
   private static final String TEST_AGG_TYPE = "SUM";
@@ -151,7 +151,7 @@ public class MondrianSchemaHandlerTest {
     assertTrue( testMeasureFound );
   }
 
-  @Test ( expected = org.pentaho.agilebi.modeler.ModelerException.class )
+  @Test ( expected = ModelerException.class )
   public void testAddMeasureInvalidCubeName() throws ModelerException {
     assertTrue( schemaDocument != null );
 
