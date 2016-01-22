@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -26,6 +26,7 @@ import mondrian.olap.MondrianDef;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
+import org.pentaho.agilebi.modeler.models.annotations.AnnotationUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,25 +37,27 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import static junit.framework.Assert.*;
-import static org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler.*;
 
 /**
  * Created by pminutillo on 3/5/15.
  */
 public class MondrianSchemaHandlerTest {
-  private static final String TEST_FILE_PATH = "test-res/products.mondrian.xml";
+  private static final String TEST_FILE_PATH = "test-res/products.with.calc.measures.mondrian.xml";
   private static final String TEST_MEASURE_NAME = "TestMeasure";
   private static final String TEST_AGG_TYPE = "SUM";
   private static final String TEST_COLUMN = "ColumnName";
-  private static final String MEASURE_NODE_NAME = "Measure";
-  private static final String CALCULATED_MEMBER_NODE_NAME = "CalculatedMember";
 
 
-  private static final String TEST_CALC_MEMBER_CAPTION = "Test Caption";
-  private static final String TEST_CALC_MEMBER_FORMULA = "Test Calc Formula";
-  private static final String TEST_CALC_MEMBER_NAME = "Test Calc Name";
-  private static final String TEST_CALC_MEMBER_DIMENSION = "Test Calc Dimension";
-  private static final String TEST_CALC_MEMBER_DESCRIPTION = "Test Calc Description";
+  private static final String TEST_CUBE_NAME = "products_38GA";
+
+  private static final String TEST_CALC_MEMBER_CAPTION = "Updated Test Caption";
+  private static final String TEST_CALC_MEMBER_FORMULA = "Updated Test Calc Formula";
+  private static final String TEST_CALC_MEMBER_NAME = "Updated Test Calc Name";
+  private static final String TEST_CALC_MEMBER_SOURCE_NAME = "Test Calc Name";
+  private static final String TEST_CALC_MEMBER_DIMENSION = "Updated Test Calc Dimension";
+  private static final String TEST_CALC_MEMBER_DESCRIPTION = "Updated Test Calc Description";
+  private static final String TEST_CALC_MEMBER_FORMAT_SCALE = "5";
+  private static final String TEST_CALC_MEMBER_FORMAT_CATEGORY = "Currency";
 
   private static final String TEST_AVERAGE_AGG_TYPE = "avg";
   private static final String TEST_NUM_DECIMAL_FORMAT_STRING = "##.##";
@@ -91,7 +94,7 @@ public class MondrianSchemaHandlerTest {
     }
 
     boolean testMeasureFound = false;
-    NodeList nodeList = schemaDocument.getElementsByTagName( MEASURE_NODE_NAME );
+    NodeList nodeList = schemaDocument.getElementsByTagName( AnnotationConstants.MEASURE_NODE_NAME );
     for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
       Node measureNode = nodeList.item( x );
       String measureName = measureNode.getAttributes().getNamedItem( MondrianSchemaHandler.MEASURE_NAME_ATTRIBUTE ).getNodeValue();
@@ -109,20 +112,7 @@ public class MondrianSchemaHandlerTest {
   public void testAddCalculatedMember() {
     assertTrue( schemaDocument != null );
 
-    MondrianDef.CalculatedMember calculatedMember = new MondrianDef.CalculatedMember();
-    calculatedMember.caption = TEST_CALC_MEMBER_CAPTION;
-    calculatedMember.formula = TEST_CALC_MEMBER_FORMULA;
-    calculatedMember.name = TEST_CALC_MEMBER_NAME;
-    calculatedMember.dimension = TEST_CALC_MEMBER_DIMENSION;
-    calculatedMember.description = TEST_CALC_MEMBER_DESCRIPTION;
-    calculatedMember.visible = true;
-    MondrianDef.CalculatedMemberProperty property1 = new MondrianDef.CalculatedMemberProperty();
-    property1.name = "name1";
-    property1.value = "value1";
-    MondrianDef.CalculatedMemberProperty property2 = new MondrianDef.CalculatedMemberProperty();
-    property2.name = "name2";
-    property2.value = "value2";
-    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{property1, property2};
+    MondrianDef.CalculatedMember calculatedMember = getMockCalculatedMember();
 
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
 
@@ -134,11 +124,11 @@ public class MondrianSchemaHandlerTest {
 
     Element measureNode = null;
 
-    NodeList nodeList = schemaDocument.getElementsByTagName( CALCULATED_MEMBER_NODE_NAME );
+    NodeList nodeList = schemaDocument.getElementsByTagName( AnnotationConstants.CALCULATED_MEMBER_NODE_NAME );
     for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
       measureNode = (Element) nodeList.item( x );
 
-      String measureName = measureNode.getAttribute( CALCULATED_MEMBER_NAME_ATTRIBUTE );
+      String measureName = measureNode.getAttribute( AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE );
 
       if ( measureName != null ) {
         if ( measureName.equals( TEST_CALC_MEMBER_NAME ) ) {
@@ -150,47 +140,35 @@ public class MondrianSchemaHandlerTest {
     assertNotNull( measureNode );
     assertEquals(
         TEST_CALC_MEMBER_NAME,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_CAPTION,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_FORMULA,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_FORMULA_ATTRIBUTE ) .getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_FORMULA_ATTRIBUTE ) .getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_DIMENSION,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_DESCRIPTION,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue() );
     NodeList childNodes = measureNode.getChildNodes();
-    assertEquals( 2, childNodes.getLength() );
+    assertEquals( 3, childNodes.getLength() );
     assertEquals(
         "name1",
-        childNodes.item( 0 ).getAttributes().getNamedItem( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
-    assertEquals( "value1", childNodes.item( 0 ).getAttributes().getNamedItem( "value" ).getNodeValue() );
+        childNodes.item( 1 ).getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals( "value1", childNodes.item( 1 ).getAttributes().getNamedItem( "value" ).getNodeValue() );
     assertEquals( "name2",
-        childNodes.item( 1 ).getAttributes().getNamedItem( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
-    assertEquals( "value2", childNodes.item( 1 ).getAttributes().getNamedItem( "value" ).getNodeValue() );
+        childNodes.item( 2 ).getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals( "value2", childNodes.item( 2 ).getAttributes().getNamedItem( "value" ).getNodeValue() );
   }
 
   @Test
   public void testAddCalculatedMemberInline() {
     assertTrue( schemaDocument != null );
 
-    MondrianDef.CalculatedMember calculatedMember = new MondrianDef.CalculatedMember();
-    calculatedMember.caption = TEST_CALC_MEMBER_CAPTION;
-    calculatedMember.formula = TEST_CALC_MEMBER_FORMULA;
-    calculatedMember.name = TEST_CALC_MEMBER_NAME;
-    calculatedMember.dimension = TEST_CALC_MEMBER_DIMENSION;
-    calculatedMember.description = TEST_CALC_MEMBER_DESCRIPTION;
-    calculatedMember.visible = true;
-    MondrianDef.Annotation annotation = new MondrianDef.Annotation();
-    annotation.name = "name1";
-    annotation.cdata = "true";
-    MondrianDef.Annotations annotations = new MondrianDef.Annotations();
-    annotations.array = new MondrianDef.Annotation[] { annotation };
-    calculatedMember.annotations = annotations;
+    MondrianDef.CalculatedMember calculatedMember = getMockCalculatedMember();
 
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
 
@@ -202,11 +180,11 @@ public class MondrianSchemaHandlerTest {
 
     Element measureNode = null;
 
-    NodeList nodeList = schemaDocument.getElementsByTagName( CALCULATED_MEMBER_NODE_NAME );
+    NodeList nodeList = schemaDocument.getElementsByTagName( AnnotationConstants.CALCULATED_MEMBER_NODE_NAME );
     for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
       measureNode = (Element) nodeList.item( x );
 
-      String measureName = measureNode.getAttribute( CALCULATED_MEMBER_NAME_ATTRIBUTE );
+      String measureName = measureNode.getAttribute( AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE );
 
       if ( measureName != null ) {
         if ( measureName.equals( TEST_CALC_MEMBER_NAME ) ) {
@@ -218,27 +196,24 @@ public class MondrianSchemaHandlerTest {
     assertNotNull( measureNode );
     assertEquals(
         TEST_CALC_MEMBER_NAME,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_CAPTION,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_FORMULA,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_FORMULA_ATTRIBUTE ) .getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_FORMULA_ATTRIBUTE ) .getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_DIMENSION,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue() );
     assertEquals(
         TEST_CALC_MEMBER_DESCRIPTION,
-        measureNode.getAttributes().getNamedItem( CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue() );
+        measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue() );
     NodeList childNodes = measureNode.getChildNodes();
-    assertEquals( 1, childNodes.getLength() );
-    NodeList annotNodes = childNodes.item( 0 ).getChildNodes();
-    assertEquals( 1, annotNodes.getLength() );
-    assertEquals(
-        "name1",
-        annotNodes.item( 0 ).getAttributes().getNamedItem( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE ).getNodeValue() );
-    assertEquals( "true", annotNodes.item( 0 ).getTextContent() );
+    assertEquals( 3, childNodes.getLength() );
+
+    // Test annotations
+    testAnnotations( measureNode );
   }
 
   @Test
@@ -255,7 +230,7 @@ public class MondrianSchemaHandlerTest {
     assertTrue( mondrianSchemaHandler.updateMeasure( null, TEST_EXISTING_MEASURE_STRING, measure ) );
 
     boolean testMeasureFound = false;
-    NodeList nodeList = schemaDocument.getElementsByTagName( MEASURE_NODE_NAME );
+    NodeList nodeList = schemaDocument.getElementsByTagName( AnnotationConstants.MEASURE_NODE_NAME );
     for ( int x = 0; x <= nodeList.getLength() - 1; x++ ) {
       Node measureNode = nodeList.item( x );
       String measureName = measureNode.getAttributes().getNamedItem(
@@ -273,6 +248,46 @@ public class MondrianSchemaHandlerTest {
     }
 
     assertTrue( testMeasureFound );
+  }
+
+  @Test
+  public void testUpdateCalculatedMember() throws ModelerException {
+    boolean result = true;
+
+    assertTrue( schemaDocument != null );
+
+    MondrianDef.CalculatedMember calculatedMember = getMockCalculatedMember();
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+
+    try {
+      result = mondrianSchemaHandler.updateCalculatedMember( TEST_CUBE_NAME, TEST_CALC_MEMBER_SOURCE_NAME, calculatedMember );
+    } catch ( ModelerException e ) {
+      e.printStackTrace();
+    }
+
+    assertTrue( result );
+
+    Element measureNode = AnnotationUtil.getCalculatedMemberNode( schemaDocument, TEST_CUBE_NAME, TEST_CALC_MEMBER_NAME );
+
+    assertEquals(
+      TEST_CALC_MEMBER_NAME,
+      measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+      TEST_CALC_MEMBER_CAPTION,
+      measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_CAPTION_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+      TEST_CALC_MEMBER_FORMULA,
+      measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_FORMULA_ATTRIBUTE ) .getNodeValue() );
+    assertEquals(
+      TEST_CALC_MEMBER_DIMENSION,
+      measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_DIMENSION_ATTRIBUTE ).getNodeValue() );
+    assertEquals(
+      TEST_CALC_MEMBER_DESCRIPTION,
+      measureNode.getAttributes().getNamedItem( AnnotationConstants.CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE ).getNodeValue() );
+
+    // Test annotations
+    testAnnotations( measureNode );
   }
 
   @Test
@@ -301,5 +316,87 @@ public class MondrianSchemaHandlerTest {
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
 
     assertFalse( mondrianSchemaHandler.updateMeasure( null, "bc_QUANTITYINSTOCK", measure ) );
+  }
+
+  private MondrianDef.CalculatedMember getMockCalculatedMember() {
+    MondrianDef.CalculatedMember calculatedMember = new MondrianDef.CalculatedMember();
+    calculatedMember.caption = TEST_CALC_MEMBER_CAPTION;
+    calculatedMember.formula = TEST_CALC_MEMBER_FORMULA;
+    calculatedMember.name = TEST_CALC_MEMBER_NAME;
+    calculatedMember.dimension = TEST_CALC_MEMBER_DIMENSION;
+    calculatedMember.description = TEST_CALC_MEMBER_DESCRIPTION;
+    calculatedMember.visible = true;
+    MondrianDef.CalculatedMemberProperty property1 = new MondrianDef.CalculatedMemberProperty();
+    property1.name = "name1";
+    property1.value = "value1";
+    MondrianDef.CalculatedMemberProperty property2 = new MondrianDef.CalculatedMemberProperty();
+    property2.name = "name2";
+    property2.value = "value2";
+    calculatedMember.memberProperties = new MondrianDef.CalculatedMemberProperty[]{property1, property2};
+
+    MondrianDef.Annotation formatScaleAnnotation = new MondrianDef.Annotation();
+    formatScaleAnnotation.name = AnnotationConstants.CALCULATED_MEMBER_FORMAT_SCALE;
+    formatScaleAnnotation.cdata = TEST_CALC_MEMBER_FORMAT_SCALE;
+
+    MondrianDef.Annotation formatCategoryAnnotation = new MondrianDef.Annotation();
+    formatCategoryAnnotation.name = AnnotationConstants.CALCULATED_MEMBER_FORMAT_CATEGORY;
+    formatCategoryAnnotation.cdata = TEST_CALC_MEMBER_FORMAT_CATEGORY;
+
+    MondrianDef.Annotation inlineAnnotation = new MondrianDef.Annotation();
+    inlineAnnotation.name = AnnotationConstants.CALCULATED_MEMBER_INLINE;
+    inlineAnnotation.cdata = "false";
+
+    MondrianDef.Annotation formulaExpressionAnnotation = new MondrianDef.Annotation();
+    formulaExpressionAnnotation.name = AnnotationConstants.CALCULATED_MEMBER_FORMULA_EXPRESSION;
+    formulaExpressionAnnotation.cdata = TEST_CALC_MEMBER_FORMULA;
+
+    MondrianDef.Annotation calcSubtotalsAnnotation = new MondrianDef.Annotation();
+    calcSubtotalsAnnotation.name = AnnotationConstants.CALCULATED_MEMBER_CALC_SUBTOTALS;
+    calcSubtotalsAnnotation.cdata = "false";
+
+    MondrianDef.Annotations annotations = new MondrianDef.Annotations();
+    annotations.array = new MondrianDef.Annotation[] {
+      formatScaleAnnotation,
+      formatCategoryAnnotation,
+      inlineAnnotation,
+      formulaExpressionAnnotation,
+      calcSubtotalsAnnotation
+    };
+
+    calculatedMember.annotations = annotations;
+
+    return calculatedMember;
+  }
+
+  private void testAnnotations( Element measureNode ) {
+    // Test annotations
+    NodeList annotationsNodes = measureNode.getElementsByTagName( AnnotationConstants.ANNOTATIONS_NODE_NAME );
+    if ( annotationsNodes.getLength() <= 0 ) {
+      fail( AnnotationConstants.NO_ANNOTATIONS_FOUND_MESSAGE );
+    }
+
+    // assume the first element is the only annotations node, as per the spec
+    Element annotationsNode = (Element) annotationsNodes.item( 0 );
+    NodeList annotationNodes = annotationsNode.getElementsByTagName( AnnotationConstants.ANNOTATION_NODE_NAME );
+    for ( int i = 0; i <= annotationNodes.getLength() - 1; i++ ) {
+      Node annotationNode = annotationNodes.item( i );
+      switch ( annotationNode.getAttributes().getNamedItem( "name" ).getTextContent() ) {
+        case AnnotationConstants.CALCULATED_MEMBER_FORMAT_CATEGORY :
+          assertTrue( annotationNode.getTextContent().equals( TEST_CALC_MEMBER_FORMAT_CATEGORY ) );
+          break;
+        case AnnotationConstants.CALCULATED_MEMBER_FORMAT_SCALE :
+          assertTrue( annotationNode.getTextContent().equals( TEST_CALC_MEMBER_FORMAT_SCALE ) );
+          break;
+        case AnnotationConstants.CALCULATED_MEMBER_FORMULA_EXPRESSION :
+          assertTrue( annotationNode.getTextContent().equals( TEST_CALC_MEMBER_FORMULA ) );
+          break;
+        case AnnotationConstants.CALCULATED_MEMBER_INLINE :
+          annotationNode.setNodeValue( "false" );
+          break;
+        case AnnotationConstants.CALCULATED_MEMBER_CALC_SUBTOTALS :
+          annotationNode.setNodeValue( "false" );
+          break;
+      }
+    }
   }
 }
