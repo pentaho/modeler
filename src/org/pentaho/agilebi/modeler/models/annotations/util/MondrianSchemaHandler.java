@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -58,18 +58,6 @@ public class MondrianSchemaHandler {
   public static final String MEASURE_COLUMN_ATTRIBUTE = "column";
   public static final String MEASURE_AGGREGATOR_ATTRIBUTE = "aggregator";
 
-  public static final String CALCULATED_MEMBER_ELEMENT_NAME = "CalculatedMember";
-  public static final String CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME = "CalculatedMemberProperty";
-  public static final String CALCULATED_MEMBER_ANNOTATION_ELEMENT_NAME = "Annotation";
-  public static final String CALCULATED_MEMBER_ANNOTATIONS_ELEMENT_NAME = "Annotations";
-  public static final String CALCULATED_MEMBER_CAPTION_ATTRIBUTE = "caption";
-  public static final String CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE = "description";
-  public static final String CALCULATED_MEMBER_DIMENSION_ATTRIBUTE = "dimension";
-  public static final String CALCULATED_MEMBER_FORMULA_ATTRIBUTE = "formula";
-  public static final String CALCULATED_MEMBER_NAME_ATTRIBUTE = "name";
-  public static final String CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE = "name";
-  public static final String CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE = "value";
-  public static final String CALCULATED_MEMBER_VISIBLE_ATTRIBUTE = "visible";
   public static final String MEASURE_DIMENSION = "Measure";
   public static final String DIMENSION = "Dimension";
   public static final String MEASURE_FORMAT_STRING_ATTRIBUTE = "formatString";
@@ -110,7 +98,7 @@ public class MondrianSchemaHandler {
       measureElement = this.schema.createElement( MEASURE_ELEMENT_NAME );
 
       // check if cube contains calculated members
-      NodeList calculatedMemberNodeList = this.schema.getElementsByTagName( CALCULATED_MEMBER_ELEMENT_NAME );
+      NodeList calculatedMemberNodeList = this.schema.getElementsByTagName( AnnotationConstants.CALCULATED_MEMBER_NODE_NAME );
       if ( ( calculatedMemberNodeList != null ) && ( calculatedMemberNodeList.getLength() > 0 ) ) {
         // get the first calculated member
         Node firstCalculatedMemberNode = calculatedMemberNodeList.item( 0 );
@@ -156,21 +144,21 @@ public class MondrianSchemaHandler {
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
       Node cube = (Node) xPathExpression.evaluate( this.schema, NODE );
       Element measureElement;
-      measureElement = this.schema.createElement( CALCULATED_MEMBER_ELEMENT_NAME );
+      measureElement = this.schema.createElement( AnnotationConstants.CALCULATED_MEMBER_NODE_NAME );
       cube.appendChild( measureElement );
-      measureElement.setAttribute( CALCULATED_MEMBER_NAME_ATTRIBUTE, calculatedMember.name );
-      measureElement.setAttribute( CALCULATED_MEMBER_CAPTION_ATTRIBUTE, calculatedMember.caption );
-      measureElement.setAttribute( CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE, calculatedMember.description );
-      measureElement.setAttribute( CALCULATED_MEMBER_DIMENSION_ATTRIBUTE, calculatedMember.dimension );
-      measureElement.setAttribute( CALCULATED_MEMBER_FORMULA_ATTRIBUTE, calculatedMember.formula );
-      measureElement.setAttribute( CALCULATED_MEMBER_VISIBLE_ATTRIBUTE, Boolean.toString( calculatedMember.visible ) );
+      measureElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE, calculatedMember.name );
+      measureElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_CAPTION_ATTRIBUTE, calculatedMember.caption );
+      measureElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_DESCRIPTION_ATTRIBUTE, calculatedMember.description );
+      measureElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_DIMENSION_ATTRIBUTE, calculatedMember.dimension );
+      measureElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_FORMULA_ATTRIBUTE, calculatedMember.formula );
+      measureElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_VISIBLE_ATTRIBUTE, calculatedMember.visible.toString() );
       measureElement.setAttribute( CALCULATED_MEMBER_FORMAT_STRING_ATTRIBUTE, calculatedMember.formatString );
 
       if ( calculatedMember.annotations != null ) {
-        Element annotationsElement = this.schema.createElement( CALCULATED_MEMBER_ANNOTATIONS_ELEMENT_NAME );
+        Element annotationsElement = this.schema.createElement( AnnotationConstants.CALCULATED_MEMBER_ANNOTATIONS_ELEMENT_NAME );
         for ( MondrianDef.Annotation annot : calculatedMember.annotations.array ) {
-          Element annotationElement = this.schema.createElement( CALCULATED_MEMBER_ANNOTATION_ELEMENT_NAME );
-          annotationElement.setAttribute( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, annot.name );
+          Element annotationElement = this.schema.createElement( AnnotationConstants.CALCULATED_MEMBER_ANNOTATION_ELEMENT_NAME );
+          annotationElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, annot.name );
           annotationElement.setTextContent( annot.cdata );
           annotationsElement.appendChild( annotationElement );
         }
@@ -179,9 +167,9 @@ public class MondrianSchemaHandler {
 
       if ( calculatedMember.memberProperties != null ) {
         for ( MondrianDef.CalculatedMemberProperty property : calculatedMember.memberProperties ) {
-          Element propertyElement = this.schema.createElement( CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME );
-          propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, property.name );
-          propertyElement.setAttribute( CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE, property.value );
+          Element propertyElement = this.schema.createElement( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME );
+          propertyElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, property.name );
+          propertyElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE, property.value );
           measureElement.appendChild( propertyElement );
         }
       }
@@ -191,6 +179,13 @@ public class MondrianSchemaHandler {
     }
   }
 
+  /**
+   * Gets a measure node from a schema
+   * @param cubeName
+   * @param measureName
+   * @return
+   * @throws ModelerException
+     */
   private Node getMeasureNode( String cubeName, String measureName ) throws ModelerException {
     if ( StringUtils.isBlank( measureName ) ) {
       return null;
@@ -298,6 +293,159 @@ public class MondrianSchemaHandler {
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }
+    return true;
+  }
+
+  /**
+   *
+   * @param cubeName
+   * @param calculatedMemberName
+   * @param updatedCalculatedMember
+   * @return
+   * @throws ModelerException
+   */
+  public boolean updateCalculatedMember( String cubeName, String calculatedMemberName,
+                                         MondrianDef.CalculatedMember updatedCalculatedMember ) throws ModelerException {
+    if ( StringUtils.isBlank( calculatedMemberName ) ) {
+      throw new ModelerException(
+        BaseMessages.getString( MSG_CLASS, "MondrianSchemaHelper.updateMeasure.UNABLE_TO_FIND_MEASURE" )
+      );
+    }
+
+    try {
+      Element existingCalculatedMemberNode = getCalculatedMeasureNode( cubeName, calculatedMemberName );
+      if ( existingCalculatedMemberNode == null ) {
+        return false;
+      }
+
+      NamedNodeMap measureAttrs = existingCalculatedMemberNode.getAttributes();
+
+      // Change format
+      if ( !StringUtils.isBlank( updatedCalculatedMember.formatString ) ) {
+        Node formatNode = measureAttrs.getNamedItem( "formatString" );
+        formatNode.setNodeValue( updatedCalculatedMember.formatString );
+      }
+
+      // Name Change
+      if ( !StringUtils.isBlank( updatedCalculatedMember.name ) ) {
+        Node nameNode = measureAttrs.getNamedItem( "name" );
+        nameNode.setNodeValue( updatedCalculatedMember.name );
+      }
+
+      // Caption
+      if ( !StringUtils.isBlank( updatedCalculatedMember.caption ) ) {
+        Node captionNode = measureAttrs.getNamedItem( "caption" );
+        captionNode.setNodeValue( updatedCalculatedMember.caption );
+      }
+
+      // Description
+      if ( !StringUtils.isBlank( updatedCalculatedMember.description ) ) {
+        Node captionNode = measureAttrs.getNamedItem( "description" );
+        captionNode.setNodeValue( updatedCalculatedMember.description );
+      }
+
+      // Formula
+      if ( !StringUtils.isBlank( updatedCalculatedMember.formula ) ) {
+        Node captionNode = measureAttrs.getNamedItem( "formula" );
+        captionNode.setNodeValue( updatedCalculatedMember.formula );
+      }
+
+      // Dimension
+      if ( !StringUtils.isBlank( updatedCalculatedMember.dimension ) ) {
+        Node captionNode = measureAttrs.getNamedItem( "dimension" );
+        captionNode.setNodeValue( updatedCalculatedMember.dimension );
+      }
+
+      // Hierarchy
+      if ( !StringUtils.isBlank( updatedCalculatedMember.hierarchy ) ) {
+        Node captionNode = measureAttrs.getNamedItem( "hierarchy" );
+        captionNode.setNodeValue( updatedCalculatedMember.hierarchy );
+      }
+
+      // Parent
+      if ( !StringUtils.isBlank( updatedCalculatedMember.parent ) ) {
+        Node captionNode = measureAttrs.getNamedItem( "parent" );
+        captionNode.setNodeValue( updatedCalculatedMember.parent );
+      }
+
+      // Visible
+      if ( !StringUtils.isBlank( updatedCalculatedMember.visible.toString() ) ) {
+        Node captionNode = measureAttrs.getNamedItem( "visible" );
+        captionNode.setNodeValue( updatedCalculatedMember.visible.toString() );
+      }
+
+      // get mondrian annotation values from updated calculated member passed in
+      String updatedFormatCategory = "";
+      String updatedFormatScale = "";
+      String updatedFormulaExpression = "";
+      String updatedInline = "";
+      String updatedCalcSubtotals = "";
+
+      for ( int x = 0; x <= updatedCalculatedMember.annotations.array.length - 1; x++ ) {
+        MondrianDef.Annotation annotation = updatedCalculatedMember.annotations.array[ x ];
+        switch ( annotation.name ) {
+          case AnnotationConstants.CALCULATED_MEMBER_FORMAT_CATEGORY :
+            updatedFormatCategory = annotation.cdata;
+            break;
+          case AnnotationConstants.CALCULATED_MEMBER_FORMAT_SCALE :
+            updatedFormatScale = annotation.cdata;
+            break;
+          case AnnotationConstants.CALCULATED_MEMBER_FORMULA_EXPRESSION :
+            updatedFormulaExpression = annotation.cdata;
+            break;
+          case AnnotationConstants.CALCULATED_MEMBER_INLINE :
+            updatedInline = annotation.cdata;
+            break;
+          case AnnotationConstants.CALCULATED_MEMBER_CALC_SUBTOTALS :
+            updatedCalcSubtotals = annotation.cdata;
+            break;
+        }
+      }
+
+      // Update Mondrian annotation values in existing
+      NodeList annotationsNodes = existingCalculatedMemberNode.getElementsByTagName( AnnotationConstants.ANNOTATIONS_NODE_NAME );
+
+      // if no annotations are found, move on
+      if ( annotationsNodes.getLength() <= 0 ) {
+        return true;
+      }
+
+      // Assume the first is the only Annotations node, as per the spec
+      Element annotationsNode = (Element) annotationsNodes.item( 0 );
+
+      NodeList annotationNodes  = annotationsNode.getElementsByTagName( AnnotationConstants.ANNOTATION_NODE_NAME );
+
+      if ( annotationNodes.getLength() <= 0 ) {
+        return true;
+      }
+
+      for ( int x = 0; x <= annotationNodes.getLength() - 1; x++ ) {
+
+        Node annotationNode = annotationNodes.item( x );
+
+        if ( annotationNode.getNodeType() == Node.ELEMENT_NODE ) {
+          if ( annotationNode.getAttributes().getNamedItem( "name" ).getTextContent()
+            .equals( AnnotationConstants.CALCULATED_MEMBER_FORMAT_CATEGORY ) ) {
+            annotationNode.setTextContent( updatedFormatCategory );
+          } else if ( annotationNode.getAttributes().getNamedItem( "name" ).getTextContent()
+            .equals( AnnotationConstants.CALCULATED_MEMBER_FORMAT_SCALE ) ) {
+            annotationNode.setTextContent( updatedFormatScale );
+          } else if ( annotationNode.getAttributes().getNamedItem( "name" ).getTextContent()
+            .equals( AnnotationConstants.CALCULATED_MEMBER_FORMULA_EXPRESSION ) ) {
+            annotationNode.setTextContent( updatedFormulaExpression );
+          } else if ( annotationNode.getAttributes().getNamedItem( "name" ).getTextContent()
+            .equals( AnnotationConstants.CALCULATED_MEMBER_INLINE ) ) {
+            annotationNode.setTextContent( updatedInline );
+          } else if ( annotationNode.getAttributes().getNamedItem( "name" ).getTextContent()
+            .equals( AnnotationConstants.CALCULATED_MEMBER_CALC_SUBTOTALS ) ) {
+            annotationNode.setTextContent( updatedCalcSubtotals );
+          }
+        }
+      }
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
+    }
+
     return true;
   }
 

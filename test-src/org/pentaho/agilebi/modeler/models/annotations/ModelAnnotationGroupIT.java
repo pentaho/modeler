@@ -291,6 +291,10 @@ public class ModelAnnotationGroupIT {
     assertEquals( 0, statusMap.get( ApplyStatus.FAILED ).size() );
     assertEquals( 0, statusMap.get( ApplyStatus.NULL_ANNOTATION ).size() );
     String actual = XMLHandler.formatNode( document );
-    assertEquals( IOUtils.toString( getClass().getResourceAsStream( "resources/annotated.mondrian.xml" ) ), actual );
+
+    assertEquals(
+      IOUtils.toString( getClass().getResourceAsStream( "resources/annotated.mondrian.xml" ) ).replace( "\r|\n", "" ),
+      actual.replace( "\r|\n", "" )
+    );
   }
 }

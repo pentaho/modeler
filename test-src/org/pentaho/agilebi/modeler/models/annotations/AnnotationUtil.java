@@ -23,6 +23,7 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.lang.StringUtils;
+import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
@@ -35,9 +36,14 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+
+import static java.lang.String.format;
+import static javax.xml.xpath.XPathConstants.NODE;
 
 /**
  * @author Brandon Groves
@@ -56,6 +62,29 @@ public final class AnnotationUtil {
   private static final String ANNOTATION_TAG = "Annotation";
 
   private AnnotationUtil() {
+  }
+
+  /**
+   * Get a named calc member element from a schema
+   *
+   * @param document
+   * @param cubeName
+   * @param measureName
+   * @return
+   * @throws ModelerException
+   */
+  public static Element getCalculatedMemberNode( final Document document, final String cubeName, final String measureName ) throws
+    ModelerException {
+    try {
+      XPathFactory xPathFactory = XPathFactory.newInstance();
+      XPath xPath = xPathFactory.newXPath();
+      String inlineWithHierarchy =
+        format( "Schema/Cube[@name=\"%s\"]/CalculatedMember[@name=\"%s\"]",
+          cubeName, measureName );
+      return (Element) xPath.compile( inlineWithHierarchy ).evaluate( document, NODE );
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
+    }
   }
 
   /**

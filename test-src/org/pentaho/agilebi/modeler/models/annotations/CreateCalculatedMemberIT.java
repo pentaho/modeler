@@ -36,6 +36,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
+import org.pentaho.agilebi.modeler.models.annotations.util.AnnotationConstants;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -71,7 +72,6 @@ public class CreateCalculatedMemberIT {
   private static final String DIMENSION_ATTRIB = "dimension";
   private static final String FORMULA_ATTRIB = "formula";
   private static final String FORMAT_STRING_ATTRIB = "formatString";
-  private static final String FORMAT_CATEGORY_ATTRIB = "formatCategory";
   private static final String GEO_ROLE_PROPERTIES = "test-res/geoRoles.properties";
 
 
@@ -149,7 +149,7 @@ public class CreateCalculatedMemberIT {
     assertTrue( AnnotationUtil.validateMondrianAnnotationValue( mondrianSchemaXmlDoc,
         AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
         TEST_CALCULATED_MEMBER_NAME,
-        FORMAT_CATEGORY_ATTRIB,
+        AnnotationConstants.INLINE_ANNOTATION_FORMAT_CATEGORY,
         TEST_CALCULATED_MEMBER_FORMAT_CATEGORY ) );
   }
 
