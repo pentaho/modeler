@@ -32,4 +32,11 @@ public class BlankAnnotationTest {
     BlankAnnotation blankAnnotation = new BlankAnnotation();
     assertEquals( ModelAnnotation.Type.BLANK, blankAnnotation.getType() );
   }
+
+  @Test
+  public void testBlankAnnotationAlwaysSuccess() throws Exception {
+    BlankAnnotation blankAnnotation = new BlankAnnotation();
+    assertTrue( blankAnnotation.apply( null ) );
+    assertTrue( blankAnnotation.apply( null, null ) );
+  }
 }
