@@ -36,12 +36,12 @@ public class BlankAnnotation extends AnnotationType {
   @Override
   public boolean apply( ModelerWorkspace workspace, IMetaStore metaStore )
     throws ModelerException {
-    return false;
+    return true;
   }
 
   @Override
   public boolean apply( Document schema ) throws ModelerException {
-    return false;
+    return true;
   }
 
   @Override
