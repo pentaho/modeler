@@ -181,6 +181,9 @@ public class ModelAnnotationGroupXmlReader {
       case CREATE_CALCULATED_MEMBER:
         CreateCalculatedMember calculatedMember = new CreateCalculatedMember();
         return new ModelAnnotation<CreateCalculatedMember>( calculatedMember );
+      case UPDATE_CALCULATED_MEMBER:
+        UpdateCalculatedMember updateCalculatedMember = new UpdateCalculatedMember();
+        return new ModelAnnotation<UpdateCalculatedMember>( updateCalculatedMember );
       case SHOW_HIDE_ATTRIBUTE:
         ShowHideAttribute hideAttribute = new ShowHideAttribute();
         return new ModelAnnotation<>( hideAttribute );
