@@ -25,6 +25,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -35,16 +37,35 @@ import java.nio.charset.StandardCharsets;
 
 public class XMLUtil {
 
+  /**
+   *
+   * @param xml
+   * @return
+   * @throws Exception
+   */
   public static String compactPrint( String xml ) throws Exception {
     final OutputFormat format = OutputFormat.createCompactFormat();
     return print( xml, format );
   }
 
+  /**
+   *
+   * @param xml
+   * @return
+   * @throws Exception
+   */
   public static String prettyPrint( String xml ) throws Exception {
     final OutputFormat format = OutputFormat.createPrettyPrint();
     return print( xml, format );
   }
 
+  /**
+   *
+   * @param xml
+   * @param format
+   * @return
+   * @throws Exception
+   */
   private static String print( final String xml, final OutputFormat format ) throws Exception {
     format.setSuppressDeclaration( true );
     final org.dom4j.Document document = DocumentHelper.parseText( xml );
@@ -54,10 +75,37 @@ public class XMLUtil {
     return sw.toString();
   }
 
+  /**
+   *
+   * @param xml
+   * @return
+   * @throws Exception
+   */
   public static Node asDOMNode( String xml ) throws Exception {
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     Document doc = dBuilder.parse( new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) ) );
     return doc.getFirstChild();
+  }
+
+  /**
+   * Update an attribute for an Element with the provided value. If
+   * it does not exist, add it.
+   *
+   * @param element
+   * @param name
+   * @param value
+   */
+  public static void addOrUpdateAttribute( Element element, String name, String value ) {
+    NamedNodeMap measureAttrs = element.getAttributes();
+    Node attrNode = measureAttrs.getNamedItem( name );
+    if ( attrNode != null ) {
+      attrNode.setNodeValue( value );
+    } else {
+      element.setAttribute(
+        name,
+        value
+      );
+    }
   }
 }

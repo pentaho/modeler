@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -55,6 +55,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final String LINK_DIMENSION_ENUM_VALUE = "Link Dimension";
   private static final String REMOVE_ATTRIBUTE_ENUM_VALUE = "Remove Attribute";
   private static final String UPDATE_MEASURE_ENUM_VALUE = "Update Measure";
+  private static final String UPDATE_CALCULATED_MEMBER_ENUM_VALUE = "Update Calculated Measure";
   private static final String SHOW_HIDE_ATTRIBUTE_ENUM_VALUE = "Show or Hide Level";
   private static final String SHOW_HIDE_MEASURE_ENUM_VALUE = "Show or Hide Measure";
   private static final String BLANK_ENUM_VALUE = "";
@@ -300,6 +301,14 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
           final ModelAnnotationGroup modelAnnotations,
           final ModelAnnotation modelAnnotation,
           final ValueMetaInterface valueMeta ) {
+        return false;
+      }
+    },
+    UPDATE_CALCULATED_MEMBER( UPDATE_CALCULATED_MEMBER_ENUM_VALUE ) {
+      @Override public boolean isApplicable(
+        final ModelAnnotationGroup modelAnnotations,
+        final ModelAnnotation modelAnnotation,
+        final ValueMetaInterface valueMeta ) {
         return false;
       }
     },
