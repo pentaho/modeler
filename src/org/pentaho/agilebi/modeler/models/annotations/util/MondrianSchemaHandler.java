@@ -33,15 +33,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.String.format;
-import static javax.xml.xpath.XPathConstants.NODE;
 
 /**
  * This class will attempt to encapsulate and abstract from the user
@@ -96,7 +94,7 @@ public class MondrianSchemaHandler {
 
       xPathExpr.append( cubeXPathPart );
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      Node cube = (Node) xPathExpression.evaluate( this.schema, NODE );
+      Node cube = (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
       Element measureElement;
       measureElement = this.schema.createElement( MEASURE_ELEMENT_NAME );
 
@@ -145,7 +143,7 @@ public class MondrianSchemaHandler {
 
       xPathExpr.append( cubeXPathPart );
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      Node cube = (Node) xPathExpression.evaluate( this.schema, NODE );
+      Node cube = (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
       Element measureElement;
       measureElement = this.schema.createElement( AnnotationConstants.CALCULATED_MEMBER_NODE_NAME );
       cube.appendChild( measureElement );
@@ -169,12 +167,7 @@ public class MondrianSchemaHandler {
       }
 
       if ( calculatedMember.memberProperties != null ) {
-        for ( MondrianDef.CalculatedMemberProperty property : calculatedMember.memberProperties ) {
-          Element propertyElement = this.schema.createElement( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME );
-          propertyElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, property.name );
-          propertyElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE, property.value );
-          measureElement.appendChild( propertyElement );
-        }
+        addCalculatedMemberProperties( calculatedMember, measureElement );
       }
 
     } catch ( XPathExpressionException e ) {
@@ -217,7 +210,7 @@ public class MondrianSchemaHandler {
       StringBuffer xPathExpr = new StringBuffer();
       xPathExpr.append( cubeXPathPart + "//" + MEASURE_DIMENSION + "[@name=\"" + measureName + "\"]" );
       XPathExpression xPathExpression = xPath.compile( xPathExpr.toString() );
-      return (Node) xPathExpression.evaluate( this.schema, NODE );
+      return (Node) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }
@@ -416,29 +409,73 @@ public class MondrianSchemaHandler {
       }
 
       // Loop through updated annotations
-      for ( int x = 0; x <= updatedCalculatedMember.annotations.array.length - 1; x++ ) {
-        // if this annotation exists already
-        if ( annotationMap.containsKey( updatedCalculatedMember.annotations.array[x].name ) ) {
-          // update it
-          annotationMap.get( updatedCalculatedMember.annotations.array[x].name ).setTextContent(
-            updatedCalculatedMember.annotations.array[ x ].cdata
-          );
-        } else {
-          // add a new annotation
-          Element newAnnotation = schema.createElement( AnnotationConstants.ANNOTATION_NODE_NAME );
-          newAnnotation.setAttribute(
-            AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE,
-            updatedCalculatedMember.annotations.array[x].name
-          );
-          newAnnotation.setTextContent( updatedCalculatedMember.annotations.array[x].cdata );
-          annotationsNode.appendChild( newAnnotation );
+      if ( updatedCalculatedMember.annotations.array != null ) {
+        for ( int x = 0; x <= updatedCalculatedMember.annotations.array.length - 1; x++ ) {
+          // if this annotation exists already
+          if ( annotationMap.containsKey( updatedCalculatedMember.annotations.array[ x ].name ) ) {
+            // update it
+            annotationMap.get( updatedCalculatedMember.annotations.array[ x ].name ).setTextContent(
+              updatedCalculatedMember.annotations.array[ x ].cdata
+            );
+          } else {
+            // add a new annotation
+            Element newAnnotation = schema.createElement( AnnotationConstants.ANNOTATION_NODE_NAME );
+            newAnnotation.setAttribute(
+              AnnotationConstants.CALCULATED_MEMBER_NAME_ATTRIBUTE,
+              updatedCalculatedMember.annotations.array[ x ].name
+            );
+            newAnnotation.setTextContent( updatedCalculatedMember.annotations.array[ x ].cdata );
+            annotationsNode.appendChild( newAnnotation );
+          }
         }
       }
+
+      deleteCalculatedMemberProperties( existingCalculatedMemberNode );
+
+      if ( updatedCalculatedMember.memberProperties != null ) {
+        addCalculatedMemberProperties( updatedCalculatedMember, existingCalculatedMemberNode );
+      }
+
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }
 
     return true;
+  }
+
+  /**
+   * Delete member properties from a given calc measure node
+   *
+   * @param existingCalculatedMemberNode
+   */
+  private void deleteCalculatedMemberProperties( Element existingCalculatedMemberNode ) {
+    // delete existing calc member properties
+    NodeList calculatedMemberProperties = existingCalculatedMemberNode.getElementsByTagName(
+      AnnotationConstants.CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME
+    );
+
+    if ( ( calculatedMemberProperties != null ) && ( calculatedMemberProperties.getLength() > 0 ) ) {
+      for ( int x = 0; x <= calculatedMemberProperties.getLength() - 1; x++ ) {
+        Element calculatedMemberProperty = (Element) calculatedMemberProperties.item( x );
+        calculatedMemberProperty.getParentNode().removeChild( calculatedMemberProperty );
+      }
+    }
+  }
+
+  /**
+   * Add member properties to schema doc
+   *
+   * @param updatedCalculatedMember
+   * @param node
+   *
+   * */
+  private void addCalculatedMemberProperties( MondrianDef.CalculatedMember updatedCalculatedMember, Element node ) {
+    for ( MondrianDef.CalculatedMemberProperty property : updatedCalculatedMember.memberProperties ) {
+      Element propertyElement = this.schema.createElement( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_ELEMENT_NAME );
+      propertyElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_NAME_ATTRIBUTE, property.name );
+      propertyElement.setAttribute( AnnotationConstants.CALCULATED_MEMBER_PROPERTY_VALUE_ATTRIBUTE, property.value );
+      node.appendChild( propertyElement );
+    }
   }
 
   private Element getLevelNode( String cubeName, String dimensionName, String hierarchyName, String levelName )
@@ -447,30 +484,30 @@ public class MondrianSchemaHandler {
       XPathFactory xPathFactory = XPathFactory.newInstance();
       XPath xPath = xPathFactory.newXPath();
       String inlineWithHierarchy =
-        format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[@name=\"%s\"]/Level[@name=\"%s\"]",
+        String.format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[@name=\"%s\"]/Level[@name=\"%s\"]",
           cubeName, dimensionName, hierarchyName, levelName );
-      Element levelElement = (Element) xPath.compile( inlineWithHierarchy ).evaluate( this.schema, NODE );
+      Element levelElement = (Element) xPath.compile( inlineWithHierarchy ).evaluate( this.schema, XPathConstants.NODE );
       if ( levelElement == null ) {
         if ( dimensionName.equals( hierarchyName ) ) {
           String inlineDefaultHierarchy =
-            format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[not(@name) or @name=\"\"]/Level[@name=\"%s\"]",
+            String.format( "Schema/Cube[@name=\"%s\"]/Dimension[@name=\"%s\"]/Hierarchy[not(@name) or @name=\"\"]/Level[@name=\"%s\"]",
               cubeName, dimensionName, levelName );
-          levelElement = (Element) xPath.compile( inlineDefaultHierarchy ).evaluate( this.schema, NODE );
+          levelElement = (Element) xPath.compile( inlineDefaultHierarchy ).evaluate( this.schema, XPathConstants.NODE );
         }
         if ( levelElement == null ) {
           String dimensionUageXPath =
-            format( "Schema/Cube[@name=\"%s\"]/DimensionUsage[@name=\"%s\"]", cubeName, dimensionName );
-          Element usageElement = (Element) xPath.compile( dimensionUageXPath ).evaluate( this.schema, NODE );
+            String.format( "Schema/Cube[@name=\"%s\"]/DimensionUsage[@name=\"%s\"]", cubeName, dimensionName );
+          Element usageElement = (Element) xPath.compile( dimensionUageXPath ).evaluate( this.schema, XPathConstants.NODE );
           if ( usageElement != null ) {
             String sharedCompleteXPath =
-              format( "Schema/Dimension[@name=\"%s\"]/Hierarchy[@name=\"%s\"]/Level[@name=\"%s\"]",
+              String.format( "Schema/Dimension[@name=\"%s\"]/Hierarchy[@name=\"%s\"]/Level[@name=\"%s\"]",
                 usageElement.getAttribute( "source" ), hierarchyName, levelName );
-            levelElement = (Element) xPath.compile( sharedCompleteXPath ).evaluate( this.schema, NODE );
+            levelElement = (Element) xPath.compile( sharedCompleteXPath ).evaluate( this.schema, XPathConstants.NODE );
             if ( levelElement == null && dimensionName.equals( hierarchyName ) ) {
               String sharedDefaultHierarchyXPath =
-                format( "Schema/Dimension[@name=\"%s\"]/Hierarchy[not(@name)]/Level[@name=\"%s\"]",
+                String.format( "Schema/Dimension[@name=\"%s\"]/Hierarchy[not(@name)]/Level[@name=\"%s\"]",
                   usageElement.getAttribute( "source" ), levelName );
-              levelElement = (Element) xPath.compile( sharedDefaultHierarchyXPath ).evaluate( this.schema, NODE );
+              levelElement = (Element) xPath.compile( sharedDefaultHierarchyXPath ).evaluate( this.schema, XPathConstants.NODE );
             }
           }
         }
@@ -486,9 +523,9 @@ public class MondrianSchemaHandler {
       XPathFactory xPathFactory = XPathFactory.newInstance();
       XPath xPath = xPathFactory.newXPath();
       String inlineWithHierarchy =
-        format( "Schema/Cube[@name=\"%s\"]/CalculatedMember[@name=\"%s\" and @dimension=\"Measures\"]",
+        String.format( "Schema/Cube[@name=\"%s\"]/CalculatedMember[@name=\"%s\" and @dimension=\"Measures\"]",
           cubeName, measureName );
-      return (Element) xPath.compile( inlineWithHierarchy ).evaluate( this.schema, NODE );
+      return (Element) xPath.compile( inlineWithHierarchy ).evaluate( this.schema, XPathConstants.NODE );
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }
