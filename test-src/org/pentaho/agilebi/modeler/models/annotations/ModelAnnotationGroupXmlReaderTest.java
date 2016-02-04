@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
@@ -31,8 +32,6 @@ import org.pentaho.metadata.model.concept.types.DataType;
 import org.w3c.dom.Document;
 
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author Rowell Belen
@@ -47,7 +46,7 @@ public class ModelAnnotationGroupXmlReaderTest {
     ModelAnnotationGroupXmlReader mar = new ModelAnnotationGroupXmlReader();
     ModelAnnotationGroup group = mar.readModelAnnotationGroup( doc );
 
-    assertEquals( group.getDescription(), "descr" );
+    Assert.assertEquals( group.getDescription(), "descr" );
   }
 
   @Test
@@ -85,19 +84,19 @@ public class ModelAnnotationGroupXmlReaderTest {
     ModelAnnotationGroup group = mar.readModelAnnotationGroup( doc );
 
     List<ModelAnnotation> lma = group.getModelAnnotations();
-    assertEquals( 3, lma.size() );
-    assertEquals( lma.get( 0 ).getName(), "myName" );
+    Assert.assertEquals( 3, lma.size() );
+    Assert.assertEquals( lma.get( 0 ).getName(), "myName" );
     CreateMeasure cm = (CreateMeasure) lma.get( 0 ).getAnnotation();
-    assertEquals( cm.getFormatString(), "xxxx" );
-    assertEquals( cm.getAggregateType(), AggregationType.SUM );
-    assertEquals( cm.getDescription(), "some description" );
-    assertEquals( cm.getField(), "col1" );
+    Assert.assertEquals( cm.getFormatString(), "xxxx" );
+    Assert.assertEquals( cm.getAggregateType(), AggregationType.SUM );
+    Assert.assertEquals( cm.getDescription(), "some description" );
+    Assert.assertEquals( cm.getField(), "col1" );
 
-    assertEquals( group.get( 2 ).getName(), "ld" );
+    Assert.assertEquals( group.get( 2 ).getName(), "ld" );
     LinkDimension linkDimension = (LinkDimension) group.get( 2 ).getAnnotation();
-    assertEquals( linkDimension.getName(), "ldName" );
-    assertEquals( linkDimension.getSharedDimension(), "sharedDimension" );
-    assertEquals( linkDimension.getField(), "ld" );
+    Assert.assertEquals( linkDimension.getName(), "ldName" );
+    Assert.assertEquals( linkDimension.getSharedDimension(), "sharedDimension" );
+    Assert.assertEquals( linkDimension.getField(), "ld" );
   }
 
   @Test
@@ -140,17 +139,17 @@ public class ModelAnnotationGroupXmlReaderTest {
     ModelAnnotationGroup modelAnnotationGroup = mar.readModelAnnotationGroup( doc );
     List<DataProvider> ldp = modelAnnotationGroup.getDataProviders();
 
-    assertEquals( 2, ldp.size() );
-    assertEquals( ldp.get( 0 ).getName(), "dp1Name" );
-    assertEquals( ldp.get( 1 ).getName(), "dp2Name" );
+    Assert.assertEquals( 2, ldp.size() );
+    Assert.assertEquals( ldp.get( 0 ).getName(), "dp1Name" );
+    Assert.assertEquals( ldp.get( 1 ).getName(), "dp2Name" );
 
     List<ColumnMapping> lcm = ldp.get( 1 ).getColumnMappings();
-    assertEquals( 2, lcm.size() );
-    assertEquals( lcm.get( 0 ).getName(), "cm1name" );
-    assertEquals( lcm.get( 0 ).getColumnDataType(), DataType.BOOLEAN );
+    Assert.assertEquals( 2, lcm.size() );
+    Assert.assertEquals( lcm.get( 0 ).getName(), "cm1name" );
+    Assert.assertEquals( lcm.get( 0 ).getColumnDataType(), DataType.BOOLEAN );
 
-    assertEquals( lcm.get( 1 ).getName(), "cm2name" );
-    assertEquals( lcm.get( 1 ).getColumnDataType(), DataType.DATE );
+    Assert.assertEquals( lcm.get( 1 ).getName(), "cm2name" );
+    Assert.assertEquals( lcm.get( 1 ).getColumnDataType(), DataType.DATE );
   }
 
   @Test
@@ -175,9 +174,38 @@ public class ModelAnnotationGroupXmlReaderTest {
     ModelAnnotationGroupXmlReader reader = new ModelAnnotationGroupXmlReader();
     ModelAnnotationGroup readAnnotations = reader.readModelAnnotationGroup(
         XMLHandler.loadXMLString( writer.getXML() ) );
-    assertEquals( 2, readAnnotations.size() );
-    assertEquals( salesAnnotation, readAnnotations.get( 0 ) );
-    assertEquals( ordersAnnotation, readAnnotations.get( 1 ) );
+    Assert.assertEquals( 2, readAnnotations.size() );
+    Assert.assertEquals( salesAnnotation, readAnnotations.get( 0 ) );
+    Assert.assertEquals( ordersAnnotation, readAnnotations.get( 1 ) );
+  }
+
+  @Test
+  public void testWriteReadsUpdateCalcMeasureAnnotations() throws Exception {
+    UpdateCalculatedMember doubleSales = new UpdateCalculatedMember();
+    doubleSales.setCalculateSubtotals( Boolean.FALSE );
+    doubleSales.setFormatCategory( "Default" );
+    doubleSales.setInline( Boolean.TRUE );
+    doubleSales.setCube( "Sales" );
+    doubleSales.setCaption( "Caption" );
+    doubleSales.setDecimalPlaces( 2 );
+    doubleSales.setDescription( "Description" );
+    doubleSales.setDimension( "Customer" );
+    doubleSales.setFormatString( "$#.##" );
+    doubleSales.setFormula( "[Measures][Sales]*2" );
+    doubleSales.setHidden( Boolean.FALSE );
+    doubleSales.setName( "DoubleSales" );
+    doubleSales.setSourceCalculatedMeasure( "DoubleSales" );
+
+    ModelAnnotation<UpdateCalculatedMember> doubleSalesAnnotation = new ModelAnnotation<>( doubleSales );
+
+    ModelAnnotationGroup originalAnnotations = new ModelAnnotationGroup( doubleSalesAnnotation );
+
+    ModelAnnotationGroupXmlWriter writer = new ModelAnnotationGroupXmlWriter( originalAnnotations );
+    ModelAnnotationGroupXmlReader reader = new ModelAnnotationGroupXmlReader();
+    ModelAnnotationGroup readAnnotations = reader.readModelAnnotationGroup(
+      XMLHandler.loadXMLString( writer.getXML() ) );
+    Assert.assertEquals( 1, readAnnotations.size() );
+    Assert.assertEquals( doubleSalesAnnotation, readAnnotations.get( 0 ) );
   }
 
   @Test
@@ -200,8 +228,8 @@ public class ModelAnnotationGroupXmlReaderTest {
     ModelAnnotationGroupXmlReader reader = new ModelAnnotationGroupXmlReader();
     ModelAnnotationGroup readAnnotations = reader.readModelAnnotationGroup(
       XMLHandler.loadXMLString( writer.getXML() ) );
-    assertEquals( 2, readAnnotations.size() );
-    assertEquals( priceAnnotation, readAnnotations.get( 0 ) );
-    assertEquals( ageAnnotation, readAnnotations.get( 1 ) );
+    Assert.assertEquals( 2, readAnnotations.size() );
+    Assert.assertEquals( priceAnnotation, readAnnotations.get( 0 ) );
+    Assert.assertEquals( ageAnnotation, readAnnotations.get( 1 ) );
   }
 }

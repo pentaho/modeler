@@ -125,6 +125,20 @@
             <Annotation name="formulaExpression">[Measures].[Sales]*2</Annotation>
             <Annotation name="calcSubtotals">true</Annotation>
         </Annotations>
+        <CalculatedMemberProperty name="SOLVE_ORDER" value="0"/>
+    </CalculatedMember>
+    <CalculatedMember name="Test Calc Without Member Properties" caption="TEST_CAPTION" description="TEST DESCRIPTION"
+                      dimension="Measures" formula="[Measures][TestMeasure]*2" visible="true" formatString="&#x23;" >
+      <Annotations>
+        <Annotation name="formatScale">2</Annotation>
+        <Annotation name="formatCategory">Default</Annotation>
+        <Annotation name="inline">true</Annotation>
+        <Annotation name="formulaExpression">[Measures].[Sales]*2</Annotation>
+        <Annotation name="calcSubtotals">true</Annotation>
+      </Annotations>
+    </CalculatedMember>
+    <CalculatedMember name="Test Calc Without Annotations" caption="TEST_CAPTION" description="TEST DESCRIPTION"
+                      dimension="Measures" formula="[Measures][TestMeasure]*2" visible="true" formatString="&#x23;" >
     </CalculatedMember>
   </Cube>
 </Schema>
