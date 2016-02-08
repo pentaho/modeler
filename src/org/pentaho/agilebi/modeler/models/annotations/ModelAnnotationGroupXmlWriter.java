@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -88,7 +88,9 @@ public class ModelAnnotationGroupXmlWriter {
               if ( !"field".equals( key ) ) {
                 xml.append( "            " ).append( XMLHandler.openTag( "property" ) );
                 xml.append( "               " ).append( XMLHandler.addTagValue( "name", key ) );
-                xml.append( "               " ).append( XMLHandler.addTagValue( "value", serializable.toString() ) );
+                xml.append( "               " ).append( XMLHandler.openTag( "value" ) );
+                xml.append( XMLHandler.buildCDATA( serializable.toString() ) );
+                xml.append( XMLHandler.closeTag( "value" ) );
                 xml.append( "            " ).append( XMLHandler.closeTag( "property" ) );
               }
             }

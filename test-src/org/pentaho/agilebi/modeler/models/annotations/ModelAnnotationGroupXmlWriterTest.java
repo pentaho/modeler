@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -22,12 +22,11 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
-import static org.pentaho.agilebi.modeler.models.annotations.util.XMLUtil.compactPrint;
-import static org.pentaho.agilebi.modeler.models.annotations.util.XMLUtil.prettyPrint;
+import org.pentaho.agilebi.modeler.models.annotations.util.XMLUtil;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
 
@@ -48,8 +47,8 @@ public class ModelAnnotationGroupXmlWriterTest {
     ModelAnnotationGroupXmlWriter xmlWriter = new ModelAnnotationGroupXmlWriter( group );
 
     String xml = xmlWriter.getXML();
-    assertEquals( "<annotations><sharedDimension>N</sharedDimension><description/></annotations>",
-        compactPrint( xml ) );
+    Assert.assertEquals( "<annotations><sharedDimension>N</sharedDimension><description/></annotations>",
+      XMLUtil.compactPrint( xml ) );
   }
 
   @Test
@@ -81,35 +80,35 @@ public class ModelAnnotationGroupXmlWriterTest {
     ModelAnnotationGroupXmlWriter xmlWriter = new ModelAnnotationGroupXmlWriter( modelAnnotationGroup );
     String xml = xmlWriter.getXML();
 
-    assertEquals( "<annotations>"
+    Assert.assertEquals( "<annotations>"
         + "<annotation>"
         + "<name>myName</name>"
         + "<field>col1</field>"
         + "<type>CREATE_MEASURE</type>"
         + "<properties>"
-        + "<property><name>formatString</name><value>xxxx</value></property>"
-        + "<property><name>hidden</name><value>false</value></property>"
-        + "<property><name>description</name><value>some description</value></property>"
-        + "<property><name>aggregateType</name><value>SUM</value></property></properties>"
+        + "<property><name>formatString</name><value><![CDATA[xxxx]]></value></property>"
+        + "<property><name>hidden</name><value><![CDATA[false]]></value></property>"
+        + "<property><name>description</name><value><![CDATA[some description]]></value></property>"
+        + "<property><name>aggregateType</name><value><![CDATA[SUM]]></value></property></properties>"
         + "</annotation>"
         + "<annotation>"
         + "<name>myName</name>"
         + "<field>col1</field><type>CREATE_MEASURE</type>"
         + "<properties>"
-        + "<property><name>formatString</name><value>xxxx</value></property>"
-        + "<property><name>hidden</name><value>false</value></property>"
-        + "<property><name>description</name><value>some description</value></property>"
-        + "<property><name>aggregateType</name><value>SUM</value></property>"
+        + "<property><name>formatString</name><value><![CDATA[xxxx]]></value></property>"
+        + "<property><name>hidden</name><value><![CDATA[false]]></value></property>"
+        + "<property><name>description</name><value><![CDATA[some description]]></value></property>"
+        + "<property><name>aggregateType</name><value><![CDATA[SUM]]></value></property>"
         + "</properties>"
         + "</annotation>"
         + "<annotation>"
         + "<name>ld</name>"
         + "<field>ld</field><type>LINK_DIMENSION</type>"
-        + "<properties><property><name>sharedDimension</name><value>sharedDimension</value></property>"
-        + "<property><name>name</name><value>ldName</value></property></properties></annotation>"
+        + "<properties><property><name>sharedDimension</name><value><![CDATA[sharedDimension]]></value></property>"
+        + "<property><name>name</name><value><![CDATA[ldName]]></value></property></properties></annotation>"
         + "<sharedDimension>N</sharedDimension>"
         + "<description>Test Description</description>"
-        + "</annotations>", compactPrint( xml ) );
+        + "</annotations>", XMLUtil.compactPrint( xml ) );
   }
 
   @Test
@@ -141,7 +140,7 @@ public class ModelAnnotationGroupXmlWriterTest {
     ModelAnnotationGroupXmlWriter xmlWriter = new ModelAnnotationGroupXmlWriter( modelAnnotationGroup );
     String xml = xmlWriter.getXML();
 
-    assertEquals( prettyPrint( ""
+    Assert.assertEquals( XMLUtil.prettyPrint( ""
         + "  <annotations>"
         + "    <sharedDimension>Y</sharedDimension>"
         + "    <description/>"
@@ -171,6 +170,6 @@ public class ModelAnnotationGroupXmlWriterTest {
         + "        </column-mappings>"
         + "      </data-provider>"
         + "    </data-providers>"
-        + "  </annotations>" ), prettyPrint( xml ) );
+        + "  </annotations>" ), XMLUtil.prettyPrint( xml ) );
   }
 }
