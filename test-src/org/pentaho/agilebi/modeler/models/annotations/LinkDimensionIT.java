@@ -164,6 +164,21 @@ public class LinkDimensionIT {
     linkDimension.setSharedDimension( "shared product group" );
     linkDimension.setField( "PRODUCT_ID" );
     assertFalse( "This should fail", linkDimension.apply( model, metaStore ) );
+    assertEquals(
+      "Dimension Product Dim is linked to shared dimension shared product group\n"
+      + "    Unable to apply annotation: Description participates in hierarchy with parent Product\n"
+      + "    Unable to apply annotation: Product is top level in hierarchy\n"
+      + "    Successfully applied annotation: id is key for dimension Shared Product dim",
+      linkDimension.getSummary() );
+  }
+
+  @Test
+  public void testSummaryWithNoApply() throws Exception {
+    LinkDimension linkDimension = new LinkDimension();
+    linkDimension.setField( "keyField" );
+    linkDimension.setName( "link dim" );
+    linkDimension.setSharedDimension( "shared dim" );
+    assertEquals( "Dimension link dim is linked to shared dimension shared dim", linkDimension.getSummary() );
   }
 
   private void saveInvalidProductToMetastore() throws Exception {
