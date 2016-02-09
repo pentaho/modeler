@@ -76,6 +76,8 @@ public class LinkDimension extends AnnotationType {
   @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true )
   private String field;
 
+  private Map<ApplyStatus, List<ModelAnnotation>> sharedApplyStatus;
+
   @Override public boolean apply(
       final ModelerWorkspace factWorkspace, final IMetaStore metaStore ) throws ModelerException {
     ModelAnnotationManager modelAnnotationManager = new ModelAnnotationManager( true );
@@ -92,9 +94,9 @@ public class LinkDimension extends AnnotationType {
       }
       ModelerWorkspace dimensionWorkspace = autoModelSharedDimension( factWorkspace, dataProvider );
 
-      Map<ApplyStatus, List<ModelAnnotation>> applied = sharedAnnotations.applyAnnotations( dimensionWorkspace,
-          metaStore );
-      if ( applied.get( ApplyStatus.FAILED ) != null && applied.get( ApplyStatus.FAILED ).size() > 0 ) {
+      sharedApplyStatus = sharedAnnotations.applyAnnotations( dimensionWorkspace, metaStore );
+      if ( sharedApplyStatus.get( ApplyStatus.FAILED ) != null
+        && sharedApplyStatus.get( ApplyStatus.FAILED ).size() > 0 ) {
         return false;
       }
       String dimKey = locateDimensionKey( sharedAnnotations );
@@ -235,7 +237,21 @@ public class LinkDimension extends AnnotationType {
   }
 
   @Override public String getSummary() {
-    return BaseMessages.getString( MSG_CLASS, "Modeler.LinkDimension.Summary", getName(), getSharedDimension() );
+    StringBuilder summary = new StringBuilder(
+      BaseMessages.getString( MSG_CLASS, "Modeler.LinkDimension.Summary", getName(), getSharedDimension() ) );
+    if ( sharedApplyStatus != null ) {
+      appendSummaries( summary, ApplyStatus.FAILED, "ModelAnnotation.log.AnnotationFailure" );
+      appendSummaries( summary, ApplyStatus.SUCCESS, "ModelAnnotation.log.AnnotationSuccess" );
+    }
+
+    return summary.toString();
+  }
+
+  private void appendSummaries( final StringBuilder summary, final ApplyStatus status, final String msgKey ) {
+    for ( ModelAnnotation modelAnnotation : sharedApplyStatus.get( status ) ) {
+      summary.append( "\n    " );
+      summary.append( BaseMessages.getString( MSG_CLASS, msgKey,  modelAnnotation.getAnnotation().getSummary() ) );
+    }
   }
 
   @Override public String getName() {
