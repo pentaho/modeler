@@ -349,13 +349,16 @@ public class CreateAttribute extends AnnotationType {
     return null;
   }
 
-  private boolean isAutoModeled( final ModelerWorkspace workspace, String column ) {
+  private boolean isAutoModeled( final ModelerWorkspace workspace ) {
     try {
       if ( ( getGeoType() != null ) && StringUtils
           .equals( workspace.getGeoContext().getDimensionName(), getDimension() ) ) {
         return true;
       }
-      return ( locateHierarchy( workspace, getDimension() ) != null );
+      HierarchyMetaData hierarchy = locateHierarchy( workspace, getDimension() );
+      return hierarchy != null
+        && hierarchy.size() == 1
+        && hierarchy.getLevels().get( 0 ).getName().equals( hierarchy.getName() );
     } catch ( Exception e ) {
       return false;
     }
@@ -365,7 +368,7 @@ public class CreateAttribute extends AnnotationType {
     HierarchyMetaData hierarchyMetaData
         = new HierarchyMetaData( isEmpty( getHierarchy() ) ? getDimension() : getHierarchy() );
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
-      if ( dimensionMetaData.getName().equals( getDimension() ) && !isAutoModeled( workspace, column ) ) {
+      if ( dimensionMetaData.getName().equals( getDimension() ) && !isAutoModeled( workspace ) ) {
         hierarchyMetaData.setParent( dimensionMetaData );
         if ( dimensionMetaData.isEmpty() ) {
           dimensionMetaData.setDimensionType( dimensionType() );
