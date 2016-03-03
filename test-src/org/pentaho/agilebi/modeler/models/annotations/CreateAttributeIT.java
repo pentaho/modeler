@@ -166,6 +166,47 @@ public class CreateAttributeIT {
     assertFalse( monthLevel.isHidden() );
   }
 
+  @SuppressWarnings( { "unchecked", "ConstantConditions" } )
+  @Test
+  public void testCanCreateMultipleHierarchiesInDimensionWithDefaultHierarchy() throws Exception {
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setField( "PRODUCTLINE_OLAP" );
+    productLine.apply( model, metaStore );
+
+    CreateAttribute productName = new CreateAttribute();
+    productName.setName( "Product Name" );
+    productName.setDimension( "Products" );
+    productName.setHierarchy( "Product Name" );
+    productName.setField( "PRODUCTNAME_OLAP" );
+    productName.setOrdinalField( "PRODUCTSCALE_OLAP" );
+    productName.apply( model, metaStore );
+
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+
+    OlapDimensionUsage productsDim = AnnotationUtil.getOlapDimensionUsage( "Products", cube.getOlapDimensionUsages() );
+    assertEquals( 2, productsDim.getOlapDimension().getHierarchies().size() );
+
+    OlapHierarchy productsHierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
+    OlapHierarchyLevel productLineLevel =
+      AnnotationUtil.getOlapHierarchyLevel( "Product Line", productsHierarchy.getHierarchyLevels() );
+    assertEquals( "Product Line", productLineLevel.getName() );
+
+    OlapHierarchy productNameHierarchy = productsDim.getOlapDimension().getHierarchies().get( 1 );
+    OlapHierarchyLevel productNameLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Name",
+      productNameHierarchy.getHierarchyLevels() );
+    assertEquals( "Product Name", productNameLevel.getName() );
+  }
+
   @Test
   public void testSummaryDescribesLevelInHierarchy() throws Exception {
     CreateAttribute createAttribute = new CreateAttribute();
