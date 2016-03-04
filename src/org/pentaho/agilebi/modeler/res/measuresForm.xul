@@ -62,11 +62,6 @@
     <menulist id="formatstring">
       <menupopup>
         <menuitem label="NONE"/>
-        <menuitem label="#,###;(#,###)"/>
-        <menuitem label="#,###.00;(#,###.00)"/>
-        <menuitem label="$#,###;($#,###)"/>
-        <menuitem label="$#,###.00;($#,###.00)"/>
-        <menuitem label="#.#%;(#.#%)"/>
       </menupopup>
     </menulist>
   </groupbox>

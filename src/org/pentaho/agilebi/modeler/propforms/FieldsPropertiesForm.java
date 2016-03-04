@@ -43,7 +43,6 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
   private static final String ID = "fieldprops";
   private Collection<AggregationType> selectedAggregations;
   private XulButton messageBtn;
-  protected XulMenuList formatFieldList;
 
   public FieldsPropertiesForm( String locale ) {
     super( ID, locale );
@@ -59,18 +58,18 @@ public class FieldsPropertiesForm extends MeasuresPropertiesForm {
     this.workspace = workspace;
     deck = (XulDeck) document.getElementById( "propertiesdeck" );
     panel = (XulVbox) document.getElementById( ID );
-    formatFieldList = (XulMenuList) document.getElementById( "fieldformatstring" );
+    XulMenuList formatFieldList = (XulMenuList) document.getElementById( "fieldformatstring" );
 
     bf.createBinding( this, "notValid", "fieldmessages", "visible" );
     bf.createBinding( this, "validMessages", "fieldmessageslabel", "value", validMsgTruncatedBinding );
     bf.createBinding( this, "displayName", "fielddisplayname", "value" );
     bf.createBinding( this, "possibleAggregations", "field_optionalAggregationTypes", "elements" );
-    bf.createBinding( this, "selectedAggregations", "field_optionalAggregationTypes", "selectedItems", BindingConvertor
-        .collection2ObjectArray() );
+    bf.createBinding( this, "selectedAggregations", "field_optionalAggregationTypes", "selectedItems", BindingConvertor.collection2ObjectArray() );
     bf.createBinding( this, "possibleAggregations", "field_defaultAggregation", "elements" );
     bf.createBinding( this, "defaultAggregation", "field_defaultAggregation", "selectedItem" );
 
     bf.createBinding( this, "format", formatFieldList, "value", new FormatStringConverter() );
+    bf.createBinding( this, "formatstring", formatFieldList, "elements" );
     bf.createBinding( this, "backingColumnAvailable", "fixFieldColumnsBtn", "!visible" );
     bf.createBinding( this, "columnName", "field_column_name", "value" );
     messageBtn = (XulButton) document.getElementById( "field_message_btn" );

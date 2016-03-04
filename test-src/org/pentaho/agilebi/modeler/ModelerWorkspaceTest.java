@@ -20,10 +20,12 @@ package org.pentaho.agilebi.modeler;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Spy;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
+import org.pentaho.agilebi.modeler.nodes.AvailableField;
 import org.pentaho.agilebi.modeler.nodes.AvailableTable;
 import org.pentaho.agilebi.modeler.nodes.CategoryMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
@@ -31,12 +33,14 @@ import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.agilebi.modeler.util.DataFormatHolder;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
+import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.util.MondrianModelExporter;
 import org.pentaho.metadata.util.XmiParser;
 
@@ -46,17 +50,21 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
 import static junit.framework.Assert.*;
-
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Matchers.any;
 
 public class ModelerWorkspaceTest {
 
   protected ModelerWorkspace workspace;
   private static final String LOCALE = "en-US";
-
 
   @Before
   public void setUp() throws Exception {
@@ -72,6 +80,32 @@ public class ModelerWorkspaceTest {
     GeoContext geo = GeoContextFactory.create( config );
 
     workspace = new ModelerWorkspace( new ModelerWorkspaceHelper( LOCALE ), geo );
+  }
+
+  @Test
+  public void testCreateFieldForParentWithNode_Date() {
+    testCreateFieldForParentWithNode( DataType.DATE, DataFormatHolder.DATE_FORMATS );
+  }
+  
+  @Test
+  public void testCreateFieldForParentWithNode_Numeric() {
+    testCreateFieldForParentWithNode( DataType.NUMERIC, DataFormatHolder.NUMBER_FORMATS );
+  }
+  
+  public void testCreateFieldForParentWithNode( DataType dataType, List<String> formatingStrings ) {
+    LogicalColumn logicalColumn = mock( LogicalColumn.class );
+    when( logicalColumn.getDataType() ).thenReturn( dataType );
+    
+    ColumnBackedNode backedNode = mock( ColumnBackedNode.class );
+    when( backedNode.getLogicalColumn() ).thenReturn( logicalColumn );
+    
+    ModelerWorkspace modelerWorkspace = spy( workspace );
+    doReturn( backedNode ).when( modelerWorkspace ).createColumnBackedNode( any( AvailableField.class ), any( ModelerPerspective.class ) );
+    
+    CategoryMetaData parent = mock( CategoryMetaData.class );
+    AvailableField selectedField = mock( AvailableField.class );
+    FieldMetaData fieldMetaData = modelerWorkspace.createFieldForParentWithNode( parent, selectedField );
+    assertEquals( formatingStrings, fieldMetaData.getFormatstring() );
   }
 
   @Test
@@ -196,7 +230,7 @@ public class ModelerWorkspaceTest {
   }
 
   private static String readFileAsString( String filePath ) throws java.io.IOException {
-    byte[] buffer = new byte[ (int) new File( filePath ).length() ];
+    byte[] buffer = new byte[(int) new File( filePath ).length()];
     BufferedInputStream f = null;
     try {
       f = new BufferedInputStream( new FileInputStream( filePath ) );
