@@ -33,7 +33,7 @@ import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
-import org.pentaho.agilebi.modeler.util.DataFormatHolder;
+import org.pentaho.agilebi.modeler.format.DataFormatHolder;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.metadata.model.Domain;
