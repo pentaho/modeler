@@ -50,7 +50,7 @@ import org.pentaho.agilebi.modeler.nodes.annotations.MemberAnnotationFactory;
 import org.pentaho.agilebi.modeler.strategy.MultiTableAutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.SimpleAutoModelStrategy;
 import org.pentaho.agilebi.modeler.strategy.StarSchemaAutoModelStrategy;
-import org.pentaho.agilebi.modeler.util.DataFormatHolder;
+import org.pentaho.agilebi.modeler.format.DataFormatHolder;
 import org.pentaho.metadata.model.Category;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.IPhysicalColumn;

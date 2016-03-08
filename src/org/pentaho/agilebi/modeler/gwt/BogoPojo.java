@@ -25,7 +25,7 @@ import org.pentaho.agilebi.modeler.geo.LocationRole;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
-import org.pentaho.agilebi.modeler.util.DataFormatHolder;
+import org.pentaho.agilebi.modeler.format.DataFormatHolder;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalModel;
@@ -100,7 +100,7 @@ public class BogoPojo implements Serializable {
   LocationRole locationRole;
   GeoContext geoContext;
   DataFormatHolder dataFormatHolder;
-  
+
   private AggregationType[] aggTypes;
 
   public Domain getDomain() {

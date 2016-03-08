@@ -24,7 +24,7 @@ import java.util.Vector;
 
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
-import org.pentaho.agilebi.modeler.util.DataFormatHolder;
+import org.pentaho.agilebi.modeler.format.DataFormatHolder;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.ui.xul.binding.BindingConvertor;

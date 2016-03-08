@@ -1,6 +1,5 @@
 <module>
-  <source path="util">
-    <exclude name="**/*Model*"/>
+  <source path="format">
   </source>
 
 </module>

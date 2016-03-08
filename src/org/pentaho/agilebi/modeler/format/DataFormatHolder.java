@@ -14,14 +14,14 @@
  *
  * Copyright (c) 2002-2015 Pentaho Corporation..  All rights reserved.
  */
-package org.pentaho.agilebi.modeler.util;
+package org.pentaho.agilebi.modeler.format;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataFormatHolder implements Cloneable, Serializable {
-  
+
   public static List<String> DATE_FORMATS = new ArrayList<String>(){{
     add( "yyyyMMdd");
     add( "dd-MM-yy");
@@ -84,7 +84,7 @@ public class DataFormatHolder implements Cloneable, Serializable {
     add( "dd MMM yyyy HH:mm:ss.SSS");
     add( "dd MMMM yyyy HH:mm:ss.SSS");
   }};
-  
+
   public static List<String> NUMBER_FORMATS = new ArrayList<String>(){{
     add( "0.00");
     add( "0000000000000");
@@ -94,10 +94,10 @@ public class DataFormatHolder implements Cloneable, Serializable {
     add( "#######.###");
     add( "#####.###%");
   }};
-  
+
   public static List<String> CONVERSION_FORMATS = new ArrayList<String>(){{
     addAll( DATE_FORMATS );
     addAll( NUMBER_FORMATS );
   }};
-  
+
 }
