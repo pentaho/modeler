@@ -20,7 +20,6 @@ package org.pentaho.agilebi.modeler;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Spy;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
@@ -86,22 +85,22 @@ public class ModelerWorkspaceTest {
   public void testCreateFieldForParentWithNode_Date() {
     testCreateFieldForParentWithNode( DataType.DATE, DataFormatHolder.DATE_FORMATS );
   }
-  
+
   @Test
   public void testCreateFieldForParentWithNode_Numeric() {
     testCreateFieldForParentWithNode( DataType.NUMERIC, DataFormatHolder.NUMBER_FORMATS );
   }
-  
+
   public void testCreateFieldForParentWithNode( DataType dataType, List<String> formatingStrings ) {
     LogicalColumn logicalColumn = mock( LogicalColumn.class );
     when( logicalColumn.getDataType() ).thenReturn( dataType );
-    
+
     ColumnBackedNode backedNode = mock( ColumnBackedNode.class );
     when( backedNode.getLogicalColumn() ).thenReturn( logicalColumn );
-    
+
     ModelerWorkspace modelerWorkspace = spy( workspace );
     doReturn( backedNode ).when( modelerWorkspace ).createColumnBackedNode( any( AvailableField.class ), any( ModelerPerspective.class ) );
-    
+
     CategoryMetaData parent = mock( CategoryMetaData.class );
     AvailableField selectedField = mock( AvailableField.class );
     FieldMetaData fieldMetaData = modelerWorkspace.createFieldForParentWithNode( parent, selectedField );
