@@ -51,8 +51,8 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
   protected List<AggregationType> selectedAggregations = new Vector<AggregationType>();
   private List<AggregationType> possibleAggregations = new ArrayList<AggregationType>();
 
-  protected List<String> formatstring;  
-  
+  protected List<String> formatstring;
+
   public List<AggregationType> getNumericAggregationTypes() {
     return Arrays.asList( AggregationType.SUM, AggregationType.AVERAGE, AggregationType.MINIMUM,
         AggregationType.MAXIMUM, AggregationType.COUNT, AggregationType.COUNT_DISTINCT );
@@ -202,14 +202,14 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
   public List<String> getFormatstring() {
     return formatstring;
   }
-  
+
   @Bindable
   public void setFormatstring( List<String> formatstring ) {
     List<String> prevXulMenuList = this.formatstring;
     this.formatstring = formatstring;
-    this.firePropertyChange( "formatstring", prevXulMenuList, formatstring ); 
+    this.firePropertyChange( "formatstring", prevXulMenuList, formatstring );
   }
-  
+
   public boolean equals( Object o ) {
     if ( o == null || o instanceof BaseAggregationMetaDataNode == false ) {
       return false;

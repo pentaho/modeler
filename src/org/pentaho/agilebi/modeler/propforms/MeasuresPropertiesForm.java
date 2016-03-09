@@ -63,7 +63,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
       }
     }
   };
-  
+
   private PropertyChangeListener validListener = new PropertyChangeListener() {
 
     public void propertyChange( PropertyChangeEvent evt ) {
@@ -114,7 +114,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
 
     t.addPropertyChangeListener( validListener );
     t.addPropertyChangeListener( propListener );
-    
+
     switch ( t.getLogicalColumn().getDataType() ) {
       case DATE:
         setFormatstring( DataFormatHolder.DATE_FORMATS );
