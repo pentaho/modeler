@@ -58,6 +58,7 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
   private static final String UPDATE_CALCULATED_MEMBER_ENUM_VALUE = "Update Calculated Measure";
   private static final String SHOW_HIDE_ATTRIBUTE_ENUM_VALUE = "Show or Hide Level";
   private static final String SHOW_HIDE_MEASURE_ENUM_VALUE = "Show or Hide Measure";
+  private static final String UPDATE_ATTRIBUTE_ENUM_VALUE = "Update Attribute";
   private static final String BLANK_ENUM_VALUE = "";
 
   @MetaStoreAttribute
@@ -335,6 +336,13 @@ public class ModelAnnotation<T extends AnnotationType> implements Serializable {
         final ModelAnnotationGroup modelAnnotations,
         final ModelAnnotation modelAnnotation,
         final ValueMetaInterface valueMeta ) {
+        return false;
+      }
+    },
+    UPDATE_ATTRIBUTE( UPDATE_ATTRIBUTE_ENUM_VALUE ) {
+      @Override
+      public boolean isApplicable( final ModelAnnotationGroup modelAnnotations, final ModelAnnotation modelAnnotation,
+                                   final ValueMetaInterface valueMeta ) {
         return false;
       }
     };

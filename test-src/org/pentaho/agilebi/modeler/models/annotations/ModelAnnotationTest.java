@@ -227,5 +227,9 @@ public class ModelAnnotationTest {
     assertFalse(
       ModelAnnotation.Type.SHOW_HIDE_MEASURE
         .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() ) );
+    assertFalse(
+      ModelAnnotation.Type.UPDATE_ATTRIBUTE
+      .isApplicable( modelAnnotations, new ModelAnnotation(), new ValueMetaString() )
+    );
   }
 }
