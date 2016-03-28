@@ -579,11 +579,11 @@ public class MondrianSchemaHandler {
     levelNode.setAttribute( "visible", Boolean.toString( visible ) );
   }
 
-  public boolean renameLevel( final String cubeName, final String dimensionName, final String hierarchyName,
-                              final String existingLevelName, final String newLevelName ) throws ModelerException {
+  public boolean captionLevel( final String cubeName, final String dimensionName, final String hierarchyName,
+                               final String existingLevelName, final String captionName ) throws ModelerException {
     Element levelNode = getLevelNode( cubeName, dimensionName, hierarchyName, existingLevelName );
     if ( levelNode != null ) {
-      levelNode.setAttribute( "name", newLevelName );
+      levelNode.setAttribute( "caption", captionName );
       return true;
     }
     return false;

@@ -80,7 +80,7 @@ public class UpdateAttribute extends AnnotationType {
 
   @Override public boolean apply( final Document schema ) throws ModelerException {
     MondrianSchemaHandler schemaHandler = new MondrianSchemaHandler( schema );
-    return schemaHandler.renameLevel( getCube(), getDimension(), getHierarchy(), getLevel(), getName() );
+    return schemaHandler.captionLevel( getCube(), getDimension(), getHierarchy(), getLevel(), getName() );
   }
 
   @Override public void validate() throws ModelerException {
