@@ -67,7 +67,7 @@ public class UpdateAttributeTest {
     updateAttribute.setName( "Month by Year" );
     Document mondrianDoc = AnnotationUtil.getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
     assertTrue( updateAttribute.apply( mondrianDoc ) );
-    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianDoc, "Level", "Month by Year", "", "" ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianDoc, "Level", "Month", "caption", "Month by Year" ) );
   }
 
   @Test
@@ -80,7 +80,7 @@ public class UpdateAttributeTest {
     updateAttribute.setName( "Code" );
     Document mondrianDoc = AnnotationUtil.getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
     assertTrue( updateAttribute.apply( mondrianDoc ) );
-    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianDoc, "Level", "Code", "column", "code" ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianDoc, "Level", "Product Code", "caption", "Code" ) );
   }
 
   @Test

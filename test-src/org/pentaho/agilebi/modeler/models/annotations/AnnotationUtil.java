@@ -205,7 +205,9 @@ public final class AnnotationUtil {
           // Found element now test attribute
           if ( element != null ) {
             validated = testValue.equals( element.getAttribute( attributeName ) );
-            break;
+            if ( validated ) {
+              break;
+            }
           }
         }
       }
