@@ -55,23 +55,23 @@ public class UpdateAttribute extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
-  private String name;
+  protected String name;
 
   @MetaStoreAttribute
   @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER )
-  private String cube;
+  protected String cube;
 
   @MetaStoreAttribute
   @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
-  private String dimension;
+  protected String dimension;
 
   @MetaStoreAttribute
   @ModelProperty( id = HIERARCHY_ID, name = HIERARCHY_NAME, order = HIERARCHY_ORDER )
-  private java.lang.String hierarchy;
+  protected java.lang.String hierarchy;
 
   @MetaStoreAttribute
   @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER )
-  private String level;
+  protected String level;
 
   @Override public boolean apply( final ModelerWorkspace workspace, final IMetaStore metaStore )
     throws ModelerException {
