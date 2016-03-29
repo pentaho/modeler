@@ -190,6 +190,9 @@ public class ModelAnnotationGroupXmlReader {
       case SHOW_HIDE_MEASURE:
         ShowHideMeasure hideMeasure = new ShowHideMeasure();
         return new ModelAnnotation<>( hideMeasure );
+      case UPDATE_ATTRIBUTE:
+        UpdateAttribute updateAttribute = new UpdateAttribute();
+        return new ModelAnnotation<>( updateAttribute );
       default:
         BlankAnnotation ba = new BlankAnnotation();
         ba.setField( field );

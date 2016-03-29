@@ -232,4 +232,24 @@ public class ModelAnnotationGroupXmlReaderTest {
     Assert.assertEquals( priceAnnotation, readAnnotations.get( 0 ) );
     Assert.assertEquals( ageAnnotation, readAnnotations.get( 1 ) );
   }
+
+  @Test
+  public void testWriteReadsUpdateAttributeAnnotations() throws Exception {
+    UpdateAttribute family = new UpdateAttribute();
+    family.setName( "Family" );
+    family.setCube( "Sales" );
+    family.setDimension( "Product" );
+    family.setHierarchy( "Products" );
+    family.setLevel( "Product Family" );
+    ModelAnnotation<UpdateAttribute> familyAnnotation = new ModelAnnotation<>( family );
+
+    ModelAnnotationGroup originalAnnotations = new ModelAnnotationGroup( familyAnnotation );
+
+    ModelAnnotationGroupXmlWriter writer = new ModelAnnotationGroupXmlWriter( originalAnnotations );
+    ModelAnnotationGroupXmlReader reader = new ModelAnnotationGroupXmlReader();
+    ModelAnnotationGroup readAnnotations = reader.readModelAnnotationGroup(
+      XMLHandler.loadXMLString( writer.getXML() ) );
+    Assert.assertEquals( 1, readAnnotations.size() );
+    Assert.assertEquals( familyAnnotation, readAnnotations.get( 0 ) );
+  }
 }
