@@ -67,6 +67,10 @@ public class UpdateMeasure extends AnnotationType {
   private static final String MEASURE_NAME = "Measure";
   private static final int MEASURE_ORDER = 4;
 
+  private static final String CAPTION_ID = "caption";
+  private static final String CAPTION_NAME = "Caption";
+  private static final int CAPTION_ORDER = 5;
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
   private String name;
@@ -86,6 +90,10 @@ public class UpdateMeasure extends AnnotationType {
   @MetaStoreAttribute
   @ModelProperty( id = FORMAT_ID, name = FORMAT_NAME, order = FORMAT_ORDER )
   private String format;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = CAPTION_ID, name = CAPTION_NAME, order = CAPTION_ORDER )
+  private String caption;
 
   /**
    * Retrieves the measure based on the formula.
@@ -173,6 +181,7 @@ public class UpdateMeasure extends AnnotationType {
     updatedMeasure.name = name;
     updatedMeasure.aggregator = mondrianAggregationType;
     updatedMeasure.formatString = format;
+    updatedMeasure.caption = caption;
     return mondrianSchemaHandler.updateMeasure( cube, measure, updatedMeasure );
   }
 
@@ -243,6 +252,14 @@ public class UpdateMeasure extends AnnotationType {
 
   public void setFormat( String format ) {
     this.format = format;
+  }
+
+  public String getCaption() {
+    return caption;
+  }
+
+  public void setCaption( final String caption ) {
+    this.caption = caption;
   }
 }
 

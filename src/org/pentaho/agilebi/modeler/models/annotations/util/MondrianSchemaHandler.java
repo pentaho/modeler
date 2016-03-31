@@ -248,7 +248,7 @@ public class MondrianSchemaHandler {
         return false;
       }
 
-      Node measureNode = getMeasureNode( cubeName, measureName );
+      Element measureNode = (Element) getMeasureNode( cubeName, measureName );
       if ( measureNode == null ) {
         return false;
       }
@@ -269,6 +269,10 @@ public class MondrianSchemaHandler {
       if ( !StringUtils.isBlank( measure.name ) ) {
         Node nameNode = measureAttrs.getNamedItem( "name" );
         nameNode.setNodeValue( measure.name );
+      }
+
+      if ( !StringUtils.isBlank( measure.caption ) ) {
+        measureNode.setAttribute( "caption", measure.caption );
       }
     } catch ( Exception e ) {
       throw new ModelerException( e );
