@@ -372,4 +372,31 @@ public class UpdateMeasureTest {
     } catch ( Exception e ) {
     }
   }
+
+  @Test
+  public void testUpdatesCaptionNameUnchanged() throws Exception {
+    File mondrianSchemaXmlFile = new File( MONDRIAN_TEST_FILE_PATH );
+
+    Document mondrianSchemaXmlDoc =
+      DocumentBuilderFactory
+        .newInstance()
+        .newDocumentBuilder()
+        .parse( mondrianSchemaXmlFile );
+
+    // Renaming the measure
+    UpdateMeasure updateMeasure = new UpdateMeasure();
+    updateMeasure.setMeasure( INIT_MEASURE_MONDRIAN_FORMULA );
+    updateMeasure.setCaption( NEW_BUYPRICE_NAME );
+    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc );
+    assertTrue( isApplied );
+
+    assertTrue( mondrianSchemaXmlDoc != null );
+    assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.MEASURE_ELEMENT_NAME ).getLength()
+      > 0 );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.MEASURE_ELEMENT_NAME,
+      INIT_BUYPRICE_COLUMN,
+      AnnotationUtil.CAPTION_ATTRIB,
+      NEW_BUYPRICE_NAME ) );
+  }
 }
