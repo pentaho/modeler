@@ -204,11 +204,9 @@ public final class AnnotationUtil {
         Element element = (Element) nodeList.item( i );
         if ( nodeName.equals( element.getAttribute( NAME_ATTRIB ) ) ) {
           // Found element now test attribute
-          if ( element != null ) {
-            validated = testValue.equals( element.getAttribute( attributeName ) );
-            if ( validated ) {
-              break;
-            }
+          validated = testValue.equals( element.getAttribute( attributeName ) );
+          if ( validated ) {
+            break;
           }
         }
       }

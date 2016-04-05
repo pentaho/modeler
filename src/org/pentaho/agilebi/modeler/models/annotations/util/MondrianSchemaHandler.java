@@ -600,4 +600,52 @@ public class MondrianSchemaHandler {
   public void setSchema( Document schema ) {
     this.schema = schema;
   }
+
+  public boolean formatLevel( final String cube, final String dimension, final String hierarchy, final String level,
+                              final String formatString ) throws ModelerException {
+    Element levelNode = getLevelNode( cube, dimension, hierarchy, level );
+    if ( levelNode != null ) {
+      levelNode.setAttribute(
+        AnnotationConstants.LEVEL_FORMATTER_ATTRIBUTE, AnnotationConstants.INLINE_MEMBER_FORMATTER_CLASS );
+
+      Element formatterAnnotation = getSchema().createElement( "Annotation" );
+      formatterAnnotation.setAttribute(
+        AnnotationConstants.ANNOTATION_NAME_ATTRIUBUTE, AnnotationConstants.INLINE_MEMBER_FORMAT_STRING );
+      formatterAnnotation.setTextContent( formatString );
+
+      NodeList annotations = levelNode.getElementsByTagName( AnnotationConstants.ANNOTATIONS_NODE_NAME );
+      if ( annotations == null || annotations.getLength() == 0 ) {
+        Element annotationsElement = getSchema().createElement( "Annotations" );
+        levelNode.appendChild( annotationsElement );
+        annotationsElement.appendChild( formatterAnnotation );
+      } else {
+        annotations.item( 0 ).appendChild( formatterAnnotation );
+      }
+      return true;
+    }
+    return false;
+  }
+
+  public boolean removeFormatting( final String cube, final String dimension, final String hierarchy,
+                                   final String level ) throws ModelerException {
+    Element levelNode = getLevelNode( cube, dimension, hierarchy, level );
+    if ( levelNode != null ) {
+      levelNode.removeAttribute( AnnotationConstants.LEVEL_FORMATTER_ATTRIBUTE );
+      NodeList annotations = levelNode.getElementsByTagName( AnnotationConstants.ANNOTATIONS_NODE_NAME );
+      if ( annotations != null && annotations.getLength() > 0 ) {
+        Node item = annotations.item( 0 );
+        NodeList childNodes = item.getChildNodes();
+        for ( int i = 0; i < childNodes.getLength(); i++ ) {
+          Element singleAnnotation = (Element) childNodes.item( i );
+          if ( AnnotationConstants.INLINE_MEMBER_FORMAT_STRING.equals(
+            singleAnnotation.getAttribute( AnnotationConstants.ANNOTATION_NAME_ATTRIUBUTE ) ) ) {
+            item.removeChild( singleAnnotation );
+            break;
+          }
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 }

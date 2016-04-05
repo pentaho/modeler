@@ -32,6 +32,10 @@ public class AnnotationConstants {
   public static final String INLINE_ANNOTATION_FORMAT_CATEGORY = "InlineFormatCategory";
   public static final String INLINE_ANNOTATION_FORMULA_EXPRESSION = "InlineFormulaExpression";
   public static final String INLINE_ANNOTATION_CALCULATE_SUBTOTALS = "InlineCalcSubtotals";
+  public static final String INLINE_MEMBER_FORMAT_STRING = "InlineMemberFormatString";
+  public static final String LEVEL_FORMATTER_ATTRIBUTE = "formatter";
+  public static final String INLINE_MEMBER_FORMATTER_CLASS =
+    "org.pentaho.platform.plugin.action.mondrian.formatter.InlineMemberFormatter";
 
   public static final String CALCULATED_MEMBER_FORMAT_CATEGORY = "formatCategory";
   public static final String CALCULATED_MEMBER_FORMAT_SCALE = "formatScale";
@@ -41,6 +45,7 @@ public class AnnotationConstants {
 
   public static final String ANNOTATIONS_NODE_NAME = "Annotations";
   public static final String ANNOTATION_NODE_NAME = "Annotation";
+  public static final String ANNOTATION_NAME_ATTRIUBUTE = "name";
   public static final String CALCULATED_MEMBER_NODE_NAME = "CalculatedMember";
   public static final String MEASURE_NODE_NAME = "Measure";
 

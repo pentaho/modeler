@@ -153,4 +153,46 @@ public class UpdateAttributeTest {
       assertEquals( "Name is required", e.getMessage() );
     }
   }
+
+  @Test
+  public void testSetsInlineFormatString() throws Exception {
+    UpdateAttribute updateAttribute = new UpdateAttribute();
+    updateAttribute.setCube( "sales" );
+    updateAttribute.setDimension( "Time" );
+    updateAttribute.setHierarchy( "Time" );
+    updateAttribute.setLevel( "Month" );
+    updateAttribute.setName( "Month" );
+    updateAttribute.setFormatString( "yyyy" );
+    Document mondrianDoc = AnnotationUtil.getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
+    assertTrue( updateAttribute.apply( mondrianDoc ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute(
+      mondrianDoc, "Level", "Month", "formatter",
+      "org.pentaho.platform.plugin.action.mondrian.formatter.InlineMemberFormatter" ) );
+    assertTrue( AnnotationUtil.validateMondrianAnnotationValue(
+        mondrianDoc, "Level", "Month", "InlineMemberFormatString", "yyyy" ) );
+  }
+
+  @Test
+  public void testEmptyFormatStringRemovesInlineMemberFormatter() throws Exception {
+    UpdateAttribute updateAttribute = new UpdateAttribute();
+    updateAttribute.setCube( "sales" );
+    updateAttribute.setDimension( "Time" );
+    updateAttribute.setHierarchy( "Time" );
+    updateAttribute.setLevel( "Month" );
+    updateAttribute.setName( "Month" );
+    updateAttribute.setFormatString( "yyyy" );
+    Document mondrianDoc = AnnotationUtil.getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
+    assertTrue( updateAttribute.apply( mondrianDoc ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute(
+      mondrianDoc, "Level", "Month", "formatter",
+      "org.pentaho.platform.plugin.action.mondrian.formatter.InlineMemberFormatter" ) );
+    assertTrue( AnnotationUtil.validateMondrianAnnotationValue(
+      mondrianDoc, "Level", "Month", "InlineMemberFormatString", "yyyy" ) );
+    updateAttribute.setFormatString( "" );
+    assertTrue( updateAttribute.apply( mondrianDoc ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute(
+      mondrianDoc, "Level", "Month", "formatter", "" ) );
+    assertFalse( AnnotationUtil.validateMondrianAnnotationValue(
+      mondrianDoc, "Level", "Month", "InlineMemberFormatString", "yyyy" ) );
+  }
 }
