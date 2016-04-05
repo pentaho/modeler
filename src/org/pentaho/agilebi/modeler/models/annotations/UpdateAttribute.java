@@ -52,6 +52,9 @@ public class UpdateAttribute extends AnnotationType {
   public static final String LEVEL_NAME = "Level";
   public static final int LEVEL_ORDER = 4;
 
+  public static final String FORMAT_STRING_ID = "formatString";
+  public static final String FORMAT_STRING_NAME = "Format String";
+  public static final int FORMAT_STRING_ORDER = 5;
 
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
@@ -73,6 +76,10 @@ public class UpdateAttribute extends AnnotationType {
   @ModelProperty( id = LEVEL_ID, name = LEVEL_NAME, order = LEVEL_ORDER )
   protected String level;
 
+  @MetaStoreAttribute
+  @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
+  protected String formatString;
+
   @Override public boolean apply( final ModelerWorkspace workspace, final IMetaStore metaStore )
     throws ModelerException {
     return false;
@@ -80,7 +87,15 @@ public class UpdateAttribute extends AnnotationType {
 
   @Override public boolean apply( final Document schema ) throws ModelerException {
     MondrianSchemaHandler schemaHandler = new MondrianSchemaHandler( schema );
-    return schemaHandler.captionLevel( getCube(), getDimension(), getHierarchy(), getLevel(), getName() );
+    boolean captioned = schemaHandler.captionLevel( getCube(), getDimension(), getHierarchy(), getLevel(), getName() );
+    if ( captioned ) {
+      if ( !StringUtils.isBlank( getFormatString() ) ) {
+        return schemaHandler.formatLevel( getCube(), getDimension(), getHierarchy(), getLevel(), getFormatString() );
+      } else {
+        return schemaHandler.removeFormatting( getCube(), getDimension(), getHierarchy(), getLevel() );
+      }
+    }
+    return false;
   }
 
   @Override public void validate() throws ModelerException {
@@ -157,6 +172,14 @@ public class UpdateAttribute extends AnnotationType {
 
   public String getLevel() {
     return level;
+  }
+
+  public String getFormatString() {
+    return formatString;
+  }
+
+  public void setFormatString( final String formatString ) {
+    this.formatString = formatString;
   }
 }
 
