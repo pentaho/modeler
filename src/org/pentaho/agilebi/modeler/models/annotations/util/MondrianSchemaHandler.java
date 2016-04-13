@@ -603,6 +603,10 @@ public class MondrianSchemaHandler {
 
   public boolean formatLevel( final String cube, final String dimension, final String hierarchy, final String level,
                               final String formatString ) throws ModelerException {
+
+    // remove any existing format element first
+    removeFormatting( cube, dimension, hierarchy, level );
+
     Element levelNode = getLevelNode( cube, dimension, hierarchy, level );
     if ( levelNode != null ) {
       levelNode.setAttribute(
@@ -636,11 +640,13 @@ public class MondrianSchemaHandler {
         Node item = annotations.item( 0 );
         NodeList childNodes = item.getChildNodes();
         for ( int i = 0; i < childNodes.getLength(); i++ ) {
-          Element singleAnnotation = (Element) childNodes.item( i );
-          if ( AnnotationConstants.INLINE_MEMBER_FORMAT_STRING.equals(
-            singleAnnotation.getAttribute( AnnotationConstants.ANNOTATION_NAME_ATTRIUBUTE ) ) ) {
-            item.removeChild( singleAnnotation );
-            break;
+          if ( childNodes.item( i ) instanceof Element ) {
+            Element singleAnnotation = (Element) childNodes.item( i );
+            if ( AnnotationConstants.INLINE_MEMBER_FORMAT_STRING.equals(
+                singleAnnotation.getAttribute( AnnotationConstants.ANNOTATION_NAME_ATTRIUBUTE ) ) ) {
+              item.removeChild( singleAnnotation );
+              break;
+            }
           }
         }
       }

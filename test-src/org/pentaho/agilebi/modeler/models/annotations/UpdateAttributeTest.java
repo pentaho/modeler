@@ -173,6 +173,34 @@ public class UpdateAttributeTest {
   }
 
   @Test
+  public void testSetsInlineFormatString_OnlyOneExistsForMultipleApplies() throws Exception {
+    UpdateAttribute updateAttribute = new UpdateAttribute();
+    updateAttribute.setCube( "sales" );
+    updateAttribute.setDimension( "Time" );
+    updateAttribute.setHierarchy( "Time" );
+    updateAttribute.setLevel( "Month" );
+    updateAttribute.setName( "Month" );
+    updateAttribute.setFormatString( "yyyy" );
+    Document mondrianDoc = AnnotationUtil.getMondrianDoc( MONDRIAN_TEST_FILE_PATH );
+    assertTrue( updateAttribute.apply( mondrianDoc ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute(
+      mondrianDoc, "Level", "Month", "formatter",
+      "org.pentaho.platform.plugin.action.mondrian.formatter.InlineMemberFormatter" ) );
+    assertTrue( AnnotationUtil.validateMondrianAnnotationValue(
+      mondrianDoc, "Level", "Month", "InlineMemberFormatString", "yyyy" ) );
+
+    updateAttribute.setFormatString( "mm-dd-yyyy" );
+    assertTrue( updateAttribute.apply( mondrianDoc ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute(
+      mondrianDoc, "Level", "Month", "formatter",
+      "org.pentaho.platform.plugin.action.mondrian.formatter.InlineMemberFormatter" ) );
+    assertTrue( AnnotationUtil.validateMondrianAnnotationValue(
+      mondrianDoc, "Level", "Month", "InlineMemberFormatString", "mm-dd-yyyy" ) );
+
+  }
+
+
+  @Test
   public void testEmptyFormatStringRemovesInlineMemberFormatter() throws Exception {
     UpdateAttribute updateAttribute = new UpdateAttribute();
     updateAttribute.setCube( "sales" );
@@ -195,4 +223,5 @@ public class UpdateAttributeTest {
     assertFalse( AnnotationUtil.validateMondrianAnnotationValue(
       mondrianDoc, "Level", "Month", "InlineMemberFormatString", "yyyy" ) );
   }
+
 }
