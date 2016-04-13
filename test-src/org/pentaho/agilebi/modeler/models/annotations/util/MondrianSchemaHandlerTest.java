@@ -971,6 +971,21 @@ public class MondrianSchemaHandlerTest {
     Assert.assertFalse( mondrianSchemaHandler.updateMeasure( null, "bc_QUANTITYINSTOCK", measure ) );
   }
 
+  @Test
+  public void testRemovingFormattingForALevelThatDoesnotExistReturnsFalse() throws Exception {
+    Document schemaDocument = AnnotationUtil.getMondrianDoc( "test-res/updateattribute.mondrian.xml" );
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+    Assert.assertFalse( mondrianSchemaHandler.removeFormatting( "Sales", "Time", "Time", "Does Not Exist" ) );
+  }
+  @Test
+  public void testAddFormattingForALevelThatDoesnotExistReturnsFalse() throws Exception {
+    Document schemaDocument = AnnotationUtil.getMondrianDoc( "test-res/updateattribute.mondrian.xml" );
+
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+    Assert.assertFalse( mondrianSchemaHandler.formatLevel( "Sales", "Time", "Time", "Does Not Exist", "yy" ) );
+  }
+
   /**
    * Build mock calc member objects for testing
    *
