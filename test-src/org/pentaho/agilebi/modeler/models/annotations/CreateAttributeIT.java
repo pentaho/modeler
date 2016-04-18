@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -40,6 +40,7 @@ import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
 import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.TimeType;
+import org.pentaho.agilebi.modeler.models.annotations.data.InlineFormatAnnotation;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -803,6 +804,36 @@ public class CreateAttributeIT {
         assertEquals( "description.en_US", desc.getName() );
         assertEquals( productLine.getDescription(), desc.getValue() );
         assertTrue( prodLineLvl.isHidden() );
+        break;
+      }
+    }
+    assertTrue( foundDim );
+  }
+
+  @Test
+  public void testAttributeFormatString() throws Exception {
+    ModelerWorkspace wspace =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
+    wspace.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    wspace.getWorkspaceHelper().populateDomain( wspace );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setField( "PRODUCTLINE_OLAP" );
+    productLine.setFormatString( "mm-dd-yyyy" );
+
+    productLine.apply( wspace, metaStore );
+
+    boolean foundDim = false;
+    for ( OlapDimensionUsage dimUse : getCubes( wspace ).get( 0 ).getOlapDimensionUsages() ) {
+      if ( dimUse.getName().equals( productLine.getDimension() ) ) {
+        foundDim = true;
+        OlapHierarchyLevel prodLineLvl =
+          dimUse.getOlapDimension().getHierarchies().get( 0 ).getHierarchyLevels().get( 0 );
+        assertEquals( 1, prodLineLvl.getAnnotations().size() );
+        OlapAnnotation formatAnnotation = prodLineLvl.getAnnotations().get( 0 );
+        assertEquals( InlineFormatAnnotation.INLINE_MEMBER_FORMAT_STRING, formatAnnotation.getName() );
         break;
       }
     }

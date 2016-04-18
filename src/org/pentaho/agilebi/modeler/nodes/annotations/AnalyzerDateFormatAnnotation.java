@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes.annotations;
@@ -82,8 +82,7 @@ public class AnalyzerDateFormatAnnotation implements IAnalyzerDateFormatAnnotati
   }
 
   @Override
-  public void saveAnnotations( Object obj ) {
-    OlapHierarchyLevel level = (OlapHierarchyLevel) obj;
+  public void saveAnnotations( OlapHierarchyLevel level ) {
     List<OlapAnnotation> annotations = level.getAnnotations();
     // remove the current AnalyzerDateFormatAnnotation if it exists
     OlapAnnotation existingAnnotation = null;
