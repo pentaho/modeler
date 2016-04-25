@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -40,4 +40,12 @@ public @interface ModelProperty {
   int order() default Integer.MAX_VALUE;
 
   boolean hideUI() default false;
+
+  AppliesTo[] appliesTo() default { AppliesTo.String, AppliesTo.Time, AppliesTo.Numeric };
+
+  enum AppliesTo {
+    String,
+    Numeric,
+    Time;
+  }
 }

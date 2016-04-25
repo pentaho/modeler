@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -27,11 +27,13 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.models.annotations.data.InlineFormatAnnotation;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.olap.OlapDimension;
@@ -43,8 +45,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import static org.pentaho.di.core.Const.isEmpty;
 
 /**
  * @author Rowell Belen
@@ -75,45 +75,49 @@ public class CreateAttribute extends AnnotationType {
   public static final String ORDINAL_FIELD_NAME = "Ordinal Field";
   public static final int ORDINAL_FIELD_ORDER = 4;
 
+  public static final String FORMAT_STRING_ID = "formatString";
+  public static final String FORMAT_STRING_NAME = "Format String";
+  public static final int FORMAT_STRING_ORDER = 5;
+
   public static final String DESCRIPTION_ID = "description";
   public static final String DESCRIPTION_NAME = "Description";
-  public static final int DESCRIPTION_ORDER = 5;
+  public static final int DESCRIPTION_ORDER = 6;
 
   public static final String BUSINESS_GROUP_ID = "businessGroup";
   public static final String BUSINESS_GROUP_NAME = "Business Group";
-  public static final int BUSINESS_GROUP_ORDER = 6;
+  public static final int BUSINESS_GROUP_ORDER = 7;
 
   public static final String PARENT_ATTRIBUTE_ID = "parentAttribute";
   public static final String PARENT_ATTRIBUTE_NAME = "Parent Attribute";
-  public static final int PARENT_ATTRIBUTE_ORDER = 7;
+  public static final int PARENT_ATTRIBUTE_ORDER = 8;
 
   public static final String DIMENSION_ID = "dimension";
   public static final String DIMENSION_NAME = "Dimension";
-  public static final int DIMENSION_ORDER = 8;
+  public static final int DIMENSION_ORDER = 9;
 
   public static final String HIERARCHY_ID = "hierarchy";
   public static final String HIERARCHY_NAME = "Hierarchy";
-  public static final int HIERARCHY_ORDER = 9;
+  public static final int HIERARCHY_ORDER = 10;
 
   public static final String UNIQUE_ID = "unique";
   public static final String UNIQUE_NAME = "Is Unique";
-  public static final int UNIQUE_ORDER = 10;
+  public static final int UNIQUE_ORDER = 11;
 
   public static final String FIELD_ID = "field";
   public static final String FIELD_NAME = "Field";
-  public static final int FIELD_ORDER = 11;
+  public static final int FIELD_ORDER = 12;
 
   public static final String LEVEL_ID = "level";
   public static final String LEVEL_NAME = "Level";
-  public static final int LEVEL_ORDER = 12;
+  public static final int LEVEL_ORDER = 13;
 
   public static final String CUBE_ID = "cube";
   public static final String CUBE_NAME = "Cube";
-  public static final int CUBE_ORDER = 13;
+  public static final int CUBE_ORDER = 14;
 
   public static final String HIDDEN_ID = "hidden";
   public static final String HIDDEN_NAME = "Hidden";
-  public static final int HIDDEN_ORDER = 14;
+  public static final int HIDDEN_ORDER = 15;
 
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
@@ -138,6 +142,11 @@ public class CreateAttribute extends AnnotationType {
   @MetaStoreAttribute
   @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME, order = ORDINAL_FIELD_ORDER )
   private String ordinalField;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER,
+    appliesTo = { ModelProperty.AppliesTo.Numeric, ModelProperty.AppliesTo.Time } )
+  private String formatString;
 
   @MetaStoreAttribute
   @ModelProperty( id = PARENT_ATTRIBUTE_ID, name = PARENT_ATTRIBUTE_NAME, order = PARENT_ATTRIBUTE_ORDER )
@@ -224,6 +233,14 @@ public class CreateAttribute extends AnnotationType {
     this.ordinalField = ordinalField;
   }
 
+  public String getFormatString() {
+    return formatString;
+  }
+
+  public void setFormatString( final String formatString ) {
+    this.formatString = formatString;
+  }
+
   public String getParentAttribute() {
     return parentAttribute;
   }
@@ -301,9 +318,9 @@ public class CreateAttribute extends AnnotationType {
   public boolean apply(
       final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
     HierarchyMetaData existingHierarchy = locateHierarchy( workspace, getHierarchy() );
-    if ( existingHierarchy == null && !isEmpty( getParentAttribute() ) ) {
+    if ( existingHierarchy == null && !Const.isEmpty( getParentAttribute() ) ) {
       return false;
-    } else if ( existingHierarchy != null && isEmpty( getParentAttribute() ) ) {
+    } else if ( existingHierarchy != null && Const.isEmpty( getParentAttribute() ) ) {
       removeHierarchy( existingHierarchy );
       return createNewHierarchy( workspace, resolveField( workspace ) );
     } else if ( existingHierarchy == null ) {
@@ -340,7 +357,7 @@ public class CreateAttribute extends AnnotationType {
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) ) {
         for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
-          if ( hierarchyMetaData.getName().equals( isEmpty( name ) ? getDimension() : name ) ) {
+          if ( hierarchyMetaData.getName().equals( Const.isEmpty( name ) ? getDimension() : name ) ) {
             return hierarchyMetaData;
           }
         }
@@ -366,7 +383,7 @@ public class CreateAttribute extends AnnotationType {
 
   private boolean createNewHierarchy( final ModelerWorkspace workspace, final String column ) throws ModelerException {
     HierarchyMetaData hierarchyMetaData
-        = new HierarchyMetaData( isEmpty( getHierarchy() ) ? getDimension() : getHierarchy() );
+        = new HierarchyMetaData( Const.isEmpty( getHierarchy() ) ? getDimension() : getHierarchy() );
     for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
       if ( dimensionMetaData.getName().equals( getDimension() ) && !isAutoModeled( workspace ) ) {
         hierarchyMetaData.setParent( dimensionMetaData );
@@ -415,7 +432,7 @@ public class CreateAttribute extends AnnotationType {
     if ( getTimeType() != null ) {
       levelMetaData.setDataRole( TimeRole.fromMondrianAttributeValue( getTimeType().name() ) );
     }
-    if ( !isEmpty( getTimeFormat() ) ) {
+    if ( !Const.isEmpty( getTimeFormat() ) ) {
       levelMetaData.setTimeLevelFormat( getTimeFormat() );
     }
     LogicalColumn ordinalColumn = locateLogicalColumn( workspace, getOrdinalField() );
@@ -423,7 +440,7 @@ public class CreateAttribute extends AnnotationType {
       levelMetaData.setLogicalOrdinalColumn( ordinalColumn );
     }
     if ( getGeoType() != null ) {
-      if ( isEmpty( getParentAttribute() ) ) {
+      if ( Const.isEmpty( getParentAttribute() ) ) {
         removeAutoGeo( workspace );
       }
       GeoRole geoRole = workspace.getGeoContext().getGeoRoleByName( getGeoType().name() );
@@ -431,6 +448,10 @@ public class CreateAttribute extends AnnotationType {
     }
     if ( getDescription() != null ) {
       levelMetaData.setDescription( getDescription() );
+    }
+    if ( !StringUtils.isBlank( getFormatString() ) ) {
+      levelMetaData.getMemberAnnotations().put(
+        InlineFormatAnnotation.INLINE_MEMBER_FORMAT_STRING,  new InlineFormatAnnotation( getFormatString() ) );
     }
   }
 
@@ -523,12 +544,12 @@ public class CreateAttribute extends AnnotationType {
 
   @Override public String getSummary() {
     return BaseMessages
-        .getString( MSG_CLASS, summaryMsgKey(), getName(), isEmpty( getHierarchy() ) ? "" : " " + getHierarchy(),
+        .getString( MSG_CLASS, summaryMsgKey(), getName(), Const.isEmpty( getHierarchy() ) ? "" : " " + getHierarchy(),
             getParentAttribute() );
   }
 
   private String summaryMsgKey() {
-    if ( isEmpty( getParentAttribute() ) ) {
+    if ( Const.isEmpty( getParentAttribute() ) ) {
       return "Modeler.CreateAttribute.Summary.noparent";
     }
     return "Modeler.CreateAttribute.Summary";

@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.geo;
@@ -215,13 +215,12 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
   }
 
   @Override
-  public void saveAnnotations( Object obj ) {
+  public void saveAnnotations( OlapHierarchyLevel level ) {
 
     if ( this.getName() == null ) {
       return;
     }
 
-    OlapHierarchyLevel level = (OlapHierarchyLevel) obj;
     clearAnnotations( level );
 
     level.getAnnotations().add( new OlapAnnotation( GeoContext.ANNOTATION_DATA_ROLE, "Geography" ) );

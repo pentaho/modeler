@@ -12,12 +12,13 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes.annotations;
 
 import org.pentaho.agilebi.modeler.nodes.AbstractMetaDataModelNode;
+import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ import java.util.List;
 public interface IMemberAnnotation {
   String getName();
 
-  void saveAnnotations( Object obj );
+  void saveAnnotations( OlapHierarchyLevel obj );
 
   boolean isValid( AbstractMetaDataModelNode node );
 
