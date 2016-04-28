@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -62,7 +62,7 @@ public class CreateMeasure extends AnnotationType {
   public static final int AGGREGATE_TYPE_ORDER = 1;
 
   public static final String FORMAT_STRING_ID = "formatString";
-  public static final String FORMAT_STRING_NAME = "Format String";
+  public static final String FORMAT_STRING_NAME = "Format";
   public static final int FORMAT_STRING_ORDER = 2;
 
   public static final String DESCRIPTION_ID = "description";
