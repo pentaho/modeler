@@ -76,7 +76,7 @@ public class CreateAttribute extends AnnotationType {
   public static final int ORDINAL_FIELD_ORDER = 4;
 
   public static final String FORMAT_STRING_ID = "formatString";
-  public static final String FORMAT_STRING_NAME = "Format String";
+  public static final String FORMAT_STRING_NAME = "Format";
   public static final int FORMAT_STRING_ORDER = 5;
 
   public static final String DESCRIPTION_ID = "description";

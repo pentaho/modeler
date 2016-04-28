@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -45,7 +45,7 @@ public class ModelPropertyTest {
     createMeasure.setModelPropertyByName( "Measure Name", "A" );
     createMeasure.setModelPropertyByName( "Description", "B" );
     createMeasure.setModelPropertyByName( "Unique Members", "true" ); // auto converted
-    createMeasure.setModelPropertyByName( "Format String", "D" );
+    createMeasure.setModelPropertyByName( "Format", "D" );
     createMeasure.setModelPropertyByName( "Aggregation Type", AggregationType.COUNT );
     createMeasure.setModelPropertyByName( "Field Name", "F" );
     createMeasure.setModelPropertyByName( "Level Name", "G" );
