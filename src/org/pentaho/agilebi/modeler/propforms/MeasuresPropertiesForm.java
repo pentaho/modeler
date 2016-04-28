@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.propforms;
@@ -22,6 +22,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.agilebi.modeler.format.DataFormatHolder;
@@ -135,7 +136,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     }
 
     setDisplayName( t.getName() );
-    setFormat( t.getFormat() );
+    setFormat( StringUtils.isBlank( t.getFormat() ) ? "#" : t.getFormat() );
 
     AggregationType aggType = t.getDefaultAggregation();
     if ( t.getPossibleAggregations() != null ) {
