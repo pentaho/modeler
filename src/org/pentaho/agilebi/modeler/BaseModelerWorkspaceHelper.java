@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler;
@@ -51,7 +51,6 @@ import org.pentaho.metadata.model.LogicalRelationship;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.IConcept;
 import org.pentaho.metadata.model.concept.types.AggregationType;
-import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
 import org.pentaho.metadata.model.olap.OlapAnnotation;
 import org.pentaho.metadata.model.olap.OlapCube;
@@ -419,8 +418,6 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
     }
     if ( formatMask != null ) {
       lCol.setProperty( "mask", formatMask ); //$NON-NLS-1$
-    } else if ( lCol.getDataType() == DataType.NUMERIC ) {
-      lCol.setProperty( "mask", "#" );
     } else {
       // remove old mask that might have been set
       if ( lCol.getChildProperty( "mask" ) != null ) { //$NON-NLS-1$

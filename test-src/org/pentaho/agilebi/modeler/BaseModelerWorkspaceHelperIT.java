@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2013 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler;
@@ -116,11 +116,7 @@ public class BaseModelerWorkspaceHelperIT extends AbstractModelerTest {
       assertNotNull( orig );
       assertEquals( orig.getDefaultAggregation(), lCol.getAggregationType() );
       if ( orig.getFormat().equals( "NONE" ) ) {
-        if ( orig.getLogicalColumn().getDataType() == DataType.NUMERIC ) {
-          assertTrue( "#".equals( lCol.getProperty( "mask" ) ) );
-        } else {
-          assertTrue( lCol.getProperty( "mask" ) == null );
-        }
+        assertTrue( lCol.getProperty( "mask" ) == null );
       } else {
         assertEquals( orig.getFormat(), lCol.getProperty( "mask" ) );
       }
@@ -158,11 +154,7 @@ public class BaseModelerWorkspaceHelperIT extends AbstractModelerTest {
         assertNotNull( orig );
         assertEquals( orig.getDefaultAggregation(), lCol.getAggregationType() );
         if ( orig.getFormat().equals( "NONE" ) ) {
-          if ( orig.getLogicalColumn().getDataType() == DataType.NUMERIC ) {
-            assertTrue( ( (String) lCol.getProperty( "mask" ) ).indexOf( "#" ) > -1 );
-          } else {
-            assertTrue( lCol.getProperty( "mask" ) == null );
-          }
+          assertTrue( lCol.getProperty( "mask" ) == null );
         } else {
           assertEquals( orig.getFormat(), lCol.getProperty( "mask" ) );
         }
@@ -175,7 +167,7 @@ public class BaseModelerWorkspaceHelperIT extends AbstractModelerTest {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper( LOCALE );
     LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
     helper.autoModelFlat( workspace );
-    logicalModel.setProperty("olap_cubes", null);
+    logicalModel.setProperty( "olap_cubes", null );
     helper.populateDomain( workspace );
     List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
     OlapCalculatedMember olapCalculatedMember = new OlapCalculatedMember( "aName", "aDim", "aFormula", "aString", false );
@@ -190,7 +182,7 @@ public class BaseModelerWorkspaceHelperIT extends AbstractModelerTest {
     ModelerWorkspaceHelper helper = new ModelerWorkspaceHelper( LOCALE );
     LogicalModel logicalModel = workspace.getLogicalModel( ModelerPerspective.ANALYSIS );
     helper.autoModelFlat( workspace );
-    logicalModel.setProperty("olap_cubes", new ArrayList<OlapCube>());
+    logicalModel.setProperty( "olap_cubes", new ArrayList<OlapCube>() );
     helper.populateDomain( workspace );
     List<OlapCube> cubes = (List<OlapCube>) logicalModel.getProperty( "olap_cubes" );
     OlapCalculatedMember olapCalculatedMember = new OlapCalculatedMember( "aName", "aDim", "aFormula", "aString", false );

@@ -1,7 +1,7 @@
 /*!
 * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
 *
-* Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+* Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
 *
 * NOTICE: All information including source code contained herein is, and
 * remains the sole property of Pentaho and its licensors. The intellectual
@@ -181,7 +181,7 @@ public class UpdateMeasureTest {
     List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
     OlapMeasure measure = AnnotationUtil.getOlapMeasure( INIT_BUYPRICE_NAME, olapMeasures );
     assertNotNull( measure );
-    assertEquals( INIT_FORMAT, measure.getLogicalColumn().getProperty( "mask" ) );
+    assertNull( measure.getLogicalColumn().getProperty( "mask" ) );
 
     // Changing the aggregation type
     UpdateMeasure updateMeasure = new UpdateMeasure();
