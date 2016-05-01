@@ -22,7 +22,7 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
+
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.BaseAggregationMetaDataNode;
 import org.pentaho.agilebi.modeler.format.DataFormatHolder;
@@ -136,7 +136,7 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     }
 
     setDisplayName( t.getName() );
-    setFormat( StringUtils.isBlank( t.getFormat() ) ? "#" : t.getFormat() );
+    setFormat( ( t.getFormat() != null &&  t.getFormat().length() > 0 ) ? t.getFormat() : "#" );
 
     AggregationType aggType = t.getDefaultAggregation();
     if ( t.getPossibleAggregations() != null ) {
