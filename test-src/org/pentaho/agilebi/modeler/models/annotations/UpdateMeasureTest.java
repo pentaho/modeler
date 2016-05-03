@@ -181,7 +181,7 @@ public class UpdateMeasureTest {
     List<OlapMeasure> olapMeasures = cube.getOlapMeasures();
     OlapMeasure measure = AnnotationUtil.getOlapMeasure( INIT_BUYPRICE_NAME, olapMeasures );
     assertNotNull( measure );
-    assertNull( measure.getLogicalColumn().getProperty( "mask" ) );
+    assertEquals( "#", measure.getLogicalColumn().getProperty( "mask" ) );
 
     // Changing the aggregation type
     UpdateMeasure updateMeasure = new UpdateMeasure();
