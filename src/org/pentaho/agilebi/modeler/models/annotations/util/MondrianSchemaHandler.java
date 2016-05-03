@@ -262,8 +262,7 @@ public class MondrianSchemaHandler {
       }
 
       // Change format
-      Node formatNode = measureAttrs.getNamedItem( "formatString" );
-      formatNode.setNodeValue( measure.formatString );
+      measureNode.setAttribute( "formatString", measure.formatString );
 
       // Name Change
       if ( !StringUtils.isBlank( measure.name ) ) {
