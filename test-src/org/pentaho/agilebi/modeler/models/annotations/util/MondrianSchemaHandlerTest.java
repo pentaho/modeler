@@ -978,6 +978,17 @@ public class MondrianSchemaHandlerTest {
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
     Assert.assertFalse( mondrianSchemaHandler.removeFormatting( "Sales", "Time", "Time", "Does Not Exist" ) );
   }
+
+  @Test
+  public void testIsCalculatedMeasure() throws Exception {
+    Document schemaDocument = AnnotationUtil.getMondrianDoc( "test-res/products.with.calc.measures.mondrian.xml" );
+    MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schemaDocument );
+    Assert.assertTrue( mondrianSchemaHandler.isCalculatedMeasure( "products_38GA", "Test Calc Without Annotations" ) );
+    Assert.assertTrue( mondrianSchemaHandler.isCalculatedMeasure( "products_38GA", "[Measures].[Test Calc Without Annotations]" ) );
+    Assert.assertFalse( mondrianSchemaHandler.isCalculatedMeasure( "products_38GA", "bc_BUYPRICE" ) );
+    Assert.assertFalse( mondrianSchemaHandler.isCalculatedMeasure( "products_38GA", "[Measures].[bc_BUYPRICE]" ) );
+  }
+
   @Test
   public void testAddFormattingForALevelThatDoesnotExistReturnsFalse() throws Exception {
     Document schemaDocument = AnnotationUtil.getMondrianDoc( "test-res/updateattribute.mondrian.xml" );

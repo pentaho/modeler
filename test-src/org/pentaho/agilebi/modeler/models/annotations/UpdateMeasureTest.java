@@ -62,6 +62,7 @@ public class UpdateMeasureTest {
   private static String EXISTING_NAME = "QUANTITYINSTOCK";
 
   private static final String MONDRIAN_TEST_FILE_PATH = "test-res/products.mondrian.xml";
+  private static final String MONDRIAN_CALC_TEST_FILE_PATH = "test-res/products.with.calc.measures.mondrian.xml";
 
   private static String INIT_MEASURE_MONDRIAN_FORMULA = "[" + AnnotationType.MEASURES_DIMENSION + "].["
       + INIT_BUYPRICE_COLUMN + "]";
@@ -351,6 +352,37 @@ public class UpdateMeasureTest {
         INIT_BUYPRICE_COLUMN,
         AnnotationUtil.FORMATSTRING_ATTRIB,
         NEW_FORMAT ) );
+  }
+
+  @Test
+  public void testUpdatesNameAndFormatForCalculatedMeasures() throws Exception {
+    File mondrianSchemaXmlFile = new File( MONDRIAN_CALC_TEST_FILE_PATH );
+
+    Document mondrianSchemaXmlDoc =
+      DocumentBuilderFactory
+        .newInstance()
+        .newDocumentBuilder()
+        .parse( mondrianSchemaXmlFile );
+    // Changing the aggregation type
+    UpdateMeasure updateMeasure = new UpdateMeasure();
+    updateMeasure.setMeasure( "[Measures].[Test Calc Without Annotations]" );
+    updateMeasure.setCaption( "newName" );
+    updateMeasure.setFormat( NEW_FORMAT );
+    updateMeasure.setCube( "products_38GA" );
+    boolean isApplied = updateMeasure.apply( mondrianSchemaXmlDoc );
+    assertTrue( isApplied );
+
+    // Check change
+    assertTrue( mondrianSchemaXmlDoc.getElementsByTagName( AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME ).getLength()
+      > 0 );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      "Test Calc Without Annotations", AnnotationUtil.CAPTION_ATTRIB, "newName" ) );
+    assertTrue( AnnotationUtil.validateNodeAttribute( mondrianSchemaXmlDoc,
+      AnnotationUtil.CALCULATED_MEMBER_ELEMENT_NAME,
+      "Test Calc Without Annotations",
+      AnnotationUtil.FORMATSTRING_ATTRIB,
+      NEW_FORMAT ) );
   }
 
   @Test

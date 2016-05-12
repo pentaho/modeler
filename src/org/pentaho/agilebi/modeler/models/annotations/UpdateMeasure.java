@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -176,13 +176,16 @@ public class UpdateMeasure extends AnnotationType {
       mondrianAggregationType = MondrianModelExporter.convertToMondrian( aggregationType );
     }
     MondrianSchemaHandler mondrianSchemaHandler = new MondrianSchemaHandler( schema );
-
-    MondrianDef.Measure updatedMeasure = new MondrianDef.Measure();
-    updatedMeasure.name = name;
-    updatedMeasure.aggregator = mondrianAggregationType;
-    updatedMeasure.formatString = format;
-    updatedMeasure.caption = caption;
-    return mondrianSchemaHandler.updateMeasure( cube, measure, updatedMeasure );
+    if ( mondrianSchemaHandler.isCalculatedMeasure( cube, measure ) ) {
+      return mondrianSchemaHandler.updateCalculatedMeasure( cube, measure, caption, format );
+    } else {
+      MondrianDef.Measure updatedMeasure = new MondrianDef.Measure();
+      updatedMeasure.name = name;
+      updatedMeasure.aggregator = mondrianAggregationType;
+      updatedMeasure.formatString = format;
+      updatedMeasure.caption = caption;
+      return mondrianSchemaHandler.updateMeasure( cube, measure, updatedMeasure );
+    }
   }
 
   @Override
