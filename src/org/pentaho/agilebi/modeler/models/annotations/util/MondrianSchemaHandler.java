@@ -193,15 +193,7 @@ public class MondrianSchemaHandler {
       cubeXPathPart += "[@name=\"" + cubeName + "\"]";
     }
 
-    // try to resolve name attribute if formatted with dimension
-    if ( measureName.contains( "[" ) ) {
-      // assuming measure is immediate child of dimension
-      //  e.g. [Measures].[Quantity]
-      measureName = measureName.substring(
-        measureName.lastIndexOf( "[" ) + 1,
-        measureName.lastIndexOf( "]" )
-      );
-    }
+    measureName = getMeasureName( measureName );
 
     // use XPath to get measure node and remove it from it's parent
     try {
@@ -214,6 +206,46 @@ public class MondrianSchemaHandler {
     } catch ( Exception e ) {
       throw new ModelerException( e );
     }
+  }
+
+  private String getMeasureName( String measureFormula ) {
+    if ( measureFormula.contains( "[" ) ) {
+      measureFormula = measureFormula.substring(
+        measureFormula.lastIndexOf( "[" ) + 1,
+        measureFormula.lastIndexOf( "]" )
+      );
+    }
+    return measureFormula;
+  }
+
+  public boolean isCalculatedMeasure( String cubeName, String measureName ) throws ModelerException {
+    return getCalculatedMeasureElement( cubeName, measureName ) != null;
+  }
+
+  private Element getCalculatedMeasureElement( String cubeName, String measureName ) throws ModelerException {
+    measureName = getMeasureName( measureName );
+    try {
+      String xPathExpr =
+        String.format( "/Schema/Cube[@name=\"%s\"]/CalculatedMember[@name=\"%s\"]", cubeName, measureName );
+      XPathFactory xPathFactory = XPathFactory.newInstance();
+      XPath xPath = xPathFactory.newXPath();
+      XPathExpression xPathExpression = xPath.compile( xPathExpr );
+      return (Element) xPathExpression.evaluate( this.schema, XPathConstants.NODE );
+    } catch ( Exception e ) {
+      throw new ModelerException( e );
+    }
+  }
+
+  public boolean updateCalculatedMeasure(
+    final String cubeName, String measureName, final String caption, final String formatString ) throws ModelerException {
+    measureName = getMeasureName( measureName );
+    Element calculatedMeasureElement = getCalculatedMeasureElement( cubeName, measureName );
+    if ( calculatedMeasureElement != null ) {
+      calculatedMeasureElement.setAttribute( "caption", caption );
+      calculatedMeasureElement.setAttribute( "formatString", formatString );
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -231,15 +263,7 @@ public class MondrianSchemaHandler {
       );
     }
 
-    // try to resolve name attribute if formatted with dimension
-    if ( measureName.contains( "[" ) ) {
-      // assuming measure is immediate child of dimension
-      //  e.g. [Measures].[Quantity]
-      measureName = measureName.substring(
-        measureName.lastIndexOf( "[" ) + 1,
-        measureName.lastIndexOf( "]" )
-      );
-    }
+    measureName = getMeasureName( measureName );
 
     try {
       // Check to make sure there isn't a measure that already exists with the new name
