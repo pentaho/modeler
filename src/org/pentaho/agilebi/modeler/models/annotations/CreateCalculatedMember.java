@@ -29,6 +29,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.AnnotationConstants;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.olap.OlapCalculatedMember;
 import org.pentaho.metadata.model.olap.OlapCube;
@@ -112,8 +113,11 @@ public class CreateCalculatedMember extends AnnotationType {
   public static final String CALCULATED_MEMBER_AGGREGATOR_ATTRIB = "aggregator";
   public static final String CUBE_XPATH_EXPR = "/Schema/Cube";
 
+  public static final String MDI_GROUP = "CALC_MEASURE";
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
+  @Injection( name = MDI_GROUP + "_NAME", group = MDI_GROUP )
   private String name;
 
   @MetaStoreAttribute
@@ -122,12 +126,15 @@ public class CreateCalculatedMember extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
+  @Injection( name = MDI_GROUP + "_DESCRIPTION", group = MDI_GROUP )
   private String description;
 
   @MetaStoreAttribute
   @ModelProperty( id = FORMULA_ID, name = FORMULA_NAME, order = FORMULA_ORDER )
+  @Injection( name = MDI_GROUP + "_FORMULA", group = MDI_GROUP )
   private String formula;
 
+  // we don't currently support non-measure calc members so we aren't allowing metadata injection of the dimension yet
   @MetaStoreAttribute
   @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
   private String dimension;
@@ -146,6 +153,7 @@ public class CreateCalculatedMember extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
+  @Injection( name = MDI_GROUP + "_FORMAT_STRING", group = MDI_GROUP )
   private String formatString;
 
   @MetaStoreAttribute
@@ -162,10 +170,12 @@ public class CreateCalculatedMember extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = CALCULATE_SUBTOTALS_ID, name = CALCULATE_SUBTOTALS_NAME, order = CALCULATE_SUBTOTALS_ORDER )
+  @Injection( name = MDI_GROUP + "_CALCULATE_SUBTOTALS", group = MDI_GROUP )
   private boolean calculateSubtotals;
 
   @MetaStoreAttribute
   @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME, order = HIDDEN_ORDER )
+  @Injection( name = MDI_GROUP + "_IS_HIDDEN", group = MDI_GROUP )
   private boolean hidden;
 
   private transient boolean pdiContext;
@@ -242,11 +252,11 @@ public class CreateCalculatedMember extends AnnotationType {
     // add annotations to collection
     MondrianDef.Annotations annot = new MondrianDef.Annotations();
     annot.array = new MondrianDef.Annotation[] {
-        inline,
-        formatScaleAnnotation,
-        formatCategoryAnnotation,
-        formulaExpressionAnnotation,
-        calcSubtotalsAnnotation
+      inline,
+      formatScaleAnnotation,
+      formatCategoryAnnotation,
+      formulaExpressionAnnotation,
+      calcSubtotalsAnnotation
     };
 
     calculatedMember.annotations = annot;

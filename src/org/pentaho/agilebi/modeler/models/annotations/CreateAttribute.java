@@ -1,28 +1,29 @@
-/*!
- * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+/*! ******************************************************************************
  *
- * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
+ * Pentaho Community Edition Project: pentaho-modeler
  *
- * NOTICE: All information including source code contained herein is, and
- * remains the sole property of Pentaho and its licensors. The intellectual
- * and technical concepts contained herein are proprietary and confidential
- * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
- * patents, or patents in process, and are protected by trade secret and
- * copyright laws. The receipt or possession of this source code and/or related
- * information does not convey or imply any rights to reproduce, disclose or
- * distribute its contents, or to manufacture, use, or sell anything that it
- * may describe, in whole or in part. Any reproduction, modification, distribution,
- * or public display of this information without the express written authorization
- * from Pentaho is strictly prohibited and in violation of applicable laws and
- * international treaties. Access to the source code contained herein is strictly
- * prohibited to anyone except those individuals and entities who have executed
- * confidentiality and non-disclosure agreements or other agreements with Pentaho,
- * explicitly covering such access.
- */
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ *
+ * *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ********************************************************************************/
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
@@ -34,6 +35,7 @@ import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.olap.OlapDimension;
@@ -52,6 +54,7 @@ import java.util.logging.Logger;
 public class CreateAttribute extends AnnotationType {
 
   private static final long serialVersionUID = 5169827225345800226L;
+  public static final String MDI_GROUP = "ATTRIBUTE";
   private static transient Logger logger = Logger.getLogger( AnnotationType.class.getName() );
   private static final String DEFAULT_AUTO_GEO_DIMENSION_NAME = "Geography";
 
@@ -121,47 +124,58 @@ public class CreateAttribute extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
+  @Injection( name = MDI_GROUP + "_NAME", group = MDI_GROUP )
   private String name;
 
   @MetaStoreAttribute
   @ModelProperty( id = UNIQUE_ID, name = UNIQUE_NAME, order = UNIQUE_ORDER )
+  @Injection( name = MDI_GROUP + "_IS_UNIQUE", group = MDI_GROUP )
   private boolean unique;
 
   @MetaStoreAttribute
   @ModelProperty( id = TIME_FORMAT_ID, name = TIME_FORMAT_NAME, order = TIME_FORMAT_ORDER )
+  @Injection( name = MDI_GROUP + "_TIME_FORMAT", group = MDI_GROUP )
   private String timeFormat;
 
   @MetaStoreAttribute
   @ModelProperty( id = TIME_TYPE_ID, name = TIME_TYPE_NAME, order = TIME_TYPE_ORDER )
+  @Injection( name = MDI_GROUP + "_TIME_TYPE", group = MDI_GROUP )
   private ModelAnnotation.TimeType timeType;
 
   @MetaStoreAttribute
   @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
+  @Injection( name = MDI_GROUP + "_GEO_TYPE", group = MDI_GROUP )
   private ModelAnnotation.GeoType geoType;
 
   @MetaStoreAttribute
   @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME, order = ORDINAL_FIELD_ORDER )
+  @Injection( name = MDI_GROUP + "_ORDINAL_FIELD", group = MDI_GROUP )
   private String ordinalField;
 
   @MetaStoreAttribute
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER,
     appliesTo = { ModelProperty.AppliesTo.Numeric, ModelProperty.AppliesTo.Time } )
+  @Injection( name = MDI_GROUP + "_FORMAT_STRING", group = MDI_GROUP )
   private String formatString;
 
   @MetaStoreAttribute
   @ModelProperty( id = PARENT_ATTRIBUTE_ID, name = PARENT_ATTRIBUTE_NAME, order = PARENT_ATTRIBUTE_ORDER )
+  @Injection( name = MDI_GROUP + "_PARENT", group = MDI_GROUP )
   private String parentAttribute;
 
   @MetaStoreAttribute
   @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
+  @Injection( name = MDI_GROUP + "_DIMENSION", group = MDI_GROUP )
   private String dimension;
 
   @MetaStoreAttribute
   @ModelProperty( id = HIERARCHY_ID, name = HIERARCHY_NAME, order = HIERARCHY_ORDER )
+  @Injection( name = MDI_GROUP + "_HIERARCHY", group = MDI_GROUP )
   private String hierarchy;
 
   @MetaStoreAttribute
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
+  @Injection( name = MDI_GROUP + "_DESCRIPTION", group = MDI_GROUP )
   private String description;
 
   @MetaStoreAttribute
@@ -171,6 +185,7 @@ public class CreateAttribute extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true )
+  @Injection( name = MDI_GROUP + "_FIELD", group = MDI_GROUP )
   private String field;
 
   @MetaStoreAttribute
@@ -183,6 +198,7 @@ public class CreateAttribute extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME, order = HIDDEN_ORDER )
+  @Injection( name = MDI_GROUP + "_IS_HIDDEN", group = MDI_GROUP )
   private boolean hidden;
 
   public String getName() {
@@ -583,5 +599,46 @@ public class CreateAttribute extends AnnotationType {
       throw new ModelerException( BaseMessages
           .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.PARENT_PROVIDED_MISSING_DIMENSION" ) );
     }
+  }
+
+  /**
+   * CreateAttribute objects are considered logically equal if the name, dimension, and hierarchy are equal to
+   * the equivalent fields in the object under comparison
+   * @param obj
+   * @return
+   */
+  @Override
+  public boolean equalsLogically( AnnotationType obj ) {
+    if ( obj == null || obj.getClass() != getClass() ) {
+      return false;
+    }
+    CreateAttribute that = (CreateAttribute) obj;
+
+    EqualsBuilder eq = new EqualsBuilder();
+
+    // by default just see if the name is the same
+    String thatName = that.getName() == null ? null : that.getName().toLowerCase();
+    String myName = getName() == null ? null : getName().toLowerCase();
+    eq.append( myName, thatName );
+
+    String thatDimension = that.getDimension() == null ? null : that.getDimension().toLowerCase();
+    String myDimension = getDimension() == null ? null : getDimension().toLowerCase();
+    eq.append( myDimension, thatDimension );
+
+    String thatHierarchy = that.getHierarchy() == null ? null : that.getHierarchy().toLowerCase();
+    String myHierarchy = getHierarchy() == null ? null : getHierarchy().toLowerCase();
+
+    // fall back to default hierarchy name equal to dimension name
+    if ( thatHierarchy == null ) {
+      thatHierarchy = thatDimension;
+    }
+    if ( myHierarchy == null ) {
+      myHierarchy = myDimension;
+    }
+
+    eq.append( myHierarchy, thatHierarchy );
+
+    return eq.isEquals();
+
   }
 }
