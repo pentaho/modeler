@@ -33,7 +33,9 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.SqlPhysicalColumn;
@@ -43,7 +45,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
 
-import static org.pentaho.metadata.automodel.PhysicalTableImporter.*;
+//import static org.pentaho.metadata.automodel..*;
 
 
 /**
@@ -93,24 +95,31 @@ public class CreateMeasure extends AnnotationType {
   public static final String HIDDEN_NAME = "Hidden";
   public static final int HIDDEN_ORDER = 9;
 
+  public static final String MDI_GROUP = "MEASURE";
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
+  @Injection( name = MDI_GROUP + "_NAME", group = MDI_GROUP )
   private String name;
 
   @MetaStoreAttribute
   @ModelProperty( id = AGGREGATE_TYPE_ID, name = AGGREGATE_TYPE_NAME, order = AGGREGATE_TYPE_ORDER )
+  @Injection( name = MDI_GROUP + "_AGGREGATION_TYPE", group = MDI_GROUP )
   private AggregationType aggregateType = AggregationType.SUM;
 
   @MetaStoreAttribute
   @ModelProperty( id = FORMAT_STRING_ID, name = FORMAT_STRING_NAME, order = FORMAT_STRING_ORDER )
+  @Injection( name = MDI_GROUP + "_FORMAT_STRING", group = MDI_GROUP )
   private String formatString;
 
   @MetaStoreAttribute
   @ModelProperty( id = DESCRIPTION_ID, name = DESCRIPTION_NAME, order = DESCRIPTION_ORDER )
+  @Injection( name = MDI_GROUP + "_DESCRIPTION", group = MDI_GROUP )
   private String description;
 
   @MetaStoreAttribute
   @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true  )
+  @Injection( name = MDI_GROUP + "_FIELD", group = MDI_GROUP )
   private String field;
 
   @MetaStoreAttribute
@@ -132,6 +141,7 @@ public class CreateMeasure extends AnnotationType {
 
   @MetaStoreAttribute
   @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME, order = HIDDEN_ORDER )
+  @Injection( name = MDI_GROUP + "_IS_HIDDEN", group = MDI_GROUP )
   private boolean hidden;
 
   public String getName() {
@@ -223,7 +233,7 @@ public class CreateMeasure extends AnnotationType {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
       for ( LogicalColumn logicalColumn : logicalColumns ) {
         if ( columnMatches( workspace, resolveField( workspace ), logicalColumn )
-            || columnMatches( workspace, beautifyName( resolveField( workspace ) ), logicalColumn ) ) {
+            || columnMatches( workspace, PhysicalTableImporter.beautifyName( resolveField( workspace ) ), logicalColumn ) ) {
           String targetColumn =
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
@@ -326,7 +336,7 @@ public class CreateMeasure extends AnnotationType {
 
   private boolean measureNameEquals( String column, MeasureMetaData measure ) {
     return measure.getName().equalsIgnoreCase( column )
-        || measure.getName().equalsIgnoreCase( beautifyName( column ) );
+        || measure.getName().equalsIgnoreCase( PhysicalTableImporter.beautifyName( column ) );
   }
 
   private void removeMeasure( final ModelerWorkspace workspace, final String measureName ) {

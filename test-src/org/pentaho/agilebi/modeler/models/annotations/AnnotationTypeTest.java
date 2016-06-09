@@ -1,3 +1,25 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Community Edition Project: pentaho-modeler
+ *
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ *
+ * *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ********************************************************************************/
+
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import static org.junit.Assert.assertEquals;
@@ -5,13 +27,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
 
 import org.junit.Test;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+
+import org.mockito.Mockito;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
@@ -227,5 +249,50 @@ public class AnnotationTypeTest {
 
     createAttribute.setModelPropertyValueById( CreateAttribute.GEO_TYPE_ID, "someInvalidValue" );
     verify( createAttribute, times( 1 ) ).getLogger(); // warning!
+  }
+
+  @Test
+  public void testEqualsLogically() throws Exception {
+    AnnotationType left = mock( AnnotationType.class, Mockito.CALLS_REAL_METHODS );
+
+    doReturn( "Hello, my name is..." ).when( left ).getName();
+
+    AnnotationType right = mock( AnnotationType.class );
+    doReturn( "Hello, my name is..." ).when( right ).getName();
+
+    assertTrue( left.equalsLogically( right ) );
+  }
+  @Test
+  public void testEqualsLogically_caseInsensitive() throws Exception {
+    AnnotationType left = mock( AnnotationType.class, Mockito.CALLS_REAL_METHODS );
+
+    doReturn( "Hello, my name is..." ).when( left ).getName();
+
+    AnnotationType right = mock( AnnotationType.class );
+    doReturn( "hello, my name IS..." ).when( right ).getName();
+
+    assertTrue( left.equalsLogically( right ) );
+  }
+  @Test
+  public void testEqualsLogically_fails() throws Exception {
+    AnnotationType left = mock( AnnotationType.class, Mockito.CALLS_REAL_METHODS );
+
+    doReturn( "Hello, my name is..." ).when( left ).getName();
+
+    AnnotationType right = mock( AnnotationType.class );
+    doReturn( "Slim Shady" ).when( right ).getName();
+
+    assertFalse( left.equalsLogically( right ) );
+  }
+
+  @Test
+  public void testEqualsLogically_failsDifferentTypes() throws Exception {
+    AnnotationType left = mock( AnnotationType.class, Mockito.CALLS_REAL_METHODS );
+
+    doReturn( "Hello, my name is..." ).when( left ).getName();
+
+    AnnotationType right = new CreateMeasure();
+
+    assertFalse( left.equalsLogically( right ) );
   }
 }

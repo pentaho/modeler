@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -37,6 +37,7 @@ import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -64,16 +65,21 @@ public class LinkDimension extends AnnotationType {
   public static final String FIELD_NAME = "Field Name";
   public static final int FIELD_ORDER = 2;
 
+  public static final String MDI_GROUP = "LINK_DIMENSION";
+
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
+  @Injection( name = MDI_GROUP + "_DIMENSION_NAME", group = MDI_GROUP )
   private String name;
 
   @MetaStoreAttribute
   @ModelProperty( id = SHARED_DIMENSION_ID, name = SHARED_DIMENSION_NAME, order = SHARED_DIMENSION_ORDER )
+  @Injection( name = MDI_GROUP + "_SHARED_DIMENSION_NAME", group = MDI_GROUP )
   private String sharedDimension;
 
   @MetaStoreAttribute
   @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true )
+  @Injection( name = MDI_GROUP + "_FIELD", group = MDI_GROUP )
   private String field;
 
   private Map<ApplyStatus, List<ModelAnnotation>> sharedApplyStatus;
