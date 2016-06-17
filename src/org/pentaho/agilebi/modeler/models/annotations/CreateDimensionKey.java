@@ -25,6 +25,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
@@ -46,16 +47,20 @@ public class CreateDimensionKey extends AnnotationType {
   public static final String FIELD_NAME = "Field";
   public static final int FIELD_ORDER = 2;
 
+  public static final String MDI_GROUP = "DIMENSION_KEY";
+
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER, hideUI = true )
   @MetaStoreAttribute
   private String name;
 
   @MetaStoreAttribute
   @ModelProperty( id = DIMENSION_ID, name = DIMENSION_NAME, order = DIMENSION_ORDER )
+  @Injection( name = MDI_GROUP + "_DIMENSION", group = MDI_GROUP )
   private String dimension;
 
   @ModelProperty( id = FIELD_ID, name = FIELD_NAME, order = FIELD_ORDER, hideUI = true )
   @MetaStoreAttribute
+  @Injection( name = MDI_GROUP + "_FIELD", group = MDI_GROUP )
   private String field;
 
   public String getDimension() {
