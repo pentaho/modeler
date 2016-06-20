@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2014 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -45,6 +45,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -296,5 +297,82 @@ public class ModelAnnotationGroupIT {
       IOUtils.toString( getClass().getResourceAsStream( "resources/annotated.mondrian.xml" ) ).replace( "\r|\n", "" ),
       actual.replace( "\r|\n", "" )
     );
+  }
+
+  @Test
+  public void testAddInjectedAnnotations_allNew() throws Exception {
+
+    List<CreateMeasure> injectedMeasures = new ArrayList<>();
+    CreateMeasure cm = buildMeasureAnnotation( "sales", "sales for our company", "sales", AggregationType.SUM, "$ #,###.00", false );
+
+    injectedMeasures.add( cm );
+
+    // these are the `templated` annotations. in this case we won't have any
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+
+    group.addInjectedAnnotations( injectedMeasures );
+
+    assertEquals( injectedMeasures.size(), group.size() );
+    assertEquals( cm, group.get( 0 ).getAnnotation() );
+
+  }
+
+  @Test
+  public void testAddInjectedAnnotations_updatingTemplatedAnnotation() throws Exception {
+    List<CreateMeasure> injectedMeasures = new ArrayList<>();
+    CreateMeasure cm = buildMeasureAnnotation( "sales", "sales for our company", "sales", null, "$ #,###.00", false );
+    CreateMeasure cmOther = buildMeasureAnnotation( "xxx", "xxx", "xxx", AggregationType.AVERAGE, "0", false );
+
+    injectedMeasures.add( cm );
+    injectedMeasures.add( cmOther );
+
+    CreateMeasure templatedCm = buildMeasureAnnotation( "sales", null, "FIELD", AggregationType.AVERAGE, null, true );
+
+    // these are the `templated` annotations.
+    ModelAnnotationGroup group = new ModelAnnotationGroup();
+    group.add( new ModelAnnotation( templatedCm ) );
+
+    // measures are unique based on name, so the one we are injecting should match the name of templated one
+    group.addInjectedAnnotations( injectedMeasures );
+
+    // should only be 2 items in the group, not 3
+    assertEquals( 2, group.size() );
+
+    CreateMeasure cmInjected = (CreateMeasure) ( group.get( 0 ).getAnnotation() );
+
+    // the original item in the group should be logically equal to the first injected measure
+    assertTrue( cm.equalsLogically( cmInjected ) );
+    // but, they should not be the same object or equal to each other
+
+    assertNotEquals( cm, cmInjected );
+
+    // verify the non-null properties of cm have been set on the original object
+    assertEquals( cm.getName(), cmInjected.getName() );
+    assertEquals( cm.getDescription(), cmInjected.getDescription() );
+    assertEquals( cm.getField(), cmInjected.getField() );
+    assertEquals( cm.getFormatString(), cmInjected.getFormatString() );
+    assertEquals( cm.isHidden(), cmInjected.isHidden() );
+
+    // verify any props that were null (not set) in the injecting annotation did not override templated values
+    assertEquals( AggregationType.AVERAGE, cmInjected.getAggregateType() );
+  }
+
+  private CreateMeasure buildMeasureAnnotation(
+    String name,
+    String description,
+    String field,
+    AggregationType aggType,
+    String formatString,
+    boolean isHidden ) {
+
+    CreateMeasure cm = new CreateMeasure();
+    cm.setName( name );
+    cm.setDescription( description );
+    cm.setField( field );
+    cm.setAggregateType( aggType );
+    cm.setFormatString( formatString );
+    cm.setHidden( isHidden );
+    return cm;
+
   }
 }
