@@ -22,6 +22,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
@@ -37,6 +38,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 //import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.*;
 
@@ -253,5 +255,43 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
       statusMap.put( applyStatus, new ArrayList<ModelAnnotation>() );
     }
     return statusMap;
+  }
+
+  public void addInjectedAnnotations( List<? extends AnnotationType> annotations ) {
+
+    for ( AnnotationType annotationType : annotations ) {
+      ModelAnnotation existingAnnotation = findExistingAnnotation( annotationType );
+      ModelAnnotation ma = existingAnnotation == null ? new ModelAnnotation() : existingAnnotation;
+
+      ma.setName( annotationType.getName() );
+
+      if ( existingAnnotation == null ) {
+        ma.setAnnotation( annotationType );
+
+        add( ma );
+      } else {
+        // set each of the specific values that are injected onto the existing annotation
+        List<ModelProperty> modelProperties = annotationType.getModelProperties();
+        modelProperties.stream().forEach( modelProperty -> {
+          try {
+            Object value = annotationType.getModelPropertyValueById( modelProperty.id() );
+            if ( value != null ) {
+              ma.getAnnotation().setModelPropertyValueById( modelProperty.id(), value );
+            }
+          } catch ( Exception e ) {
+            // this shouldn't happen since we are iterating over the properties
+          }
+        } );
+
+      }
+    }
+  }
+
+  protected ModelAnnotation findExistingAnnotation( AnnotationType annotation ) {
+    List<ModelAnnotation> matches = stream()
+      .filter( ma -> ma.getAnnotation().equalsLogically( annotation ) )
+      .collect( Collectors.toList() );
+
+    return CollectionUtils.isNotEmpty( matches ) ? matches.get( 0 ) : null;
   }
 }
