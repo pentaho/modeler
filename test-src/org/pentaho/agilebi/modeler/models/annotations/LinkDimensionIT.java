@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -168,7 +168,7 @@ public class LinkDimensionIT {
       "Dimension Product Dim is linked to shared dimension shared product group\n"
       + "    Unable to apply annotation: Description participates in hierarchy with parent Product\n"
       + "    Unable to apply annotation: Product is top level in hierarchy\n"
-      + "    Successfully applied annotation: id is key for dimension Shared Product dim",
+      + "    Successfully applied annotation: Id is key for dimension Shared Product dim",
       linkDimension.getSummary() );
   }
 

@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2015 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2016 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -87,7 +87,8 @@ public class CreateDimensionKeyTest {
   @Test
   public void testSummary() throws Exception {
     CreateDimensionKey createKey = new CreateDimensionKey();
-    createKey.setName( "field1" );
+    createKey.setName( "name" );
+    createKey.setField( "field1" );
     createKey.setDimension( "dim1" );
     LanguageChoice.getInstance().setDefaultLocale( Locale.US );
     final String summary = createKey.getSummary();

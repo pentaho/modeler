@@ -118,7 +118,7 @@ public class CreateDimensionKey extends AnnotationType {
 
   @Override
   public String getSummary() {
-    return BaseMessages.getString( MSG_CLASS, "Modeler.CreateDimensionKey.Summary", getName(), getDimension() );
+    return BaseMessages.getString( MSG_CLASS, "Modeler.CreateDimensionKey.Summary", getField(), getDimension() );
   }
 
   @Override
