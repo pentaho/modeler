@@ -89,7 +89,7 @@ public class GwtModelerDebugServlet extends RemoteServiceServlet implements IGwt
   public Domain loadDomain( String id ) throws Exception {
     XmiParser parser = new XmiParser();
     try {
-      return parser.parseXmi( new FileInputStream( new File( "test-res/example_olap.xmi" ) ) );
+      return parser.parseXmi( new FileInputStream( new File( "src/test/resources/example_olap.xmi" ) ) );
     } catch ( Exception e ) {
       e.printStackTrace();
       throw e;
