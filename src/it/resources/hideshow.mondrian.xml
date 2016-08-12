@@ -1,0 +1,44 @@
+<Schema name="hideshow">
+  <Dimension name="Product Dimension">
+    <Hierarchy hasAll="true">
+      <Level name="Product Category" uniqueMembers="false" column="PRODUCTCATEGORY" type="String" visible="true"/>
+      <Level name="Product Name" uniqueMembers="false" column="PRODUCTNAME" type="String"/>
+    </Hierarchy>
+    <Hierarchy name="By Line" hasAll="true">
+      <Level name="Product Line" uniqueMembers="false" column="PRODUCTLINE" type="String" visible="false"/>
+      <Level name="Product Name2" uniqueMembers="false" column="PRODUCTNAME" type="String"/>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="products">
+    <Dimension name="Customer" foreignKey="customer_id">
+      <Hierarchy hasAll="true" allMemberName="All Gender" primaryKey="customer_id">
+        <Table name="customer"/>
+        <Level name="Gender2" column="gender" uniqueMembers="true"/>
+        <Level name="Age2" column="age" uniqueMembers="true"/>
+      </Hierarchy>
+      <Hierarchy hasAll="true" allMemberName="All Gender" primaryKey="customer_id" name="cust">
+        <Table name="customer"/>
+        <Level name="Gender" column="gender" uniqueMembers="true"/>
+        <Level name="Age" column="age" uniqueMembers="true"/>
+      </Hierarchy>
+    </Dimension>
+    <Dimension name="Location">
+      <Hierarchy name="">
+        <Table name="geo"/>
+        <Level name="State" column="state"/>
+        <Level name="City" column="city"/>
+      </Hierarchy>
+    </Dimension>
+    <DimensionUsage name="Product" source="Product Dimension"/>
+    <Measure name="Price" column="BUYPRICE" aggregator="sum" formatString="&#x23;"/>
+    <Measure name="visibleMeasure" column="QUANTITYINSTOCK" aggregator="sum" formatString="&#x23;" visible="true"/>
+    <Measure name="hiddenMeasure" column="QUANTITYINSTOCK" aggregator="sum" formatString="&#x23;" visible="false"/>
+    <CalculatedMember
+        name="Profit"
+        dimension="Measures">
+      <Formula>[Measures].[Store Price] - [Measures].[Store Cost]</Formula>
+      <CalculatedMemberProperty name="FORMAT_STRING" value="$#,##0.00"/>
+    </CalculatedMember>
+
+  </Cube>
+</Schema>

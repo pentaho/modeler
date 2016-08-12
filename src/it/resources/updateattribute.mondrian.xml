@@ -1,0 +1,35 @@
+<Schema name="sales">
+  <Dimension name="Product">
+    <Hierarchy hasAll="true" primaryKey="product_id">
+      <Table name="products" schema="public"/>
+      <Level name="Product Line" uniqueMembers="false" column="productline" type="String">
+      </Level>
+      <Level name="Product Code" uniqueMembers="false" column="productcode" type="String">
+      </Level>
+    </Hierarchy>
+    <Hierarchy name="two" hasAll="true" primaryKey="product_id">
+      <Table name="products" schema="public"/>
+      <Level name="Product Line" uniqueMembers="false" column="line" type="String">
+      </Level>
+      <Level name="Product Code" uniqueMembers="false" column="code" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="sales">
+    <Table name="sales" schema="public"/>
+    <Dimension name="Time">
+      <Hierarchy hasAll="true" primaryKey="product_id">
+        <Table name="time" schema="public"/>
+        <Level name="Year" uniqueMembers="false" column="year" type="String">
+        </Level>
+        <Level name="Quarter" uniqueMembers="false" column="quarter" type="String">
+        </Level>
+        <Level name="Month" uniqueMembers="false" column="month" type="String">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <DimensionUsage name="Product" source="Product" foreignKey="product_id"/>
+    <Measure name="PRICEEACH" column="priceeach" aggregator="sum" formatString="&#x23;"/>
+    <Measure name="Quantity ordered" column="quantityordered" aggregator="sum" formatString="&#x23;"/>
+  </Cube>
+</Schema>

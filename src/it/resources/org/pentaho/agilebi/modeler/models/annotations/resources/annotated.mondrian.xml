@@ -1,0 +1,17 @@
+<Schema name="sales">
+  <Dimension name="Product">
+    <Hierarchy hasAll="true" primaryKey="product_id">
+      <Table name="products" schema="public"/>
+      <Level column="productline" name="Product Line" type="String" uniqueMembers="false">
+      </Level>
+      <Level column="productcode" name="Product Code" type="String" uniqueMembers="false">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="sales">
+    <Table name="sales" schema="public"/>
+    <DimensionUsage foreignKey="product_id" name="Product" source="Product"/>
+    <Measure aggregator="sum" column="priceeach" formatString="##.##" name="Price Each"/>
+    <Measure aggregator="avg" column="quantityordered" formatString="#" name="Quantity Ordered"/>
+  </Cube>
+</Schema>

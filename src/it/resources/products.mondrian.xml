@@ -1,0 +1,120 @@
+<Schema name="products_38GA">
+  <Dimension name="BUYPRICE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="BUYPRICE" uniqueMembers="false" column="BUYPRICE" type="Numeric">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="MSRP">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="MSRP" uniqueMembers="false" column="MSRP" type="Numeric">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTCODE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTCODE" uniqueMembers="false" column="PRODUCTCODE" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTDESCRIPTION">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTDESCRIPTION" uniqueMembers="false" column="PRODUCTDESCRIPTION" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTLINE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTLINE" uniqueMembers="false" column="PRODUCTLINE" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTNAME">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTNAME" uniqueMembers="false" column="PRODUCTNAME" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTSCALE">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTSCALE" uniqueMembers="false" column="PRODUCTSCALE" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="PRODUCTVENDOR">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="PRODUCTVENDOR" uniqueMembers="false" column="PRODUCTVENDOR" type="String">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Dimension name="QUANTITYINSTOCK">
+    <Hierarchy hasAll="true">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+      <Level name="QUANTITYINSTOCK" uniqueMembers="false" column="QUANTITYINSTOCK" type="Numeric">
+      </Level>
+    </Hierarchy>
+  </Dimension>
+  <Cube name="products_38GA">
+    <View alias="FACT">
+        <SQL dialect="generic">
+         <![CDATA[select * from products]]>
+        </SQL>
+    </View>
+    <DimensionUsage name="BUYPRICE" source="BUYPRICE"/>
+    <DimensionUsage name="MSRP" source="MSRP"/>
+    <DimensionUsage name="PRODUCTCODE" source="PRODUCTCODE"/>
+    <DimensionUsage name="PRODUCTDESCRIPTION" source="PRODUCTDESCRIPTION"/>
+    <DimensionUsage name="PRODUCTLINE" source="PRODUCTLINE"/>
+    <DimensionUsage name="PRODUCTNAME" source="PRODUCTNAME"/>
+    <DimensionUsage name="PRODUCTSCALE" source="PRODUCTSCALE"/>
+    <DimensionUsage name="PRODUCTVENDOR" source="PRODUCTVENDOR"/>
+    <DimensionUsage name="QUANTITYINSTOCK" source="QUANTITYINSTOCK"/>
+    <Measure name="bc_BUYPRICE" column="BUYPRICE" aggregator="sum" formatString="&#x23;"/>
+    <Measure name="bc_MSRP" column="MSRP" aggregator="sum" formatString="&#x23;"/>
+    <Measure name="bc_QUANTITYINSTOCK" column="QUANTITYINSTOCK" aggregator="sum" formatString="&#x23;"/>
+  </Cube>
+</Schema>
