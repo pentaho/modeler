@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<window id="root" title="" xmlns="http://www.pentaho.org/there.is.only.xul"
+        height="600" width="800" onload="dialog.init()"
+        xmlns:pen="http://www.pentaho.org/2008/xul">
+
+  <dialog width="600" height="480" id="publish" title="${Spoon.Perspectives.AgileBi.Publish.Title}"
+          buttons="accept,cancel"
+          ondialogaccept="dialog.okClick()"
+          ondialogcancel="dialog.cancelClick()"
+      >
+
+    <vbox flex="1" id="mainVBox">
+
+      <label value="${Spoon.Perspectives.AgileBi.Publish.Filename}"/>
+      <textbox id="filename" padding="1" spacing="1"/>
+
+      <!-- groupbox id="serverGroupBox" height="50" padding="1" spacing="1">
+        <caption label="${Spoon.Perspectives.AgileBi.Publish.Server}"/>
+      </groupbox -->
+      <groupbox id="locationGroupBox" flex="1" padding="1" spacing="1">
+        <caption label="${Spoon.Perspectives.AgileBi.Publish.Location}"/>
+        <vbox id="serverControls" padding="1" spacing="1" flex="1">
+          <hbox padding="1" spacing="1">
+            <label value="${Spoon.Perspectives.AgileBi.Publish.Server}:" flex="1"/>
+            <button image="images/edit.png" onclick="dialog.editBiServers()" padding="1" spacing="1"/>
+            <button image="images/Add.png" onclick="dialog.addBiServer()"/>
+            <button id="removeButton" image="images/remove_disabled.png" onclick="dialog.removeBiServer()"
+                    disabled="true"/>
+          </hbox>
+
+          <listbox flex="1" id="serverlist" label="" padding="1" spacing="1"/>
+
+          <label value="${Spoon.Perspectives.AgileBi.Publish.Folder}"/>
+          <hbox>
+            <textbox id="folderTextbox" flex="1"/>
+            <button label="Browse..." onclick="dialog.browseServer()"/>
+          </hbox>
+
+          <!--<vbox id="folderControls" flex="1" padding="1" spacing="1">
+            <hbox id="currentFolderControls" padding="1" spacing="1">
+              <menulist flex="1" id="folderparents" label="" padding="1" spacing="1" pen:binding="name" oncommand="dialog.folderChange()">
+                  <menupopup >
+                        <menuitem label="dummy" />
+                    </menupopup>
+                </menulist>
+                  <button image="images/up.png" onclick="dialog.folderUpClick()" padding="1" spacing="1"/>
+              </hbox>
+              <tree id="filesBox" flex="1" editable="false" hiddenrootnode="true" onselect="dialog.fileClick()" command="dialog.fileDblClick()" >
+                    <treecols>
+                      <treecol flex="1" label="" primary="true" pen:binding="name" pen:childrenbinding="children"
+                        pen:imagebinding="image" editable="false"/>
+                    </treecols>
+                    <treechildren>
+                      <treeitem container="true" open="true">
+                        <treerow>
+                          <treecell label="" />
+                        </treerow>
+                        <treechildren></treechildren>
+                      </treeitem>
+                    </treechildren>
+                  </tree>
+            <label id="publishpath" value=""/>
+
+              </vbox>-->
+        </vbox>
+      </groupbox>
+      <groupbox id="datasourceGroupBox" padding="1" spacing="1">
+        <caption label="${Spoon.Perspectives.AgileBi.Publish.DataSource}"/>
+        <label id="datasourceLabel" value="${Spoon.Perspectives.AgileBi.Publish.Status}"/>
+        <checkbox id="publishradio" label="Publish" selected="true"/>
+      </groupbox>
+    </vbox>
+
+
+    <dialog width="600" height="400" id="biserverEditDialog"
+            title="${Spoon.Perspectives.AgileBi.EditBIServerConfigsDialog.Title}"
+            buttons="accept,cancel"
+            ondialogaccept="biserverDialog.okClick()"
+            ondialogcancel="biserverDialog.cancelClick()"
+        >
+
+      <vbox flex="1" id="mainVBox">
+        <hbox flex="1">
+          <vbox flex="1" padding="1" spacing="1">
+            <hbox>
+              <label value="${Spoon.Perspectives.AgileBi.EditBIServerConfigsDialog.ListTitle}"/>
+              <spacer flex="1"/>
+              <button image="images/Add.png" onclick="dialog.addBiServer()"/>
+              <button id="removeButton" image="images/remove_disabled.png" onclick="dialog.removeBiServer()"
+                      disabled="true"/>
+            </hbox>
+            <listbox id="serverListBox" onselect="dialog.serverClick()" flex="1" seltype="single" pen:binding="name">
+            </listbox>
+          </vbox>
+          <vbox flex="2" padding="1" spacing="1">
+            <groupbox padding="1" spacing="1">
+              <caption label="${Spoon.Perspectives.AgileBi.EditBIServerConfigsDialog.Settings}"/>
+              <label flex="1" value="${Spoon.Perspectives.AgileBi.EditBIServerConfigDialog.Server.Name}"/>
+              <textbox flex="1" id="name" oninput="updateButtonStatus()" onchange="updateButtonStatus()"
+                       onkeyup="updateButtonStatus()"/>
+              <label flex="1" value="${Spoon.Perspectives.AgileBi.EditBIServerConfigDialog.Server.URL}"/>
+              <textbox flex="1" id="url"/>
+              <label flex="1" value="${Spoon.Perspectives.AgileBi.EditBIServerConfigDialog.Server.UserId}"/>
+              <textbox flex="1" id="userid"/>
+              <label flex="1" value="${Spoon.Perspectives.AgileBi.EditBIServerConfigDialog.Server.Password}"/>
+              <textbox flex="1" id="password" type="password"/>
+              <label flex="1" value="${Spoon.Perspectives.AgileBi.EditBIServerConfigDialog.Server.PublishPassword}"/>
+              <textbox flex="1" id="publishpassword" type="password"/>
+              <hbox>
+                <spacer flex="1"/>
+                <!-- RE-ENABLE after RC-1 <button id="testButton" width="100" label="${Spoon.Perspectives.AgileBi.EditBIServerConfigsDialog.Test}" onclick="dialog.testServerConnection()"/> -->
+                <button id="saveButton" width="100" label="${Spoon.Perspectives.AgileBi.EditBIServerConfigsDialog.Save}"
+                        onclick="dialog.saveServerConnection()"/>
+              </hbox>
+            </groupbox>
+          </vbox>
+        </hbox>
+      </vbox>
+
+    </dialog>
+
+  </dialog>
+
+
+</window>

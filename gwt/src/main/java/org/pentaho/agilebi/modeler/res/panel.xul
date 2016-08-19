@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<window id="label-test" title="Flow Test"
+        xmlns="http://www.pentaho.org/there.is.only.xul"
+        height="600"
+        width="850" onload="modeler.init()" xmlns:pen="http://www.pentaho.org/2008/xul">
+
+  <pen:include src="columnResolver.xul"/>
+
+  <vbox flex="1" id="mainVBox" spacing="0" padding="0">
+
+    <toolbar mode="full">
+      <toolbaritem>
+        <label value="${new}:"/>
+      </toolbaritem>
+      <toolbaritem>
+        <menulist id="visualizationlist" label="">
+          <menupopup>
+            <menuitem label="Dummy Visualization"/>
+          </menupopup>
+        </menulist>
+      </toolbaritem>
+
+      <toolbarbutton label="${go}" id="exploreButton" onclick="modeler.visualize()"/>
+      <toolbarbutton image="images/publish.png" id="publishButton" onclick="modeler.publish()"
+                     tooltiptext="${publish}"/>
+
+    </toolbar>
+    <hbox flex="1">
+
+      <editpanel width="250">
+        <caption label="${data}"/>
+
+        <toolbar mode="icons">
+          <toolbaritem>
+            <label value="${available}:"/>
+          </toolbaritem>
+          <toolbarspacer flex="1"/>
+          <toolbarbutton id="refreshButton" onclick="modeler.refreshFields()" image="images/refresh.png"
+                         tooltiptext="${refresh_table_metadata}"/>
+          <toolbarbutton id="autoPopulateButton" image="images/autogen_model.png"
+                         onclick="modeler.showAutopopulatePrompt()" tooltiptext="${autopopulate_model}"/>
+          <toolbarbutton id="addField" image="images/insert_to_model.png" onclick="modeler.addField()"
+                         tooltiptext="${add}"/>
+        </toolbar>
+
+        <tree id="fieldList" flex="1" editable="false" hiddenrootnode="true" preserveselection="true"
+              ondrag="modeler.onModelTreeDrag()" pen:drageffect="copy" pen:dropiconsvisible="false">
+          <treecols>
+            <treecol flex="1" label="" primary="true"
+                     pen:binding="name" pen:childrenbinding="children"
+                     pen:imagebinding="image" editable="false"
+                     pen:expandedbinding="expanded"/>
+          </treecols>
+          <treechildren>
+            <treeitem container="true" open="true">
+              <treerow>
+                <treecell label=""/>
+              </treerow>
+              <treechildren></treechildren>
+            </treeitem>
+          </treechildren>
+
+        </tree>
+
+      </editpanel>
+      <deck id="modelDeck" flex="1">
+
+        <tabbox id="modelTabbox" flex="1">
+          <tabs>
+            <tab id="analysisTab" label="${analysisTabLabel}" onclick="modeler.setModelerPerspective('ANALYSIS')"></tab>
+            <tab id="reportingTab" label="${reportingTabLabel}"
+                 onclick="modeler.setModelerPerspective('REPORTING')"></tab>
+          </tabs>
+          <tabpanels>
+            <tabpanel id="analysisTabPanel">
+              <pen:include src="analysisModel.xul"/>
+            </tabpanel>
+            <tabpanel id="reportingTabPanel">
+              <pen:include src="reportingModel.xul"/>
+            </tabpanel>
+          </tabpanels>
+        </tabbox>
+
+        <editpanel flex="1">
+          <caption label="${model}"/>
+          <hbox id="modelPanel" flex="1" spacing="0" padding="0">
+
+          </hbox>
+        </editpanel>
+      </deck>
+
+      <editpanel type="closable" width="250" id="propertiesPanel">
+        <caption label="${properties}"/>
+        <deck id="propertiesdeck" flex="1">
+          <vbox/>
+          <pen:include src="measuresForm.xul"/>
+          <pen:include src="cubeForms.xul" ignoreroot="true"/>
+          <pen:include src="reportingForms.xul" ignoreroot="true"/>
+        </deck>
+      </editpanel>
+
+    </hbox>
+  </vbox>
+
+</window>

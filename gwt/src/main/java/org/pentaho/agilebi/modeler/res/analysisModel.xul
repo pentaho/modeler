@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<vbox
+    xmlns="http://www.pentaho.org/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul"
+    id="analyzerModelPanel" flex="1" spacing="0" padding="0">
+
+  <toolbar id="schema-toolbar" mode="icons">
+    <toolbarbutton id="expandAllBtn" image="images/ExpandAll.png" onclick="modeler.expandAll()" disabled="false"
+                   tooltiptext="${expand_all}"/>
+    <toolbarbutton id="collapseAllBtn" image="images/CollapseAll.png" onclick="modeler.collapseAll()" disabled="false"
+                   tooltiptext="${collapse_all}"/>
+    <toolbarspacer flex="1"/>
+    <toolbarbutton id="measureBtn" image="images/sm_measure_icon.png" onclick="modeler.showNewMeasureDialog()"
+                   disabled="true" tooltiptext="${add_measure}"/>
+    <toolbarbutton id="dimensionBtn" image="images/sm_dim_icon.png" onclick="modeler.showNewDimensionDialog()"
+                   disabled="true" tooltiptext="${add_dimension}"/>
+    <toolbarbutton id="hierarchyBtn" image="images/sm_hierarchy_icon.png" onclick="modeler.showNewHierarchyDialog()"
+                   disabled="true" tooltiptext="${add_hiearchy}"/>
+    <toolbarbutton id="levelBtn" image="images/sm_level_icon.png" onclick="modeler.showNewLevelDialog()" disabled="true"
+                   tooltiptext="${add_level}"/>
+    <toolbarbutton id="memberPropBtn" image="images/sm_member_prop_icon.png" onclick="modeler.showNewMemberPropDialog()"
+                   disabled="true" tooltiptext="${add_member_prop}"/>
+    <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveFieldDown()" tooltiptext="${move_field_down}"/>
+    <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveFieldUp()" tooltiptext="${move_field_up}"/>
+    <toolbarbutton image="images/remove.png" onclick="modeler.removeField()" tooltiptext="${remove_field}"/>
+    <toolbarbutton id="clearModel" image="images/clear_model.png" onclick="modeler.clearFields()"
+                   tooltiptext="${clearFields}"/>
+  </toolbar>
+  <tree id="dimensionTree" flex="1" editable="false"
+        ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+        ondrop="modeler.onModelTreeDrop()" hiddenrootnode="false" preserveselection="true"
+        pen:dropiconsvisible="false">
+    <treecols>
+      <treecol flex="1" label="" primary="true"
+               pen:binding="displayName" pen:childrenbinding="children"
+               pen:imagebinding="image" editable="false"
+               pen:disabledbinding="editingDisabled"
+               pen:tooltipbinding="validationMessagesString"
+               pen:expandedbinding="expanded"/>
+    </treecols>
+    <treechildren>
+      <treeitem container="true" open="true">
+        <treerow>
+          <treecell label=""/>
+        </treerow>
+        <treechildren></treechildren>
+      </treeitem>
+    </treechildren>
+  </tree>
+</vbox>
