@@ -8,8 +8,9 @@
     <version>1.2.6</version>
   </parent>
   <groupId>pentaho</groupId>
-  <artifactId>pentaho-modeler</artifactId>
+  <artifactId>pentaho-modeler-parent</artifactId>
   <version>7.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>Pentaho common modeler project.</description>
   <url>http://www.pentaho.com</url>
@@ -18,6 +19,10 @@
     <developerConnection>scm:git:git@github.com:pentaho/${project.artifactId}.git</developerConnection>
     <url>scm:git:git@github.com:pentaho/${project.artifactId}.git</url>
   </scm>
+  <modules>
+    <module>core</module>
+    <module>gwt</module>
+  </modules>
   <properties>
     <dependency.pentaho-metadata.revision>7.0-SNAPSHOT</dependency.pentaho-metadata.revision>
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
@@ -29,11 +34,13 @@
     <dependency.pentaho-database.revision>7.0-SNAPSHOT</dependency.pentaho-database.revision>
     <dependency.pentaho-platform.revision>7.0-SNAPSHOT</dependency.pentaho-platform.revision>
     <dependency.pentaho-gwt-widgets.revision>7.0-SNAPSHOT</dependency.pentaho-gwt-widgets.revision>
+    <dependency.pentaho-simple-jndi.revision>1.0.0</dependency.pentaho-simple-jndi.revision>
+    <dependency.mondrian.revision>3.13-SNAPSHOT</dependency.mondrian.revision>
+    <dependency.pentaho-gwt-widgets.revision>7.0-SNAPSHOT</dependency.pentaho-gwt-widgets.revision>
     <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
     <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
     <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
-    <dependency.pentaho-simple-jndi.revision>1.0.0</dependency.pentaho-simple-jndi.revision>
-    <dependency.mondrian.revision>3.13-SNAPSHOT</dependency.mondrian.revision>
+    <dependency.pentaho-xul.revision>7.0-SNAPSHOT</dependency.pentaho-xul.revision>
   </properties>
   <dependencies>
     <dependency>
@@ -113,10 +120,9 @@
       <version>${dependency.pentaho-metadata.revision}</version>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>${dependency.mockito.revision}</version>
-      <scope>test</scope>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-xul-gwt</artifactId>
+      <version>${dependency.pentaho-xul.revision}</version>
     </dependency>
     <dependency>
       <groupId>GWT-FX</groupId>
@@ -152,6 +158,23 @@
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
       <version>${dependency.gwt.revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-gwt-widgets</artifactId>
+      <version>${dependency.pentaho-gwt-widgets.revision}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-gwt-widgets</artifactId>
+      <version>${dependency.pentaho-gwt-widgets.revision}</version>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>${dependency.mockito.revision}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -194,7 +217,6 @@
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <version>2.7.2</version>
-      <scope>test</scope>
       <exclusions>
         <exclusion>
           <groupId>xalan</groupId>
@@ -281,56 +303,4 @@
       <version>138</version>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-       <groupId>org.codehaus.mojo</groupId>
-       <artifactId>gwt-maven-plugin</artifactId>
-       <version>2.5.1</version>
-       <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-dependencies</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/pentaho-modeler-${project.version}/pentaho-modeler/lib</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptor>src/assembly/bin.xml</descriptor>
-          <finalName>pentaho-modeler</finalName>
-          <appendAssemblyId>false</appendAssemblyId>
-        </configuration>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-     </plugins>
-   </build>
 </project>
