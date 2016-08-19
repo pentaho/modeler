@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<vbox
+    xmlns="http://www.pentaho.org/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul"
+    id="reportingModelPanel" flex="1" spacing="0" padding="0">
+
+  <toolbar id="categories-toolbar" mode="icons">
+    <toolbarbutton id="expandAllBtn" image="images/ExpandAll.png" onclick="modeler.expandRelationalAll()"
+                   disabled="false" tooltiptext="${expand_all}"/>
+    <toolbarbutton id="collapseAllBtn" image="images/CollapseAll.png" onclick="modeler.collapseRelationalAll()"
+                   disabled="false" tooltiptext="${collapse_all}"/>
+    <toolbarspacer flex="1"/>
+    <toolbarbutton id="categoryBtn" image="images/sm_folder_icon.png" onclick="modeler.showNewCategoryDialog()"
+                   tooltiptext="${new_category}"/>
+    <toolbarbutton id="fieldBtn" image="images/fields.png" onclick="modeler.showNewFieldDialog()" disabled="true"
+                   tooltiptext="${new_field}"/>
+    <toolbarbutton image="images/16x16_down.png" onclick="modeler.moveRelationalFieldDown()"
+                   tooltiptext="${move_field_down}"/>
+    <toolbarbutton image="images/16x16_Up.png" onclick="modeler.moveRelationalFieldUp()"
+                   tooltiptext="${move_field_up}"/>
+    <toolbarbutton image="images/remove.png" onclick="modeler.removeRelationalNode()" tooltiptext="${remove_field}"/>
+    <toolbarbutton id="clearRelationalModel" image="images/clear_model.png" onclick="modeler.clearRelationalFields()"
+                   tooltiptext="${clearFields}"/>
+  </toolbar>
+  <tree id="categoriesTree" flex="1" editable="false" hiddenrootnode="false" preserveselection="true"
+        ondrag="modeler.onModelTreeDrag()" pen:drageffect="move" pen:dropvetoer="modeler.checkDropLocation()"
+        ondrop="modeler.onModelTreeDrop()" pen:dropiconsvisible="false">
+
+    <treecols>
+      <treecol flex="1" label="" primary="true"
+               pen:binding="displayName" pen:childrenbinding="children"
+               pen:imagebinding="image" editable="false"
+               pen:disabledbinding="editingDisabled"
+               pen:tooltipbinding="validationMessagesString"
+               pen:expandedbinding="expanded"/>
+    </treecols>
+    <treechildren>
+      <treeitem container="true" open="true">
+        <treerow>
+          <treecell label=""/>
+        </treerow>
+        <treechildren></treechildren>
+      </treeitem>
+    </treechildren>
+  </tree>
+</vbox>

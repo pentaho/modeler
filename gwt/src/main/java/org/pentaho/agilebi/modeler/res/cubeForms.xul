@@ -1,0 +1,310 @@
+<?xml version="1.0"?>
+<vbox xmlns="http://www.pentaho.org/there.is.only.xul"
+      xmlns:pen="http://www.pentaho.org/2008/xul">
+
+  <vbox id="dimensionprops">
+    <vbox bgcolor="#FFFFCC" id="dimension_message">
+      <grid spacing="3">
+        <columns>
+          <column/>
+          <column flex="1"/>
+
+        </columns>
+        <rows>
+          <row flex="1">
+            <image src="images/warning.png"/>
+            <label id="dimension_message_label" flex="1" multiline="true"
+                   value="This is a test to see how a warning message will appear."/>
+          </row>
+
+        </rows>
+      </grid>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button id="dimension_message_btn" label="${more}"
+                onclick="modeler.showValidationMessagesDialog()" visible="false"/>
+      </hbox>
+    </vbox>
+    <groupbox>
+      <!--
+        <caption label="${details}"/>
+      -->
+      <label value="${dimension_name}:"/>
+      <textbox id="dimension_name"/>
+
+      <hbox flex="1">
+        <checkbox id="is_time_dimension"/>
+        <label value="${is_time_dimension}"/>
+        <spacer flex="1"/>
+      </hbox>
+    </groupbox>
+
+  </vbox>
+
+  <vbox id="mainprops">
+    <vbox bgcolor="#FFFFCC" id="main_message">
+      <grid spacing="3">
+        <columns>
+          <column/>
+          <column flex="1"/>
+
+        </columns>
+        <rows>
+          <row>
+            <image src="images/warning.png"/>
+            <label id="mainnode_message_label" flex="1" multiline="true"
+                   value="${undefined_ds}"/>
+          </row>
+        </rows>
+      </grid>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button id="mainnode_message_btn" label="${more}"
+                onclick="modeler.showValidationMessagesDialog()" visible="false"/>
+      </hbox>
+    </vbox>
+    <groupbox>
+      <!--
+        <caption label="${details}"/>
+      -->
+      <label value="${model_name}:"/>
+      <textbox id="main_name"/>
+      <label value="${source}:"/>
+      <label id="source_name" value="some source"/>
+      <hbox>
+        <button id="datasource_button" label="Select" onclick="modeler.editDataSource()"
+                tooltiptext="${select_edit_ds}"/>
+        <spacer flex="1"/>
+      </hbox>
+    </groupbox>
+
+  </vbox>
+
+
+  <vbox id="hierarchyprops">
+    <vbox bgcolor="#FFFFCC" id="hierarchy_message">
+      <grid spacing="3">
+        <columns>
+          <column/>
+          <column flex="1"/>
+
+        </columns>
+        <rows>
+          <row flex="1">
+            <image src="images/warning.png"/>
+            <label id="hierarchy_message_label" flex="1" multiline="true"
+                   value="This is a test to see how a warning message will appear."/>
+          </row>
+
+        </rows>
+      </grid>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button id="hierarchy_message_btn" label="${more}"
+                onclick="modeler.showValidationMessagesDialog()" visible="false"/>
+      </hbox>
+    </vbox>
+    <groupbox>
+      <!--
+        <caption label="${details}"/>
+      -->
+      <label value="${hierarchy_name}:"/>
+      <textbox id="hierarchy_name"/>
+    </groupbox>
+
+  </vbox>
+
+  <vbox id="genericProps">
+    <vbox bgcolor="#FFFFCC" id="generic_message">
+      <grid spacing="3">
+        <columns>
+          <column/>
+          <column flex="1"/>
+
+        </columns>
+        <rows>
+          <row flex="1">
+            <image src="images/warning.png"/>
+            <label id="generic_message_label" flex="1" multiline="true"
+                   value="This is a test to see how a warning message will appear."/>
+          </row>
+
+        </rows>
+      </grid>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button id="generic_message_btn" label="${more}"
+                onclick="modeler.showValidationMessagesDialog()" visible="false"/>
+      </hbox>
+    </vbox>
+  </vbox>
+
+  <vbox id="levelprops">
+    <vbox bgcolor="#FFFFCC" id="level_message">
+      <grid spacing="3">
+        <columns>
+          <column/>
+          <column flex="1"/>
+        </columns>
+        <rows>
+          <row flex="1">
+            <image src="images/warning.png"/>
+            <label id="level_message_label" flex="1" multiline="true"
+                   value="This is a test to see how a warning message will appear."/>
+          </row>
+        </rows>
+      </grid>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button
+            id="fixLevelColumnsBtn"
+            label="${missing_columns}"
+            onclick="modeler.resolveMissingColumn()"
+            visible="true"
+            />
+        <spacer flex="1"/>
+        <button
+            id="level_message_btn"
+            label="${more}"
+            onclick="modeler.showValidationMessagesDialog()"
+            visible="false"
+            />
+      </hbox>
+    </vbox>
+    <groupbox>
+      <label value="${level_name}:"/>
+      <textbox id="level_name"/>
+      <hbox flex="1">
+        <checkbox id="has_unique_members"/>
+        <label value="${has_unique_members}"/>
+        <spacer flex="1"/>
+      </hbox>
+
+      <label value="${source_column}:" flex="1"/>
+      <hbox flex="1">
+        <vbox flex="1">
+          <label id="level_source_col" value="source column"/>
+        </vbox>
+        <vbox>
+          <button
+              image="images/edit.png"
+              onclick="modeler.changeColumn()"
+              />
+        </vbox>
+        <vbox>
+          <button
+              image="images/blank_button.png"
+              width="16"
+              />
+        </vbox>
+      </hbox>
+
+      <label value="${ordinal_column}:" flex="1"/>
+      <hbox flex="1">
+        <vbox flex="1">
+          <label id="level_ordinal_col" value=""/>
+        </vbox>
+        <vbox>
+          <button
+              image="images/edit.png"
+              onclick="modeler.changeOrdinalColumn()"
+              />
+        </vbox>
+        <vbox>
+          <button
+              id="clear_ordinal_column"
+              image="images/remove.png"
+              onclick="modeler.clearOrdinalColumn()"
+              />
+        </vbox>
+      </hbox>
+
+      <vbox id="geo_level_elements">
+        <label id="level_geo_role_label" value="${geo_role}:"/>
+        <menulist id="level_geo_role" pen:binding="displayName">
+          <menupopup/>
+        </menulist>
+      </vbox>
+
+      <vbox id="time_level_elements">
+        <label id="time_level_type_label" value="${time_level_type}:"/>
+        <menulist id="time_level_type" pen:binding="name">
+          <menupopup/>
+        </menulist>
+
+        <hbox>
+          <label id="time_level_format_label" value="${time_format}:"/>
+          <button
+              image="images/help_link2.png"
+              tooltiptext="${time_format_help_tooltip}"
+              onclick="modeler.showHelp('${time_format_help_url}')"
+              />
+        </hbox>
+        <menulist id="time_level_format" editable="true">
+          <menupopup>
+            <menuitem label=""/>
+            <menuitem label="yyyy"/>
+            <menuitem label="q"/>
+            <menuitem label="M"/>
+            <menuitem label="w"/>
+            <menuitem label="yyyy-MM-dd"/>
+          </menupopup>
+        </menulist>
+      </vbox>
+    </groupbox>
+
+  </vbox>
+
+  <vbox id="memberprops">
+    <vbox bgcolor="#FFFFCC" id="memberprops_message">
+      <grid spacing="3">
+        <columns>
+          <column/>
+          <column flex="1"/>
+
+        </columns>
+        <rows>
+          <row flex="1">
+            <image src="images/warning.png"/>
+            <label id="memberprops_message_label" flex="1" multiline="true"
+                   value="This is a test to see how a warning message will appear."/>
+          </row>
+
+        </rows>
+      </grid>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button id="fixMemberPropsColumnsBtn" label="${missing_columns}"
+                onclick="modeler.resolveMissingColumn()" visible="true"/>
+        <spacer flex="1"/>
+        <button id="memberprops_message_btn" label="${more}"
+                onclick="modeler.showValidationMessagesDialog()" visible="false"/>
+      </hbox>
+    </vbox>
+
+
+    <groupbox>
+      <caption label="${source_column}"/>
+      <hbox flex="1">
+        <label id="memberprops_source_col" value="" flex="1"/>
+        <button image="images/edit.png"
+                onclick="modeler.changeColumn()"/>
+
+      </hbox>
+    </groupbox>
+
+    <spacer height="5"/>
+
+    <groupbox>
+      <caption label="${details}"/>
+      <label value="${memberprops_name}:"/>
+      <textbox id="memberprops_name"/>
+
+      <label value="${node_description}:"/>
+      <textbox id="memberprops_desc" multiline="true" height="70"/>
+
+    </groupbox>
+  </vbox>
+
+
+</vbox>
