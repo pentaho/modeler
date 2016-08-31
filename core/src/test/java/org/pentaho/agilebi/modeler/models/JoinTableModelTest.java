@@ -35,6 +35,7 @@ public class JoinTableModelTest {
     assertFalse( model1.equals( model2 ) );
     model2.setName( "model1" );
     assertTrue( model1.equals( model2 ) );
+    assertFalse( model1.equals( "model1" ) );
   }
 
   @Test
