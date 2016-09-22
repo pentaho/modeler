@@ -503,6 +503,9 @@ public class CreateAttribute extends AnnotationType {
       LevelMetaData existingLevel = locateLevel( workspace, column );
       LevelMetaData ordinalAutoLevel = locateLevel( workspace, getOrdinalField() );
       LogicalColumn logicalColumn = locateLogicalColumn( workspace, column );
+      if ( logicalColumn == null ) {
+        return false;
+      }
       LevelMetaData levelMetaData = new LevelMetaData( existingHierarchy, getName() );
       existingHierarchy.add( parentIndex + 1, levelMetaData );
       fillLevelProperties( workspace, logicalColumn, levelMetaData );

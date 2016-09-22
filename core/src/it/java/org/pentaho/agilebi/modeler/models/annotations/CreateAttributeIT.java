@@ -286,17 +286,21 @@ public class CreateAttributeIT {
 
     CreateAttribute productCode = new CreateAttribute();
     productCode.setName( "Product Code" );
-    productCode.setDimension( "Productz" );
+    productCode.setDimension( "Product" );
     productCode.setField( "PRODUCTCODE_OLAP-1" );
     boolean applied = productCode.apply( model, metaStore );
     assertFalse( "This should not be applied", applied );
 
+    productCode.setField( "PRODUCTCODE_OLAP" );
+    assertTrue( productCode.apply( model, metaStore ) );
+
     CreateAttribute productDescription = new CreateAttribute();
     productDescription.setName( "Product Description" );
     productDescription.setDimension( "Product" );
-    productDescription.setField( "PRODUCTCODE_OLAP" );
+    productDescription.setField( "PRODUCTDESCRIPTION_NOTTHERE" );
+    productDescription.setParentAttribute( "Product Code" );
     applied = productDescription.apply( model, metaStore );
-    assertTrue( "This should be applied", applied );
+    assertFalse( "This should not be applied", applied );
 
   }
 

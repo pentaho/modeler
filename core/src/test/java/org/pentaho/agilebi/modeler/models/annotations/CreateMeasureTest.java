@@ -452,6 +452,23 @@ public class CreateMeasureTest {
   }
 
   @Test
+  public void testInvalidColumn() throws Exception {
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateMeasure sales = new CreateMeasure();
+    sales.setName( "Buy Price" );
+    sales.setField( "wrong field" );
+    boolean applied = sales.apply( model, metaStore );
+    assertFalse( "This should not be applied", applied );
+
+    sales.setField( "PRODUCTCODE_OLAP" );
+    assertTrue( sales.apply( model, metaStore ) );
+  }
+
+  @Test
   public void testFieldLevelCubeMeasureAreHiddenProperties() throws Exception {
     CreateMeasure createMeasure = new CreateMeasure();
     List<ModelProperty> modelProperties = createMeasure.getModelProperties();
