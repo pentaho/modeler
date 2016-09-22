@@ -261,7 +261,7 @@ public class CreateMeasure extends AnnotationType {
       }
 
     }
-    throw new ModelerException( "Unable to apply Create Measure annotation: Column not found" );
+    return false;
   }
 
   /**
