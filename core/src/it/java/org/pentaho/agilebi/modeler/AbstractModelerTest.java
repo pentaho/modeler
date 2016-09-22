@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
@@ -52,15 +53,19 @@ public class AbstractModelerTest {
 
   private static final String LOCALE = "en-US";
 
-  static {
-
+  @BeforeClass
+  public static void setupBeforeClass() {
     System.setProperty( "org.osjava.sj.root", "src/it/resources/solution1/system/simple-jndi" ); //$NON-NLS-1$ //$NON-NLS-2$
     try {
-      KettleEnvironment.init();
+      if ( !KettleEnvironment.isInitialized() ) {
+        KettleEnvironment.init();
+      }
     } catch ( KettleException e ) {
       throw new IllegalStateException( "Unable to initialize Kettle.", e );
     }
-    Props.init( Props.TYPE_PROPERTIES_EMPTY );
+    if ( ! Props.isInitialized() ) {
+      Props.init( Props.TYPE_PROPERTIES_EMPTY );
+    }
   }
 
   @Before

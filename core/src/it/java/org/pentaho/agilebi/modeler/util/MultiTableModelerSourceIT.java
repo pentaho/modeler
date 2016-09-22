@@ -17,23 +17,14 @@
 
 package org.pentaho.agilebi.modeler.util;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.AbstractModelerTest;
 import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.models.JoinFieldModel;
 import org.pentaho.agilebi.modeler.models.JoinRelationshipModel;
 import org.pentaho.agilebi.modeler.models.JoinTableModel;
 import org.pentaho.agilebi.modeler.models.SchemaModel;
-import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
@@ -42,21 +33,20 @@ import org.pentaho.metadata.model.olap.OlapCube;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
 public class MultiTableModelerSourceIT extends AbstractModelerTest {
 
   private static Logger logger = LoggerFactory.getLogger( MultiTableModelerSourceIT.class );
 
-  static {
-    try {
-      KettleEnvironment.init();
-      Props.init( Props.TYPE_PROPERTIES_EMPTY );
-    } catch ( Exception e ) {
-      // May be already initialized by another test
-    }
-
-    if ( ModelerMessagesHolder.getMessages() == null ) {
-      ModelerMessagesHolder.setMessages( new SpoonModelerMessages() );
-    }
+  @BeforeClass
+  public static void callParentSetup() {
+    AbstractModelerTest.setupBeforeClass();
   }
 
   @Test
