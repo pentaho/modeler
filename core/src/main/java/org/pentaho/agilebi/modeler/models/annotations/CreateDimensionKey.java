@@ -100,11 +100,6 @@ public class CreateDimensionKey extends AnnotationType {
           BaseMessages.getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.ATTRIBUTE_NAME_REQUIRED" ) );
     }
 
-    if ( StringUtils.isBlank( getField() ) ) {
-      throw new ModelerException( BaseMessages.getString( MSG_CLASS,
-        "ModelAnnotation.CreateAttribute.validation.FIELD_NAME " ) );
-    }
-
     if ( StringUtils.isBlank( getDimension() ) ) {
       throw new ModelerException( BaseMessages.getString( MSG_CLASS,
           "ModelAnnotation.CreateAttribute.validation.PARENT_PROVIDED_MISSING_DIMENSION" ) );
@@ -123,6 +118,9 @@ public class CreateDimensionKey extends AnnotationType {
 
   @Override
   public String getField() {
+    if ( field == null ) {
+      setField( getName() );
+    }
     return field;
   }
 
