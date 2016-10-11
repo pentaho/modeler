@@ -57,7 +57,7 @@ public class SharedDimensionGroupCompatibilityTest {
     SharedDimensionGroup sdg = (SharedDimensionGroup) group;
     assertTrue( sdg.isSharedDimension() );
     assertEquals( 7, sdg.getModelAnnotations().size() );
-    assertEquals( 2, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
+    assertEquals( 3, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
     assertEquals( 6, sdg.getModelAnnotations().get( 1 ).describeAnnotation().size() );
     assertEquals( 7, sdg.getModelAnnotations().get( 2 ).describeAnnotation().size() );
     assertEquals( 7, sdg.getModelAnnotations().get( 3 ).describeAnnotation().size() );
@@ -79,7 +79,7 @@ public class SharedDimensionGroupCompatibilityTest {
     assertEquals( 8, sdg.getModelAnnotations().get( 1 ).describeAnnotation().size() );
     assertEquals( 8, sdg.getModelAnnotations().get( 2 ).describeAnnotation().size() );
     assertEquals( 8, sdg.getModelAnnotations().get( 3 ).describeAnnotation().size() );
-    assertEquals( 2, sdg.getModelAnnotations().get( 4 ).describeAnnotation().size() );
+    assertEquals( 3, sdg.getModelAnnotations().get( 4 ).describeAnnotation().size() );
     assertEquals( 8, sdg.getModelAnnotations().get( 5 ).describeAnnotation().size() );
   }
 
@@ -92,7 +92,7 @@ public class SharedDimensionGroupCompatibilityTest {
     SharedDimensionGroup sdg = (SharedDimensionGroup) group;
     assertTrue( sdg.isSharedDimension() );
     assertEquals( 2, sdg.getModelAnnotations().size() );
-    assertEquals( 2, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
+    assertEquals( 3, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
     assertEquals( 6, sdg.getModelAnnotations().get( 1 ).describeAnnotation().size() );
   }
 
@@ -111,7 +111,7 @@ public class SharedDimensionGroupCompatibilityTest {
     assertEquals( 6, sdg.getModelAnnotations().get( 3 ).describeAnnotation().size() );
     assertEquals( 6, sdg.getModelAnnotations().get( 4 ).describeAnnotation().size() );
     assertEquals( 6, sdg.getModelAnnotations().get( 5 ).describeAnnotation().size() );
-    assertEquals( 2, sdg.getModelAnnotations().get( 6 ).describeAnnotation().size() );
+    assertEquals( 3, sdg.getModelAnnotations().get( 6 ).describeAnnotation().size() );
   }
 
   @Test
@@ -123,7 +123,7 @@ public class SharedDimensionGroupCompatibilityTest {
     SharedDimensionGroup sdg = (SharedDimensionGroup) group;
     assertTrue( sdg.isSharedDimension() );
     assertEquals( 7, sdg.getModelAnnotations().size() );
-    assertEquals( 2, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
+    assertEquals( 3, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
     assertEquals( 5, sdg.getModelAnnotations().get( 1 ).describeAnnotation().size() );
     assertEquals( 5, sdg.getModelAnnotations().get( 2 ).describeAnnotation().size() );
     assertEquals( 5, sdg.getModelAnnotations().get( 3 ).describeAnnotation().size() );
@@ -141,7 +141,7 @@ public class SharedDimensionGroupCompatibilityTest {
     SharedDimensionGroup sdg = (SharedDimensionGroup) group;
     assertTrue( sdg.isSharedDimension() );
     assertEquals( 2, sdg.getModelAnnotations().size() );
-    assertEquals( 2, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
+    assertEquals( 3, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
     assertEquals( 5, sdg.getModelAnnotations().get( 1 ).describeAnnotation().size() );
   }
 
@@ -154,7 +154,7 @@ public class SharedDimensionGroupCompatibilityTest {
     SharedDimensionGroup sdg = (SharedDimensionGroup) group;
     assertTrue( sdg.isSharedDimension() );
     assertEquals( 3, sdg.getModelAnnotations().size() );
-    assertEquals( 2, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
+    assertEquals( 3, sdg.getModelAnnotations().get( 0 ).describeAnnotation().size() );
     assertEquals( 5, sdg.getModelAnnotations().get( 1 ).describeAnnotation().size() );
     assertEquals( 5, sdg.getModelAnnotations().get( 2 ).describeAnnotation().size() );
   }
