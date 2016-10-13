@@ -116,23 +116,26 @@ public class MeasuresPropertiesForm extends AbstractModelerNodeForm<BaseAggregat
     t.addPropertyChangeListener( validListener );
     t.addPropertyChangeListener( propListener );
 
-    switch ( t.getLogicalColumn().getDataType() ) {
-      case DATE:
-        setFormatstring( DataFormatHolder.DATE_FORMATS );
-        break;
-      case NUMERIC:
-        setFormatstring( DataFormatHolder.NUMBER_FORMATS );
-        break;
-      case STRING:
-        setFormatstring( DataFormatHolder.CONVERSION_FORMATS );
-        break;
-      case BOOLEAN:
-      case URL:
-      case BINARY:
-      case UNKNOWN:
-      case IMAGE:
-      default:
-        break;
+
+    if ( null != t.getLogicalColumn() ) {
+      switch ( t.getLogicalColumn().getDataType() ) {
+        case DATE:
+          setFormatstring( DataFormatHolder.DATE_FORMATS );
+          break;
+        case NUMERIC:
+          setFormatstring( DataFormatHolder.NUMBER_FORMATS );
+          break;
+        case STRING:
+          setFormatstring( DataFormatHolder.CONVERSION_FORMATS );
+          break;
+        case BOOLEAN:
+        case URL:
+        case BINARY:
+        case UNKNOWN:
+        case IMAGE:
+        default:
+          break;
+      }
     }
 
     setDisplayName( t.getName() );
