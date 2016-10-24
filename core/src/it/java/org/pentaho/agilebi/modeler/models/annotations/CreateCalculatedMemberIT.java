@@ -73,6 +73,7 @@ public class CreateCalculatedMemberIT {
   private static final String FORMULA_ATTRIB = "formula";
   private static final String FORMAT_STRING_ATTRIB = "formatString";
   private static final String GEO_ROLE_PROPERTIES = "src/it/resources/geoRoles.properties";
+  private static final String TEST_CALCULATED_MEMBER_CUBE = "products_38GA";
 
 
   CreateCalculatedMember createCalculatedMember = new CreateCalculatedMember();
@@ -89,6 +90,7 @@ public class CreateCalculatedMemberIT {
     createCalculatedMember.setDimension( TEST_CALCULATED_MEMBER_DIMENSION );
     createCalculatedMember.setFormatString( TEST_CALCULATED_MEMBER_FORMAT_STRING );
     createCalculatedMember.setFormatCategory( TEST_CALCULATED_MEMBER_FORMAT_CATEGORY );
+    createCalculatedMember.setCube( TEST_CALCULATED_MEMBER_CUBE );
     createCalculatedMember.setHidden( Boolean.FALSE );
   }
 

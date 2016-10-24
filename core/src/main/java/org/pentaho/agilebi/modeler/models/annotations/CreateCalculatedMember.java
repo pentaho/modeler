@@ -103,9 +103,13 @@ public class CreateCalculatedMember extends AnnotationType {
   public static final String CATALOG_NAME_NAME = "Catalog Name";
   public static final int CATALOG_NAME_ORDER = 6;
 
+  private static final String CUBE_ID = "cube";
+  private static final String CUBE_NAME = "Cube";
+  private static final int CUBE_ORDER = 7;
+
   public static final String HIDDEN_ID = "hidden";
   public static final String HIDDEN_NAME = "Hidden";
-  public static final int HIDDEN_ORDER = 7;
+  public static final int HIDDEN_ORDER = 8;
 
   public static final String CALCULATED_MEMBER_NODE_NAME = "CalculatedMember";
   public static final String CALCULATED_MEMBER_NAME_ATTRIB = "name";
@@ -172,6 +176,10 @@ public class CreateCalculatedMember extends AnnotationType {
   @ModelProperty( id = CALCULATE_SUBTOTALS_ID, name = CALCULATE_SUBTOTALS_NAME, order = CALCULATE_SUBTOTALS_ORDER )
   @Injection( name = MDI_GROUP + "_CALCULATE_SUBTOTALS", group = MDI_GROUP )
   private boolean calculateSubtotals;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = CUBE_ID, name = CUBE_NAME, order = CUBE_ORDER, hideUI = true  )
+  private String cube;
 
   @MetaStoreAttribute
   @ModelProperty( id = HIDDEN_ID, name = HIDDEN_NAME, order = HIDDEN_ORDER )
@@ -263,7 +271,7 @@ public class CreateCalculatedMember extends AnnotationType {
 
     calculatedMember.formatString = this.getFormatString();
 
-    mondrianSchemaHandler.addCalculatedMember( null, calculatedMember );
+    mondrianSchemaHandler.addCalculatedMember( cube, calculatedMember );
 
     return true;
   }
@@ -419,6 +427,14 @@ public class CreateCalculatedMember extends AnnotationType {
 
   public void setFormatCategory( String formatCategory ) {
     this.formatCategory = formatCategory;
+  }
+
+  public String getCube() {
+    return cube;
+  }
+
+  public void setCube( String cube ) {
+    this.cube = cube;
   }
 
   public boolean isHidden() {
