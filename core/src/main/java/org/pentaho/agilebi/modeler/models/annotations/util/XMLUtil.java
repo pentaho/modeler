@@ -24,6 +24,7 @@ package org.pentaho.agilebi.modeler.models.annotations.util;
 import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -82,7 +83,7 @@ public class XMLUtil {
    * @throws Exception
    */
   public static Node asDOMNode( String xml ) throws Exception {
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    DocumentBuilderFactory dbFactory = XMLParserFactoryProducer.createSecureDocBuilderFactory();
     DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
     Document doc = dBuilder.parse( new ByteArrayInputStream( xml.getBytes( StandardCharsets.UTF_8 ) ) );
     return doc.getFirstChild();
