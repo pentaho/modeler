@@ -23,29 +23,19 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.junit.Assert;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
-import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
-import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.models.annotations.util.AnnotationConstants;
-import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.util.TableModelerSource;
+import org.pentaho.agilebi.modeler.models.annotations.util.ModelITHelper;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.olap.OlapCalculatedMember;
 import org.pentaho.metadata.model.olap.OlapCube;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
@@ -53,10 +43,11 @@ import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.List;
-import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class CreateCalculatedMemberIT {
   private static final String TEST_CALCULATED_MEMBER_NAME = "TestCalculatedMember";
@@ -72,7 +63,6 @@ public class CreateCalculatedMemberIT {
   private static final String DIMENSION_ATTRIB = "dimension";
   private static final String FORMULA_ATTRIB = "formula";
   private static final String FORMAT_STRING_ATTRIB = "formatString";
-  private static final String GEO_ROLE_PROPERTIES = "src/it/resources/geoRoles.properties";
   private static final String TEST_CALCULATED_MEMBER_CUBE = "products_38GA";
 
 
@@ -217,7 +207,7 @@ public class CreateCalculatedMemberIT {
 
   @Test
   public void testCreatesCalculatedMembersInAnalysisModel() throws Exception {
-    ModelerWorkspace model = prepareOrderModel();
+    ModelerWorkspace model = ModelITHelper.prepareOrderModel( "CreateCalculatedMemberIT-H2-DB" );
     CreateCalculatedMember doubleQuantity = new CreateCalculatedMember();
     doubleQuantity.setFormatString( "##.##" );
     doubleQuantity.setFormula( "[Measures].[Quantity Ordered] * 2" );
@@ -266,63 +256,4 @@ public class CreateCalculatedMemberIT {
     assertEquals( calculateSubtotals, firstMember.isCalculateSubtotals() );
   }
 
-  private ModelerWorkspace prepareOrderModel() throws Exception {
-    createOrderfactDB();
-    TableModelerSource source = new TableModelerSource( dbMeta, "orderfact", "" );
-    Domain domain = source.generateDomain();
-
-    Reader propsReader = new FileReader( new File( GEO_ROLE_PROPERTIES ) );
-    Properties props = new Properties();
-    props.load( propsReader );
-    GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
-    GeoContext geoContext = GeoContextFactory.create( config );
-
-    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ), geoContext );
-    model.setModelSource( source );
-    model.setDomain( domain );
-    model.setModelName( "someModel" );
-    model.getWorkspaceHelper().autoModelFlat( model );
-    model.getWorkspaceHelper().populateDomain( model );
-    return model;
-  }
-
-  private void createOrderfactDB() throws Exception {
-    dbMeta = newH2Db();
-    Database db = new Database( null, dbMeta );
-    db.connect();
-    db.execStatement( "DROP TABLE IF EXISTS orderfact;" );
-    db.execStatement( "DROP TABLE IF EXISTS product;" );
-    db.execStatement( "DROP TABLE IF EXISTS mydate;" );
-    db.execStatement( "CREATE TABLE orderfact\n"
-        + "(\n"
-        + "   ordernumber int,\n"
-        + "   product_id int,\n"
-        + "   quantityordered int\n,"
-        + "   date Date"
-        + ");\n" );
-    db.execStatement( "CREATE TABLE product\n"
-        + "(\n"
-        + "   product_id int,\n"
-        + "   product_name varchar(50),\n"
-        + "   product_description varchar(50)\n"
-        + ");\n" );
-    db.execStatement( "CREATE TABLE mydate\n"
-        + "(\n"
-        + "   date Date,\n"
-        + "   year varchar(50),\n"
-        + "   month varchar(50)\n"
-        + ");\n" );
-    db.disconnect();
-  }
-
-  private DatabaseMeta newH2Db() {
-    // DB Setup
-    String dbDir = "bin/test/DswModelerTest-H2-DB";
-    File file = new File( dbDir + ".h2.db" );
-    if ( file.exists() ) {
-      file.delete();
-    }
-    DatabaseMeta dbMeta = new DatabaseMeta( "myh2", "HYPERSONIC", "Native", null, dbDir, null, "sa", null );
-    return dbMeta;
-  }
 }

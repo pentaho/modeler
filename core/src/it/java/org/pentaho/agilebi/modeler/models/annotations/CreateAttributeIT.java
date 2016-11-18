@@ -27,7 +27,6 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
-import static org.pentaho.agilebi.modeler.models.annotations.CreateAttribute.*;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -35,17 +34,13 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
-import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
-import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotation.TimeType;
 import org.pentaho.agilebi.modeler.models.annotations.data.InlineFormatAnnotation;
+import org.pentaho.agilebi.modeler.models.annotations.util.ModelITHelper;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.TableModelerSource;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -61,18 +56,14 @@ import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.List;
-import java.util.Properties;
 
 public class CreateAttributeIT {
   private IMetaStore metaStore;
+  private final String dbName = "CreateAttributeIT-H2-DB";
 
   private static String PRODUCT_XMI_FILE = "src/it/resources/products.xmi";
-  private static String GEO_ROLES_PROPERTIES_FILE = "src/it/resources/geoRoles.properties";
 
   @Before
   public void setUp() throws Exception {
@@ -505,23 +496,7 @@ public class CreateAttributeIT {
   }
 
   private ModelerWorkspace prepareGeoModel() throws Exception {
-    DatabaseMeta dbMeta = createGeoTable();
-    TableModelerSource source = new TableModelerSource( dbMeta, "geodata", "" );
-    Domain domain = source.generateDomain();
-
-    Reader propsReader = new FileReader( new File( GEO_ROLES_PROPERTIES_FILE ) );
-    Properties props = new Properties();
-    props.load( propsReader );
-    GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
-    GeoContext geoContext = GeoContextFactory.create( config );
-
-    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ), geoContext );
-    model.setModelSource( source );
-    model.setDomain( domain );
-    model.setModelName( "someModel" );
-    model.getWorkspaceHelper().autoModelFlat( model );
-    model.getWorkspaceHelper().populateDomain( model );
-    return model;
+    return ModelITHelper.prepareGeoModel( dbName );
   }
 
   @Test
@@ -580,47 +555,6 @@ public class CreateAttributeIT {
     assertAnnotation( cityLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( cityLevel.getAnnotations().get( 1 ), "Geo.Role", "city" );
     assertAnnotation( cityLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country,state" );
-  }
-
-  private DatabaseMeta createGeoTable() throws Exception {
-    DatabaseMeta dbMeta = newH2Db();
-    Database db = new Database( null, dbMeta );
-    db.connect();
-    db.execStatement( "DROP TABLE if exists geodata;" );
-    db.execStatement( "CREATE TABLE geodata\n"
-        + "(\n"
-        + "  state_fips bigint\n"
-        + ", state varchar(25)\n"
-        + ", state_abbr varchar(4)\n"
-        + ", zipcode varchar(10)\n"
-        + ", country varchar(45)\n"
-        + ", city varchar(45)\n"
-        + ");\n" );
-    db.disconnect();
-    return dbMeta;
-
-  }
-
-  private DatabaseMeta newH2Db() {
-    // DB Setup
-    String dbDir = "bin/test/DswModelerTest-H2-DB";
-    File file = new File( dbDir + ".h2.db" );
-    if ( file.exists() ) {
-      file.delete();
-    }
-    DatabaseMeta dbMeta = new DatabaseMeta( "myh2", "HYPERSONIC", "Native", null, dbDir, null, "sa", null );
-    return dbMeta;
-  }
-
-  private DatabaseMeta newH2Db( String ... statements ) throws Exception {
-    DatabaseMeta dbMeta = newH2Db();
-    Database db = new Database( null, dbMeta );
-    db.connect();
-    for ( String stmt : statements ) {
-      db.execStatement( stmt );
-    }
-    db.disconnect();
-    return dbMeta;
   }
 
   private void assertAnnotation( final OlapAnnotation olapAnnotation, final String name, final String value ) {
@@ -755,11 +689,8 @@ public class CreateAttributeIT {
   @Test
   public void testTimeDimensionSetAfterAutoModel() throws Exception {
     ModelerWorkspace wspace = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ) );
-    DatabaseMeta dbMeta = newH2Db( "DROP TABLE if exists datetable;",
-        "CREATE TABLE datetable\n"
-            + "(\n"
-            + "\"date\" TIMESTAMP\n"
-            + ");\n" );
+    DatabaseMeta dbMeta = ModelITHelper.newH2Db( dbName, "DROP TABLE if exists datetable;",
+      "CREATE TABLE datetable ( \"date\" TIMESTAMP );" );
     TableModelerSource source = new TableModelerSource( dbMeta, "datetable", "" );
     Domain domain = source.generateDomain();
     wspace.setModelSource( source );

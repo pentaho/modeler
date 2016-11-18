@@ -28,21 +28,14 @@ import org.junit.Test;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
-import org.pentaho.agilebi.modeler.geo.GeoContext;
-import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
-import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
-import org.pentaho.agilebi.modeler.geo.GeoContextPropertiesProvider;
 import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
-import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
-import org.pentaho.agilebi.modeler.util.TableModelerSource;
+import org.pentaho.agilebi.modeler.models.annotations.util.ModelITHelper;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
-import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.metadata.model.Domain;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.olap.OlapCube;
@@ -52,27 +45,25 @@ import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.*;
 
 @SuppressWarnings( "unchecked" )
 public class LinkDimensionIT {
+  private ModelerWorkspace model;
   private IMetaStore metaStore;
   private DatabaseMeta dbMeta;
-
-  private static final String GEO_ROLE_PROPERTIES = "src/it/resources/geoRoles.properties";
 
   @Before
   public void setUp() throws Exception {
     metaStore = new MemoryMetaStore();
+    String dbName = "LinkDimensionIT-H2-DB";
+    model = ModelITHelper.prepareOrderModel( dbName );
+    dbMeta = ModelITHelper.newH2Db( dbName );
   }
 
   @BeforeClass
@@ -128,7 +119,6 @@ public class LinkDimensionIT {
 
   @Test
   public void testLinksDimensionToModel() throws Exception {
-    ModelerWorkspace model = prepareOrderModel();
     saveProductToMetastore();
     LinkDimension linkDimension = new LinkDimension();
     linkDimension.setName( "Product Dim" );
@@ -159,7 +149,6 @@ public class LinkDimensionIT {
 
   @Test
   public void testInvalidAnnotationsApplication() throws Exception {
-    ModelerWorkspace model = prepareOrderModel();
     saveInvalidProductToMetastore();
     LinkDimension linkDimension = new LinkDimension();
     linkDimension.setName( "Product Dim" );
@@ -275,7 +264,6 @@ public class LinkDimensionIT {
 
   @Test
   public void testLinksMultipleDimensionsToModel() throws Exception {
-    ModelerWorkspace model = prepareOrderModel();
     saveProductAsTwoDimensionsToMetastore();
     LinkDimension linkProduct = new LinkDimension();
     linkProduct.setName( "Product" );
@@ -369,7 +357,6 @@ public class LinkDimensionIT {
 
   @Test
   public void testAutoLevelRemovedWithLinkingFieldToASharedDimension() throws Exception {
-    ModelerWorkspace model = prepareOrderModel();
     saveDateToMetastore();
     LinkDimension linkDate = new LinkDimension();
     linkDate.setName( "Date" );
@@ -451,7 +438,6 @@ public class LinkDimensionIT {
 
   @Test
   public void testNoProviderMatchFailsToApply() throws Exception {
-    ModelerWorkspace model = prepareOrderModel();
     saveBadDbMeta();
     LinkDimension linkDate = new LinkDimension();
     linkDate.setName( "Date" );
@@ -490,8 +476,6 @@ public class LinkDimensionIT {
 
   @Test
   public void testLinkDimRemovingSelf() throws Exception {
-
-    ModelerWorkspace model = prepareOrderModel();
     CreateDimensionKey key = new CreateDimensionKey();
     key.setDimension( "Shared" );
     key.setField( "PRODUCT_ID" );
@@ -558,65 +542,4 @@ public class LinkDimensionIT {
     }
     assertEquals( 1, assertCount );
   }
-
-  private ModelerWorkspace prepareOrderModel() throws Exception {
-    createOrderfactDB();
-    TableModelerSource source = new TableModelerSource( dbMeta, "orderfact", "" );
-    Domain domain = source.generateDomain();
-
-    Reader propsReader = new FileReader( new File( GEO_ROLE_PROPERTIES ) );
-    Properties props = new Properties();
-    props.load( propsReader );
-    GeoContextConfigProvider config = new GeoContextPropertiesProvider( props );
-    GeoContext geoContext = GeoContextFactory.create( config );
-
-    ModelerWorkspace model = new ModelerWorkspace( new ModelerWorkspaceHelper( "en_US" ), geoContext );
-    model.setModelSource( source );
-    model.setDomain( domain );
-    model.setModelName( "someModel" );
-    model.getWorkspaceHelper().autoModelFlat( model );
-    model.getWorkspaceHelper().populateDomain( model );
-    return model;
-  }
-
-  private void createOrderfactDB() throws Exception {
-    dbMeta = newH2Db();
-    Database db = new Database( null, dbMeta );
-    db.connect();
-    db.execStatement( "DROP TABLE IF EXISTS orderfact;" );
-    db.execStatement( "DROP TABLE IF EXISTS product;" );
-    db.execStatement( "DROP TABLE IF EXISTS mydate;" );
-    db.execStatement( "CREATE TABLE orderfact\n"
-        + "(\n"
-        + "   ordernumber int,\n"
-        + "   product_id int,\n"
-        + "   quantityordered int\n,"
-        + "   date Date"
-        + ");\n" );
-    db.execStatement( "CREATE TABLE product\n"
-        + "(\n"
-        + "   product_id int,\n"
-        + "   product_name varchar(50),\n"
-        + "   product_description varchar(50)\n"
-        + ");\n" );
-    db.execStatement( "CREATE TABLE mydate\n"
-        + "(\n"
-        + "   date Date,\n"
-        + "   year varchar(50),\n"
-        + "   month varchar(50)\n"
-        + ");\n" );
-    db.disconnect();
-  }
-
-  private DatabaseMeta newH2Db() {
-    // DB Setup
-    String dbDir = "bin/test/DswModelerTest-H2-DB";
-    File file = new File( dbDir + ".h2.db" );
-    if ( file.exists() ) {
-      file.delete();
-    }
-    DatabaseMeta dbMeta = new DatabaseMeta( "myh2", "HYPERSONIC", "Native", null, dbDir, null, "sa", null );
-    return dbMeta;
-  }
-
 }
