@@ -127,7 +127,7 @@ public abstract class BaseModelerWorkspaceHelper implements IModelerWorkspaceHel
       return;
     }
     DimensionMetaDataCollection dimensions = mainModelNode.getDimensions();
-    if ( dimensions.size() == 0 ) {
+    if ( dimensions.size() == 0 && model.getModellingMode() == ModelerMode.REPORTING_ONLY ) {
       return;
     }
 
