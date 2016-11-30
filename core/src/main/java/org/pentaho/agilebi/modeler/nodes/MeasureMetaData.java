@@ -31,6 +31,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class MeasureMetaData extends BaseAggregationMetaDataNode {
   private static final long serialVersionUID = -7974277299013394857L;
   private static final String IMAGE = "images/sm_measure_icon.png";
+  private boolean manuallyCreated = false;
 
   public MeasureMetaData( String locale ) {
     super( locale );
@@ -38,6 +39,11 @@ public class MeasureMetaData extends BaseAggregationMetaDataNode {
 
   public MeasureMetaData( String fieldName, String format, String displayName, String locale ) {
     super( fieldName, format, displayName, locale );
+  }
+
+  public MeasureMetaData( String fieldName, String format, String displayName, String locale, boolean manual ) {
+    this( fieldName, format, displayName, locale );
+    manuallyCreated = manual;
   }
 
   @Override
@@ -90,4 +96,13 @@ public class MeasureMetaData extends BaseAggregationMetaDataNode {
     }
     return null;
   }
+
+  public boolean isManuallyCreated() {
+    return manuallyCreated;
+  }
+
+  public void setManuallyCreated( boolean manuallyCreated ) {
+    this.manuallyCreated = manuallyCreated;
+  }
+
 }
