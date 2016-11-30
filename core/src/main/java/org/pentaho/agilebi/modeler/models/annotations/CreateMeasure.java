@@ -240,7 +240,8 @@ public class CreateMeasure extends AnnotationType {
               new MeasureMetaData( targetColumn,
                 getFormatString(),
                 getName(),
-                workspace.getWorkspaceHelper().getLocale() );
+                workspace.getWorkspaceHelper().getLocale(),
+                true );
 
           LogicalColumn columnClone = (LogicalColumn) logicalColumn.clone();
           columnClone.setId( BaseModelerWorkspaceHelper.uniquify( columnClone.getId(), logicalColumns ) );
@@ -327,7 +328,8 @@ public class CreateMeasure extends AnnotationType {
       if ( measureNameEquals( column, measure )
           && measure.getLogicalColumn().getPhysicalColumn().getName( locale ).equals(
           logicalColumn.getPhysicalColumn().getName( locale ) )
-          && measure.getDefaultAggregation().equals( AggregationType.SUM ) ) {
+          && measure.getDefaultAggregation().equals( AggregationType.SUM )
+          && !measure.isManuallyCreated() ) {
         workspace.getModel().getMeasures().remove( measure );
         break;
       }
