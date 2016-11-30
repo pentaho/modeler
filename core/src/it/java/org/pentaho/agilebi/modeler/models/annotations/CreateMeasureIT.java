@@ -53,6 +53,12 @@ public class CreateMeasureIT {
   public void createMeasureWorksOnDimensionlessModel() throws Exception {
     ModelerWorkspace workspace = createWorkspace();
 
+    CreateMeasure valueMeasure2 = new CreateMeasure();
+    valueMeasure2.setField( "value" );
+    valueMeasure2.setName( "value" );
+    valueMeasure2.setAggregateType( AggregationType.SUM );
+    valueMeasure2.apply( workspace, new MemoryMetaStore() );
+
     CreateMeasure valueMeasure = new CreateMeasure();
     valueMeasure.setField( "value" );
     valueMeasure.setName( "The Value" );
@@ -65,10 +71,11 @@ public class CreateMeasureIT {
     idMeasure.setAggregateType( AggregationType.COUNT );
     idMeasure.apply( workspace, new MemoryMetaStore() );
     OlapCube olapCube = getCubes( workspace ).get( 0 );
-    assertEquals( 2, olapCube.getOlapMeasures().size() );
+    assertEquals( 3, olapCube.getOlapMeasures().size() );
+    assertEquals( 3, workspace.getModel().getMeasures().size() );
     assertEquals( 0, olapCube.getOlapDimensionUsages().size() );
-    assertEquals( "The Value", olapCube.getOlapMeasures().get( 0 ).getName() );
-    assertEquals( "Id Count", olapCube.getOlapMeasures().get( 1 ).getName() );
+    assertEquals( "The Value", olapCube.getOlapMeasures().get( 1 ).getName() );
+    assertEquals( "Id Count", olapCube.getOlapMeasures().get( 2 ).getName() );
   }
 
   @SuppressWarnings( "unchecked" )
