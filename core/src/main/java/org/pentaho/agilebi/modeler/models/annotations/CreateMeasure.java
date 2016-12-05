@@ -31,6 +31,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.data.GeneratedbyMemberAnnotation;
 import org.pentaho.agilebi.modeler.models.annotations.util.MondrianSchemaHandler;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.di.core.injection.Injection;
@@ -233,7 +234,8 @@ public class CreateMeasure extends AnnotationType {
       List<LogicalColumn> logicalColumns = logicalTable.getLogicalColumns();
       for ( LogicalColumn logicalColumn : logicalColumns ) {
         if ( columnMatches( workspace, resolveField( workspace ), logicalColumn )
-            || columnMatches( workspace, PhysicalTableImporter.beautifyName( resolveField( workspace ) ), logicalColumn ) ) {
+            || columnMatches( workspace, PhysicalTableImporter.beautifyName( resolveField( workspace ) ),
+                logicalColumn ) ) {
           String targetColumn =
               (String) logicalColumn.getPhysicalColumn().getProperty( SqlPhysicalColumn.TARGET_COLUMN );
           MeasureMetaData measureMetaData =
@@ -248,6 +250,8 @@ public class CreateMeasure extends AnnotationType {
           measureMetaData.setName( getName() );
           measureMetaData.setDefaultAggregation( getAggregateType() );
           measureMetaData.setHidden( isHidden() );
+          measureMetaData.getMemberAnnotations().put( GeneratedbyMemberAnnotation.GEBERATED_BY_STRING,
+              new GeneratedbyMemberAnnotation( this.getName() ) );
           if ( getDescription() != null ) {
             measureMetaData.setDescription( getDescription() );
           }
@@ -259,7 +263,6 @@ public class CreateMeasure extends AnnotationType {
           return true;
         }
       }
-
     }
     return false;
   }
@@ -327,7 +330,8 @@ public class CreateMeasure extends AnnotationType {
       if ( measureNameEquals( column, measure )
           && measure.getLogicalColumn().getPhysicalColumn().getName( locale ).equals(
           logicalColumn.getPhysicalColumn().getName( locale ) )
-          && measure.getDefaultAggregation().equals( AggregationType.SUM ) ) {
+          && measure.getDefaultAggregation().equals( AggregationType.SUM )
+          && !measure.getMemberAnnotations().containsKey( GeneratedbyMemberAnnotation.GEBERATED_BY_STRING ) ) {
         workspace.getModel().getMeasures().remove( measure );
         break;
       }
