@@ -33,6 +33,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.models.annotations.data.GeneratedbyMemberAnnotation;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
@@ -356,7 +357,8 @@ public abstract class AnnotationType implements Serializable {
 
   protected void removeAutoMeasure( final ModelerWorkspace workspace, final String column ) {
     MeasureMetaData measure = locateMeasure( workspace, column );
-    if ( measure != null ) {
+    if ( measure != null
+        && !measure.getMemberAnnotations().containsKey( GeneratedbyMemberAnnotation.GEBERATED_BY_STRING ) ) {
       workspace.getModel().getMeasures().remove( measure );
     }
   }

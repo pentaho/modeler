@@ -55,6 +55,7 @@ import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.util.XmiParser;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+import org.pentaho.metadata.model.concept.types.AggregationType;
 
 import java.io.FileInputStream;
 import java.util.List;
@@ -197,6 +198,46 @@ public class CreateAttributeIT {
     OlapHierarchyLevel productNameLevel = AnnotationUtil.getOlapHierarchyLevel( "Product Name",
       productNameHierarchy.getHierarchyLevels() );
     assertEquals( "Product Name", productNameLevel.getName() );
+  }
+
+  @SuppressWarnings( { "unchecked", "ConstantConditions" } )
+  @Test
+  public void testCanCreateAttributeAndMeasure() throws Exception {
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateMeasure productMeasure = new CreateMeasure();
+    productMeasure.setName( "Product Line" );
+    productMeasure.setField( "PRODUCTLINE_OLAP" );
+    productMeasure.setAggregateType( AggregationType.COUNT );
+    productMeasure.apply( model, metaStore );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setField( "PRODUCTLINE_OLAP" );
+    productLine.apply( model, metaStore );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+
+    OlapDimensionUsage productsDim = AnnotationUtil.getOlapDimensionUsage( "Products", cube.getOlapDimensionUsages() );
+    assertEquals( 1, productsDim.getOlapDimension().getHierarchies().size() );
+
+    OlapHierarchy productsHierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
+    OlapHierarchyLevel productLineLevel =
+      AnnotationUtil.getOlapHierarchyLevel( "Product Line", productsHierarchy.getHierarchyLevels() );
+    assertEquals( "Product Line", productLineLevel.getName() );
+    boolean found = false;
+    for ( int i = 0; i< cube.getOlapMeasures().size(); i++ ) {
+      found = found || cube.getOlapMeasures().get( i ).getName().equalsIgnoreCase( "Product Line" );
+    }
+    if ( !found ) {
+      fail();
+    }
   }
 
   @Test
