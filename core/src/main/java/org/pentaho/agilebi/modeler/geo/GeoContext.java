@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.geo;
@@ -237,11 +237,10 @@ public class GeoContext extends AbstractModelList<GeoRole> {
             for ( LevelMetaData existingLevel : existingHier ) {
               if ( locationField
                   .isSameUnderlyingPhysicalColumn( existingLevel.getLogicalColumn().getPhysicalColumn() ) ) {
-                existingLevel.getMemberAnnotations().put( ANNOTATION_DATA_ROLE, locationRole );
-                existingLevel.getMemberAnnotations().put( ANNOTATION_GEO_ROLE, locationRole );
+                setLocationMemberAnnotations( existingLevel, locationRole );
+
                 // if it is a LocationField we need to make sure the lat & long columns get
                 // added as logical columns to the model.
-
                 AvailableField latField =
                     table.findFieldByPhysicalColumn( table.getPhysicalTable().getPhysicalColumns().get( latColIndex ) );
                 AvailableField lonField =
@@ -338,4 +337,79 @@ public class GeoContext extends AbstractModelList<GeoRole> {
     return null;
   }
 
+  public void setLocationFields( ModelerWorkspace workspace, LevelMetaData locationLevel ) {
+    List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
+
+    // get all roles for the fields
+    for ( AvailableTable table : tableList ) {
+      if ( table.isFactTable() ) {
+        // don't bother looking at fact tables for geographic fields
+        continue;
+      }
+
+      LocationRole locationRole = getLocationRole();
+
+      boolean locationFieldDetected = false;
+      int latColIndex = 0;
+      int lonColIndex = 0;
+      int count = 0;
+      // must iterate over the physical columns to ensure we process the columns in the proper order, available fields
+      // are sorted in available table
+      for ( IPhysicalColumn col : table.getPhysicalTable().getPhysicalColumns() ) {
+        // go get the field for this physical column so we can work with that
+        AvailableField field = table.findFieldByPhysicalColumn( col );
+
+        GeoRole role = matchFieldToGeoRole( field );
+        String fieldName = col.getId();
+
+        if ( role != null ) {
+          if ( role instanceof LocationRole ) {
+            locationFieldDetected = true;
+            // if this was matched to a location role. we need to set it as the data role on another level
+            // in an existing dimension, but only if we detect both lat & long
+            if ( locationRole.evaluateLatitude( fieldName ) ) {
+              latColIndex = count;
+            } else if ( locationRole.evaluateLongitude( fieldName ) ) {
+              lonColIndex = count;
+            }
+          }
+        }
+        count++;
+      }
+
+      // Set data role and member properties
+      if ( locationFieldDetected && locationLevel != null && locationRole != null && latColIndex > -1
+        && lonColIndex > -1 ) {
+        setLocationMemberAnnotations( locationLevel, locationRole );
+        setLocationMemberProperties( workspace, table, locationLevel, latColIndex, lonColIndex );
+      }
+    }
+  }
+
+  private void setLocationMemberAnnotations( LevelMetaData locationLevel, LocationRole locationRole ) {
+    locationLevel.getMemberAnnotations().put( ANNOTATION_DATA_ROLE, locationRole );
+    locationLevel.getMemberAnnotations().put( ANNOTATION_GEO_ROLE, locationRole );
+  }
+
+  private void setLocationMemberProperties( ModelerWorkspace workspace, AvailableTable table,
+                                            LevelMetaData locationLevel, int latColIndex, int lonColIndex ) {
+    // if it is a LocationField we need to make sure the lat & long columns get
+    // added as logical columns to the model.
+    AvailableField latField =
+      table.findFieldByPhysicalColumn( table.getPhysicalTable().getPhysicalColumns().get( latColIndex ) );
+    AvailableField lonField =
+      table.findFieldByPhysicalColumn( table.getPhysicalTable().getPhysicalColumns().get( lonColIndex ) );
+
+    ColumnBackedNode tmp = workspace.createColumnBackedNode( latField, ModelerPerspective.ANALYSIS );
+    tmp.getLogicalColumn().setName( new LocalizedString( workspace.getWorkspaceHelper().getLocale(), LATITUDE ) );
+    MemberPropertyMetaData memberProp = workspace.createMemberPropertyForParentWithNode( locationLevel, tmp );
+    memberProp.setName( LATITUDE );
+    locationLevel.add( memberProp );
+
+    tmp = workspace.createColumnBackedNode( lonField, ModelerPerspective.ANALYSIS );
+    tmp.getLogicalColumn().setName( new LocalizedString( workspace.getWorkspaceHelper().getLocale(), LONGITUDE ) );
+    memberProp = workspace.createMemberPropertyForParentWithNode( locationLevel, tmp );
+    memberProp.setName( LONGITUDE );
+    locationLevel.add( memberProp );
+  }
 }

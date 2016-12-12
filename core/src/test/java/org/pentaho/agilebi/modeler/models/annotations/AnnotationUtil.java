@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2017 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
+import org.pentaho.metadata.model.olap.OlapAnnotation;
 import org.pentaho.metadata.model.olap.OlapDimensionUsage;
 import org.pentaho.metadata.model.olap.OlapHierarchyLevel;
 import org.pentaho.metadata.model.olap.OlapMeasure;
@@ -257,5 +258,17 @@ public final class AnnotationUtil {
       .newInstance()
       .newDocumentBuilder()
       .parse( mondrianSchemaXmlFile );
+  }
+
+  public static OlapAnnotation getOlapAnnotationByName( final String name, List<OlapAnnotation> annotations) {
+    OlapAnnotation foundAnnotation = null;
+    for( OlapAnnotation annotation : annotations ) {
+      if ( name.equals( annotation.getName() ) ) {
+        foundAnnotation = annotation;
+        break;
+      }
+    }
+
+    return foundAnnotation;
   }
 }

@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.geo;
@@ -28,6 +28,7 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.IAvailableItem;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;
 import org.pentaho.agilebi.modeler.nodes.annotations.IDataRoleAnnotation;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
@@ -48,6 +49,9 @@ import java.util.Properties;
 
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_DATA_ROLE;
+import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_GEO_ROLE;
 
 /**
  * Created by IntelliJ IDEA. User: rfellows Date: 9/16/11 Time: 9:19 AM To change this template use File | Settings |
@@ -983,4 +987,105 @@ public class GeoContextIT extends AbstractModelerTest {
     verify( mockGeoCol );
   }
 
+  @Test
+  public void testSetLocationFields() throws Exception {
+    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+
+    // mock object init...
+    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
+    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
+    IPhysicalColumn mockCustomerCol = createMock( IPhysicalColumn.class );
+    IPhysicalColumn mockLatitudeCol = createMock( IPhysicalColumn.class );
+    IPhysicalColumn mockLongitudeCol = createMock( IPhysicalColumn.class );
+
+    cols1.add( mockStateCol );
+    cols1.add( mockCustomerCol );
+    cols1.add( mockLatitudeCol );
+    cols1.add( mockLongitudeCol );
+
+    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
+    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
+    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+
+    // state col
+    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
+    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
+    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
+    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
+    expect( mockStateCol.getAggregationList() ).andReturn( null );
+    expect( mockStateCol.getAggregationType() ).andReturn( null );
+    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
+
+    // customer col
+    expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "CustomerName" ).anyTimes();
+    expect( mockCustomerCol.getName( "en-US" ) ).andReturn( "CustomerName" ).anyTimes();
+    expect( mockCustomerCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
+    expect( mockCustomerCol.getId() ).andReturn( "CUSTOMERNAME" ).anyTimes();
+
+    // lat col
+    expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
+    expect( mockLatitudeCol.getName( "en-US" ) ).andReturn( "Latitude" ).anyTimes();
+    expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
+    expect( mockLatitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
+    expect( mockLatitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
+    expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
+    expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
+
+    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    latProperties.put( "name", "Latitude" );
+    expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
+
+    // lng col
+    expect( mockLongitudeCol.getName( LOCALE ) ).andReturn( "Longitude" ).anyTimes();
+    expect( mockLongitudeCol.getName( "en-US" ) ).andReturn( "Longitude" ).anyTimes();
+    expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
+    expect( mockLongitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
+    expect( mockLongitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
+    expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
+    expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
+
+    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    lngProperties.put( "name", "Longitude" );
+    expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
+
+    replay( mockTable1 );
+    replay( mockStateCol );
+    replay( mockCustomerCol );
+    replay( mockLatitudeCol );
+    replay( mockLongitudeCol );
+
+    AvailableTable table = new AvailableTable( mockTable1 );
+    items.add( table );
+    // end mock object init...
+
+    // use the existing tool to generate a domain with multiple tables
+    generateTestDomain();
+
+    // automodel this first, so we have some dimension to test that our locationRole gets set properly
+    workspace.getWorkspaceHelper().autoModelFlat( workspace );
+
+    // overwrite the table definitions with our mocks, so we control the columns
+    workspace.getAvailableTables().setChildren( items );
+
+    GeoContext geo = GeoContextFactory.create( config );
+    LocationRole locationRole = geo.getLocationRole();
+
+    LevelMetaData levelMetaData = new LevelMetaData();
+    geo.setLocationFields( workspace, levelMetaData );
+
+    assertEquals( locationRole, levelMetaData.getMemberAnnotations().get( ANNOTATION_DATA_ROLE ) );
+    assertEquals( locationRole, levelMetaData.getMemberAnnotations().get( ANNOTATION_GEO_ROLE ) );
+
+    MemberPropertyMetaData latMemberPropertyMetaData = levelMetaData.get( 0 );
+    MemberPropertyMetaData longMemberPropertyMetaData = levelMetaData.get( 1 );
+
+    assertEquals( GeoContext.LATITUDE, latMemberPropertyMetaData.getName() );
+    assertEquals( "LATITUDE" , latMemberPropertyMetaData.getLogicalColumn().getPhysicalColumn().getId() );
+
+    assertEquals( GeoContext.LONGITUDE, longMemberPropertyMetaData.getName() );
+    assertEquals( "LONGITUDE" , longMemberPropertyMetaData.getLogicalColumn().getPhysicalColumn().getId() );
+  }
 }

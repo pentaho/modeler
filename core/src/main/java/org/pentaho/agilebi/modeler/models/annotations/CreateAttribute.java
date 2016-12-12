@@ -2,7 +2,7 @@
  *
  * Pentaho Community Edition Project: pentaho-modeler
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  * *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+import org.pentaho.agilebi.modeler.nodes.MemberPropertyMetaData;
 import org.pentaho.agilebi.modeler.nodes.TimeRole;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.injection.Injection;
@@ -48,6 +49,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_DATA_ROLE;
+import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_GEO_ROLE;
 
 /**
  * @author Rowell Belen
@@ -444,7 +448,7 @@ public class CreateAttribute extends AnnotationType {
   }
 
   private void fillLevelProperties( final ModelerWorkspace workspace, final LogicalColumn logicalColumn,
-      final LevelMetaData levelMetaData ) {
+      final LevelMetaData levelMetaData ) throws ModelerException {
     levelMetaData.setLogicalColumn( logicalColumn );
     levelMetaData.setUniqueMembers( isUnique() );
     levelMetaData.setHidden( isHidden() );
@@ -463,7 +467,29 @@ public class CreateAttribute extends AnnotationType {
         removeAutoGeo( workspace );
       }
       GeoRole geoRole = workspace.getGeoContext().getGeoRoleByName( getGeoType().name() );
-      levelMetaData.getMemberAnnotations().put( "Data.Role", geoRole );
+      levelMetaData.getMemberAnnotations().put( ANNOTATION_DATA_ROLE, geoRole );
+
+      // If this is a Lat/Long Location Geo Type then try and find auto modeled Lat/Long level and move the
+      // member properties and annotations to this level. If the auto modeled Lat/Long level doesn't exist
+      // or was removed then search for Lat/Long fields and assign them to the level
+      if ( ModelAnnotation.GeoType.Location.equals( getGeoType() ) ) {
+        LevelMetaData oldLocationMetaData = locateLocationLevel( workspace );
+        if ( null != oldLocationMetaData ) {
+          MemberPropertyMetaData latitudeMetaData = oldLocationMetaData.getLatitudeField();
+          MemberPropertyMetaData longitudeMetaData = oldLocationMetaData.getLongitudeField();
+          levelMetaData.add( latitudeMetaData );
+          levelMetaData.add( longitudeMetaData );
+          oldLocationMetaData.remove( latitudeMetaData );
+          oldLocationMetaData.remove( longitudeMetaData );
+
+          Map oldMemberAnnotations = oldLocationMetaData.getMemberAnnotations();
+          Map newMemberAnnotations = levelMetaData.getMemberAnnotations();
+          newMemberAnnotations.put( ANNOTATION_GEO_ROLE, oldMemberAnnotations.remove( ANNOTATION_GEO_ROLE ) );
+          newMemberAnnotations.put( ANNOTATION_DATA_ROLE, oldMemberAnnotations.remove( ANNOTATION_DATA_ROLE ) );
+        } else {
+          workspace.getGeoContext().setLocationFields( workspace, levelMetaData );
+        }
+      }
     }
     if ( getDescription() != null ) {
       levelMetaData.setDescription( getDescription() );
