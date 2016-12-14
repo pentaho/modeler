@@ -120,7 +120,7 @@ public class RemoveAttribute extends AnnotationType {
     HierarchyMetaData hierarchyMetaData = levelMetaData.getHierarchyMetaData();
     if ( hierarchyMetaData.getLevels().size() == 1 ) {
       // Remove the hierarchy and dimension if this is the only level created (ex. auto modeling)
-      removeAutoLevel( workspace, levelMetaData );
+      removeAutoLevel( workspace, levelMetaData, true );
     } else if ( hierarchyMetaData.contains( levelMetaData ) ) {
       hierarchyMetaData.remove( levelMetaData );
     }
