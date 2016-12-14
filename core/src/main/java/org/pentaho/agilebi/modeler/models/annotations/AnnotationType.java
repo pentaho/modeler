@@ -315,7 +315,7 @@ public abstract class AnnotationType implements Serializable {
     HierarchyMetaData hierarchy = levelMetaData.getHierarchyMetaData();
     DimensionMetaData dimension = hierarchy.getDimensionMetaData();
     if ( hierarchy.getLevels().size() > 1
-        || ( !force 
+        || ( !force
             && dimension.getMemberAnnotations().containsKey( GeneratedbyMemberAnnotation.GEBERATED_BY_STRING ) ) ) {
       return;
     }
