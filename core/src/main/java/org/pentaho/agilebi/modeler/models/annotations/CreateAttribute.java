@@ -28,6 +28,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoRole;
+import org.pentaho.agilebi.modeler.models.annotations.data.GeneratedbyMemberAnnotation;
 import org.pentaho.agilebi.modeler.models.annotations.data.InlineFormatAnnotation;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaDataCollection;
@@ -412,6 +413,8 @@ public class CreateAttribute extends AnnotationType {
     if ( hierarchyMetaData.getParent() == null ) {
       DimensionMetaData dimensionMetaData = new DimensionMetaData( getDimension(), dimensionType() );
       dimensionMetaData.setTimeDimension( getTimeType() != null );
+      dimensionMetaData.getMemberAnnotations().put( GeneratedbyMemberAnnotation.GEBERATED_BY_STRING,
+          new GeneratedbyMemberAnnotation( dimensionMetaData.getName() ) );
       workspace.getModel().getDimensions().add( dimensionMetaData );
       hierarchyMetaData.setParent( dimensionMetaData );
       dimensionMetaData.add( hierarchyMetaData );

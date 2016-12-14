@@ -304,12 +304,19 @@ public abstract class AnnotationType implements Serializable {
   }
 
   protected void removeAutoLevel( final ModelerWorkspace workspace, final LevelMetaData levelMetaData ) {
+    removeAutoLevel( workspace, levelMetaData, false );
+  }
+
+  protected void removeAutoLevel( final ModelerWorkspace workspace, final LevelMetaData levelMetaData,
+      boolean force ) {
     if ( levelMetaData == null ) {
       return;
     }
     HierarchyMetaData hierarchy = levelMetaData.getHierarchyMetaData();
     DimensionMetaData dimension = hierarchy.getDimensionMetaData();
-    if ( hierarchy.getLevels().size() > 1 ) {
+    if ( hierarchy.getLevels().size() > 1
+        || ( !force 
+            && dimension.getMemberAnnotations().containsKey( GeneratedbyMemberAnnotation.GEBERATED_BY_STRING ) ) ) {
       return;
     }
     if ( dimension.contains( hierarchy ) ) {
