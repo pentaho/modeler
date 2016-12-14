@@ -113,8 +113,8 @@
     <DimensionUsage name="PRODUCTSCALE" source="PRODUCTSCALE"/>
     <DimensionUsage name="PRODUCTVENDOR" source="PRODUCTVENDOR"/>
     <DimensionUsage name="QUANTITYINSTOCK" source="QUANTITYINSTOCK"/>
-    <Measure name="bc_BUYPRICE" column="BUYPRICE" aggregator="sum" formatString="&#x23;"/>
-    <Measure name="bc_MSRP" column="MSRP" aggregator="sum" formatString="&#x23;"/>
-    <Measure name="bc_QUANTITYINSTOCK" column="QUANTITYINSTOCK" aggregator="sum" formatString="&#x23;"/>
+    <Measure name="bc_BUYPRICE" column="BUYPRICE" aggregator="sum" formatString="#"/>
+    <Measure name="bc_MSRP" column="MSRP" aggregator="sum" formatString="#"/>
+    <Measure name="bc_QUANTITYINSTOCK" column="QUANTITYINSTOCK" aggregator="sum" formatString="#"/>
   </Cube>
 </Schema>
