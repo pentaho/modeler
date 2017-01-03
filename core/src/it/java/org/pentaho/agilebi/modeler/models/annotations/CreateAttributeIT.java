@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2017 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -25,6 +25,7 @@ package org.pentaho.agilebi.modeler.models.annotations;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
@@ -472,7 +473,7 @@ public class CreateAttributeIT {
 
     final OlapCube cube = getCubes( model ).get( 0 );
     List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
-    OlapDimensionUsage geoDim = dimensionUsages.get( 2 );
+    OlapDimensionUsage geoDim = AnnotationUtil.getOlapDimensionUsage( "Geo", dimensionUsages );
     OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
     List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
 
@@ -636,6 +637,105 @@ public class CreateAttributeIT {
     assertAnnotation( cityLevel.getAnnotations().get( 0 ), "Data.Role", "Geography" );
     assertAnnotation( cityLevel.getAnnotations().get( 1 ), "Geo.Role", "city" );
     assertAnnotation( cityLevel.getAnnotations().get( 2 ), "Geo.RequiredParents", "country,state" );
+  }
+
+  @Test
+  public void testLatLongGeo() throws Exception {
+    ModelerWorkspace model = prepareGeoModel();
+
+    OlapCube cube = getCubes( model ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    OlapDimensionUsage geoDim = AnnotationUtil.getOlapDimensionUsage( "Geography", dimensionUsages );
+    OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
+
+    OlapHierarchyLevel cityLevel = AnnotationUtil.getOlapHierarchyLevel( "CITY", levels );
+    List<OlapAnnotation> annotationList = cityLevel.getAnnotations();
+    OlapAnnotation dataAnnotation = AnnotationUtil.getOlapAnnotationByName( "Data.Role", annotationList );
+    OlapAnnotation geoAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.Role", annotationList );
+
+    assertNotNull( cityLevel );
+    assertEquals( "CITY", cityLevel.getName() );
+    assertNotNull( dataAnnotation );
+    assertNotNull( geoAnnotation );
+    assertAnnotation( dataAnnotation, "Data.Role", "Geography" );
+    assertAnnotation( geoAnnotation, "Geo.Role", "location" );
+
+    CreateAttribute country = new CreateAttribute();
+    country.setName( "Country" );
+    country.setDimension( "Geo" );
+    country.setGeoType( ModelAnnotation.GeoType.Country );
+    country.setField( "Country" );
+    country.apply( model, metaStore );
+
+    CreateAttribute state = new CreateAttribute();
+    state.setName( "State" );
+    state.setParentAttribute( "Country" );
+    state.setDimension( "Geo" );
+    state.setGeoType( ModelAnnotation.GeoType.State );
+    state.setField( "STATE" );
+    state.apply( model, metaStore );
+
+    cube = getCubes( model ).get( 0 );
+    dimensionUsages = cube.getOlapDimensionUsages();
+    geoDim = AnnotationUtil.getOlapDimensionUsage( "Geography", dimensionUsages );
+
+    assertNull( geoDim );
+
+    geoDim = AnnotationUtil.getOlapDimensionUsage( "Geo", dimensionUsages );
+    levels = geoDim.getOlapDimension().getHierarchies().get( 0 ).getHierarchyLevels();
+    OlapHierarchyLevel olapCountryLevel = AnnotationUtil.getOlapHierarchyLevel( "Country", levels );
+    annotationList = olapCountryLevel.getAnnotations();
+    OlapAnnotation countryDataAnnotation = AnnotationUtil.getOlapAnnotationByName( "Data.Role", annotationList );
+    OlapAnnotation countryGeoAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.Role", annotationList );
+    OlapHierarchyLevel olapStateLevel = AnnotationUtil.getOlapHierarchyLevel( "State", levels );
+    annotationList = olapStateLevel.getAnnotations();
+    OlapAnnotation stateDataAnnotation = AnnotationUtil.getOlapAnnotationByName( "Data.Role", annotationList );
+    OlapAnnotation stateGeoAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.Role", annotationList );
+    OlapAnnotation stateParentAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.RequiredParents", annotationList );
+
+    assertEquals( 2, levels.size() );
+    assertAnnotation( countryDataAnnotation, "Data.Role", "Geography" );
+    assertAnnotation( countryGeoAnnotation, "Geo.Role", "country" );
+    assertAnnotation( stateDataAnnotation, "Data.Role", "Geography" );
+    assertAnnotation( stateGeoAnnotation, "Geo.Role", "state" );
+    assertAnnotation( stateParentAnnotation, "Geo.RequiredParents", "country" );
+
+    CreateAttribute location = new CreateAttribute();
+    location.setName( "id" );
+    location.setParentAttribute( "State" );
+    location.setDimension( "Geo" );
+    location.setGeoType( ModelAnnotation.GeoType.Location );
+    location.setField( "ID" );
+    location.apply( model, metaStore );
+
+    cube = getCubes( model ).get( 0 );
+    dimensionUsages = cube.getOlapDimensionUsages();
+    geoDim = AnnotationUtil.getOlapDimensionUsage( "Geo", dimensionUsages );
+    levels = geoDim.getOlapDimension().getHierarchies().get( 0 ).getHierarchyLevels();
+    olapCountryLevel = AnnotationUtil.getOlapHierarchyLevel( "Country", levels );
+    annotationList = olapCountryLevel.getAnnotations();
+    countryDataAnnotation = AnnotationUtil.getOlapAnnotationByName( "Data.Role", annotationList );
+    countryGeoAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.Role", annotationList );
+    olapStateLevel= AnnotationUtil.getOlapHierarchyLevel( "State", levels );
+    annotationList = olapStateLevel.getAnnotations();
+    stateDataAnnotation = AnnotationUtil.getOlapAnnotationByName( "Data.Role", annotationList );
+    stateGeoAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.Role", annotationList );
+    stateParentAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.RequiredParents", annotationList );
+    OlapHierarchyLevel olapIdLevel = AnnotationUtil.getOlapHierarchyLevel( "id", levels );
+    annotationList = olapIdLevel.getAnnotations();
+    dataAnnotation = AnnotationUtil.getOlapAnnotationByName( "Data.Role", annotationList );
+    geoAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.Role", annotationList );
+
+    assertNotNull( geoDim );
+    assertEquals( 3, levels.size() );
+    assertAnnotation( countryDataAnnotation, "Data.Role", "Geography" );
+    assertAnnotation( countryGeoAnnotation, "Geo.Role", "country" );
+    assertAnnotation( stateDataAnnotation, "Data.Role", "Geography" );
+    assertAnnotation( stateGeoAnnotation, "Geo.Role", "state" );
+    assertAnnotation( stateParentAnnotation, "Geo.RequiredParents", "country" );
+    assertAnnotation( dataAnnotation, "Data.Role", "Geography" );
+    assertAnnotation( geoAnnotation, "Geo.Role", "location" );
   }
 
   private void assertAnnotation( final OlapAnnotation olapAnnotation, final String name, final String value ) {

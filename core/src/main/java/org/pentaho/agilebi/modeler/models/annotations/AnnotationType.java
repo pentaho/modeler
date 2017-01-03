@@ -2,7 +2,7 @@
  *
  * Pentaho Community Edition Project: pentaho-modeler
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  * *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.pentaho.agilebi.modeler.BaseModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
+import org.pentaho.agilebi.modeler.geo.LocationRole;
 import org.pentaho.agilebi.modeler.models.annotations.data.GeneratedbyMemberAnnotation;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
 import org.pentaho.agilebi.modeler.nodes.DimensionMetaData;
@@ -41,6 +42,7 @@ import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasuresCollection;
+import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.automodel.PhysicalTableImporter;
 import org.pentaho.metadata.model.LogicalColumn;
@@ -70,6 +72,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_GEO_ROLE;
 
 /**
  * @author Rowell Belen
@@ -339,6 +343,21 @@ public abstract class AnnotationType implements Serializable {
         for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
           if ( levelMetaData.getLogicalColumn().getName( locale ).equalsIgnoreCase( column )
               || levelMetaData.getLogicalColumn().getName( locale ).equals( beautify( column ) ) ) {
+            return levelMetaData;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  protected LevelMetaData locateLocationLevel( final ModelerWorkspace workspace ) throws ModelerException {
+    workspace.getModel().getDimensions();
+    for ( DimensionMetaData dimensionMetaData : workspace.getModel().getDimensions() ) {
+      for ( HierarchyMetaData hierarchyMetaData : dimensionMetaData ) {
+        for ( LevelMetaData levelMetaData : hierarchyMetaData ) {
+          IMemberAnnotation geoAnnotation = levelMetaData.getMemberAnnotations().get( ANNOTATION_GEO_ROLE );
+          if ( null != geoAnnotation && LocationRole.LOCATION.equalsIgnoreCase( geoAnnotation.getName() ) ) {
             return levelMetaData;
           }
         }

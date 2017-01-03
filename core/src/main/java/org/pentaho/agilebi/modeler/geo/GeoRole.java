@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.geo;
@@ -39,6 +39,7 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializable, IMemberAnnotation,
     IDataRoleAnnotation, IGeoRoleAnnotation {
   private static final long serialVersionUID = 815135675387559794L;
+  public static final String ANNOTATTION_GEO_VALUE = "Geography";
   private String name = null;
   private List<String> commonAliases;
   private String matchSeparator = "_";
@@ -223,7 +224,7 @@ public class GeoRole extends XulEventSourceAdapter implements DataRole, Serializ
 
     clearAnnotations( level );
 
-    level.getAnnotations().add( new OlapAnnotation( GeoContext.ANNOTATION_DATA_ROLE, "Geography" ) );
+    level.getAnnotations().add( new OlapAnnotation( GeoContext.ANNOTATION_DATA_ROLE, ANNOTATTION_GEO_VALUE ) );
 
     // lat long is set as member properties (add as logical columns to achieve this)
     // geo-role is set on the level as an annotation
