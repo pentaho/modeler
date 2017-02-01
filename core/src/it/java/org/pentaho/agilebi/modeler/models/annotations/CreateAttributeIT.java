@@ -640,7 +640,7 @@ public class CreateAttributeIT {
   }
 
   @Test
-  public void testLatLongGeo() throws Exception {
+  public void testAutoLatLongGeo() throws Exception {
     ModelerWorkspace model = prepareGeoModel();
 
     OlapCube cube = getCubes( model ).get( 0 );
@@ -734,6 +734,36 @@ public class CreateAttributeIT {
     assertAnnotation( stateDataAnnotation, "Data.Role", "Geography" );
     assertAnnotation( stateGeoAnnotation, "Geo.Role", "state" );
     assertAnnotation( stateParentAnnotation, "Geo.RequiredParents", "country" );
+    assertAnnotation( dataAnnotation, "Data.Role", "Geography" );
+    assertAnnotation( geoAnnotation, "Geo.Role", "location" );
+  }
+
+  @Test
+  public void testDefinedLatLongGeo() throws Exception {
+    ModelerWorkspace model = prepareGeoModel();
+
+    CreateAttribute location = new CreateAttribute();
+    location.setName( "id" );
+    location.setDimension( "Geo" );
+    location.setGeoType( ModelAnnotation.GeoType.Location );
+    location.setField( "ID" );
+    location.setLatitudeField( "LAT" );
+    location.setLongitudeField( "LONG" );
+    location.apply( model, metaStore );
+
+    OlapCube cube = getCubes( model ).get( 0 );
+    List<OlapDimensionUsage> dimensionUsages = cube.getOlapDimensionUsages();
+    OlapDimensionUsage geoDim = AnnotationUtil.getOlapDimensionUsage( "Geo", dimensionUsages );
+    OlapHierarchy hierarchy = geoDim.getOlapDimension().getHierarchies().get( 0 );
+    List<OlapHierarchyLevel> levels = hierarchy.getHierarchyLevels();
+
+    OlapHierarchyLevel olapIdLevel = AnnotationUtil.getOlapHierarchyLevel( "id", levels );
+    List<OlapAnnotation> annotationList = olapIdLevel.getAnnotations();
+    OlapAnnotation dataAnnotation = AnnotationUtil.getOlapAnnotationByName( "Data.Role", annotationList );
+    OlapAnnotation geoAnnotation = AnnotationUtil.getOlapAnnotationByName( "Geo.Role", annotationList );
+
+    assertNotNull( geoDim );
+    assertEquals( 1, levels.size() );
     assertAnnotation( dataAnnotation, "Data.Role", "Geography" );
     assertAnnotation( geoAnnotation, "Geo.Role", "location" );
   }

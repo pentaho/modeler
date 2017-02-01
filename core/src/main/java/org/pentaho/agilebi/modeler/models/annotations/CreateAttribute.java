@@ -50,8 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_DATA_ROLE;
-import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_GEO_ROLE;
+import static org.pentaho.agilebi.modeler.geo.GeoContext.*;
 
 /**
  * @author Rowell Belen
@@ -79,53 +78,61 @@ public class CreateAttribute extends AnnotationType {
   public static final String GEO_TYPE_NAME = "Geo Type";
   public static final int GEO_TYPE_ORDER = 3;
 
+  public static final String LATITUDE_FIELD_ID = "latitude";
+  public static final String LATITUDE_FIELD_NAME = "Latitude";
+  public static final int LATITUDE_FIELD_ORDER = 4;
+
+  public static final String LONGITUDE_FIELD_ID = "longitude";
+  public static final String LONGITUDE_FIELD_NAME = "Longitude";
+  public static final int LONGITUDE_FIELD_ORDER = 5;
+
   public static final String ORDINAL_FIELD_ID = "ordinalField";
   public static final String ORDINAL_FIELD_NAME = "Ordinal Field";
-  public static final int ORDINAL_FIELD_ORDER = 4;
+  public static final int ORDINAL_FIELD_ORDER = 6;
 
   public static final String FORMAT_STRING_ID = "formatString";
   public static final String FORMAT_STRING_NAME = "Format";
-  public static final int FORMAT_STRING_ORDER = 5;
+  public static final int FORMAT_STRING_ORDER = 7;
 
   public static final String DESCRIPTION_ID = "description";
   public static final String DESCRIPTION_NAME = "Description";
-  public static final int DESCRIPTION_ORDER = 6;
+  public static final int DESCRIPTION_ORDER = 8;
 
   public static final String BUSINESS_GROUP_ID = "businessGroup";
   public static final String BUSINESS_GROUP_NAME = "Business Group";
-  public static final int BUSINESS_GROUP_ORDER = 7;
+  public static final int BUSINESS_GROUP_ORDER = 9;
 
   public static final String PARENT_ATTRIBUTE_ID = "parentAttribute";
   public static final String PARENT_ATTRIBUTE_NAME = "Parent Attribute";
-  public static final int PARENT_ATTRIBUTE_ORDER = 8;
+  public static final int PARENT_ATTRIBUTE_ORDER = 10;
 
   public static final String DIMENSION_ID = "dimension";
   public static final String DIMENSION_NAME = "Dimension";
-  public static final int DIMENSION_ORDER = 9;
+  public static final int DIMENSION_ORDER = 11;
 
   public static final String HIERARCHY_ID = "hierarchy";
   public static final String HIERARCHY_NAME = "Hierarchy";
-  public static final int HIERARCHY_ORDER = 10;
+  public static final int HIERARCHY_ORDER = 12;
 
   public static final String UNIQUE_ID = "unique";
   public static final String UNIQUE_NAME = "Is Unique";
-  public static final int UNIQUE_ORDER = 11;
+  public static final int UNIQUE_ORDER = 13;
 
   public static final String FIELD_ID = "field";
   public static final String FIELD_NAME = "Field";
-  public static final int FIELD_ORDER = 12;
+  public static final int FIELD_ORDER = 14;
 
   public static final String LEVEL_ID = "level";
   public static final String LEVEL_NAME = "Level";
-  public static final int LEVEL_ORDER = 13;
+  public static final int LEVEL_ORDER = 15;
 
   public static final String CUBE_ID = "cube";
   public static final String CUBE_NAME = "Cube";
-  public static final int CUBE_ORDER = 14;
+  public static final int CUBE_ORDER = 16;
 
   public static final String HIDDEN_ID = "hidden";
   public static final String HIDDEN_NAME = "Hidden";
-  public static final int HIDDEN_ORDER = 15;
+  public static final int HIDDEN_ORDER = 17;
 
   @MetaStoreAttribute
   @ModelProperty( id = NAME_ID, name = NAME_NAME, order = NAME_ORDER )
@@ -151,6 +158,16 @@ public class CreateAttribute extends AnnotationType {
   @ModelProperty( id = GEO_TYPE_ID, name = GEO_TYPE_NAME, order = GEO_TYPE_ORDER )
   @Injection( name = MDI_GROUP + "_GEO_TYPE", group = MDI_GROUP )
   private ModelAnnotation.GeoType geoType;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = LATITUDE_FIELD_ID, name = LATITUDE_FIELD_NAME, order = LATITUDE_FIELD_ORDER )
+  @Injection( name = MDI_GROUP + "_LATITUDE_FIELD", group = MDI_GROUP )
+  private String latitudeField;
+
+  @MetaStoreAttribute
+  @ModelProperty( id = LONGITUDE_FIELD_ID, name = LONGITUDE_FIELD_NAME, order = LONGITUDE_FIELD_ORDER )
+  @Injection( name = MDI_GROUP + "_LONGITUDE_FIELD", group = MDI_GROUP )
+  private String longitudeField;
 
   @MetaStoreAttribute
   @ModelProperty( id = ORDINAL_FIELD_ID, name = ORDINAL_FIELD_NAME, order = ORDINAL_FIELD_ORDER )
@@ -335,6 +352,22 @@ public class CreateAttribute extends AnnotationType {
     this.hidden = hidden;
   }
 
+  public String getLatitudeField() {
+    return latitudeField;
+  }
+
+  public void setLatitudeField( String latitudeField ) {
+    this.latitudeField = latitudeField;
+  }
+
+  public String getLongitudeField() {
+    return longitudeField;
+  }
+
+  public void setLongitudeField( String longitudeField ) {
+    this.longitudeField = longitudeField;
+  }
+
   @Override
   public boolean apply(
       final ModelerWorkspace workspace, final IMetaStore metaStore ) throws ModelerException {
@@ -469,25 +502,36 @@ public class CreateAttribute extends AnnotationType {
       GeoRole geoRole = workspace.getGeoContext().getGeoRoleByName( getGeoType().name() );
       levelMetaData.getMemberAnnotations().put( ANNOTATION_DATA_ROLE, geoRole );
 
-      // If this is a Lat/Long Location Geo Type then try and find auto modeled Lat/Long level and move the
-      // member properties and annotations to this level. If the auto modeled Lat/Long level doesn't exist
-      // or was removed then search for Lat/Long fields and assign them to the level
+      // If this is a Lat/Long Location Geo Type then try use the User defined Lat/Long values. If the User has not
+      // defined Lat/Long fields then try and find them.
       if ( ModelAnnotation.GeoType.Location.equals( getGeoType() ) ) {
-        LevelMetaData oldLocationMetaData = locateLocationLevel( workspace );
-        if ( null != oldLocationMetaData ) {
-          MemberPropertyMetaData latitudeMetaData = oldLocationMetaData.getLatitudeField();
-          MemberPropertyMetaData longitudeMetaData = oldLocationMetaData.getLongitudeField();
-          levelMetaData.add( latitudeMetaData );
-          levelMetaData.add( longitudeMetaData );
-          oldLocationMetaData.remove( latitudeMetaData );
-          oldLocationMetaData.remove( longitudeMetaData );
+        if ( !StringUtils.isEmpty( latitudeField ) && !StringUtils.isEmpty( longitudeField ) ) {
+          LevelMetaData oldLocationMetaData = locateLocationLevel( workspace );
+          MemberPropertyMetaData latitudeMetaData = null;
+          MemberPropertyMetaData longitudeMetaData = null;
 
-          Map oldMemberAnnotations = oldLocationMetaData.getMemberAnnotations();
-          Map newMemberAnnotations = levelMetaData.getMemberAnnotations();
-          newMemberAnnotations.put( ANNOTATION_GEO_ROLE, oldMemberAnnotations.remove( ANNOTATION_GEO_ROLE ) );
-          newMemberAnnotations.put( ANNOTATION_DATA_ROLE, oldMemberAnnotations.remove( ANNOTATION_DATA_ROLE ) );
+          if ( null != oldLocationMetaData  ) {
+            MemberPropertyMetaData tmpLatitudeMetaData = oldLocationMetaData.getLatitudeField();
+            MemberPropertyMetaData tmpLongitudeMetaData = oldLocationMetaData.getLongitudeField();
+            if ( tmpLatitudeMetaData.getColumnName().equalsIgnoreCase( latitudeField )
+                && tmpLongitudeMetaData.getColumnName().equalsIgnoreCase( longitudeField ) ) {
+              latitudeMetaData = tmpLatitudeMetaData;
+              longitudeMetaData = tmpLongitudeMetaData;
+            }
+          }
+
+          if ( null != latitudeMetaData && null != longitudeMetaData ) {
+            moveGeoLocationFields( oldLocationMetaData, levelMetaData );
+          } else {
+            workspace.getGeoContext().setLocationFields( workspace, levelMetaData, latitudeField, longitudeField );
+          }
         } else {
-          workspace.getGeoContext().setLocationFields( workspace, levelMetaData );
+          LevelMetaData oldLocationMetaData = locateLocationLevel( workspace );
+          if ( null != oldLocationMetaData ) {
+            moveGeoLocationFields( oldLocationMetaData, levelMetaData );
+          } else {
+            workspace.getGeoContext().setLocationFields( workspace, levelMetaData );
+          }
         }
       }
     }
@@ -521,6 +565,20 @@ public class CreateAttribute extends AnnotationType {
     if ( toRemove != null ) {
       dimensions.remove( toRemove );
     }
+  }
+
+  private void moveGeoLocationFields( LevelMetaData oldLocationMetaData, LevelMetaData newLocationMetaData ) {
+    MemberPropertyMetaData latitudeMetaData = oldLocationMetaData.getLatitudeField();
+    MemberPropertyMetaData longitudeMetaData = oldLocationMetaData.getLongitudeField();
+    newLocationMetaData.add( latitudeMetaData );
+    newLocationMetaData.add( longitudeMetaData );
+    oldLocationMetaData.remove( latitudeMetaData );
+    oldLocationMetaData.remove( longitudeMetaData );
+
+    Map oldMemberAnnotations = oldLocationMetaData.getMemberAnnotations();
+    Map newMemberAnnotations = newLocationMetaData.getMemberAnnotations();
+    newMemberAnnotations.put( ANNOTATION_GEO_ROLE, oldMemberAnnotations.remove( ANNOTATION_GEO_ROLE ) );
+    newMemberAnnotations.put( ANNOTATION_DATA_ROLE, oldMemberAnnotations.remove( ANNOTATION_DATA_ROLE ) );
   }
 
   private boolean attachLevel( final ModelerWorkspace workspace, final HierarchyMetaData existingHierarchy,

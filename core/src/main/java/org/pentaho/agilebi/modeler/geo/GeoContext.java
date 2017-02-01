@@ -195,27 +195,7 @@ public class GeoContext extends AbstractModelList<GeoRole> {
                 level.getMemberAnnotations().put( ANNOTATION_DATA_ROLE, locationRole );
                 level.getMemberAnnotations().put( ANNOTATION_GEO_ROLE, locationRole );
 
-                // if it is a LocationField we need to make sure the lat & long columns get
-                // added as logical columns to the model.
-                AvailableField latField =
-                    table.findFieldByPhysicalColumn( table.getPhysicalTable().getPhysicalColumns().get( latColIndex ) );
-                AvailableField lonField =
-                    table.findFieldByPhysicalColumn( table.getPhysicalTable().getPhysicalColumns().get( lonColIndex ) );
-
-                ColumnBackedNode tmp = workspace.createColumnBackedNode( latField, ModelerPerspective.ANALYSIS );
-                tmp.getLogicalColumn().setName(
-                    new LocalizedString( workspace.getWorkspaceHelper().getLocale(), LATITUDE ) );
-                MemberPropertyMetaData memberProp = workspace.createMemberPropertyForParentWithNode( level, tmp );
-                memberProp.setName( LATITUDE );
-                level.add( memberProp );
-
-                tmp = workspace.createColumnBackedNode( lonField, ModelerPerspective.ANALYSIS );
-                tmp.getLogicalColumn().setName(
-                    new LocalizedString( workspace.getWorkspaceHelper().getLocale(), LONGITUDE ) );
-                memberProp = workspace.createMemberPropertyForParentWithNode( level, tmp );
-                memberProp.setName( LONGITUDE );
-                level.add( memberProp );
-
+                setLocationMemberProperties( workspace, table, level, latColIndex, lonColIndex );
               }
               if ( !hier.contains( level ) ) {
                 hier.add( level );
@@ -350,8 +330,9 @@ public class GeoContext extends AbstractModelList<GeoRole> {
       LocationRole locationRole = getLocationRole();
 
       boolean locationFieldDetected = false;
-      int latColIndex = 0;
-      int lonColIndex = 0;
+      // -1 used to determine if something column index has not been found. > -1 if found.
+      int latColIndex = -1;
+      int lonColIndex = -1;
       int count = 0;
       // must iterate over the physical columns to ensure we process the columns in the proper order, available fields
       // are sorted in available table
@@ -381,6 +362,37 @@ public class GeoContext extends AbstractModelList<GeoRole> {
       if ( locationFieldDetected && locationLevel != null && locationRole != null && latColIndex > -1
         && lonColIndex > -1 ) {
         setLocationMemberAnnotations( locationLevel, locationRole );
+        setLocationMemberProperties( workspace, table, locationLevel, latColIndex, lonColIndex );
+      }
+    }
+  }
+
+  public void setLocationFields( ModelerWorkspace workspace, LevelMetaData locationLevel,
+                                 String latitudeFieldName, String longitudeFieldName ) {
+    boolean foundLatLongColumn = false;
+    // -1 used to determine if something column index has not been found. > -1 if found.
+    int latColIndex = -1;
+    int lonColIndex = -1;
+
+    // Look for specified lat and long columns
+    List<AvailableTable> tableList = workspace.getAvailableTables().getAsAvailableTablesList();
+    for ( AvailableTable table : tableList ) {
+      int count = 0;
+
+      for ( IPhysicalColumn col : table.getPhysicalTable().getPhysicalColumns() ) {
+        String fieldName = col.getId();
+        if ( fieldName.equalsIgnoreCase( latitudeFieldName ) ) {
+          foundLatLongColumn = true;
+          latColIndex = count;
+        } else if ( fieldName.equalsIgnoreCase( longitudeFieldName ) ) {
+          foundLatLongColumn = true;
+          lonColIndex = count;
+        }
+        count++;
+      }
+
+      if ( foundLatLongColumn && locationLevel != null && latColIndex > -1 && lonColIndex > -1 ) {
+        setLocationMemberAnnotations( locationLevel, getLocationRole() );
         setLocationMemberProperties( workspace, table, locationLevel, latColIndex, lonColIndex );
       }
     }
