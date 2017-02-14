@@ -674,6 +674,18 @@ public class CreateAttribute extends AnnotationType {
           .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.ATTRIBUTE_NAME_REQUIRED" ) );
     }
 
+    if ( StringUtils.isNotBlank( getLatitudeField() ) && StringUtils.isNotBlank( getLongitudeField() )
+        && StringUtils.equals( getLatitudeField(), getLongitudeField() ) ) {
+      throw new ModelerException( BaseMessages
+          .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.LATITUDE_EQUALS_LONGITUDE" ) );
+    }
+
+    if ( ( StringUtils.isBlank( getLatitudeField() ) && StringUtils.isNotBlank( getLongitudeField() ) )
+        || ( StringUtils.isBlank( getLongitudeField() ) && StringUtils.isNotBlank( getLatitudeField() ) )  ) {
+      throw new ModelerException( BaseMessages
+          .getString( MSG_CLASS, "ModelAnnotation.CreateAttribute.validation.LATITUDE_OR_LONGITUDE_NOT_PROVIDED" ) );
+    }
+
     if ( StringUtils.isBlank( getField() ) && ( StringUtils.isBlank( getLevel() )
         || StringUtils.isBlank( getCube() ) ) ) {
       throw new ModelerException( BaseMessages
