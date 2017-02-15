@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns=  "http://maven.apache.org/POM/4.0.0"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -9,38 +9,36 @@
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-modeler-parent</artifactId>
-  <version>7.0-SNAPSHOT</version>
+  <version>7.0.0.3-64</version>
   <packaging>pom</packaging>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>Pentaho common modeler project.</description>
   <url>http://www.pentaho.com</url>
+  <modules>
+    <module>core</module>
+    <module>gwt</module>
+  </modules>
   <scm>
     <connection>scm:git:git@github.com:pentaho/${project.artifactId}.git</connection>
     <developerConnection>scm:git:git@github.com:pentaho/${project.artifactId}.git</developerConnection>
     <url>scm:git:git@github.com:pentaho/${project.artifactId}.git</url>
   </scm>
-  <modules>
-    <module>core</module>
-    <module>gwt</module>
-  </modules>
   <properties>
-    <dependency.pentaho-metadata.revision>7.0-SNAPSHOT</dependency.pentaho-metadata.revision>
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
-    <dependency.junit.revision>4.11</dependency.junit.revision>
-    <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
-    <dependency.mockito.revision>1.8.4</dependency.mockito.revision>
-    <dependency.pentaho-xul.revision>7.0-SNAPSHOT</dependency.pentaho-xul.revision>
-    <dependency.kettle.revision>7.0-SNAPSHOT</dependency.kettle.revision>
-    <dependency.pentaho-database.revision>7.0-SNAPSHOT</dependency.pentaho-database.revision>
-    <dependency.pentaho-platform.revision>7.0-SNAPSHOT</dependency.pentaho-platform.revision>
-    <dependency.pentaho-gwt-widgets.revision>7.0-SNAPSHOT</dependency.pentaho-gwt-widgets.revision>
+    <dependency.pentaho-platform.revision>7.0.0.3-64</dependency.pentaho-platform.revision>
     <dependency.pentaho-simple-jndi.revision>1.0.0</dependency.pentaho-simple-jndi.revision>
-    <dependency.mondrian.revision>3.13-SNAPSHOT</dependency.mondrian.revision>
-    <dependency.pentaho-gwt-widgets.revision>7.0-SNAPSHOT</dependency.pentaho-gwt-widgets.revision>
+    <dependency.mondrian.revision>3.13.0.3-64</dependency.mondrian.revision>
+    <dependency.pentaho-database.revision>7.0.0.3-64</dependency.pentaho-database.revision>
+    <dependency.pentaho-xul.revision>7.0.0.3-64</dependency.pentaho-xul.revision>
+    <dependency.junit.revision>4.11</dependency.junit.revision>
     <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
     <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
+    <dependency.pentaho-metadata.revision>7.0.0.3-64</dependency.pentaho-metadata.revision>
+    <dependency.pentaho-gwt-widgets.revision>7.0.0.3-64</dependency.pentaho-gwt-widgets.revision>
+    <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
+    <dependency.mockito.revision>1.8.4</dependency.mockito.revision>
     <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
-    <dependency.pentaho-xul.revision>7.0-SNAPSHOT</dependency.pentaho-xul.revision>
+    <dependency.kettle.revision>7.0.0.3-64</dependency.kettle.revision>
   </properties>
   <dependencies>
     <dependency>
@@ -89,8 +87,8 @@
       <version>3.3.0-I20070606-0010</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
           <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -110,8 +108,8 @@
       <version>${dependency.pentaho-xul.revision}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.eclipse</groupId>
           <artifactId>swt</artifactId>
+          <groupId>org.eclipse</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -231,8 +229,8 @@
       <version>2.7.2</version>
       <exclusions>
         <exclusion>
-          <groupId>xalan</groupId>
           <artifactId>serializer</artifactId>
+          <groupId>xalan</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -242,15 +240,14 @@
       <version>2.3.2</version>
       <scope>test</scope>
     </dependency>
-    <!-- to match current distribution-->
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr</artifactId>
       <version>3.4-complete</version>
       <exclusions>
         <exclusion>
-          <groupId>org.antlr</groupId>
           <artifactId>*</artifactId>
+          <groupId>org.antlr</groupId>
         </exclusion>
       </exclusions>
     </dependency>
