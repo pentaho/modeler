@@ -420,7 +420,25 @@ public class CreateAttributeIT {
     }
 
     try {
+      createAttribute.setLatitudeField( "LAT" );
+      createAttribute.validate(); // throws an error
+      fail( "no exception" );
+    } catch ( ModelerException me ) {
+      assertEquals( "Please choose a value for both latitude and longitude.", me.getMessage() );
+    }
+
+    try {
+      createAttribute.setLatitudeField( "LAT" );
+      createAttribute.setLongitudeField( "LAT" );
+      createAttribute.validate(); // throws an error
+      fail( "no exception" );
+    } catch ( ModelerException me ) {
+      assertEquals( "You may not use the same value for latitude and longitude.", me.getMessage() );
+    }
+
+    try {
       createAttribute.setDimension( "dimension" );
+      createAttribute.setLongitudeField( "LON" );
       createAttribute.validate(); // no error
     } catch ( ModelerException me ) {
       fail( "Exception" );
