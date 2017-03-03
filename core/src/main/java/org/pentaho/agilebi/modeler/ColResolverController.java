@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler;
@@ -88,6 +88,7 @@ public class ColResolverController extends AbstractXulEventHandler {
       return;
     }
     AvailableField field = (AvailableField) selectedFields[0];
+    normalizeFieldName( field );
     ColumnBackedNode cnode = workspace.createColumnBackedNode( field, workspace.getCurrentModelerPerspective() );
     LogicalColumn lCol = cnode.getLogicalColumn();
     if ( ColumnBackedNode.COLUMN_TYPE_SOURCE.equals( columnType ) ) {
@@ -99,6 +100,11 @@ public class ColResolverController extends AbstractXulEventHandler {
     }
     workspace.setDirty( true );
     dialog.hide();
+  }
+
+  private void normalizeFieldName( AvailableField field ) {
+    String fieldName = field.getName().toLowerCase();
+    field.setName( fieldName );
   }
 
   @Bindable

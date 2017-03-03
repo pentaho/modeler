@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.geo;
@@ -33,10 +33,7 @@ import java.util.List;
  */
 public class GeoContextFactory {
 
-  private static final String LATITUDE = "latitude";
-  private static final String LONGITUDE = "longitude";
-
-  /**
+   /**
    * This factory method creates a GeoContext from a GeoContextConfigProvider.
    * 
    * @param configProvider
@@ -94,10 +91,10 @@ public class GeoContextFactory {
           + GeoContext.GEO_ROLE_KEY + " property defined." );
     }
 
-    String latAliases = configProvider.getRoleAliases( LATITUDE );
-    LatLngRole latRole = new LatLngRole( LATITUDE, latAliases );
-    String longAliases = configProvider.getRoleAliases( LONGITUDE );
-    LatLngRole longRole = new LatLngRole( LONGITUDE, longAliases );
+    String latAliases = configProvider.getRoleAliases( GeoContext.LATITUDE );
+    LatLngRole latRole = new LatLngRole( GeoContext.LATITUDE, latAliases );
+    String longAliases = configProvider.getRoleAliases( GeoContext.LONGITUDE );
+    LatLngRole longRole = new LatLngRole( GeoContext.LONGITUDE, longAliases );
 
     String displayName = ModelerMessagesHolder.getMessages().getString( "geo.location" );
     if ( StringUtils.isEmpty( displayName ) ) {
