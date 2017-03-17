@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -229,7 +229,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   public MemberPropertyMetaData getLatitudeField() {
     for ( MemberPropertyMetaData member : this ) {
-      if ( member.getName().equals( GeoContext.LATITUDE ) ) {
+      if ( member.getName().equalsIgnoreCase( GeoContext.LATITUDE ) ) {
         return member;
       }
     }
@@ -238,7 +238,7 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   public MemberPropertyMetaData getLongitudeField() {
     for ( MemberPropertyMetaData member : this ) {
-      if ( member.getName().equals( GeoContext.LONGITUDE ) ) {
+      if ( member.getName().equalsIgnoreCase( GeoContext.LONGITUDE ) ) {
         return member;
       }
     }
