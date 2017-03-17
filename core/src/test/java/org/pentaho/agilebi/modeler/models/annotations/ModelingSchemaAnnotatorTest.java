@@ -1,7 +1,7 @@
 /*!
  * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2016 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2002 - 2017 Pentaho Corporation (Pentaho). All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Pentaho and its licensors. The intellectual
@@ -39,7 +39,8 @@ public class ModelingSchemaAnnotatorTest {
     InputStream annotationsInput = getClass().getResourceAsStream( "resources/annotations.xml" );
     InputStream expectedInput = getClass().getResourceAsStream( "resources/annotated.mondrian.xml" );
     InputStream actualInput = annotator.getInputStream( schemaInput, annotationsInput );
-    assertEquals( IOUtils.toString( expectedInput ), IOUtils.toString( actualInput ) );
+    assertEquals( IOUtils.toString( expectedInput ).replaceAll( "\\r\\n", "\\\n" ), IOUtils.toString( actualInput )
+            .replaceAll( "\\r\\n", "\\\n" ) );
   }
 
   @Test
