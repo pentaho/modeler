@@ -23,13 +23,11 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.platform.api.repository.RepositoryException;
 
 import java.io.InputStream;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public class ModelingSchemaAnnotatorTest {
   @Test
@@ -39,7 +37,7 @@ public class ModelingSchemaAnnotatorTest {
     InputStream annotationsInput = getClass().getResourceAsStream( "resources/annotations.xml" );
     InputStream expectedInput = getClass().getResourceAsStream( "resources/annotated.mondrian.xml" );
     InputStream actualInput = annotator.getInputStream( schemaInput, annotationsInput );
-    assertEquals( IOUtils.toString( expectedInput ).replaceAll( "\\r\\n", "\\\n" ), IOUtils.toString( actualInput )
+    Assert.assertEquals( IOUtils.toString( expectedInput ).replaceAll( "\\r\\n", "\\\n" ), IOUtils.toString( actualInput )
             .replaceAll( "\\r\\n", "\\\n" ) );
   }
 
@@ -54,8 +52,8 @@ public class ModelingSchemaAnnotatorTest {
     } catch ( RepositoryException e ) {
       return;
     } catch ( Exception e ) {
-      fail( "got wrong exception" );
+      Assert.fail( "got wrong exception" );
     }
-    fail( "should have got exception" );
+    Assert.fail( "should have got exception" );
   }
 }
