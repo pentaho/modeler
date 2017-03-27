@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.util;
@@ -28,6 +28,8 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.metadata.automodel.PhysicalTableImporter.ImportStrategy;
 import org.pentaho.metadata.automodel.SchemaTable;
 import org.pentaho.metadata.model.Domain;
+import org.pentaho.metadata.model.IPhysicalModel;
+import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.LogicalModel;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.metadata.model.concept.IConcept;
@@ -148,6 +150,16 @@ public class ModelerSourceUtil {
       tableNames[0] = new SchemaTable( schemaName, tableName );
       generator.setTableNames( tableNames );
       domain = generator.generateDomain( importStrategy );
+      for ( IPhysicalModel physicalModel : domain.getPhysicalModels() ) {
+        for ( IPhysicalTable physicalTable : physicalModel.getPhysicalTables() ) {
+          physicalTable.setName( new LocalizedString( locale, datasourceName ) );
+        }
+      }
+      for ( LogicalModel logicalModel : domain.getLogicalModels() ) {
+        for ( LogicalTable logicalTable : logicalModel.getLogicalTables() ) {
+          logicalTable.setName( new LocalizedString( locale, datasourceName ) );
+        }
+      }
       domain.setId( tableName ); // replaced with user specified name later
 
       LogicalModel businessModel = domain.getLogicalModels().get( 0 ); // schemaMeta.getActiveModel();
