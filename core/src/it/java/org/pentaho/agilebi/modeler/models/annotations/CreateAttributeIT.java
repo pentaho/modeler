@@ -1025,6 +1025,39 @@ public class CreateAttributeIT {
     state.apply( model, metaStore );
   }
 
+  @Test
+  public void testDuplicateAttributesInHierarchy() throws Exception {
+    ModelerWorkspace model =
+      new ModelerWorkspace( new ModelerWorkspaceHelper( "" ) );
+    model.setDomain( new XmiParser().parseXmi( new FileInputStream( PRODUCT_XMI_FILE ) ) );
+    model.getWorkspaceHelper().populateDomain( model );
+
+    CreateAttribute productLine = new CreateAttribute();
+    productLine.setName( "Product Line" );
+    productLine.setDimension( "Products" );
+    productLine.setHierarchy( "Products" );
+    productLine.setField( "PRODUCTLINE_OLAP" );
+    productLine.apply( model, metaStore );
+
+    CreateAttribute secondProductLine = new CreateAttribute();
+    secondProductLine.setName( "Product Line" );
+    secondProductLine.setDimension( "Products" );
+    secondProductLine.setHierarchy( "Products" );
+    secondProductLine.setField( "PRODUCTLINE_OLAP" );
+    secondProductLine.apply( model, metaStore );
+
+    final LogicalModel anlModel = model.getLogicalModel( ModelerPerspective.ANALYSIS );
+    final OlapCube cube = ( (List<OlapCube>) anlModel.getProperty( LogicalModel.PROPERTY_OLAP_CUBES ) ).get( 0 );
+
+    OlapDimensionUsage productsDim = AnnotationUtil.getOlapDimensionUsage( "Products", cube.getOlapDimensionUsages() );
+    assertEquals( 1, productsDim.getOlapDimension().getHierarchies().size() );
+
+    OlapHierarchy productsHierarchy = productsDim.getOlapDimension().getHierarchies().get( 0 );
+    OlapHierarchyLevel productLineLevel =
+      AnnotationUtil.getOlapHierarchyLevel( "Product Line", productsHierarchy.getHierarchyLevels() );
+    assertEquals( "Product Line", productLineLevel.getName() );
+  }
+
   @SuppressWarnings( "unchecked" )
   private List<OlapCube> getCubes( ModelerWorkspace wspace ) {
     return (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(

@@ -596,6 +596,7 @@ public class CreateAttribute extends AnnotationType {
       LevelMetaData levelMetaData = new LevelMetaData( existingHierarchy, getName() );
       existingHierarchy.add( parentIndex + 1, levelMetaData );
       fillLevelProperties( workspace, logicalColumn, levelMetaData );
+      removeDuplicateLevel( levelMetaData );
       removeAutoLevel( workspace, existingLevel );
       removeAutoMeasure( workspace, column );
       removeAutoLevel( workspace, ordinalAutoLevel );
@@ -742,5 +743,20 @@ public class CreateAttribute extends AnnotationType {
 
     return eq.isEquals();
 
+  }
+
+  protected void removeDuplicateLevel( final LevelMetaData levelMetaData ) {
+    if ( null == levelMetaData || null == levelMetaData.getHierarchyMetaData() ) {
+      return;
+    }
+
+    HierarchyMetaData hierarchyMetaData = levelMetaData.getHierarchyMetaData();
+
+    for ( LevelMetaData duplicateLevel : hierarchyMetaData.getLevels() ) {
+      if ( levelMetaData.getName().equals( duplicateLevel.getName() ) && duplicateLevel != levelMetaData ) {
+        hierarchyMetaData.remove( duplicateLevel );
+        break;
+      }
+    }
   }
 }

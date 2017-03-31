@@ -1,7 +1,7 @@
 /*
  * ******************************************************************************
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -21,8 +21,14 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
+import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Created by rfellows on 6/8/16.
@@ -98,5 +104,29 @@ public class CreateAttributeTest {
     assertTrue( left.equalsLogically( right ) );
   }
 
+  @Test
+  public void testRemovingDuplicateLevels() {
+    LevelMetaData duplicateLevel = new LevelMetaData();
+    duplicateLevel.setName( "testLevel" );
+    LevelMetaData notDuplicateLevel = new LevelMetaData();
+    notDuplicateLevel.setName( "notDuplicateLevel" );
 
+    HierarchyMetaData existingHierarchy = mock( HierarchyMetaData.class );
+
+    LevelMetaData newLevel = new LevelMetaData( existingHierarchy, "testLevel" );
+
+    when( existingHierarchy.getLevels() ).thenReturn( new ArrayList<>( Arrays.asList( duplicateLevel, notDuplicateLevel, newLevel ) ) );
+
+    CreateAttribute createAttribute = new CreateAttribute();
+    createAttribute.removeDuplicateLevel( newLevel );
+
+    // Ensure duplicate level was removed
+    verify( existingHierarchy ).remove( duplicateLevel );
+
+    // Test not being a duplicate so level should not be removed
+    reset( existingHierarchy );
+    duplicateLevel.setName( "alsoNotDuplicate" );
+    createAttribute.removeDuplicateLevel( newLevel );
+    verify( existingHierarchy, never() ).remove( duplicateLevel );
+  }
 }
