@@ -7,3 +7,5 @@ target
 .vscode/*
 override.properties
 bin/
+pentaho-modeler-parent.iml
+
