@@ -27,7 +27,7 @@
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
     <dependency.pentaho-platform.revision>8.0-SNAPSHOT</dependency.pentaho-platform.revision>
     <dependency.pentaho-simple-jndi.revision>1.0.0</dependency.pentaho-simple-jndi.revision>
-    <dependency.mondrian.revision>3.15-SNAPSHOT</dependency.mondrian.revision>
+    <dependency.mondrian.revision>8.0-SNAPSHOT</dependency.mondrian.revision>
     <dependency.pentaho-database.revision>8.0-SNAPSHOT</dependency.pentaho-database.revision>
     <dependency.pentaho-xul.revision>8.0-SNAPSHOT</dependency.pentaho-xul.revision>
     <dependency.junit.revision>4.11</dependency.junit.revision>
