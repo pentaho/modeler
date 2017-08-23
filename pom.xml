@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.3-57</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-modeler-parent</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1.0.3-57</version>
   <packaging>pom</packaging>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>Pentaho common modeler project.</description>
@@ -25,20 +25,20 @@
   </scm>
   <properties>
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
-    <dependency.pentaho-platform.revision>7.1-SNAPSHOT</dependency.pentaho-platform.revision>
+    <dependency.pentaho-platform.revision>7.1.0.3-57</dependency.pentaho-platform.revision>
     <dependency.pentaho-simple-jndi.revision>1.0.0</dependency.pentaho-simple-jndi.revision>
-    <dependency.mondrian.revision>3.14-SNAPSHOT</dependency.mondrian.revision>
-    <dependency.pentaho-database.revision>7.1-SNAPSHOT</dependency.pentaho-database.revision>
-    <dependency.pentaho-xul.revision>7.1-SNAPSHOT</dependency.pentaho-xul.revision>
+    <dependency.mondrian.revision>3.14.0.3-57</dependency.mondrian.revision>
+    <dependency.pentaho-database.revision>7.1.0.3-57</dependency.pentaho-database.revision>
+    <dependency.pentaho-xul.revision>7.1.0.3-57</dependency.pentaho-xul.revision>
     <dependency.junit.revision>4.11</dependency.junit.revision>
     <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
+    <dependency.pentaho-metadata.revision>7.1.0.3-57</dependency.pentaho-metadata.revision>
     <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
-    <dependency.pentaho-metadata.revision>7.1-SNAPSHOT</dependency.pentaho-metadata.revision>
-    <dependency.pentaho-gwt-widgets.revision>7.1-SNAPSHOT</dependency.pentaho-gwt-widgets.revision>
     <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
+    <dependency.pentaho-gwt-widgets.revision>7.1.0.3-57</dependency.pentaho-gwt-widgets.revision>
     <dependency.mockito.revision>1.8.4</dependency.mockito.revision>
+    <dependency.kettle.revision>7.1.0.3-57</dependency.kettle.revision>
     <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
-    <dependency.kettle.revision>7.1-SNAPSHOT</dependency.kettle.revision>
   </properties>
   <dependencies>
     <dependency>
