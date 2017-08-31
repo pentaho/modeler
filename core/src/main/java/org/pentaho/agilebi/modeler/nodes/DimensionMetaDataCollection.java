@@ -190,7 +190,7 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
       } else if ( data instanceof DimensionMetaData ) {
         return data;
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
 
     } catch ( Exception e ) {

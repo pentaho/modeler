@@ -161,7 +161,7 @@ public class CategoryMetaData extends AbstractMetaDataModelNode<FieldMetaData> {
         ( (FieldMetaData) data ).setParent( this );
         return data;
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
     } catch ( Exception e ) {
       throw new ModelerException( e );

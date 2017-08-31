@@ -343,8 +343,7 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
 
   @Override
   public Object onDrop( Object data ) throws ModelerException {
-    throw new ModelerException( new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString(
-        "invalid_drop" ) ) );
+    return null;
   }
 
   public String getValidationMessageKey( String key ) {

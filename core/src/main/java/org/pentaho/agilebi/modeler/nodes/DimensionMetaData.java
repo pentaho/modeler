@@ -231,7 +231,7 @@ public class DimensionMetaData extends AbstractMetaDataModelNode<HierarchyMetaDa
         hier.get( 0 ).setName( measure.getName() );
         return hier;
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
     } catch ( Exception e ) {
       throw new ModelerException( e );

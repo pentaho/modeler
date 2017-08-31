@@ -18,7 +18,6 @@
 package org.pentaho.agilebi.modeler.nodes;
 
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.MemberPropertyPropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
@@ -57,8 +56,7 @@ public class MemberPropertyMetaData extends BaseColumnBackedMetaData<MemberPrope
 
   @Override
   public Object onDrop( Object data ) throws ModelerException {
-    throw new ModelerException( new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString(
-        "invalid_drop" ) ) );
+    return null;
   }
 
   @Override
