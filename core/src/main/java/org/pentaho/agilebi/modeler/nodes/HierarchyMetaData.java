@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -25,6 +25,7 @@ import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.HierarchyPropertiesForm;
+import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -233,6 +234,13 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
             || obj instanceof MeasureMetaData || obj instanceof MemberPropertyMetaData );
 
     // get the columns of children, make sure the potential drop object is backed by the same table
+
+    if ( obj instanceof LevelMetaData ) {
+      LevelMetaData lev = (LevelMetaData) obj;
+      if ( lev.getLogicalColumn() == null ) {
+        return false;
+      }
+    }
     if ( isSupportedType ) {
       if ( size() == 0 ) {
         // no children to compare tables with, accept the drop
@@ -276,7 +284,11 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
       }
       if ( size() > 0 ) {
         LogicalTable existingTable = get( 0 ).getLogicalColumn().getLogicalTable();
-        if ( level.getLogicalColumn().getLogicalTable().getId() != existingTable.getId() ) {
+        LogicalColumn col = level.getLogicalColumn();
+        if ( col == null ) {
+          throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        }
+        if ( col.getLogicalTable().getId() != existingTable.getId() ) {
           throw new IllegalStateException( ModelerMessagesHolder.getMessages().getString(
               "DROP.ERROR.TWO_TABLES_IN_HIERARCHY" ) );
         }
