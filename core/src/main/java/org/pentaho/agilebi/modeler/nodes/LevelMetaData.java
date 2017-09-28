@@ -26,6 +26,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.propforms.LevelsPropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
+import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
@@ -153,7 +154,11 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
         throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
       }
       LogicalTable existingTable = getLogicalColumn().getLogicalTable();
-      if ( memberProp.getLogicalColumn().getLogicalTable().getId() != existingTable.getId() ) {
+      LogicalColumn col = memberProp.getLogicalColumn();
+      if ( col == null ) {
+        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+      }
+      if ( col.getLogicalTable().getId() != existingTable.getId() ) {
         throw new IllegalStateException( ModelerMessagesHolder.getMessages().getString(
             "DROP.ERROR.MEMBER_PROP_FROM_DIFFERENT_TABLE" ) );
       }
