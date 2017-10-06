@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Vector;
 
 import org.pentaho.agilebi.modeler.ModelerException;
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metadata.model.concept.types.DataType;
@@ -236,8 +235,7 @@ public abstract class BaseAggregationMetaDataNode extends BaseColumnBackedMetaDa
 
   @Override
   public Object onDrop( Object data ) throws ModelerException {
-    throw new ModelerException( new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString(
-        "invalid_drop" ) ) );
+    return null;
   }
 
 }
