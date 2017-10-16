@@ -235,12 +235,6 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
 
     // get the columns of children, make sure the potential drop object is backed by the same table
 
-    if ( obj instanceof LevelMetaData ) {
-      LevelMetaData lev = (LevelMetaData) obj;
-      if ( lev.getLogicalColumn() == null ) {
-        return false;
-      }
-    }
     if ( isSupportedType ) {
       if ( size() == 0 ) {
         // no children to compare tables with, accept the drop
@@ -280,14 +274,14 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
         level = getWorkspace().createLevelForParentWithNode( this, node );
         level.setName( node.getName() );
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
       if ( size() > 0 ) {
-        LogicalTable existingTable = get( 0 ).getLogicalColumn().getLogicalTable();
         LogicalColumn col = level.getLogicalColumn();
         if ( col == null ) {
-          throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+          return null;
         }
+        LogicalTable existingTable = get( 0 ).getLogicalColumn().getLogicalTable();
         if ( col.getLogicalTable().getId() != existingTable.getId() ) {
           throw new IllegalStateException( ModelerMessagesHolder.getMessages().getString(
               "DROP.ERROR.TWO_TABLES_IN_HIERARCHY" ) );

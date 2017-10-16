@@ -123,9 +123,6 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
 
   @Override
   public boolean acceptsDrop( Object obj ) {
-    if ( this.getLogicalColumn() == null ) {
-      return false;
-    }
     String myTableId = this.getLogicalColumn().getPhysicalColumn().getPhysicalTable().getId();
     if ( obj instanceof AvailableField ) {
       AvailableField field = (AvailableField) obj;
@@ -151,12 +148,12 @@ public class LevelMetaData extends BaseColumnBackedMetaData<MemberPropertyMetaDa
         memberProp = (MemberPropertyMetaData) data;
         memberProp.setParent( this );
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
       LogicalTable existingTable = getLogicalColumn().getLogicalTable();
       LogicalColumn col = memberProp.getLogicalColumn();
       if ( col == null ) {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
       if ( col.getLogicalTable().getId() != existingTable.getId() ) {
         throw new IllegalStateException( ModelerMessagesHolder.getMessages().getString(

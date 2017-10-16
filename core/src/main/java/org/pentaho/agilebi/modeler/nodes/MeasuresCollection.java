@@ -209,7 +209,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         measure = (MeasureMetaData) data;
         measure.setParent( this );
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
       String agileBiVersion =
           (String) getWorkspace().getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "AGILE_BI_VERSION" );
@@ -218,7 +218,7 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         // if we're in a multi-table mode check for a fact table
         LogicalColumn col = measure.getLogicalColumn();
         if ( col == null ) {
-          throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+          return null;
         }
 
         if ( getWorkspace().getAvailableTables().size() > 1 ) {

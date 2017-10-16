@@ -192,7 +192,7 @@ public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<Catego
       } else if ( data instanceof CategoryMetaData ) {
         return data;
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
     } catch ( Exception e ) {
       throw new ModelerException( e );
