@@ -1,17 +1,16 @@
 <module rename-to="agilebi">
 
-	<!-- Inherit the core Web Toolkit stuff. -->
-	<inherits name='com.google.gwt.user.User'/>
-	<inherits name='com.google.gwt.xml.XML'/>
+  <!-- Inherit the core Web Toolkit stuff. -->
+  <inherits name='com.google.gwt.user.User'/>
+  <inherits name='com.google.gwt.xml.XML'/>
 
-	<inherits name='org.pentaho.ui.Xul'/>
+  <inherits name='org.pentaho.ui.Xul'/>
   <inherits name='org.pentaho.ui.xul.Gwt'/>
   <inherits name='com.googlecode.gwtx.Java'/>
 
-	<inherits name='org.pentaho.gwt.widgets.Widgets'/>
+  <inherits name='org.pentaho.gwt.widgets.Widgets'/>
 
   <inherits name="org.pentaho.metadata.Model"/>
-
 
   <source path="modeler">
     <exclude name="**/*Servlet*"/>
@@ -25,5 +24,5 @@
 
   <public path="modeler/res"/>
 
-  <servlet path="/modelerService" class="org.pentaho.agilebi.modeler.gwt.services.GwtModelerDebugServlet" />
+  <servlet path="/modelerService" class="org.pentaho.agilebi.modeler.gwt.services.GwtModelerDebugServlet"/>
 </module>
