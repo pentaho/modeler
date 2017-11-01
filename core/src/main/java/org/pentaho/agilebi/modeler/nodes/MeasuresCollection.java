@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -28,6 +28,7 @@ import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
 import org.pentaho.metadata.model.IPhysicalTable;
+import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
 public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaData> implements Serializable {
@@ -208,15 +209,20 @@ public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaDat
         measure = (MeasureMetaData) data;
         measure.setParent( this );
       } else {
-        throw new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString( "invalid_drop" ) );
+        return null;
       }
       String agileBiVersion =
           (String) getWorkspace().getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty( "AGILE_BI_VERSION" );
 
       if ( measure != null && agileBiVersion != null && Float.parseFloat( agileBiVersion ) >= 2.0 ) {
         // if we're in a multi-table mode check for a fact table
+        LogicalColumn col = measure.getLogicalColumn();
+        if ( col == null ) {
+          return null;
+        }
+
         if ( getWorkspace().getAvailableTables().size() > 1 ) {
-          Object factProp = measure.getLogicalColumn().getLogicalTable().getPhysicalTable().getProperty( "FACT_TABLE" );
+          Object factProp = col.getLogicalTable().getPhysicalTable().getProperty( "FACT_TABLE" );
           if ( factProp == null || factProp.equals( Boolean.FALSE ) ) {
             throw new IllegalStateException( ModelerMessagesHolder.getMessages()
                 .getString( "DROP.ERROR.NON_FACT_TABLE" ) );

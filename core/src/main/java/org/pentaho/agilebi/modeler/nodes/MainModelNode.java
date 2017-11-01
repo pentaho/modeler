@@ -229,8 +229,7 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
 
   @Override
   public Object onDrop( Object data ) throws ModelerException {
-    throw new ModelerException( new IllegalArgumentException( ModelerMessagesHolder.getMessages().getString(
-        "invalid_drop" ) ) );
+    return null;
   }
 
   @Override
