@@ -132,7 +132,7 @@ public class LinkDimensionIT {
     assertEquals( 4, dimensionUsages.size() );
     OlapDimensionUsage productDim = dimensionUsages.get( 3 );
     OlapHierarchy productHierarchy = productDim.getOlapDimension().getHierarchies().get( 0 );
-    assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
+    assertEquals( "product", productHierarchy.getLogicalTable().getName( "en_us" ) );
 
     OlapHierarchyLevel nameLevel = productHierarchy.getHierarchyLevels().get( 0 );
     assertEquals( "Product", nameLevel.getName() );
@@ -283,7 +283,7 @@ public class LinkDimensionIT {
     assertEquals( 5, dimensionUsages.size() );
     OlapDimensionUsage productDim = dimensionUsages.get( 3 );
     OlapHierarchy productHierarchy = productDim.getOlapDimension().getHierarchies().get( 0 );
-    assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
+    assertEquals( "product", productHierarchy.getLogicalTable().getName( "en_us" ) );
 
     OlapHierarchyLevel nameLevel = productHierarchy.getHierarchyLevels().get( 0 );
     assertEquals( "Product", nameLevel.getName() );
@@ -292,7 +292,7 @@ public class LinkDimensionIT {
 
     OlapDimensionUsage descriptionDim = dimensionUsages.get( 4 );
     OlapHierarchy descriptionHierarchy = descriptionDim.getOlapDimension().getHierarchies().get( 0 );
-    assertEquals( "PRODUCT", productHierarchy.getLogicalTable().getName( "en_us" ) );
+    assertEquals( "product", productHierarchy.getLogicalTable().getName( "en_us" ) );
     OlapHierarchyLevel descriptionLevel = descriptionHierarchy.getHierarchyLevels().get( 0 );
     assertEquals( "Description", descriptionLevel.getName() );
     assertEquals( "PRODUCT DESCRIPTION",
@@ -373,7 +373,7 @@ public class LinkDimensionIT {
 
     assertEquals( 1, dateDim.getOlapDimension().getHierarchies().size() );
     OlapHierarchy dateHierarchy = dateDim.getOlapDimension().getHierarchies().get( 0 );
-    assertEquals( "MYDATE", dateHierarchy.getLogicalTable().getName( "en_us" ) );
+    assertEquals( "mydate", dateHierarchy.getLogicalTable().getName( "en_us" ) );
     assertEquals( "Date", dateHierarchy.getName() );
 
     OlapHierarchyLevel yearLevel = dateHierarchy.getHierarchyLevels().get( 0 );
