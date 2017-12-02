@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>8.1-SNAPSHOT</version>
+    <version>8.1.0-SNAPSHOT</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-modeler-parent</artifactId>
-  <version>8.1-SNAPSHOT</version>
+  <version>8.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>Pentaho common modeler project.</description>
@@ -25,19 +25,19 @@
   </scm>
   <properties>
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
-    <platform.version>8.1-SNAPSHOT</platform.version>
+    <platform.version>8.1.0-SNAPSHOT</platform.version>
     <dependency.pentaho-simple-jndi.revision>1.0.0</dependency.pentaho-simple-jndi.revision>
-    <mondrian.version>8.1-SNAPSHOT</mondrian.version>
-    <pentaho-database.version>8.1-SNAPSHOT</pentaho-database.version>
-    <pentaho-xul.version>8.1-SNAPSHOT</pentaho-xul.version>
+    <mondrian.version>8.1.0-SNAPSHOT</mondrian.version>
+    <pentaho-database.version>8.1.0-SNAPSHOT</pentaho-database.version>
+    <pentaho-xul.version>8.1.0-SNAPSHOT</pentaho-xul.version>
     <dependency.junit.revision>4.11</dependency.junit.revision>
     <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
-    <pentaho-metadata.version>8.1-SNAPSHOT</pentaho-metadata.version>
+    <pentaho-metadata.version>8.1.0-SNAPSHOT</pentaho-metadata.version>
     <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
     <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
-    <pentaho-gwt-widgets.version>8.1-SNAPSHOT</pentaho-gwt-widgets.version>
+    <pentaho-gwt-widgets.version>8.1.0-SNAPSHOT</pentaho-gwt-widgets.version>
     <dependency.mockito.revision>1.8.4</dependency.mockito.revision>
-    <pdi.version>8.1-SNAPSHOT</pdi.version>
+    <pdi.version>8.1.0-SNAPSHOT</pdi.version>
     <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
   </properties>
   <dependencies>
