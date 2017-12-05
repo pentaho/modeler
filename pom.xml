@@ -35,7 +35,7 @@
     <pentaho-metadata.version>8.1.0.0-SNAPSHOT</pentaho-metadata.version>
     <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
     <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
-    <pentaho-gwt-widgets.version>8.1.0.0-SNAPSHOT</pentaho-gwt-widgets.version>
+    <commons-gwt.version>8.1.0.0-SNAPSHOT</commons-gwt.version>
     <dependency.mockito.revision>1.8.4</dependency.mockito.revision>
     <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
     <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
@@ -170,14 +170,14 @@
       <version>${dependency.gwt.revision}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-gwt-widgets</artifactId>
-      <version>${pentaho-gwt-widgets.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-gwt-widgets</artifactId>
+      <version>${commons-gwt.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-gwt-widgets</artifactId>
-      <version>${pentaho-gwt-widgets.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-gwt-widgets</artifactId>
+      <version>${commons-gwt.version}</version>
       <classifier>sources</classifier>
     </dependency>
     <dependency>
@@ -192,14 +192,14 @@
       <version>${mondrian.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-gwt-widgets</artifactId>
-      <version>${pentaho-gwt-widgets.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-gwt-widgets</artifactId>
+      <version>${commons-gwt.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-gwt-widgets</artifactId>
-      <version>${pentaho-gwt-widgets.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-gwt-widgets</artifactId>
+      <version>${commons-gwt.version}</version>
       <classifier>sources</classifier>
     </dependency>
     <dependency>
