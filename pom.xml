@@ -130,11 +130,6 @@
       <version>${pentaho-metadata.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-gwt</artifactId>
-      <version>${pentaho-xul.version}</version>
-    </dependency>
-    <dependency>
       <groupId>GWT-FX</groupId>
       <artifactId>GWT-FX</artifactId>
       <version>0.5.0</version>
@@ -192,17 +187,6 @@
       <version>${mondrian.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>commons-gwt-widgets</artifactId>
-      <version>${commons-gwt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>commons-gwt-widgets</artifactId>
-      <version>${commons-gwt.version}</version>
-      <classifier>sources</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <version>3.0</version>
@@ -250,11 +234,6 @@
           <groupId>org.antlr</groupId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>ascsapjco3wrp</groupId>
-      <artifactId>ascsapjco3wrp</artifactId>
-      <version>20100529</version>
     </dependency>
     <dependency>
       <groupId>ascsapjco3wrp</groupId>
