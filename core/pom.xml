@@ -23,7 +23,7 @@
     <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
     <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
     <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
-    <pentaho-xul.version>8.1.0.0-SNAPSHOT</pentaho-xul.version>
+    <commons-xul.version>8.1.0.0-SNAPSHOT</commons-xul.version>
   </properties>
   <dependencies>
     <dependency>

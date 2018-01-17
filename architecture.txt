@@ -7,7 +7,7 @@ within Pentaho, as well as top down design of logical models.
 This project is built using pentaho-xul, a UI framework based on the Mozilla XUL standard 
 which allows for multi-environment UI development, including Swing, SWT and HTML/Javascript (GWT).  
 The pentaho-xul project can be found here:
-svn://source.pentaho.org/svnroot/pentaho-commons/pentaho-xul/trunk
+https://github.com/pentaho/pentaho-commons-xul
 
 A good starting point for debugging and experimenting with the modeler is by running the 
 SwtModelerUI java class in your favorite IDE.  First, run "ant resolve" to download all necessary dependencies 
