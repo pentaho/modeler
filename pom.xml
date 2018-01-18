@@ -29,7 +29,7 @@
     <dependency.pentaho-simple-jndi.revision>1.0.0</dependency.pentaho-simple-jndi.revision>
     <mondrian.version>8.1.0.0-SNAPSHOT</mondrian.version>
     <pentaho-database.version>8.1.0.0-SNAPSHOT</pentaho-database.version>
-    <pentaho-xul.version>8.1.0.0-SNAPSHOT</pentaho-xul.version>
+    <commons-xul.version>8.1.0.0-SNAPSHOT</commons-xul.version>
     <dependency.junit.revision>4.11</dependency.junit.revision>
     <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
     <pentaho-metadata.version>8.1.0.0-SNAPSHOT</pentaho-metadata.version>
@@ -98,14 +98,14 @@
       <version>1.2.14</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-core</artifactId>
-      <version>${pentaho-xul.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-core</artifactId>
+      <version>${commons-xul.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-swt</artifactId>
-      <version>${pentaho-xul.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-swt</artifactId>
+      <version>${commons-xul.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>swt</artifactId>
@@ -114,9 +114,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-gwt</artifactId>
-      <version>${pentaho-xul.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-gwt-impl</artifactId>
+      <version>${commons-xul.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
