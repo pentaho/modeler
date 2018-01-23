@@ -5,7 +5,13 @@ node_modules/
 target
 .idea
 .vscode/*
+.project
+.settings
+.classpath
 override.properties
 bin/
-pentaho-modeler-parent.iml
+*.class
+*.jar
+*.war
+*.ear
 
