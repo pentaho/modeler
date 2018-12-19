@@ -40,16 +40,5 @@ Integration
  
 The modeler project is included in the following assemblies
 
-Kettle Agile BI Plugin: 
-svn://source.pentaho.org/svnkettleroot/agile-bi/trunk
-
 Pentaho BI Platform Data Access Plugin:
 https://github.com/pentaho/data-access
-
-
-
-
-
-
-
-   
