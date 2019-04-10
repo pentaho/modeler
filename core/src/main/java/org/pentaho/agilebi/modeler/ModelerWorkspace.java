@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler;
@@ -400,15 +400,19 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
     ColumnBackedNode node = createColumnBackedNode( selectedField, ModelerPerspective.REPORTING );
     field.setLogicalColumn( node.getLogicalColumn() );
     field.setFieldTypeDesc( node.getLogicalColumn().getDataType().getName() );
+    field.setFormat( "" );
     switch ( node.getLogicalColumn().getDataType() ) {
       case DATE:
         field.setFormatstring( DataFormatHolder.DATE_FORMATS );
+        field.setFormat( DataFormatHolder.DATE_FORMATS.get( 0 ) );
         break;
       case NUMERIC:
         field.setFormatstring( DataFormatHolder.NUMBER_FORMATS );
+        field.setFormat( DataFormatHolder.NUMBER_FORMATS.get( 0 ) );
         break;
       case STRING:
         field.setFormatstring( DataFormatHolder.CONVERSION_FORMATS );
+        field.setFormat( DataFormatHolder.CONVERSION_FORMATS.get( 0 ) );
         break;
       case BOOLEAN:
       case URL:
@@ -418,7 +422,6 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
       default:
         break;
     }
-    field.setFormat( "" );
     return field;
   }
 
