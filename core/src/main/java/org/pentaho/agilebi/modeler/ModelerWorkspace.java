@@ -408,7 +408,7 @@ public class ModelerWorkspace extends XulEventSourceAdapter implements Serializa
         break;
       case NUMERIC:
         field.setFormatstring( DataFormatHolder.NUMBER_FORMATS );
-        field.setFormat( DataFormatHolder.NUMBER_FORMATS.get( 0 ) );
+        field.setFormat( DataFormatHolder.NUMBER_FORMATS.get( 3 ) );
         break;
       case STRING:
         field.setFormatstring( DataFormatHolder.CONVERSION_FORMATS );
