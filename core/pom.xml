@@ -5,11 +5,11 @@
   <parent>
     <groupId>pentaho</groupId>
     <artifactId>pentaho-modeler-parent</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.24-200</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-modeler</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1.0.24-200</version>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>Pentaho common modeler project.</description>
   <url>http://www.pentaho.com</url>
@@ -19,11 +19,11 @@
     <url>scm:git:git@github.com:pentaho/${project.artifactId}.git</url>
   </scm>
   <properties>
-    <dependency.pentaho-gwt-widgets.revision>7.1-SNAPSHOT</dependency.pentaho-gwt-widgets.revision>
+    <dependency.pentaho-gwt-widgets.revision>7.1.0.24-200</dependency.pentaho-gwt-widgets.revision>
     <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
     <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
     <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
-    <dependency.pentaho-xul.revision>7.1-SNAPSHOT</dependency.pentaho-xul.revision>
+    <dependency.pentaho-xul.revision>7.1.0.24-200</dependency.pentaho-xul.revision>
   </properties>
   <dependencies>
     <dependency>
