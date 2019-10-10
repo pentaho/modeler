@@ -24,7 +24,6 @@
     <url>scm:git:git@github.com:pentaho/${project.artifactId}.git</url>
   </scm>
   <properties>
-    <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
     <platform.version>9.0.0.0-SNAPSHOT</platform.version>
     <dependency.pentaho-simple-jndi.revision>1.0.2</dependency.pentaho-simple-jndi.revision>
     <mondrian.version>9.0.0.0-SNAPSHOT</mondrian.version>
