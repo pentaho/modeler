@@ -278,11 +278,6 @@
       <artifactId>bcmail-jdk14</artifactId>
       <version>138</version>
     </dependency>
-    <dependency>
-      <groupId>bouncycastle</groupId>
-      <artifactId>bcprov-jdk14</artifactId>
-      <version>138</version>
-    </dependency>
   </dependencies>
 
 
