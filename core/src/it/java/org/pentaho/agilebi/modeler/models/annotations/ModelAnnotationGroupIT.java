@@ -248,8 +248,9 @@ public class ModelAnnotationGroupIT {
     String actual = XMLHandler.formatNode( document );
 
     assertEquals(
-      IOUtils.toString( getClass().getResourceAsStream( "resources/annotated.mondrian.xml" ) ).replace( "\r|\n", "" ),
-      actual.replace( "\r|\n", "" )
+      IOUtils.toString( getClass().getResourceAsStream( "resources/annotated.mondrian.xml" ) ).replace( "\r", "" )
+        .replace( "\n", "" ),
+      actual.replace( "\r", "" ).replace( "\n", "" )
     );
   }
 
