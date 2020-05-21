@@ -85,7 +85,7 @@ public class CreateMeasureIT {
   }
 
   private ModelerWorkspace createWorkspace() throws Exception {
-    String sql = "CREATE TABLE testTable\n"
+    String sql = "DROP TABLE testtable; CREATE TABLE testTable\n"
       + "(\n"
       + "  value bigint\n"
       + ", id varchar(25)\n"
