@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2002 - 2021 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -49,6 +49,7 @@ public class CreateMeasureIT {
       Props.init( 0 );
     }
   }
+
   @Test
   public void createMeasureWorksOnDimensionlessModel() throws Exception {
     ModelerWorkspace workspace = createWorkspace();
@@ -81,15 +82,13 @@ public class CreateMeasureIT {
   @SuppressWarnings( "unchecked" )
   private List<OlapCube> getCubes( ModelerWorkspace wspace ) {
     return (List<OlapCube>) wspace.getLogicalModel( ModelerPerspective.ANALYSIS ).getProperty(
-      LogicalModel.PROPERTY_OLAP_CUBES );
+        LogicalModel.PROPERTY_OLAP_CUBES );
   }
 
   private ModelerWorkspace createWorkspace() throws Exception {
-    String sql = "DROP TABLE testtable; CREATE TABLE testTable\n"
-      + "(\n"
-      + "  value bigint\n"
-      + ", id varchar(25)\n"
-      + ");\n";
+    String sql =
+        "DROP TABLE IF EXISTS testtable; CREATE TABLE testTable\n" + "(\n" + "  value bigint\n" + ", id varchar(25)\n"
+            + ");\n";
     return ModelITHelper.modelTable( "CreateMeasureIT-H2-DB", "testTable", sql );
   }
 }
