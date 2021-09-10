@@ -30,14 +30,11 @@
     <mondrian.version>9.3.0.0-SNAPSHOT</mondrian.version>
     <commons-xul.version>9.3.0.0-SNAPSHOT</commons-xul.version>
     <dependency.junit.revision>4.11</dependency.junit.revision>
-    <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
     <pentaho-metadata.version>9.3.0.0-SNAPSHOT</pentaho-metadata.version>
-    <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
     <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
     <commons-gwt.version>9.3.0.0-SNAPSHOT</commons-gwt.version>
     <dependency.mockito.revision>1.8.4</dependency.mockito.revision>
     <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
-    <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
   </properties>
   <dependencies>
     <dependency>
@@ -126,37 +123,30 @@
     <dependency>
       <groupId>GWT-FX</groupId>
       <artifactId>GWT-FX</artifactId>
-      <version>0.5.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gwtx</groupId>
       <artifactId>gwtx</artifactId>
-      <version>1.5.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-incubator</artifactId>
-      <version>${dependency.gwt-incubator.revision}</version>
     </dependency>
     <dependency>
-      <groupId>com.allen_sauer</groupId>
+      <groupId>com.allen-sauer.gwt.dnd</groupId>
       <artifactId>gwt-dnd</artifactId>
-      <version>${dependency.gwt-dnd.revision}</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>${dependency.gwt.revision}</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-dev</artifactId>
-      <version>${dependency.gwt.revision}</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
-      <version>${dependency.gwt.revision}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
