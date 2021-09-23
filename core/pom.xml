@@ -20,9 +20,6 @@
   </scm>
   <properties>
     <commons-gwt.version>9.3.0.0-SNAPSHOT</commons-gwt.version>
-    <dependency.gwt.revision>2.5.1</dependency.gwt.revision>
-    <dependency.gwt-dnd.revision>3.1.2</dependency.gwt-dnd.revision>
-    <dependency.gwt-incubator.revision>2.1.0</dependency.gwt-incubator.revision>
     <commons-xul.version>9.3.0.0-SNAPSHOT</commons-xul.version>
   </properties>
   <build>
@@ -30,7 +27,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>${gwt.version}</version>
         <executions>
           <execution>
             <goals>
