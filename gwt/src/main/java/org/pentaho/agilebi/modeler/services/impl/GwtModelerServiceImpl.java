@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.services.impl;
@@ -24,6 +24,8 @@ import org.pentaho.agilebi.modeler.gwt.BogoPojo;
 import org.pentaho.agilebi.modeler.gwt.services.IGwtModelerService;
 import org.pentaho.agilebi.modeler.gwt.services.IGwtModelerServiceAsync;
 import org.pentaho.agilebi.modeler.services.IModelerServiceAsync;
+import org.pentaho.mantle.client.csrf.CsrfUtil;
+import org.pentaho.mantle.client.csrf.IConsumer;
 import org.pentaho.metadata.model.Domain;
 import org.pentaho.ui.xul.XulServiceCallback;
 
@@ -48,7 +50,7 @@ public class GwtModelerServiceImpl implements IModelerServiceAsync {
 
   private IGwtModelerServiceAsync getDelegate() {
     if ( delegate == null ) {
-      delegate = (IGwtModelerServiceAsync) GWT.create( IGwtModelerService.class );
+      delegate = GWT.create( IGwtModelerService.class );
       ServiceDefTarget endpoint = (ServiceDefTarget) delegate;
       endpoint.setServiceEntryPoint( getBaseUrl() );
     }
@@ -56,49 +58,64 @@ public class GwtModelerServiceImpl implements IModelerServiceAsync {
   }
 
   public void generateDomain( String connectionName, String tableName, String dbType, String query,
-      String datasourceName, final XulServiceCallback<Domain> callback ) {
+                              String datasourceName, final XulServiceCallback<Domain> callback ) {
     getDelegate().generateDomain( connectionName, tableName, dbType, query, datasourceName,
-        new AsyncCallback<Domain>() {
-          public void onFailure( Throwable throwable ) {
-            callback.error( "Error generating Metadata Domain", throwable );
-          }
+      new AsyncCallback<Domain>() {
+        public void onFailure( Throwable throwable ) {
+          callback.error( "Error generating Metadata Domain", throwable );
+        }
 
-          public void onSuccess( Domain domain ) {
-            callback.success( domain );
-          }
-        } );
+        public void onSuccess( Domain domain ) {
+          callback.success( domain );
+        }
+      } );
   }
 
   private static String getBaseUrl() {
     String moduleUrl = GWT.getModuleBaseURL();
 
-    if ( moduleUrl.indexOf( "content" ) > -1 ) { //$NON-NLS-1$
-      String baseUrl = moduleUrl.substring( 0, moduleUrl.indexOf( "content" ) ); //$NON-NLS-1$
-      return baseUrl + "gwtrpc/modelerService"; //$NON-NLS-1$
+    if ( moduleUrl.contains( "content" ) ) {
+      String baseUrl = moduleUrl.substring( 0, moduleUrl.indexOf( "content" ) );
+      return baseUrl + "gwtrpc/modelerService";
     }
-    return moduleUrl + "modelerService"; //$NON-NLS-1$
+    return moduleUrl + "modelerService";
   }
 
-  public void serializeModels( Domain domain, String name, final XulServiceCallback<String> callback ) {
-    getDelegate().serializeModels( domain, name, new AsyncCallback<String>() {
-      public void onFailure( Throwable throwable ) {
-        callback.error( "Error saving models", throwable );
-      }
+  public void serializeModels( final Domain domain, final String name, final XulServiceCallback<String> callback ) {
+    // Lambda expressions are only supported from GWT 2.8 onwards.
+    CsrfUtil.callProtected( getDelegate(), new IConsumer<IGwtModelerServiceAsync>() {
+      @Override
+      public void accept( IGwtModelerServiceAsync delegate ) {
 
-      public void onSuccess( String v ) {
-        callback.success( v );
+        delegate.serializeModels( domain, name, new AsyncCallback<String>() {
+          public void onFailure( Throwable throwable ) {
+            callback.error( "Error saving models", throwable );
+          }
+
+          public void onSuccess( String v ) {
+            callback.success( v );
+          }
+        } );
       }
     } );
   }
 
-  public void serializeModels( Domain domain, String name, boolean doOlap, final XulServiceCallback<String> callback ) {
-    getDelegate().serializeModels( domain, name, doOlap, new AsyncCallback<String>() {
-      public void onFailure( Throwable throwable ) {
-        callback.error( "Error saving models", throwable );
-      }
+  public void serializeModels( final Domain domain, final String name, final boolean doOlap,
+                               final XulServiceCallback<String> callback ) {
+    // Lambda expressions are only supported from GWT 2.8 onwards.
+    CsrfUtil.callProtected( getDelegate(), new IConsumer<IGwtModelerServiceAsync>() {
+      @Override
+      public void accept( IGwtModelerServiceAsync delegate ) {
 
-      public void onSuccess( String v ) {
-        callback.success( v );
+        delegate.serializeModels( domain, name, doOlap, new AsyncCallback<String>() {
+          public void onFailure( Throwable throwable ) {
+            callback.error( "Error saving models", throwable );
+          }
+
+          public void onSuccess( String v ) {
+            callback.success( v );
+          }
+        } );
       }
     } );
   }
