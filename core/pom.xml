@@ -5,11 +5,11 @@
   <parent>
     <groupId>pentaho</groupId>
     <artifactId>pentaho-modeler-parent</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-428</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-modeler</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-428</version>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>Pentaho common modeler project.</description>
   <url>http://www.pentaho.com</url>
@@ -19,8 +19,8 @@
     <url>scm:git:git@github.com:pentaho/${project.artifactId}.git</url>
   </scm>
   <properties>
-    <commons-gwt.version>9.3.0.0-SNAPSHOT</commons-gwt.version>
-    <commons-xul.version>9.3.0.0-SNAPSHOT</commons-xul.version>
+    <commons-gwt.version>9.3.0.0-428</commons-gwt.version>
+    <commons-xul.version>9.3.0.0-428</commons-xul.version>
   </properties>
   <build>
     <plugins>

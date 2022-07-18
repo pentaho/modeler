@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>9.3.0.0-SNAPSHOT</version>
+    <version>9.3.0.0-428</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-modeler-parent</artifactId>
-  <version>9.3.0.0-SNAPSHOT</version>
+  <version>9.3.0.0-428</version>
   <packaging>pom</packaging>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>Pentaho common modeler project.</description>
@@ -25,16 +25,16 @@
   </scm>
   <properties>
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
-    <platform.version>9.3.0.0-SNAPSHOT</platform.version>
+    <platform.version>9.3.0.0-428</platform.version>
     <dependency.pentaho-simple-jndi.revision>1.0.2</dependency.pentaho-simple-jndi.revision>
-    <mondrian.version>9.3.0.0-SNAPSHOT</mondrian.version>
-    <commons-xul.version>9.3.0.0-SNAPSHOT</commons-xul.version>
+    <mondrian.version>9.3.0.0-428</mondrian.version>
+    <commons-xul.version>9.3.0.0-428</commons-xul.version>
     <dependency.junit.revision>4.11</dependency.junit.revision>
-    <pentaho-metadata.version>9.3.0.0-SNAPSHOT</pentaho-metadata.version>
+    <pentaho-metadata.version>9.3.0.0-428</pentaho-metadata.version>
     <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
-    <commons-gwt.version>9.3.0.0-SNAPSHOT</commons-gwt.version>
+    <commons-gwt.version>9.3.0.0-428</commons-gwt.version>
     <dependency.mockito.revision>1.8.4</dependency.mockito.revision>
-    <pdi.version>9.3.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>9.3.0.0-428</pdi.version>
   </properties>
   <dependencies>
     <dependency>
