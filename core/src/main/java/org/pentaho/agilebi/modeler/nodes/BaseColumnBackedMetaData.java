@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -56,6 +56,7 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
 
   public BaseColumnBackedMetaData() {
     super( CLASSNAME );
+    getMessageStringAndSetAltText( "modeler.alternative_text.baseColumnBacked" );
   }
 
   public BaseColumnBackedMetaData( String name ) {
@@ -349,4 +350,5 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   public String getValidationMessageKey( String key ) {
     return "validation.measure." + key;
   }
+
 }

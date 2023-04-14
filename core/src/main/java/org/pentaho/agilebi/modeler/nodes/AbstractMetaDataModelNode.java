@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.pentaho.agilebi.modeler.IDropTarget;
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.nodes.annotations.IMemberAnnotation;
 import org.pentaho.agilebi.modeler.propforms.ModelerNodePropertiesForm;
@@ -49,6 +50,7 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
   protected String classname;
   protected String validClassname;
   protected String invalidClassname = "pentaho-warningbutton";
+  protected String altText;
 
   protected transient PropertyChangeListener validListener = new PropertyChangeListener() {
     public void propertyChange( PropertyChangeEvent arg0 ) {
@@ -72,6 +74,13 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
     this.image = getInvalidImage();
     this.classname = classname;
     this.validClassname = classname;
+  }
+
+  public AbstractMetaDataModelNode( String classname, String altText ) {
+    this.image = getInvalidImage();
+    this.classname = classname;
+    this.validClassname = classname;
+    this.altText = altText;
   }
 
   @Override
@@ -175,6 +184,49 @@ public abstract class AbstractMetaDataModelNode<T extends AbstractMetaDataModelN
         this.firePropertyChange( "classname", oldClassname, classname ); //$NON-NLS-1$
       }
     }
+  }
+
+  @Bindable
+  public String getAltText() {
+    return altText;
+  }
+
+  @Bindable
+  public void setAltText( String altText ) {
+    if ( this.altText == null || !this.altText.equals( altText ) ) {
+      String oldAltText = this.altText;
+      this.altText = altText;
+      if ( !suppressEvents ) {
+        this.firePropertyChange( "altText", oldAltText, altText ); //$NON-NLS-1$
+      }
+    }
+  }
+
+  /**
+   * Retrieve <code>propertyName</code> from modeler message property and then set alternative text.
+   * @param propertyName
+   */
+  protected void getMessageStringAndSetAltText( String propertyName ) {
+    setAltText( getMessageString( propertyName) );
+  }
+
+  /**
+   * Retrieve <code>propertyName</code> from modeler message property.
+   * @param propertyName
+   * @param defaultValue
+   * @return value of property if <code>propertyName</code> is present, if not then <code>defaultValue</code>
+   */
+  protected String getMessageString( String propertyName, String defaultValue ) {
+    return ModelerMessagesHolder.getMessages().getString( propertyName , defaultValue );
+  }
+
+  /**
+   * Retrieve <code>propertyName</code> from modeler message property.
+   * @param propertyName
+   * @return value of property if <code>propertyName</code> is present, if not then ""
+   */
+  protected String getMessageString( String propertyName ) {
+    return getMessageString( propertyName, "" ); // default is empty string
   }
 
   public abstract void validate();
