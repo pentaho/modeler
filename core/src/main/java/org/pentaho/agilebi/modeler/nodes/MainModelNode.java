@@ -45,6 +45,7 @@ public class MainModelNode extends AbstractMetaDataModelNode<AbstractMetaDataMod
     add( dimensions );
     setExpanded( true );
     dimensions.setExpanded( true );
+    getMessageStringAndSetAltText( "modeler.alternative_text.model" );
   }
 
   public MainModelNode( ModelerWorkspace workspace ) {

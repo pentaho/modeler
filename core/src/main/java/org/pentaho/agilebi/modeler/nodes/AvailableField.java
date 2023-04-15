@@ -12,11 +12,12 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -34,6 +35,7 @@ public class AvailableField extends AbstractAvailableItem<IAvailableItem> implem
   public AvailableField() {
     setImage( FIELD_IMAGE );
     setClassname( CLASS_NAME );
+    getMessageStringAndSetAltText( "modeler.alternative_text.availableField" );
   }
 
   public AvailableField( IPhysicalColumn physicalColumn ) {
@@ -41,6 +43,7 @@ public class AvailableField extends AbstractAvailableItem<IAvailableItem> implem
     setName( physicalColumn.getName( LocalizedString.DEFAULT_LOCALE ) );
     setImage( FIELD_IMAGE );
     setClassname( CLASS_NAME );
+    getMessageStringAndSetAltText( "modeler.alternative_text.availableField" );
   }
 
   public IPhysicalColumn getPhysicalColumn() {
