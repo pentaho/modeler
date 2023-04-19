@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -47,6 +47,7 @@ public class RelationalModelNode extends AbstractMetaDataModelNode<CategoryMetaD
     add( categories );
     setExpanded( true );
     categories.setExpanded( true );
+    getMessageStringAndSetAltText( "modeler.alternative_text.model" );
   }
 
   public RelationalModelNode( ModelerWorkspace workspace ) {

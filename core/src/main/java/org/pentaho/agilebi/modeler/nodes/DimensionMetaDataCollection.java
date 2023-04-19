@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -36,6 +36,7 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
   public DimensionMetaDataCollection() {
     super( CLASSNAME );
     this.valid = false;
+    getMessageStringAndSetAltText( "modeler.alternative_text.dimension_collection" );
   }
 
   @Bindable

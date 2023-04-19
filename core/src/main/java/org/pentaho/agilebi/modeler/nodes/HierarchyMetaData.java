@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -37,10 +37,12 @@ public class HierarchyMetaData extends AbstractMetaDataModelNode<LevelMetaData> 
   private static final long serialVersionUID = 7063031303948537101L;
 
   String name;
+
   private static final String CLASSNAME = "pentaho-smallhierarchybutton";
 
   public HierarchyMetaData() {
     super( CLASSNAME );
+    getMessageStringAndSetAltText( "modeler.alternative_text.hierarchy" );
   }
 
   public HierarchyMetaData( String name ) {

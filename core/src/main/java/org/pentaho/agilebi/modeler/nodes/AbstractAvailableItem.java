@@ -12,11 +12,12 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
 
+import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelNode;
@@ -34,6 +35,7 @@ public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractMod
   private String name;
   private String image;
   private String classname;
+  private String altText;
 
   @Bindable
   public boolean isExpanded() {
@@ -78,5 +80,42 @@ public class AbstractAvailableItem<T extends IAvailableItem> extends AbstractMod
   @Bindable
   public void setClassname( String classname ) {
     this.classname = classname;
+  }
+
+  @Bindable
+  public String getAltText() {
+    return this.altText;
+  }
+
+  @Bindable
+  public void setAltText( String altText ) {
+    this.altText = altText;
+  }
+
+  /**
+   * Retrieve <code>propertyName</code> from modeler message property and then set alternative text.
+   * @param propertyName
+   */
+  protected void getMessageStringAndSetAltText( String propertyName ) {
+    setAltText( getMessageString( propertyName) );
+  }
+
+  /**
+   * Retrieve <code>propertyName</code> from modeler message property.
+   * @param propertyName
+   * @param defaultValue
+   * @return value of property if <code>propertyName</code> is present, if not then <code>defaultValue</code>
+   */
+  protected String getMessageString( String propertyName, String defaultValue ) {
+    return ModelerMessagesHolder.getMessages().getString( propertyName , defaultValue );
+  }
+
+  /**
+   * Retrieve <code>propertyName</code> from modeler message property.
+   * @param propertyName
+   * @return value of property if <code>propertyName</code> is present, if not then ""
+   */
+  protected String getMessageString( String propertyName ) {
+    return getMessageString( propertyName, "" ); // default is empty string
   }
 }
