@@ -264,9 +264,9 @@
       <version>1.9.1</version>
     </dependency>
     <dependency>
-      <groupId>bouncycastle</groupId>
+      <groupId>org.bouncycastle</groupId>
       <artifactId>bcmail-jdk14</artifactId>
-      <version>138</version>
+      <version>${bcprov-jdk14.version}</version>
     </dependency>
   </dependencies>
 
