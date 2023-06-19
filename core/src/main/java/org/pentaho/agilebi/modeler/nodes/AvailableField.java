@@ -12,12 +12,11 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara. All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
 
-import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.metadata.model.IPhysicalColumn;
 import org.pentaho.metadata.model.IPhysicalTable;
 import org.pentaho.metadata.model.concept.types.LocalizedString;
@@ -28,9 +27,9 @@ public class AvailableField extends AbstractAvailableItem<IAvailableItem> implem
 
   private transient IPhysicalColumn physicalColumn;
 
-  private static final String FIELD_IMAGE = "images/column.png"; //$NON-NLS-1$
-  private static final String CLASS_NAME = "pentaho-column"; //$NON-NLS-1$
-  public static String MEASURE_PROP = "potential_measure"; //$NON-NLS-1$
+  private static final String FIELD_IMAGE = "images/column.png";
+  private static final String CLASS_NAME = "pentaho-column icon-zoomable";
+  public static String MEASURE_PROP = "potential_measure";
 
   public AvailableField() {
     setImage( FIELD_IMAGE );

@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara. All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -24,15 +24,10 @@ import org.pentaho.agilebi.modeler.ModelerMessagesHolder;
 import org.pentaho.agilebi.modeler.propforms.GenericPropertiesForm;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-/**
- * Created: 3/30/11
- * 
- * @author rfellows
- */
 public class CategoryMetaDataCollection extends AbstractMetaDataModelNode<CategoryMetaData> {
   private static final long serialVersionUID = 7083527229930283278L;
   private String name = "Categories";
-  private static final String CLASSNAME = "pentaho-smallcategorybutton";
+  private static final String CLASSNAME = "pentaho-smallcategorybutton icon-zoomable";
 
   public CategoryMetaDataCollection() {
     super( CLASSNAME );
