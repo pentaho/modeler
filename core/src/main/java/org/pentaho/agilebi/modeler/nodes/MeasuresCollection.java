@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara. All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -34,10 +34,10 @@ import org.pentaho.ui.xul.stereotype.Bindable;
 public class MeasuresCollection extends AbstractMetaDataModelNode<MeasureMetaData> implements Serializable {
   private static final long serialVersionUID = 5827211352596188503L;
 
-  private String name = "Measures"; // BaseMessages.getString(ModelerWorkspace.class, "measures");
+  private String name = "Measures";
 
   public static String MEASURE_PROP = "potential_measure";
-  private static final String CLASSNAME = "pentaho-smallcategorybutton";
+  private static final String CLASSNAME = "pentaho-smallcategorybutton icon-zoomable";
 
   public MeasuresCollection() {
     super( CLASSNAME );
