@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara. All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -31,7 +31,7 @@ public class DimensionMetaDataCollection extends AbstractMetaDataModelNode<Dimen
   private static final long serialVersionUID = -6327799582519270107L;
 
   private String name = "Dimensions";
-  private static final String CLASSNAME = "pentaho-smallcategorybutton";
+  private static final String CLASSNAME = "pentaho-smallcategorybutton icon-zoomable";
 
   public DimensionMetaDataCollection() {
     super( CLASSNAME );

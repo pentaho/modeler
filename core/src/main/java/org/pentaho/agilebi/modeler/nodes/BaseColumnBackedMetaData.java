@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara. All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler.nodes;
@@ -34,11 +34,6 @@ import org.pentaho.metadata.model.LogicalColumn;
 import org.pentaho.metadata.model.LogicalTable;
 import org.pentaho.ui.xul.stereotype.Bindable;
 
-/**
- * Created: 3/18/11
- * 
- * @author rfellows
- */
 public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> extends AbstractMetaDataModelNode<T>
     implements ColumnBackedNode {
   private static final long serialVersionUID = -7342401951588541248L;
@@ -52,7 +47,7 @@ public class BaseColumnBackedMetaData<T extends AbstractMetaDataModelNode> exten
   protected String timeLevelFormat;
   private static final String IMAGE = "images/sm_level_icon.png";
   private String description = "";
-  private static final String CLASSNAME = "pentaho-smalllevelbutton";
+  private static final String CLASSNAME = "pentaho-smalllevelbutton icon-zoomable";
 
   public BaseColumnBackedMetaData() {
     super( CLASSNAME );
