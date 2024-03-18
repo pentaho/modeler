@@ -2,7 +2,7 @@
  *
  * Hitachi Vantara Community Edition Project: pentaho-modeler
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2024 by Hitachi Vantara : http://www.pentaho.com
  *
  * *******************************************************************************
  *
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.*;
 import static org.pentaho.metadata.model.concept.types.AggregationType.MINIMUM;
 
 import org.junit.Test;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.any;
 
 import org.mockito.Mockito;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;

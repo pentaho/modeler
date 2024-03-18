@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2016 - 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2016 - 2024 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -28,12 +28,13 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.eq;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -106,7 +107,7 @@ public class ModelAnnotationManagerIT {
     modelAnnotationManager.createGroup( group, this.metaStore );
     assertNotNull( modelAnnotationManager.readGroup( group.getName(), this.metaStore ) );
     assertNotNull(
-        modelAnnotationManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
+      modelAnnotationManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
 
     SharedDimensionGroup sGroup = new SharedDimensionGroup();
     sGroup.setName( "Shared Dimension Group" );
@@ -168,7 +169,7 @@ public class ModelAnnotationManagerIT {
     } ) );
 
     List<ModelAnnotationGroup> loadedGroups =
-        modelAnnotationManager.listGroups( this.metaStore );
+      modelAnnotationManager.listGroups( this.metaStore );
     assertEquals( 1, loadedGroups.size() );
   }
 
@@ -195,7 +196,7 @@ public class ModelAnnotationManagerIT {
     } ) );
 
     List<ModelAnnotationGroup> loadedGroups =
-        sharedDimensionManager.listGroups( this.metaStore );
+      sharedDimensionManager.listGroups( this.metaStore );
     assertEquals( 1, loadedGroups.size() );
   }
 
@@ -353,15 +354,15 @@ public class ModelAnnotationManagerIT {
   public void testStoreLoadDbMetaNew() throws Exception {
     KettleClientEnvironment.init();
     DatabaseMeta
-        dbMeta =
-        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
+      dbMeta =
+      new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
     dbMeta.getAttributes().setProperty( "SUPPORTS_BOOLEAN_DATA_TYPE", "N" );
     final String dbRef = modelAnnotationManager.storeDatabaseMeta( dbMeta, this.metaStore );
     assertEquals( dbMeta.getName(), dbRef );
     IMetaStore spy = Mockito.spy( this.metaStore );
     DatabaseMeta dbMetaBack = modelAnnotationManager.loadDatabaseMeta( dbRef, spy );
     Mockito.verify( spy ).getElementByName(
-        eq( PentahoDefaults.NAMESPACE ) , argThat( idNotNull() ), eq( dbRef ) );
+      eq( PentahoDefaults.NAMESPACE ), argThat( idNotNull() ), eq( dbRef ) );
     assertEquals( dbMeta, dbMetaBack );
     dbMetaBack.setChangedDate( dbMeta.getChangedDate() );
     assertEquals( dbMeta.getAccessType(), dbMetaBack.getAccessType() );
@@ -391,12 +392,12 @@ public class ModelAnnotationManagerIT {
   public void testStoreLoadDbMetaUpdate() throws Exception {
     KettleClientEnvironment.init();
     DatabaseMeta
-        dbMetaPrevious =
-        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "otherhost", "db", "3002", "user1", "pass1" );
+      dbMetaPrevious =
+      new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "otherhost", "db", "3002", "user1", "pass1" );
     final String dbRefPrev = modelAnnotationManager.storeDatabaseMeta( dbMetaPrevious, this.metaStore );
     DatabaseMeta
-        dbMeta =
-        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
+      dbMeta =
+      new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
     dbMeta.getAttributes().setProperty( "SUPPORTS_BOOLEAN_DATA_TYPE", "N" );
     final String dbRef = modelAnnotationManager.storeDatabaseMeta( dbMeta, this.metaStore );
     assertEquals( dbMeta.getName(), dbRef );

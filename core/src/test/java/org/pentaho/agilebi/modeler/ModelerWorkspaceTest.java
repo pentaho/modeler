@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler;
@@ -20,6 +20,7 @@ package org.pentaho.agilebi.modeler;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.agilebi.modeler.format.DataFormatHolder;
 import org.pentaho.agilebi.modeler.geo.GeoContext;
 import org.pentaho.agilebi.modeler.geo.GeoContextConfigProvider;
 import org.pentaho.agilebi.modeler.geo.GeoContextFactory;
@@ -32,7 +33,6 @@ import org.pentaho.agilebi.modeler.nodes.FieldMetaData;
 import org.pentaho.agilebi.modeler.nodes.HierarchyMetaData;
 import org.pentaho.agilebi.modeler.nodes.LevelMetaData;
 import org.pentaho.agilebi.modeler.nodes.MeasureMetaData;
-import org.pentaho.agilebi.modeler.format.DataFormatHolder;
 import org.pentaho.agilebi.modeler.util.ModelerWorkspaceHelper;
 import org.pentaho.agilebi.modeler.util.SpoonModelerMessages;
 import org.pentaho.metadata.model.Domain;
@@ -53,12 +53,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import static junit.framework.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Matchers.any;
 
 public class ModelerWorkspaceTest {
 
@@ -99,7 +101,8 @@ public class ModelerWorkspaceTest {
     when( backedNode.getLogicalColumn() ).thenReturn( logicalColumn );
 
     ModelerWorkspace modelerWorkspace = spy( workspace );
-    doReturn( backedNode ).when( modelerWorkspace ).createColumnBackedNode( any( AvailableField.class ), any( ModelerPerspective.class ) );
+    doReturn( backedNode ).when( modelerWorkspace )
+      .createColumnBackedNode( any( AvailableField.class ), any( ModelerPerspective.class ) );
 
     CategoryMetaData parent = mock( CategoryMetaData.class );
     AvailableField selectedField = mock( AvailableField.class );
@@ -229,7 +232,7 @@ public class ModelerWorkspaceTest {
   }
 
   private static String readFileAsString( String filePath ) throws java.io.IOException {
-    byte[] buffer = new byte[(int) new File( filePath ).length()];
+    byte[] buffer = new byte[ (int) new File( filePath ).length() ];
     BufferedInputStream f = null;
     try {
       f = new BufferedInputStream( new FileInputStream( filePath ) );
