@@ -22,7 +22,7 @@
     <commons-gwt.version>10.2.0.0-SNAPSHOT</commons-gwt.version>
     <commons-xul.version>10.2.0.0-SNAPSHOT</commons-xul.version>
   </properties>
-  <build>
+    <build>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
