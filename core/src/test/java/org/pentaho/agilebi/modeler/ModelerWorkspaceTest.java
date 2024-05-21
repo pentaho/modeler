@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.agilebi.modeler;
@@ -45,20 +45,22 @@ import org.pentaho.metadata.util.XmiParser;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import static junit.framework.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.any;
 
 public class ModelerWorkspaceTest {
 
@@ -99,7 +101,8 @@ public class ModelerWorkspaceTest {
     when( backedNode.getLogicalColumn() ).thenReturn( logicalColumn );
 
     ModelerWorkspace modelerWorkspace = spy( workspace );
-    doReturn( backedNode ).when( modelerWorkspace ).createColumnBackedNode( any( AvailableField.class ), any( ModelerPerspective.class ) );
+    doReturn( backedNode ).when( modelerWorkspace )
+      .createColumnBackedNode( any( AvailableField.class ), any( ModelerPerspective.class ) );
 
     CategoryMetaData parent = mock( CategoryMetaData.class );
     AvailableField selectedField = mock( AvailableField.class );
@@ -110,7 +113,7 @@ public class ModelerWorkspaceTest {
   @Test
   public void testUpConvertLegacyModel() throws Exception {
     XmiParser parser = new XmiParser();
-    Domain d = parser.parseXmi( new FileInputStream( "src/test/resources/products.xmi" ) );
+    Domain d = parser.parseXmi( Files.newInputStream( Paths.get( "src/test/resources/products.xmi" ) ) );
     LogicalModel model = d.getLogicalModels().get( 0 );
 
     assertEquals( 1, model.getLogicalTables().size() );
@@ -124,7 +127,7 @@ public class ModelerWorkspaceTest {
   @Test
   public void testUpConvert_v2() throws Exception {
     XmiParser parser = new XmiParser();
-    Domain d = parser.parseXmi( new FileInputStream( "src/test/resources/multi-table-model-2.0.xmi" ) );
+    Domain d = parser.parseXmi( Files.newInputStream( Paths.get( "src/test/resources/multi-table-model-2.0.xmi" ) ) );
     LogicalModel model = d.getLogicalModels().get( 0 );
 
     assertEquals( 6, model.getLogicalTables().size() );
@@ -140,7 +143,7 @@ public class ModelerWorkspaceTest {
   @Test
   public void testSetDomain_NeedsUpConverted() throws Exception {
     XmiParser parser = new XmiParser();
-    Domain d = parser.parseXmi( new FileInputStream( "src/test/resources/products.xmi" ) );
+    Domain d = parser.parseXmi( Files.newInputStream( Paths.get( "src/test/resources/products.xmi" ) ) );
     LogicalModel model = d.getLogicalModels().get( 0 );
     workspace.setDomain( d );
 
@@ -206,7 +209,7 @@ public class ModelerWorkspaceTest {
   @Test
   public void testMondrianExportAfterUpConvertOfModel() throws Exception {
     XmiParser parser = new XmiParser();
-    Domain d = parser.parseXmi( new FileInputStream( "src/test/resources/products.xmi" ) );
+    Domain d = parser.parseXmi( Files.newInputStream( Paths.get( "src/test/resources/products.xmi" ) ) );
     workspace.setDomain( d );
     LogicalModel model = d.getLogicalModels().get( 1 );
 
@@ -229,20 +232,11 @@ public class ModelerWorkspaceTest {
   }
 
   private static String readFileAsString( String filePath ) throws java.io.IOException {
-    byte[] buffer = new byte[(int) new File( filePath ).length()];
-    BufferedInputStream f = null;
-    try {
-      f = new BufferedInputStream( new FileInputStream( filePath ) );
+    byte[] buffer = new byte[ (int) new File( filePath ).length() ];
+    try ( BufferedInputStream f = new BufferedInputStream( Files.newInputStream( Paths.get( filePath ) ) ) ) {
       f.read( buffer );
-    } finally {
-      if ( f != null ) {
-        try {
-          f.close();
-        } catch ( IOException ignored ) {
-          // ignore
-        }
-      }
     }
+    // ignore
     return new String( buffer );
   }
 }
