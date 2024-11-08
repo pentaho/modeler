@@ -146,8 +146,8 @@
       <artifactId>gwt-dev</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-servlet</artifactId>
+      <groupId>org.gwtproject</groupId>
+      <artifactId>gwt-servlet-jakarta</artifactId>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
@@ -172,9 +172,9 @@
       <version>${mondrian.version}</version>
     </dependency>
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.1</version>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>${jakarta.xml.bind-api.version}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.xml.bind</groupId>
