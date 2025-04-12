@@ -30,7 +30,6 @@
     <dependency.pentaho-simple-jndi.revision>1.0.2</dependency.pentaho-simple-jndi.revision>
     <mondrian.version>10.3.0.0-SNAPSHOT</mondrian.version>
     <commons-xul.version>10.3.0.0-SNAPSHOT</commons-xul.version>
-    <dependency.junit.revision>4.13.2</dependency.junit.revision>
     <pentaho-metadata.version>10.3.0.0-SNAPSHOT</pentaho-metadata.version>
     <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
     <commons-gwt.version>10.3.0.0-SNAPSHOT</commons-gwt.version>

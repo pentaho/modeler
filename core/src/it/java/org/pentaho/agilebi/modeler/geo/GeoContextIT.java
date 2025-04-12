@@ -43,9 +43,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_DATA_ROLE;
 import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_GEO_ROLE;
 
@@ -55,9 +59,8 @@ import static org.pentaho.agilebi.modeler.geo.GeoContext.ANNOTATION_GEO_ROLE;
  */
 public class GeoContextIT extends AbstractModelerTest {
   private static final String GEO_ROLE_KEY = "geo.roles";
-  private static Properties props = null;
   private static final String LOCALE = "en_US";
-
+  private static Properties props = null;
   private static GeoContextConfigProvider config;
 
   @BeforeClass
@@ -75,7 +78,7 @@ public class GeoContextIT extends AbstractModelerTest {
     generateTestDomain();
 
     GeoContext geo = GeoContextFactory.create( config );
-    List<GeoRole> matched = new ArrayList<GeoRole>();
+    List<GeoRole> matched = new ArrayList<>();
 
     List<AvailableTable> tables = workspace.getAvailableTables().getAsAvailableTablesList();
 
@@ -105,7 +108,7 @@ public class GeoContextIT extends AbstractModelerTest {
     assertNotNull( dim );
 
     IDataRoleAnnotation dataRole =
-        (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+      (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
     assertTrue( dataRole instanceof GeoRole );
 
     dataRole = (IDataRoleAnnotation) dim.get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
@@ -135,7 +138,7 @@ public class GeoContextIT extends AbstractModelerTest {
         }
       }
     }
-    assertTrue( found == dim.get( 0 ).size() );
+    assertEquals( dim.get( 0 ).size(), found );
   }
 
   @Test
@@ -151,7 +154,7 @@ public class GeoContextIT extends AbstractModelerTest {
     assertNotNull( dim );
 
     IDataRoleAnnotation dataRole =
-        (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+      (IDataRoleAnnotation) dim.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
 
     assertTrue( dataRole instanceof GeoRole );
     dataRole = (IDataRoleAnnotation) dim.get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
@@ -177,7 +180,7 @@ public class GeoContextIT extends AbstractModelerTest {
         }
       }
     }
-    assertTrue( found == dim.get( 0 ).size() );
+    assertEquals( dim.get( 0 ).size(), found );
   }
 
   @Test
@@ -186,60 +189,54 @@ public class GeoContextIT extends AbstractModelerTest {
     // build up 2 mock tables that both have geographic fields, make sure that
     // 2 dimensions are built, one for each table.
 
-    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    List<IAvailableItem> items = new ArrayList<>();
 
     // mock object init...
-    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable1 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<>();
+    IPhysicalColumn mockStateCol = mock( IPhysicalColumn.class );
     cols1.add( mockStateCol );
 
-    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
-    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
+    when( mockTable1.getName( LOCALE ) ).thenReturn( "CUSTOMERS" );
+    when( mockTable1.getPhysicalColumns() ).thenReturn( cols1 );
+    when( mockTable1.getId() ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "target_table" ) ).thenReturn( "PT_CUSTOMERS" );
 
-    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol.getAggregationList() ).andReturn( null );
-    expect( mockStateCol.getAggregationType() ).andReturn( null );
-    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
+    when( mockStateCol.getName( LOCALE ) ).thenReturn( "State" );
+    when( mockStateCol.getName( "en-US" ) ).thenReturn( "State" );
+    when( mockStateCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockStateCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol.getAggregationList() ).thenReturn( null );
+    when( mockStateCol.getAggregationType() ).thenReturn( null );
+    when( mockStateCol.getId() ).thenReturn( "STATE" );
 
-    IPhysicalTable mockTable2 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols2 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockCountryCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable2 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols2 = new ArrayList<>();
+    IPhysicalColumn mockCountryCol = mock( IPhysicalColumn.class );
     cols2.add( mockCountryCol );
-    IPhysicalColumn mockStateCol2 = createMock( IPhysicalColumn.class );
+    IPhysicalColumn mockStateCol2 = mock( IPhysicalColumn.class );
     cols2.add( mockStateCol2 );
 
-    expect( mockTable2.getName( LOCALE ) ).andReturn( "ORDERFACT" ).anyTimes();
-    expect( mockTable2.getPhysicalColumns() ).andReturn( cols2 ).anyTimes();
-    expect( mockTable2.getId() ).andReturn( "PT_ORDERFACT" ).anyTimes();
-    expect( mockTable2.getProperty( "target_table" ) ).andReturn( "PT_ORDERFACT" ).anyTimes();
+    when( mockTable2.getName( LOCALE ) ).thenReturn( "ORDERFACT" );
+    when( mockTable2.getPhysicalColumns() ).thenReturn( cols2 );
+    when( mockTable2.getId() ).thenReturn( "PT_ORDERFACT" );
+    when( mockTable2.getProperty( "target_table" ) ).thenReturn( "PT_ORDERFACT" );
 
-    expect( mockCountryCol.getName( LOCALE ) ).andReturn( "Country" ).anyTimes();
-    expect( mockCountryCol.getName( "en-US" ) ).andReturn( "Country" ).anyTimes();
-    expect( mockCountryCol.getPhysicalTable() ).andReturn( mockTable2 ).anyTimes();
-    expect( mockCountryCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockCountryCol.getAggregationList() ).andReturn( null );
-    expect( mockCountryCol.getAggregationType() ).andReturn( null );
-    expect( mockCountryCol.getId() ).andReturn( "COUNTRY" ).anyTimes();
+    when( mockCountryCol.getName( LOCALE ) ).thenReturn( "Country" );
+    when( mockCountryCol.getName( "en-US" ) ).thenReturn( "Country" );
+    when( mockCountryCol.getPhysicalTable() ).thenReturn( mockTable2 );
+    when( mockCountryCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockCountryCol.getAggregationList() ).thenReturn( null );
+    when( mockCountryCol.getAggregationType() ).thenReturn( null );
+    when( mockCountryCol.getId() ).thenReturn( "COUNTRY" );
 
-    expect( mockStateCol2.getName( LOCALE ) ).andReturn( "Province" ).anyTimes();
-    expect( mockStateCol2.getName( "en-US" ) ).andReturn( "Province" ).anyTimes();
-    expect( mockStateCol2.getPhysicalTable() ).andReturn( mockTable2 ).anyTimes();
-    expect( mockStateCol2.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol2.getAggregationList() ).andReturn( null );
-    expect( mockStateCol2.getAggregationType() ).andReturn( null );
-    expect( mockStateCol2.getId() ).andReturn( "PROVINCE" ).anyTimes();
-
-    replay( mockTable1 );
-    replay( mockStateCol );
-    replay( mockTable2 );
-    replay( mockCountryCol );
-    replay( mockStateCol2 );
+    when( mockStateCol2.getName( LOCALE ) ).thenReturn( "Province" );
+    when( mockStateCol2.getName( "en-US" ) ).thenReturn( "Province" );
+    when( mockStateCol2.getPhysicalTable() ).thenReturn( mockTable2 );
+    when( mockStateCol2.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol2.getAggregationList() ).thenReturn( null );
+    when( mockStateCol2.getAggregationType() ).thenReturn( null );
+    when( mockStateCol2.getId() ).thenReturn( "PROVINCE" );
 
     AvailableTable table = new AvailableTable( mockTable1 );
     items.add( table );
@@ -265,93 +262,81 @@ public class GeoContextIT extends AbstractModelerTest {
     // since there was more than one geo dimension created, dim names should be prefixed with table name (example:
     // table_geography)
     String expectedDimName =
-        mockTable1.getName( LOCALE ) + geo.getGeoRole( 0 ).getMatchSeparator() + geo.getDimensionName();
+      mockTable1.getName( LOCALE ) + geo.getGeoRole( 0 ).getMatchSeparator() + geo.getDimensionName();
     assertEquals( expectedDimName, custGeoDim.getName() );
     assertEquals( 1, custGeoDim.get( 0 ).size() );
 
     expectedDimName = mockTable2.getName( LOCALE ) + geo.getGeoRole( 0 ).getMatchSeparator() + geo.getDimensionName();
     assertEquals( expectedDimName, orderGeoDim.getName() );
     assertEquals( 2, orderGeoDim.get( 0 ).size() );
-
-    verify( mockTable1 );
-    verify( mockStateCol );
-    verify( mockTable2 );
-    verify( mockCountryCol );
-    verify( mockStateCol2 );
   }
 
   @Test
   public void testLatLongDetection() throws Exception {
     // LatLong fields should be detected and the column immediately preceding them in the source table should
-    // get it's data role set to LocationRole
+    // get its data role set to LocationRole
 
-    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    List<IAvailableItem> items = new ArrayList<>();
 
     // mock object init...
-    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCustomerCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLatitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLongitudeCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable1 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<>();
+    IPhysicalColumn mockStateCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCustomerCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLatitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLongitudeCol = mock( IPhysicalColumn.class );
 
     cols1.add( mockStateCol );
     cols1.add( mockCustomerCol );
     cols1.add( mockLatitudeCol );
     cols1.add( mockLongitudeCol );
 
-    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
-    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    when( mockTable1.getName( LOCALE ) ).thenReturn( "CUSTOMERS" );
+    when( mockTable1.getPhysicalColumns() ).thenReturn( cols1 );
+    when( mockTable1.getId() ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "target_table" ) ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "name" ) ).thenReturn( "CUSTOMERS" );
 
     // state col
-    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol.getAggregationList() ).andReturn( null );
-    expect( mockStateCol.getAggregationType() ).andReturn( null );
-    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
+    when( mockStateCol.getName( LOCALE ) ).thenReturn( "State" );
+    when( mockStateCol.getName( "en-US" ) ).thenReturn( "State" );
+    when( mockStateCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockStateCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol.getAggregationList() ).thenReturn( null );
+    when( mockStateCol.getAggregationType() ).thenReturn( null );
+    when( mockStateCol.getId() ).thenReturn( "STATE" );
 
     // customer col
-    expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getName( "en-US" ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCustomerCol.getId() ).andReturn( "CUSTOMERNAME" ).anyTimes();
+    when( mockCustomerCol.getName( LOCALE ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getName( "en-US" ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCustomerCol.getId() ).thenReturn( "CUSTOMERNAME" );
 
     // lat col
-    expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getName( "en-US" ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLatitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLatitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
+    when( mockLatitudeCol.getName( LOCALE ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getName( "en-US" ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLatitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLatitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLatitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLatitudeCol.getId() ).thenReturn( "LATITUDE" );
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    HashMap<String, Object> latProperties = new HashMap<>();
     latProperties.put( "name", "Latitude" );
-    expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
+    when( mockLatitudeCol.getProperties() ).thenReturn( latProperties );
 
     // lng col
-    expect( mockLongitudeCol.getName( LOCALE ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getName( "en-US" ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLongitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLongitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
+    when( mockLongitudeCol.getName( LOCALE ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getName( "en-US" ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLongitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLongitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLongitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLongitudeCol.getId() ).thenReturn( "LONGITUDE" );
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    HashMap<String, Object> lngProperties = new HashMap<>();
     lngProperties.put( "name", "Longitude" );
-    expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
-
-    replay( mockTable1 );
-    replay( mockStateCol );
-    replay( mockCustomerCol );
-    replay( mockLatitudeCol );
-    replay( mockLongitudeCol );
+    when( mockLongitudeCol.getProperties() ).thenReturn( lngProperties );
 
     AvailableTable table = new AvailableTable( mockTable1 );
     items.add( table );
@@ -384,27 +369,26 @@ public class GeoContextIT extends AbstractModelerTest {
                 assertNotNull( existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) );
 
                 IDataRoleAnnotation dataRole =
-                    (IDataRoleAnnotation) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+                  (IDataRoleAnnotation) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
                 assertTrue( dataRole instanceof LocationRole );
 
                 assertEquals( 2, existingLevel.size() );
 
                 LocationRole lr =
-                    (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_GEO_ROLE );
+                  (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_GEO_ROLE );
 
                 assertNotNull( existingLevel.getLatitudeField() );
                 assertNotNull( existingLevel.getLongitudeField() );
 
                 // make sure the lat & long fields are available as logical columns in the model
                 LogicalColumn lc =
-                    workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
-                        .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
+                  workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
+                    .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
                 assertNotNull( lc );
                 assertEquals( "latitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
-                lc =
-                  workspace.findLogicalColumn( existingLevel.getLongitudeField().getLogicalColumn()
-                    .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
+                lc = workspace.findLogicalColumn( existingLevel.getLongitudeField().getLogicalColumn()
+                  .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
                 assertNotNull( lc );
                 assertEquals( "longitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
@@ -418,78 +402,67 @@ public class GeoContextIT extends AbstractModelerTest {
         }
       }
     }
-
-    verify( mockTable1 );
-    verify( mockStateCol );
-    verify( mockCustomerCol );
-    verify( mockLatitudeCol );
-    verify( mockLongitudeCol );
   }
 
   @Test
   public void testLatLongDetection_OnGeoField() throws Exception {
     // LatLong fields should be detected and the column immediately preceding them in the source table should
-    // get it's data role set to LocationRole. In this case the preceding col is also a GeoRole. That should be
+    // get its data role set to LocationRole. In this case the preceding col is also a GeoRole. That should be
     // overridden and set to LocationRole
 
-    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    List<IAvailableItem> items = new ArrayList<>();
 
     // mock object init...
-    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLatitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLongitudeCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable1 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<>();
+    IPhysicalColumn mockStateCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLatitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLongitudeCol = mock( IPhysicalColumn.class );
 
     cols1.add( mockStateCol );
     cols1.add( mockLatitudeCol );
     cols1.add( mockLongitudeCol );
 
-    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
-    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    when( mockTable1.getName( LOCALE ) ).thenReturn( "CUSTOMERS" );
+    when( mockTable1.getPhysicalColumns() ).thenReturn( cols1 );
+    when( mockTable1.getId() ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "target_table" ) ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "name" ) ).thenReturn( "CUSTOMERS" );
 
     // state col
-    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol.getAggregationList() ).andReturn( null );
-    expect( mockStateCol.getAggregationType() ).andReturn( null );
-    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
+    when( mockStateCol.getName( LOCALE ) ).thenReturn( "State" );
+    when( mockStateCol.getName( "en-US" ) ).thenReturn( "State" );
+    when( mockStateCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockStateCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol.getAggregationList() ).thenReturn( null );
+    when( mockStateCol.getAggregationType() ).thenReturn( null );
+    when( mockStateCol.getId() ).thenReturn( "STATE" );
 
     // lat col
-    expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getName( "en-US" ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
-    expect( mockLatitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLatitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
+    when( mockLatitudeCol.getName( LOCALE ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getName( "en-US" ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getId() ).thenReturn( "LATITUDE" );
+    when( mockLatitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLatitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLatitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLatitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    HashMap<String, Object> latProperties = new HashMap<>();
     latProperties.put( "name", "Latitude" );
-    expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
+    when( mockLatitudeCol.getProperties() ).thenReturn( latProperties );
 
     // lng col
-    expect( mockLongitudeCol.getName( LOCALE ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getName( "en-US" ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
-    expect( mockLongitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLongitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
+    when( mockLongitudeCol.getName( LOCALE ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getName( "en-US" ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getId() ).thenReturn( "LONGITUDE" );
+    when( mockLongitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLongitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLongitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLongitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    HashMap<String, Object> lngProperties = new HashMap<>();
     lngProperties.put( "name", "Longitude" );
-    expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
-
-    replay( mockTable1 );
-    replay( mockStateCol );
-    replay( mockLatitudeCol );
-    replay( mockLongitudeCol );
+    when( mockLongitudeCol.getProperties() ).thenReturn( lngProperties );
 
     AvailableTable table = new AvailableTable( mockTable1 );
     items.add( table );
@@ -520,98 +493,85 @@ public class GeoContextIT extends AbstractModelerTest {
 
         // make sure the lat & long fields are available as logical columns in the model
         LogicalColumn lc =
-            workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn().getPhysicalColumn(),
-                ModelerPerspective.ANALYSIS );
+          workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn().getPhysicalColumn(),
+            ModelerPerspective.ANALYSIS );
         assertNotNull( lc );
         assertEquals( "latitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
-        lc =
-          workspace.findLogicalColumn( existingLevel.getLongitudeField().getLogicalColumn().getPhysicalColumn(),
-            ModelerPerspective.ANALYSIS );
+        lc = workspace.findLogicalColumn( existingLevel.getLongitudeField().getLogicalColumn().getPhysicalColumn(),
+          ModelerPerspective.ANALYSIS );
         assertNotNull( lc );
         assertEquals( "longitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
-
       }
     }
-
-    verify( mockTable1 );
-    verify( mockStateCol );
-    verify( mockLatitudeCol );
-    verify( mockLongitudeCol );
   }
 
   @Test
   public void testLatLongDetection_LatLongAreFirstInSourceData() throws Exception {
     // LatLong fields should be detected and the column immediately following them in the source table should
-    // get it's data role set to LocationRole.
+    // get its data role set to LocationRole.
 
-    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    List<IAvailableItem> items = new ArrayList<>();
 
     // mock object init...
-    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCustomerCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLatitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLongitudeCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable1 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<>();
+    IPhysicalColumn mockStateCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCustomerCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLatitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLongitudeCol = mock( IPhysicalColumn.class );
 
     cols1.add( mockLatitudeCol );
     cols1.add( mockLongitudeCol );
     cols1.add( mockCustomerCol );
     cols1.add( mockStateCol );
 
-    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
-    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    when( mockTable1.getName( LOCALE ) ).thenReturn( "CUSTOMERS" );
+    when( mockTable1.getPhysicalColumns() ).thenReturn( cols1 );
+    when( mockTable1.getId() ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "target_table" ) ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "name" ) ).thenReturn( "CUSTOMERS" );
 
     // lat col
-    expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getName( "en-US" ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLatitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLatitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
+    when( mockLatitudeCol.getName( LOCALE ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getName( "en-US" ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLatitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLatitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLatitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLatitudeCol.getId() ).thenReturn( "LATITUDE" );
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    HashMap<String, Object> latProperties = new HashMap<>();
     latProperties.put( "name", "Latitude" );
-    expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
+    when( mockLatitudeCol.getProperties() ).thenReturn( latProperties );
 
     // lng col
-    expect( mockLongitudeCol.getName( LOCALE ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getName( "en-US" ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLongitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLongitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
+    when( mockLongitudeCol.getName( LOCALE ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getName( "en-US" ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLongitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLongitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLongitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLongitudeCol.getId() ).thenReturn( "LONGITUDE" );
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    HashMap<String, Object> lngProperties = new HashMap<>();
     lngProperties.put( "name", "Longitude" );
-    expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
+    when( mockLongitudeCol.getProperties() ).thenReturn( lngProperties );
 
     // customer col
-    expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getName( "en-US" ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCustomerCol.getId() ).andReturn( "CUSTOMERNAME" ).anyTimes();
+    when( mockCustomerCol.getName( LOCALE ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getName( "en-US" ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCustomerCol.getId() ).thenReturn( "CUSTOMERNAME" );
 
     // state col
-    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol.getAggregationList() ).andReturn( null );
-    expect( mockStateCol.getAggregationType() ).andReturn( null );
-    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
-
-    replay( mockTable1 );
-    replay( mockLatitudeCol );
-    replay( mockLongitudeCol );
-    replay( mockCustomerCol );
-    replay( mockStateCol );
+    when( mockStateCol.getName( LOCALE ) ).thenReturn( "State" );
+    when( mockStateCol.getName( "en-US" ) ).thenReturn( "State" );
+    when( mockStateCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockStateCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol.getAggregationList() ).thenReturn( null );
+    when( mockStateCol.getAggregationType() ).thenReturn( null );
+    when( mockStateCol.getId() ).thenReturn( "STATE" );
 
     AvailableTable table = new AvailableTable( mockTable1 );
     items.add( table );
@@ -643,22 +603,20 @@ public class GeoContextIT extends AbstractModelerTest {
               if ( existingLevel.getName().equalsIgnoreCase( "customername" ) ) {
                 assertNotNull( existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) );
                 assertTrue(
-                    existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) instanceof LocationRole );
+                  existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE ) instanceof LocationRole );
                 LocationRole lr =
-                    (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
+                  (LocationRole) existingLevel.getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE );
                 assertNotNull( existingLevel.getLatitudeField() );
                 assertNotNull( existingLevel.getLongitudeField() );
 
                 // make sure the lat & long fields are available as logical columns in the model
-                LogicalColumn lc =
-                    workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
-                        .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
+                LogicalColumn lc = workspace.findLogicalColumn( existingLevel.getLatitudeField().getLogicalColumn()
+                  .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
                 assertNotNull( lc );
                 assertEquals( "latitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
-                lc =
-                  workspace.findLogicalColumn( existingLevel.getLongitudeField().getLogicalColumn()
-                    .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
+                lc = workspace.findLogicalColumn( existingLevel.getLongitudeField().getLogicalColumn()
+                  .getPhysicalColumn(), ModelerPerspective.ANALYSIS );
                 assertNotNull( lc );
                 assertEquals( "longitude", lc.getName( workspace.getWorkspaceHelper().getLocale() ) );
 
@@ -672,17 +630,10 @@ public class GeoContextIT extends AbstractModelerTest {
       }
     }
 
-    verify( mockTable1 );
-    verify( mockLatitudeCol );
-    verify( mockLongitudeCol );
-    verify( mockCustomerCol );
-    verify( mockStateCol );
-
     workspace.getWorkspaceHelper().populateDomain( workspace );
-    List olapDimensions = (List) workspace.getDomain().getLogicalModels().get( 1 ).getProperty( "olap_dimensions" );
+    List<OlapDimension> olapDimensions = (List) workspace.getDomain().getLogicalModels().get( 1 ).getProperty( "olap_dimensions" );
     boolean foundLevel = false;
-    for ( Object d : olapDimensions ) {
-      OlapDimension dim = (OlapDimension) d;
+    for ( OlapDimension dim : olapDimensions ) {
       if ( dim.getName().equalsIgnoreCase( "customername" ) ) {
         for ( OlapHierarchy hier : dim.getHierarchies() ) {
           if ( hier.getName().equalsIgnoreCase( "customername" ) ) {
@@ -702,19 +653,19 @@ public class GeoContextIT extends AbstractModelerTest {
   @Test
   public void testInvertedOrderOfSourceGeoFields() throws Exception {
     // LatLong fields should be detected and the column immediately preceding them in the source table should
-    // get it's data role set to LocationRole
+    // get its data role set to LocationRole
 
-    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    List<IAvailableItem> items = new ArrayList<>();
 
     // mock object init...
-    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCustomerCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLatitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLongitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCountryCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCityCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable1 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<>();
+    IPhysicalColumn mockStateCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCustomerCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLatitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLongitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCountryCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCityCol = mock( IPhysicalColumn.class );
 
     cols1.add( mockCustomerCol );
     cols1.add( mockCityCol );
@@ -723,78 +674,70 @@ public class GeoContextIT extends AbstractModelerTest {
     cols1.add( mockLatitudeCol );
     cols1.add( mockLongitudeCol );
 
-    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
-    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    when( mockTable1.getName( LOCALE ) ).thenReturn( "CUSTOMERS" );
+    when( mockTable1.getPhysicalColumns() ).thenReturn( cols1 );
+    when( mockTable1.getId() ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "target_table" ) ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "name" ) ).thenReturn( "CUSTOMERS" );
 
     // country
-    expect( mockCountryCol.getName( LOCALE ) ).andReturn( "Country" ).anyTimes();
-    expect( mockCountryCol.getName( "en-US" ) ).andReturn( "Country" ).anyTimes();
-    expect( mockCountryCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCountryCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockCountryCol.getAggregationList() ).andReturn( null );
-    expect( mockCountryCol.getAggregationType() ).andReturn( null );
-    expect( mockCountryCol.getId() ).andReturn( "COUNTRY" ).anyTimes();
+    when( mockCountryCol.getName( LOCALE ) ).thenReturn( "Country" );
+    when( mockCountryCol.getName( "en-US" ) ).thenReturn( "Country" );
+    when( mockCountryCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCountryCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockCountryCol.getAggregationList() ).thenReturn( null );
+    when( mockCountryCol.getAggregationType() ).thenReturn( null );
+    when( mockCountryCol.getId() ).thenReturn( "COUNTRY" );
 
     // state col
-    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol.getAggregationList() ).andReturn( null );
-    expect( mockStateCol.getAggregationType() ).andReturn( null );
-    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
+    when( mockStateCol.getName( LOCALE ) ).thenReturn( "State" );
+    when( mockStateCol.getName( "en-US" ) ).thenReturn( "State" );
+    when( mockStateCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockStateCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol.getAggregationList() ).thenReturn( null );
+    when( mockStateCol.getAggregationType() ).thenReturn( null );
+    when( mockStateCol.getId() ).thenReturn( "STATE" );
 
     // city
-    expect( mockCityCol.getName( LOCALE ) ).andReturn( "City" ).anyTimes();
-    expect( mockCityCol.getName( "en-US" ) ).andReturn( "City" ).anyTimes();
-    expect( mockCityCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCityCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockCityCol.getAggregationList() ).andReturn( null );
-    expect( mockCityCol.getAggregationType() ).andReturn( null );
-    expect( mockCityCol.getId() ).andReturn( "CITY" ).anyTimes();
+    when( mockCityCol.getName( LOCALE ) ).thenReturn( "City" );
+    when( mockCityCol.getName( "en-US" ) ).thenReturn( "City" );
+    when( mockCityCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCityCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockCityCol.getAggregationList() ).thenReturn( null );
+    when( mockCityCol.getAggregationType() ).thenReturn( null );
+    when( mockCityCol.getId() ).thenReturn( "CITY" );
 
     // customer col
-    expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getName( "en-US" ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCustomerCol.getId() ).andReturn( "CUSTOMERNAME" ).anyTimes();
+    when( mockCustomerCol.getName( LOCALE ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getName( "en-US" ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCustomerCol.getId() ).thenReturn( "CUSTOMERNAME" );
 
     // lat col
-    expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getName( "en-US" ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLatitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLatitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
+    when( mockLatitudeCol.getName( LOCALE ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getName( "en-US" ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLatitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLatitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLatitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLatitudeCol.getId() ).thenReturn( "LATITUDE" );
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    HashMap<String, Object> latProperties = new HashMap<>();
     latProperties.put( "name", "Latitude" );
-    expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
+    when( mockLatitudeCol.getProperties() ).thenReturn( latProperties );
 
     // lng col
-    expect( mockLongitudeCol.getName( LOCALE ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getName( "en-US" ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLongitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLongitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
+    when( mockLongitudeCol.getName( LOCALE ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getName( "en-US" ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLongitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLongitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLongitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLongitudeCol.getId() ).thenReturn( "LONGITUDE" );
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    HashMap<String, Object> lngProperties = new HashMap<>();
     lngProperties.put( "name", "Longitude" );
-    expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
-
-    replay( mockTable1 );
-    replay( mockCustomerCol );
-    replay( mockCityCol );
-    replay( mockStateCol );
-    replay( mockCountryCol );
-    replay( mockLatitudeCol );
-    replay( mockLongitudeCol );
+    when( mockLongitudeCol.getProperties() ).thenReturn( lngProperties );
 
     AvailableTable table = new AvailableTable( mockTable1 );
     items.add( table );
@@ -820,38 +763,30 @@ public class GeoContextIT extends AbstractModelerTest {
     assertEquals( 3, custGeoDim.get( 0 ).size() );
 
     assertEquals( "location", custGeoDim.get( 0 ).get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-        .getName() ); // due to order of fields, this should be the location role
+      .getName() ); // due to order of fields, this should be the location role
     assertEquals( "state", custGeoDim.get( 0 ).get( 1 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-        .getName() );
+      .getName() );
     assertEquals( "city", custGeoDim.get( 0 ).get( 2 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-        .getName() );
-
-    verify( mockTable1 );
-    verify( mockCityCol );
-    verify( mockStateCol );
-    verify( mockCountryCol );
-    verify( mockCustomerCol );
-    verify( mockLatitudeCol );
-    verify( mockLongitudeCol );
+      .getName() );
   }
 
   @Test
   public void testSourceDataAlreadyHasGeographyField() throws Exception {
     // LatLong fields should be detected and the column immediately preceding them in the source table should
-    // get it's data role set to LocationRole
+    // get its data role set to LocationRole
 
-    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    List<IAvailableItem> items = new ArrayList<>();
 
     // mock object init...
-    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCustomerCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLatitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLongitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCountryCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCityCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockGeoCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable1 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<>();
+    IPhysicalColumn mockStateCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCustomerCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLatitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLongitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCountryCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCityCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockGeoCol = mock( IPhysicalColumn.class );
 
     cols1.add( mockCustomerCol );
     cols1.add( mockCityCol );
@@ -861,85 +796,76 @@ public class GeoContextIT extends AbstractModelerTest {
     cols1.add( mockLongitudeCol );
     cols1.add( mockGeoCol );
 
-    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
-    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    when( mockTable1.getName( LOCALE ) ).thenReturn( "CUSTOMERS" );
+    when( mockTable1.getPhysicalColumns() ).thenReturn( cols1 );
+    when( mockTable1.getId() ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "target_table" ) ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "name" ) ).thenReturn( "CUSTOMERS" );
 
     // country
-    expect( mockCountryCol.getName( LOCALE ) ).andReturn( "Country" ).anyTimes();
-    expect( mockCountryCol.getName( "en-US" ) ).andReturn( "Country" ).anyTimes();
-    expect( mockCountryCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCountryCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockCountryCol.getAggregationList() ).andReturn( null );
-    expect( mockCountryCol.getAggregationType() ).andReturn( null );
-    expect( mockCountryCol.getId() ).andReturn( "COUNTRY" ).anyTimes();
+    when( mockCountryCol.getName( LOCALE ) ).thenReturn( "Country" );
+    when( mockCountryCol.getName( "en-US" ) ).thenReturn( "Country" );
+    when( mockCountryCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCountryCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockCountryCol.getAggregationList() ).thenReturn( null );
+    when( mockCountryCol.getAggregationType() ).thenReturn( null );
+    when( mockCountryCol.getId() ).thenReturn( "COUNTRY" );
 
     // state col
-    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol.getAggregationList() ).andReturn( null );
-    expect( mockStateCol.getAggregationType() ).andReturn( null );
-    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
+    when( mockStateCol.getName( LOCALE ) ).thenReturn( "State" );
+    when( mockStateCol.getName( "en-US" ) ).thenReturn( "State" );
+    when( mockStateCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockStateCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol.getAggregationList() ).thenReturn( null );
+    when( mockStateCol.getAggregationType() ).thenReturn( null );
+    when( mockStateCol.getId() ).thenReturn( "STATE" );
 
     // city
-    expect( mockCityCol.getName( LOCALE ) ).andReturn( "City" ).anyTimes();
-    expect( mockCityCol.getName( "en-US" ) ).andReturn( "City" ).anyTimes();
-    expect( mockCityCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCityCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockCityCol.getAggregationList() ).andReturn( null );
-    expect( mockCityCol.getAggregationType() ).andReturn( null );
-    expect( mockCityCol.getId() ).andReturn( "CITY" ).anyTimes();
+    when( mockCityCol.getName( LOCALE ) ).thenReturn( "City" );
+    when( mockCityCol.getName( "en-US" ) ).thenReturn( "City" );
+    when( mockCityCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCityCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockCityCol.getAggregationList() ).thenReturn( null );
+    when( mockCityCol.getAggregationType() ).thenReturn( null );
+    when( mockCityCol.getId() ).thenReturn( "CITY" );
 
     // customer col
-    expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getName( "en-US" ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCustomerCol.getId() ).andReturn( "CUSTOMERNAME" ).anyTimes();
+    when( mockCustomerCol.getName( LOCALE ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getName( "en-US" ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCustomerCol.getId() ).thenReturn( "CUSTOMERNAME" );
 
     // lat col
-    expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getName( "en-US" ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLatitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLatitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
+    when( mockLatitudeCol.getName( LOCALE ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getName( "en-US" ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLatitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLatitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLatitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLatitudeCol.getId() ).thenReturn( "LATITUDE" );
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    HashMap<String, Object> latProperties = new HashMap<>();
     latProperties.put( "name", "Latitude" );
-    expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
+    when( mockLatitudeCol.getProperties() ).thenReturn( latProperties );
 
     // lng col
-    expect( mockLongitudeCol.getName( LOCALE ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getName( "en-US" ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLongitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLongitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
+    when( mockLongitudeCol.getName( LOCALE ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getName( "en-US" ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLongitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLongitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLongitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLongitudeCol.getId() ).thenReturn( "LONGITUDE" );
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    HashMap<String, Object> lngProperties = new HashMap<>();
     lngProperties.put( "name", "Longitude" );
-    expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
+    when( mockLongitudeCol.getProperties() ).thenReturn( lngProperties );
 
     // geography col
-    expect( mockGeoCol.getName( LOCALE ) ).andReturn( "Geography" ).anyTimes();
-    expect( mockGeoCol.getName( "en-US" ) ).andReturn( "Geography" ).anyTimes();
-    expect( mockGeoCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockGeoCol.getId() ).andReturn( "GEOGRAPHY" ).anyTimes();
-
-    replay( mockTable1 );
-    replay( mockCustomerCol );
-    replay( mockCityCol );
-    replay( mockStateCol );
-    replay( mockCountryCol );
-    replay( mockLatitudeCol );
-    replay( mockLongitudeCol );
-    replay( mockGeoCol );
+    when( mockGeoCol.getName( LOCALE ) ).thenReturn( "Geography" );
+    when( mockGeoCol.getName( "en-US" ) ).thenReturn( "Geography" );
+    when( mockGeoCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockGeoCol.getId() ).thenReturn( "GEOGRAPHY" );
 
     AvailableTable table = new AvailableTable( mockTable1 );
     items.add( table );
@@ -967,91 +893,76 @@ public class GeoContextIT extends AbstractModelerTest {
     assertEquals( 3, custGeoDim.get( 0 ).size() );
 
     assertEquals( "location", custGeoDim.get( 0 ).get( 0 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-        .getName() ); // due to order of fields, this should be the location role
+      .getName() ); // due to order of fields, this should be the location role
     assertEquals( "state", custGeoDim.get( 0 ).get( 1 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-        .getName() );
+      .getName() );
     assertEquals( "city", custGeoDim.get( 0 ).get( 2 ).getMemberAnnotations().get( GeoContext.ANNOTATION_DATA_ROLE )
-        .getName() );
-
-    verify( mockTable1 );
-    verify( mockCityCol );
-    verify( mockStateCol );
-    verify( mockCountryCol );
-    verify( mockCustomerCol );
-    verify( mockLatitudeCol );
-    verify( mockLongitudeCol );
-    verify( mockGeoCol );
+      .getName() );
   }
 
   @Test
   public void testSetLocationFields() throws Exception {
-    List<IAvailableItem> items = new ArrayList<IAvailableItem>();
+    List<IAvailableItem> items = new ArrayList<>();
 
     // mock object init...
-    IPhysicalTable mockTable1 = createMock( IPhysicalTable.class );
-    List<IPhysicalColumn> cols1 = new ArrayList<IPhysicalColumn>();
-    IPhysicalColumn mockStateCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockCustomerCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLatitudeCol = createMock( IPhysicalColumn.class );
-    IPhysicalColumn mockLongitudeCol = createMock( IPhysicalColumn.class );
+    IPhysicalTable mockTable1 = mock( IPhysicalTable.class );
+    List<IPhysicalColumn> cols1 = new ArrayList<>();
+    IPhysicalColumn mockStateCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockCustomerCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLatitudeCol = mock( IPhysicalColumn.class );
+    IPhysicalColumn mockLongitudeCol = mock( IPhysicalColumn.class );
 
     cols1.add( mockStateCol );
     cols1.add( mockCustomerCol );
     cols1.add( mockLatitudeCol );
     cols1.add( mockLongitudeCol );
 
-    expect( mockTable1.getName( LOCALE ) ).andReturn( "CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getPhysicalColumns() ).andReturn( cols1 ).anyTimes();
-    expect( mockTable1.getId() ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "target_table" ) ).andReturn( "PT_CUSTOMERS" ).anyTimes();
-    expect( mockTable1.getProperty( "name" ) ).andReturn( "CUSTOMERS" ).anyTimes();
+    when( mockTable1.getName( LOCALE ) ).thenReturn( "CUSTOMERS" );
+    when( mockTable1.getPhysicalColumns() ).thenReturn( cols1 );
+    when( mockTable1.getId() ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "target_table" ) ).thenReturn( "PT_CUSTOMERS" );
+    when( mockTable1.getProperty( "name" ) ).thenReturn( "CUSTOMERS" );
 
     // state col
-    expect( mockStateCol.getName( LOCALE ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getName( "en-US" ) ).andReturn( "State" ).anyTimes();
-    expect( mockStateCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockStateCol.getDataType() ).andReturn( DataType.STRING );
-    expect( mockStateCol.getAggregationList() ).andReturn( null );
-    expect( mockStateCol.getAggregationType() ).andReturn( null );
-    expect( mockStateCol.getId() ).andReturn( "STATE" ).anyTimes();
+    when( mockStateCol.getName( LOCALE ) ).thenReturn( "State" );
+    when( mockStateCol.getName( "en-US" ) ).thenReturn( "State" );
+    when( mockStateCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockStateCol.getDataType() ).thenReturn( DataType.STRING );
+    when( mockStateCol.getAggregationList() ).thenReturn( null );
+    when( mockStateCol.getAggregationType() ).thenReturn( null );
+    when( mockStateCol.getId() ).thenReturn( "STATE" );
 
     // customer col
-    expect( mockCustomerCol.getName( LOCALE ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getName( "en-US" ) ).andReturn( "CustomerName" ).anyTimes();
-    expect( mockCustomerCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockCustomerCol.getId() ).andReturn( "CUSTOMERNAME" ).anyTimes();
+    when( mockCustomerCol.getName( LOCALE ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getName( "en-US" ) ).thenReturn( "CustomerName" );
+    when( mockCustomerCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockCustomerCol.getId() ).thenReturn( "CUSTOMERNAME" );
 
     // lat col
-    expect( mockLatitudeCol.getName( LOCALE ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getName( "en-US" ) ).andReturn( "Latitude" ).anyTimes();
-    expect( mockLatitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLatitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLatitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLatitudeCol.getId() ).andReturn( "LATITUDE" ).anyTimes();
+    when( mockLatitudeCol.getName( LOCALE ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getName( "en-US" ) ).thenReturn( "Latitude" );
+    when( mockLatitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLatitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLatitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLatitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLatitudeCol.getId() ).thenReturn( "LATITUDE" );
 
-    HashMap<String, Object> latProperties = new HashMap<String, Object>();
+    HashMap<String, Object> latProperties = new HashMap<>();
     latProperties.put( "name", "Latitude" );
-    expect( mockLatitudeCol.getProperties() ).andReturn( latProperties ).anyTimes();
+    when( mockLatitudeCol.getProperties() ).thenReturn( latProperties );
 
     // lng col
-    expect( mockLongitudeCol.getName( LOCALE ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getName( "en-US" ) ).andReturn( "Longitude" ).anyTimes();
-    expect( mockLongitudeCol.getPhysicalTable() ).andReturn( mockTable1 ).anyTimes();
-    expect( mockLongitudeCol.getDataType() ).andReturn( DataType.NUMERIC ).anyTimes();
-    expect( mockLongitudeCol.getAggregationList() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getAggregationType() ).andReturn( null ).anyTimes();
-    expect( mockLongitudeCol.getId() ).andReturn( "LONGITUDE" ).anyTimes();
+    when( mockLongitudeCol.getName( LOCALE ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getName( "en-US" ) ).thenReturn( "Longitude" );
+    when( mockLongitudeCol.getPhysicalTable() ).thenReturn( mockTable1 );
+    when( mockLongitudeCol.getDataType() ).thenReturn( DataType.NUMERIC );
+    when( mockLongitudeCol.getAggregationList() ).thenReturn( null );
+    when( mockLongitudeCol.getAggregationType() ).thenReturn( null );
+    when( mockLongitudeCol.getId() ).thenReturn( "LONGITUDE" );
 
-    HashMap<String, Object> lngProperties = new HashMap<String, Object>();
+    HashMap<String, Object> lngProperties = new HashMap<>();
     lngProperties.put( "name", "Longitude" );
-    expect( mockLongitudeCol.getProperties() ).andReturn( lngProperties ).anyTimes();
-
-    replay( mockTable1 );
-    replay( mockStateCol );
-    replay( mockCustomerCol );
-    replay( mockLatitudeCol );
-    replay( mockLongitudeCol );
+    when( mockLongitudeCol.getProperties() ).thenReturn( lngProperties );
 
     AvailableTable table = new AvailableTable( mockTable1 );
     items.add( table );
@@ -1079,9 +990,9 @@ public class GeoContextIT extends AbstractModelerTest {
     MemberPropertyMetaData longMemberPropertyMetaData = levelMetaData.get( 1 );
 
     assertEquals( GeoContext.LATITUDE, latMemberPropertyMetaData.getName() );
-    assertEquals( "LATITUDE" , latMemberPropertyMetaData.getLogicalColumn().getPhysicalColumn().getId() );
+    assertEquals( "LATITUDE", latMemberPropertyMetaData.getLogicalColumn().getPhysicalColumn().getId() );
 
     assertEquals( GeoContext.LONGITUDE, longMemberPropertyMetaData.getName() );
-    assertEquals( "LONGITUDE" , longMemberPropertyMetaData.getLogicalColumn().getPhysicalColumn().getId() );
+    assertEquals( "LONGITUDE", longMemberPropertyMetaData.getLogicalColumn().getPhysicalColumn().getId() );
   }
 }
