@@ -18,11 +18,7 @@
     <developerConnection>scm:git:git@github.com:pentaho/${project.artifactId}.git</developerConnection>
     <url>scm:git:git@github.com:pentaho/${project.artifactId}.git</url>
   </scm>
-  <properties>
-    <commons-gwt.version>10.3.0.0-SNAPSHOT</commons-gwt.version>
-    <commons-xul.version>10.3.0.0-SNAPSHOT</commons-xul.version>
-  </properties>
-    <build>
+  <build>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

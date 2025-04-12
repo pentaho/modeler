@@ -19,16 +19,8 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.argThat;
-import static org.mockito.Mockito.eq;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.agilebi.modeler.models.annotations.CreateAttribute;
 import org.pentaho.agilebi.modeler.models.annotations.CreateMeasure;
 import org.pentaho.agilebi.modeler.models.annotations.LinkDimension;
@@ -38,17 +30,23 @@ import org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationManager;
 import org.pentaho.agilebi.modeler.models.annotations.SharedDimensionGroup;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.metadata.model.concept.types.AggregationType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElementType;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.pentaho.metastore.util.PentahoDefaults;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Rowell Belen
@@ -61,7 +59,7 @@ public class ModelAnnotationManagerIT {
   private ModelAnnotationManager sharedDimensionManager = null;
 
   @Before
-  public void before() throws IOException, MetaStoreException, KettleException {
+  public void before() throws Exception {
     File f = File.createTempFile( "ModelAnnotationManageTest", "before" );
     f.deleteOnExit();
 
@@ -72,7 +70,7 @@ public class ModelAnnotationManagerIT {
   }
 
   @After
-  public void after() throws IOException {
+  public void after() throws Exception {
     FileUtils.deleteDirectory( new File( ( (XmlMetaStore) metaStore ).getRootFolder() ) );
   }
 
@@ -97,7 +95,7 @@ public class ModelAnnotationManagerIT {
     modelAnnotationManager.createGroup( group, this.metaStore );
     assertNotNull( modelAnnotationManager.readGroup( group.getName(), this.metaStore ) );
     assertNotNull(
-        modelAnnotationManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
+      modelAnnotationManager.readGroup( group.getName(), this.metaStore ).get( 0 ).getAnnotation().getType() );
 
     SharedDimensionGroup sGroup = new SharedDimensionGroup();
     sGroup.setName( "Shared Dimension Group" );
@@ -107,20 +105,20 @@ public class ModelAnnotationManagerIT {
     sharedDimensionManager.createGroup( sGroup, this.metaStore ); // able to save even with the same group name
 
     ModelAnnotationGroup sharedDimensionGroup = sharedDimensionManager.readGroup( sGroup.getName(), this.metaStore );
-    assertEquals( sharedDimensionGroup.getName(), "Shared Dimension Group" );
+    assertEquals( "Shared Dimension Group", sharedDimensionGroup.getName() );
     assertTrue( sharedDimensionGroup instanceof SharedDimensionGroup );
-    assertEquals( sharedDimensionGroup.size(), 2 );
+    assertEquals( 2, sharedDimensionGroup.size() );
     assertNotNull( sharedDimensionGroup.get( 0 ).getAnnotation().getType() );
     assertNotNull( sharedDimensionGroup.get( 1 ).getAnnotation().getType() );
-    assertEquals( sharedDimensionGroup.get( 0 ).getAnnotation().getType(), ModelAnnotation.Type.CREATE_ATTRIBUTE );
-    assertEquals( sharedDimensionGroup.get( 1 ).getAnnotation().getType(), ModelAnnotation.Type.LINK_DIMENSION );
+    assertEquals( ModelAnnotation.Type.CREATE_ATTRIBUTE, sharedDimensionGroup.get( 0 ).getAnnotation().getType() );
+    assertEquals( ModelAnnotation.Type.LINK_DIMENSION, sharedDimensionGroup.get( 1 ).getAnnotation().getType() );
 
     CreateAttribute createAttribute = (CreateAttribute) sharedDimensionGroup.get( 0 ).getAnnotation();
-    assertEquals( createAttribute.getField(), "country" );
+    assertEquals( "country", createAttribute.getField() );
 
     LinkDimension linkDimension = (LinkDimension) sharedDimensionGroup.get( 1 ).getAnnotation();
-    assertEquals( linkDimension.getField(), "country" );
-    assertEquals( linkDimension.getSharedDimension(), "Geo Dimension" );
+    assertEquals( "country", linkDimension.getField() );
+    assertEquals( "Geo Dimension", linkDimension.getSharedDimension() );
   }
 
   @Test
@@ -150,17 +148,12 @@ public class ModelAnnotationManagerIT {
       @Override public boolean evaluate( Object o ) {
 
         String name = (String) o;
-        if ( name.equals( group.getName() ) ) { // check mcm object
-          return true;
-        }
-
-        return false;
+        // check mcm object
+        return name.equals( group.getName() );
       }
     } ) );
 
-    List<ModelAnnotationGroup> loadedGroups =
-        modelAnnotationManager.listGroups( this.metaStore );
-    assertEquals( 1, loadedGroups.size() );
+    assertEquals( 1, modelAnnotationManager.listGroups( this.metaStore ).size() );
   }
 
   @Test
@@ -177,17 +170,12 @@ public class ModelAnnotationManagerIT {
       @Override public boolean evaluate( Object o ) {
 
         String name = (String) o;
-        if ( name.equals( group.getName() ) ) { // check mcm object
-          return true;
-        }
-
-        return false;
+        // check mcm object
+        return name.equals( group.getName() );
       }
     } ) );
 
-    List<ModelAnnotationGroup> loadedGroups =
-        sharedDimensionManager.listGroups( this.metaStore );
-    assertEquals( 1, loadedGroups.size() );
+    assertEquals( 1, sharedDimensionManager.listGroups( this.metaStore ).size() );
   }
 
   @Test
@@ -205,7 +193,7 @@ public class ModelAnnotationManagerIT {
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<>( ca );
     group.add( mca );
 
     // add annotations
@@ -239,13 +227,13 @@ public class ModelAnnotationManagerIT {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<>( cm );
     group.add( mcm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<>( ca );
     group.add( mca );
 
     // add annotations
@@ -293,13 +281,13 @@ public class ModelAnnotationManagerIT {
     CreateMeasure cm = new CreateMeasure();
     cm.setAggregateType( AggregationType.COUNT_DISTINCT );
 
-    final ModelAnnotation<?> mcm = new ModelAnnotation<CreateMeasure>( cm );
+    final ModelAnnotation<?> mcm = new ModelAnnotation<>( cm );
     group.add( mcm );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<>( ca );
     group.add( mca );
 
     return group;
@@ -313,14 +301,14 @@ public class ModelAnnotationManagerIT {
     LinkDimension ld = new LinkDimension();
     ld.setField( "country" );
     ld.setSharedDimension( "Geo Dimension" );
-    ModelAnnotation<LinkDimension> mld = new ModelAnnotation<LinkDimension>( ld );
+    ModelAnnotation<LinkDimension> mld = new ModelAnnotation<>( ld );
 
     group.add( mld );
 
     CreateAttribute ca = new CreateAttribute();
     ca.setGeoType( ModelAnnotation.GeoType.Country );
 
-    final ModelAnnotation<?> mca = new ModelAnnotation<CreateAttribute>( ca );
+    final ModelAnnotation<?> mca = new ModelAnnotation<>( ca );
     group.add( mca );
 
     return group;
@@ -344,17 +332,16 @@ public class ModelAnnotationManagerIT {
   public void testStoreLoadDbMetaNew() throws Exception {
     KettleClientEnvironment.init();
     DatabaseMeta
-        dbMeta =
-        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
+      dbMeta =
+      new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
     dbMeta.getAttributes().setProperty( "SUPPORTS_BOOLEAN_DATA_TYPE", "N" );
     final String dbRef = modelAnnotationManager.storeDatabaseMeta( dbMeta, this.metaStore );
     assertEquals( dbMeta.getName(), dbRef );
-    IMetaStore spy = Mockito.spy( this.metaStore );
+    IMetaStore spy = spy( this.metaStore );
     DatabaseMeta dbMetaBack = modelAnnotationManager.loadDatabaseMeta( dbRef, spy );
-    Mockito.verify( spy ).getElementByName(
-        eq( PentahoDefaults.NAMESPACE ) , argThat( idNotNull() ), eq( dbRef ) );
     assertEquals( dbMeta, dbMetaBack );
     dbMetaBack.setChangedDate( dbMeta.getChangedDate() );
+    verify( spy ).getElementByName(      eq( PentahoDefaults.NAMESPACE ), any(), eq( dbRef ) );
     assertEquals( dbMeta.getAccessType(), dbMetaBack.getAccessType() );
     assertEquals( dbMeta.getAttributes(), dbMetaBack.getAttributes() );
     assertEquals( dbMeta.getHostname(), dbMetaBack.getHostname() );
@@ -366,7 +353,7 @@ public class ModelAnnotationManagerIT {
   }
 
   private Matcher<IMetaStoreElementType> idNotNull() {
-    return new BaseMatcher<IMetaStoreElementType>() {
+    return new BaseMatcher<>() {
       @Override public boolean matches( final Object item ) {
         IMetaStoreElementType elementType = (IMetaStoreElementType) item;
         return elementType.getId() != null;
@@ -382,12 +369,12 @@ public class ModelAnnotationManagerIT {
   public void testStoreLoadDbMetaUpdate() throws Exception {
     KettleClientEnvironment.init();
     DatabaseMeta
-        dbMetaPrevious =
-        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "otherhost", "db", "3002", "user1", "pass1" );
+      dbMetaPrevious =
+      new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "otherhost", "db", "3002", "user1", "pass1" );
     final String dbRefPrev = modelAnnotationManager.storeDatabaseMeta( dbMetaPrevious, this.metaStore );
     DatabaseMeta
-        dbMeta =
-        new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
+      dbMeta =
+      new DatabaseMeta( "dbmetaTest", "postgresql", "Native", "somehost", "db", "3001", "user", "pass" );
     dbMeta.getAttributes().setProperty( "SUPPORTS_BOOLEAN_DATA_TYPE", "N" );
     final String dbRef = modelAnnotationManager.storeDatabaseMeta( dbMeta, this.metaStore );
     assertEquals( dbMeta.getName(), dbRef );
