@@ -31,9 +31,9 @@
     <mondrian.version>11.0.0.0-SNAPSHOT</mondrian.version>
     <commons-xul.version>11.0.0.0-SNAPSHOT</commons-xul.version>
     <pentaho-metadata.version>11.0.0.0-SNAPSHOT</pentaho-metadata.version>
-    <dependency.sl4j.revision>1.5.8</dependency.sl4j.revision>
     <commons-gwt.version>11.0.0.0-SNAPSHOT</commons-gwt.version>
     <dependency.mockito.revision>5.10.0</dependency.mockito.revision>
+    <dependency.slf4j-jcl.version>1.7.36</dependency.slf4j-jcl.version>
     <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
   </properties>
   <dependencies>
@@ -60,12 +60,12 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${dependency.sl4j.revision}</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jcl</artifactId>
-      <version>${dependency.sl4j.revision}</version>
+      <version>${dependency.slf4j-jcl.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.core</groupId>
