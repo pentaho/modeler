@@ -13,7 +13,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;

@@ -13,7 +13,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.agilebi.modeler.models.annotations.util.KeyValueClosure;
