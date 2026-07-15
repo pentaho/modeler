@@ -23,7 +23,7 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.w3c.dom.Document;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class ShowHideAttribute extends AnnotationType {
   protected static final Class<?> MSG_CLASS = BaseModelerWorkspaceHelper.class;

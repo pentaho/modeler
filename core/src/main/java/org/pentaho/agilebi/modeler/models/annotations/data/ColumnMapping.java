@@ -12,7 +12,7 @@
 
 package org.pentaho.agilebi.modeler.models.annotations.data;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.pentaho.metadata.model.concept.types.DataType;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 

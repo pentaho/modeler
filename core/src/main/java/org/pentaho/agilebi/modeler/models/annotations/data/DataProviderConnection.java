@@ -14,8 +14,8 @@
 package org.pentaho.agilebi.modeler.models.annotations.data;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.metastore.api.IMetaStore;

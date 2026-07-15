@@ -13,8 +13,8 @@
 
 package org.pentaho.agilebi.modeler.models.annotations;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.agilebi.modeler.models.annotations.data.ColumnMapping;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
 import org.pentaho.di.core.exception.KettleException;
