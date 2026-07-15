@@ -14,7 +14,7 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import mondrian.olap.MondrianDef;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerPerspective;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
