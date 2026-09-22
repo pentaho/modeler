@@ -119,16 +119,16 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
     if ( this == obj ) {
       return true;
     }
-    if ( !( obj instanceof ModelAnnotationGroup ) ) {
+    if ( obj == null || getClass() != obj.getClass() ) {
       return false;
     }
 
     ModelAnnotationGroup other = (ModelAnnotationGroup) obj;
-    return sharedDimension == other.sharedDimension
-        && Objects.equals( id, other.id )
-        && Objects.equals( name, other.name )
-        && Objects.equals( description, other.description )
-        && Objects.equals( dataProviders, other.dataProviders )
+    return isSharedDimension() == other.isSharedDimension()
+        && Objects.equals( getId(), other.getId() )
+        && Objects.equals( getName(), other.getName() )
+        && Objects.equals( getDescription(), other.getDescription() )
+        && Objects.equals( getDataProviders(), other.getDataProviders() )
         && super.equals( other );
   }
 
