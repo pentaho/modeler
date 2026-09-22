@@ -15,7 +15,6 @@
 package org.pentaho.agilebi.modeler.models.annotations;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.pentaho.agilebi.modeler.ModelerException;
 import org.pentaho.agilebi.modeler.ModelerWorkspace;
 import org.pentaho.agilebi.modeler.models.annotations.data.DataProvider;
@@ -30,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 //import static org.pentaho.agilebi.modeler.models.annotations.ModelAnnotationGroup.ApplyStatus.*;
@@ -116,28 +116,20 @@ public class ModelAnnotationGroup extends ArrayList<ModelAnnotation> {
 
   @Override
   public boolean equals( Object obj ) {
-
-    try {
-      if ( !EqualsBuilder.reflectionEquals( this, obj ) ) {
-        return false;
-      }
-
-      // manually check annotations
-      ModelAnnotationGroup objGroup = (ModelAnnotationGroup) obj;
-      if ( this.size() != objGroup.size() ) {
-        return false;
-      }
-
-      for ( int i = 0; i < this.size(); i++ ) {
-        if ( !this.get( i ).equals( objGroup.get( i ) ) ) {
-          return false;
-        }
-      }
-
+    if ( this == obj ) {
       return true;
-    } catch ( Exception e ) {
+    }
+    if ( !( obj instanceof ModelAnnotationGroup ) ) {
       return false;
     }
+
+    ModelAnnotationGroup other = (ModelAnnotationGroup) obj;
+    return sharedDimension == other.sharedDimension
+        && Objects.equals( id, other.id )
+        && Objects.equals( name, other.name )
+        && Objects.equals( description, other.description )
+        && Objects.equals( dataProviders, other.dataProviders )
+        && super.equals( other );
   }
 
   public enum ApplyStatus {
