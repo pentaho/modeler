@@ -85,6 +85,43 @@ public class ModelAnnotationGroupIT {
     assertFalse( modelAnnotationGroup.equals( new ModelAnnotationGroup() ) );
   }
 
+  @Test
+  public void testEqualsUsesSharedDimensionGroupMetadata() throws Exception {
+    SharedDimensionGroup group = new SharedDimensionGroup();
+    group.setId( "id" );
+    group.setName( "name" );
+    group.setDescription( "description" );
+    group.setSharedDimension( true );
+    group.getDataProviders().add( new DataProvider() );
+
+    SharedDimensionGroup copy = new SharedDimensionGroup();
+    copy.setId( "id" );
+    copy.setName( "name" );
+    copy.setDescription( "description" );
+    copy.setSharedDimension( true );
+    copy.getDataProviders().add( new DataProvider() );
+
+    assertTrue( group.equals( copy ) );
+
+    copy.setName( "different name" );
+    assertFalse( group.equals( copy ) );
+    copy.setName( group.getName() );
+
+    copy.setId( "different id" );
+    assertFalse( group.equals( copy ) );
+    copy.setId( group.getId() );
+
+    copy.setSharedDimension( false );
+    assertFalse( group.equals( copy ) );
+    copy.setSharedDimension( group.isSharedDimension() );
+
+    copy.getDataProviders().get( 0 ).setName( "different provider" );
+    assertFalse( group.equals( copy ) );
+
+    assertFalse( group.equals( new ModelAnnotationGroup() ) );
+    assertFalse( new ModelAnnotationGroup().equals( group ) );
+  }
+
   private ModelAnnotationGroup getSampleModelAnnotationGroup() {
 
     ModelAnnotationGroup modelAnnotationGroup = new ModelAnnotationGroup();
